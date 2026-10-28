@@ -1,9 +1,12 @@
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Bluetooth para Android 12+ -->
+    <!-- Bluetooth clásico y BLE para Android antiguo -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
+    <!-- Bluetooth BLE para Android 12+ -->
     <uses-permission
         android:name="android.permission.BLUETOOTH_SCAN"
         android:usesPermissionFlags="neverForLocation" />
@@ -11,14 +14,7 @@
     <uses-permission
         android:name="android.permission.BLUETOOTH_CONNECT" />
 
-    <!-- Bluetooth en Android antiguos -->
-    <uses-permission
-        android:name="android.permission.BLUETOOTH" />
-
-    <uses-permission
-        android:name="android.permission.BLUETOOTH_ADMIN" />
-
-    <!-- Necesario para escaneo BLE en Android antiguos -->
+    <!-- Necesario para escaneo BLE en Android 11 y anteriores -->
     <uses-permission
         android:name="android.permission.ACCESS_FINE_LOCATION" />
 
@@ -28,20 +24,16 @@
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:usesCleartextTraffic="false"
-        android:allowBackup="true">
+        android:allowBackup="true"
+        android:supportsRtl="true">
 
         <activity
             android:name=".MainActivity"
             android:exported="true">
 
             <intent-filter>
-
-                <action
-                    android:name="android.intent.action.MAIN" />
-
-                <category
-                    android:name="android.intent.category.LAUNCHER" />
-
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
         </activity>
