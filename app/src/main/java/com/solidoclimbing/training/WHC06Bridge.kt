@@ -1,200 +1,190 @@
-```kotlin
 package com.solidoclimbing.training
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
-import android.content.Context
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
+import android.bluetooth.le.BluetoothLeScanner
+import android.bluetooth.le.ScanCallback
+import android.bluetooth.le.ScanResult
+import android.content.pm.PackageManager
+import android.os.Build
 import android.webkit.JavascriptInterface
+import android.webkit.WebView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import org.json.JSONObject
 
-class WHC06Bridge(private val context: Context) {
-
+class WHC06Bridge(
+    private val activity: Activity,
+    private val webView: WebView
+) {
     companion object {
-        private const val TAG = "WHC06Bridge"
         private const val COMPANY_ID = 0x0100
+        private const val PERMISSION_REQUEST = 4106
     }
 
-    private val handler = Handler(Looper.getMainLooper())
-    private var bluetoothAdapter: BluetoothAdapter? = null
+    private val adapter: BluetoothAdapter? =
+        (activity.getSystemService(Activity.BLUETOOTH_SERVICE) as BluetoothManager).adapter
+
+    private var scanner: BluetoothLeScanner? = null
+    private var scanCallback: ScanCallback? = null
     private var scanning = false
+    private var released = false
 
-    private var javascriptCallback: ((String) -> Unit)? = null
-
-    init {
-        val bluetoothManager =
-            context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-
-        bluetoothAdapter = bluetoothManager.adapter
-    }
-
-    fun setCallback(callback: (String) -> Unit) {
-        javascriptCallback = callback
-    }
-
-    @SuppressLint("MissingPermission")
     @JavascriptInterface
     fun startScan() {
+        activity.runOnUiThread { startScanInternal() }
+    }
 
-        if (scanning) return
+    @JavascriptInterface
+    fun stopScan() {
+        activity.runOnUiThread { stopScanInternal("Búsqueda finalizada") }
+    }
 
-        val adapter = bluetoothAdapter
+    private fun requiredPermissions(): Array<String> =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            arrayOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT
+            )
+        } else {
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
 
-        if (adapter == null) {
-            sendError("Bluetooth no disponible")
+    private fun hasRequiredPermissions(): Boolean =
+        requiredPermissions().all { permission ->
+            ContextCompat.checkSelfPermission(activity, permission) ==
+                PackageManager.PERMISSION_GRANTED
+        }
+
+    private fun startScanInternal() {
+        if (released || scanning) return
+
+        if (!hasRequiredPermissions()) {
+            sendStatus("Solicitando permisos Bluetooth…")
+            val missing = requiredPermissions().filter { permission ->
+                ContextCompat.checkSelfPermission(activity, permission) !=
+                    PackageManager.PERMISSION_GRANTED
+            }.toTypedArray()
+            ActivityCompat.requestPermissions(activity, missing, PERMISSION_REQUEST)
             return
         }
 
-        if (!adapter.isEnabled) {
-            sendError("Bluetooth está desactivado")
+        val bluetoothAdapter = adapter
+        if (bluetoothAdapter == null) {
+            sendError("Bluetooth no está disponible en este móvil.")
             return
         }
 
-        scanning = true
+        try {
+            if (!bluetoothAdapter.isEnabled) {
+                sendError("Activa el Bluetooth del móvil y vuelve a conectar.")
+                return
+            }
 
-        sendStatus("Buscando WH-C06...")
+            val activeScanner = bluetoothAdapter.bluetoothLeScanner
+            if (activeScanner == null) {
+                sendError("No se pudo iniciar el escáner Bluetooth LE.")
+                return
+            }
 
-        adapter.bluetoothLeScanner?.startScan(
-            object : android.bluetooth.le.ScanCallback() {
+            val callback = object : ScanCallback() {
+                override fun onScanResult(callbackType: Int, result: ScanResult) {
+                    val data = result.scanRecord?.getManufacturerSpecificData(COMPANY_ID) ?: return
+                    if (data.size < 12) return
 
-                override fun onScanResult(
-                    callbackType: Int,
-                    result: android.bluetooth.le.ScanResult
-                ) {
-                    val device = result.device
-                    val scanRecord = result.scanRecord
+                    val high = data[10].toInt() and 0xFF
+                    val low = data[11].toInt() and 0xFF
+                    val weightKg = ((high shl 8) or low) / 100.0
 
-                    if (scanRecord == null) return
-
-                    val manufacturerData =
-                        scanRecord.getManufacturerSpecificData(COMPANY_ID)
-
-                    if (manufacturerData != null) {
-
-                        Log.d(
-                            TAG,
-                            "WH-C06 encontrado: ${device.name ?: device.address}"
-                        )
-
-                        val weight = readWeight(manufacturerData)
-
-                        if (weight != null) {
-
-                            val json = JSONObject()
-
-                            json.put("type", "weight")
-                            json.put("weight", weight)
-                            json.put(
-                                "device",
-                                device.name ?: "WH-C06"
-                            )
-                            json.put(
-                                "address",
-                                device.address
-                            )
-
-                            javascriptCallback?.invoke(
-                                json.toString()
-                            )
-                        }
-                    }
+                    val payload = JSONObject()
+                        .put("type", "weight")
+                        .put("weight", weightKg)
+                        .put("device", result.device.name ?: "WH-C06")
+                        .put("address", result.device.address)
+                    sendData(payload)
                 }
 
                 override fun onScanFailed(errorCode: Int) {
                     scanning = false
-                    sendError(
-                        "Error Bluetooth LE: $errorCode"
-                    )
+                    scanCallback = null
+                    scanner = null
+                    sendError("Error Bluetooth LE: $errorCode")
                 }
             }
-        )
 
-        handler.postDelayed(
-            {
-                stopScan()
-            },
-            30000
-        )
+            scanner = activeScanner
+            scanCallback = callback
+            activeScanner.startScan(callback)
+            scanning = true
+            sendStatus("Buscando WH-C06 / IF_B7…")
+        } catch (error: SecurityException) {
+            scanning = false
+            sendError("Faltan permisos Bluetooth: ${error.message ?: "permiso denegado"}")
+        } catch (error: Exception) {
+            scanning = false
+            sendError("No se pudo iniciar Bluetooth: ${error.message ?: "error desconocido"}")
+        }
+    }
+
+    fun onRequestPermissionsResult(requestCode: Int, grantResults: IntArray) {
+        if (requestCode != PERMISSION_REQUEST) return
+        if (grantResults.isNotEmpty() && grantResults.all {
+                it == PackageManager.PERMISSION_GRANTED
+            } && hasRequiredPermissions()
+        ) {
+            startScanInternal()
+        } else {
+            sendError("Sin permisos Bluetooth no se puede leer el medidor.")
+        }
     }
 
     @SuppressLint("MissingPermission")
-    @JavascriptInterface
-    fun stopScan() {
-
-        if (!scanning) return
-
-        bluetoothAdapter
-            ?.bluetoothLeScanner
-            ?.stopScan(
-                object : android.bluetooth.le.ScanCallback() {}
-            )
-
-        scanning = false
-
-        sendStatus("Búsqueda finalizada")
-    }
-
-    private fun readWeight(data: ByteArray): Double? {
-
-        /*
-         * WH-C06:
-         *
-         * Offset utilizado por la implementación Web Bluetooth:
-         * byte 10 + byte 11
-         *
-         * Peso:
-         * ((byte10 << 8) | byte11) / 100
-         */
-
-        if (data.size < 12) {
-            return null
+    private fun stopScanInternal(message: String) {
+        try {
+            if (scanning && hasRequiredPermissions()) {
+                val activeScanner = scanner
+                val activeCallback = scanCallback
+                if (activeScanner != null && activeCallback != null) {
+                    activeScanner.stopScan(activeCallback)
+                }
+            }
+        } catch (_: Exception) {
+            // Continue cleanup even if Android no longer permits stopping the scan.
+        } finally {
+            scanning = false
+            scanner = null
+            scanCallback = null
         }
-
-        val high = data[10].toInt() and 0xFF
-        val low = data[11].toInt() and 0xFF
-
-        val rawWeight =
-            (high shl 8) or low
-
-        return rawWeight / 100.0
+        sendStatus(message)
     }
 
     private fun sendStatus(message: String) {
-
-        val json = JSONObject()
-
-        json.put("type", "status")
-        json.put("message", message)
-
-        javascriptCallback?.invoke(
-            json.toString()
-        )
+        sendData(JSONObject().put("type", "status").put("message", message))
     }
 
     private fun sendError(message: String) {
+        sendData(JSONObject().put("type", "error").put("message", message))
+    }
 
-        val json = JSONObject()
-
-        json.put("type", "error")
-        json.put("message", message)
-
-        javascriptCallback?.invoke(
-            json.toString()
-        )
+    private fun sendData(payload: JSONObject) {
+        if (released) return
+        val json = payload.toString()
+        activity.runOnUiThread {
+            if (!released) {
+                webView.evaluateJavascript(
+                    "window.onWHC06Data && window.onWHC06Data(${JSONObject.quote(json)});",
+                    null
+                )
+            }
+        }
     }
 
     fun release() {
-
-        try {
-            stopScan()
-        } catch (_: Exception) {
-        }
-
-        javascriptCallback = null
+        if (released) return
+        stopScanInternal("Medidor desconectado.")
+        released = true
     }
 }
-```
