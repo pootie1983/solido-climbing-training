@@ -1,22 +1,16 @@
-```xml
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Bluetooth clásico y BLE para Android antiguo -->
+    <!-- Bluetooth clásico / compatibilidad -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
-    <!-- Bluetooth BLE para Android 12+ -->
+    <!-- Bluetooth en Android 12+ -->
     <uses-permission
         android:name="android.permission.BLUETOOTH_SCAN"
         android:usesPermissionFlags="neverForLocation" />
 
-    <uses-permission
-        android:name="android.permission.BLUETOOTH_CONNECT" />
-
-    <!-- Necesario para escaneo BLE en Android 11 y anteriores -->
-    <uses-permission
-        android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 
     <application
         android:theme="@style/AppTheme"
@@ -24,8 +18,7 @@
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:usesCleartextTraffic="false"
-        android:allowBackup="true"
-        android:supportsRtl="true">
+        android:allowBackup="true">
 
         <activity
             android:name=".MainActivity"
@@ -41,4 +34,3 @@
     </application>
 
 </manifest>
-```
