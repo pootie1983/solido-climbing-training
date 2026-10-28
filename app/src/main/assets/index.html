@@ -1,50 +1,2643 @@
+```html
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08121b"><title>SOLIDO CLIMBING TRAINING</title>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08121b">
+<title>SOLIDO CLIMBING TRAINING</title>
+
 <style>
-:root{--bg:#08121b;--panel:#122330;--panel2:#1a2d3a;--green:#7cff45;--text:#f2f7f4;--muted:#a8bbc4;--line:#29424f}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#142b37 0,#08121b 60%);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,sans-serif;padding-bottom:82px}header{padding:20px 18px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#08121bee;backdrop-filter:blur(10px);z-index:3;border-bottom:1px solid #1b303b}.logo{font-weight:1000;font-style:italic;font-size:20px;letter-spacing:.4px;color:var(--green)}.logo small{display:block;color:white;font-size:10px;letter-spacing:3px;font-style:normal;text-align:center}.pill{border:1px solid #36505c;border-radius:30px;padding:6px 10px;color:var(--muted);font-size:12px}.wrap{padding:16px;max-width:760px;margin:auto}.hero{border:1px solid #31505b;border-radius:20px;overflow:hidden;background:linear-gradient(130deg,#1b3945,#10222f 60%,#1a352b);padding:20px;position:relative;min-height:180px}.hero:after{content:'⛰';position:absolute;right:4px;bottom:-32px;font-size:145px;opacity:.18}.eyebrow{color:var(--green);font-weight:800;letter-spacing:1.5px;font-size:11px}.hero h1{font-size:28px;line-height:1.06;margin:10px 0;max-width:280px}.hero p{color:#c0d1d5;max-width:270px;margin:0 0 15px}.btn{background:var(--green);color:#10200b;border:0;border-radius:13px;padding:13px 16px;font-weight:900;cursor:pointer}.btn.secondary{background:#203642;color:#f2f7f4;border:1px solid #3a5663}.sectionhead{display:flex;justify-content:space-between;align-items:center;margin:24px 0 12px}.sectionhead h2{font-size:18px;margin:0}.muted{color:var(--muted);font-size:12px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.tile,.exercise,.stat,.planstep{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:14px}.tile{cursor:pointer;min-height:112px}.tile .emoji{font-size:27px}.tile strong{display:block;margin-top:8px}.tile small{color:var(--muted)}.cards{display:grid;gap:10px}.exercise{display:grid;grid-template-columns:78px 1fr;gap:12px;align-items:center}.art{height:82px;border-radius:12px;background:linear-gradient(145deg,#294b54,#172a36);display:grid;place-items:center;font-size:40px;border:1px solid #3a5962}.exercise h3{margin:0 0 5px;font-size:15px}.exercise p{margin:0 0 8px;color:var(--muted);font-size:12px}.tag{display:inline-block;font-size:10px;color:var(--green);border:1px solid #477d3b;padding:3px 7px;border-radius:30px}.tabs{display:flex;gap:7px;overflow:auto;padding:3px 0 12px}.tab{white-space:nowrap;background:#152834;color:#b8c9ce;border:1px solid #304651;padding:8px 12px;border-radius:24px}.tab.active{background:var(--green);color:#14220e;border-color:var(--green);font-weight:800}.nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;background:#09151df5;border-top:1px solid #29414b;padding:10px 5px max(10px,env(safe-area-inset-bottom));z-index:5}.nav button{background:none;border:0;color:#a8bbc4;font-size:11px;display:grid;gap:4px;justify-items:center}.nav button span{font-size:20px}.nav button.active{color:var(--green)}.hide{display:none!important}.timer{text-align:center;padding:22px 8px}.clock{width:210px;height:210px;border:8px solid var(--green);border-radius:50%;display:grid;place-content:center;margin:20px auto;box-shadow:0 0 35px #7cff4520}.clock strong{font-size:48px;font-variant-numeric:tabular-nums}.clock span{color:var(--muted)}input,select{background:#0d1d27;color:white;border:1px solid #36505c;border-radius:10px;padding:10px;max-width:100%}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.progress{height:8px;background:#253c46;border-radius:20px;overflow:hidden}.progress i{display:block;background:var(--green);height:100%;width:45%}.stat strong{font-size:23px;display:block}.stat span{font-size:12px;color:var(--muted)}.notice{padding:12px;border-radius:12px;background:#1e302c;color:#d6f8cc;font-size:12px;line-height:1.5}.footer{text-align:center;color:#627985;font-size:10px;padding:22px}
-</style></head><body>
-<header><div class="logo">SOLIDO <small>CLIMBING TRAINING</small></div><div class="pill">VERSIÓN 0.1</div></header>
+:root{
+  --bg:#08121b;
+  --panel:#122330;
+  --panel2:#1a2d3a;
+  --green:#7cff45;
+  --text:#f2f7f4;
+  --muted:#a8bbc4;
+  --line:#29424f;
+  --danger:#ff6262;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:radial-gradient(ellipse at top,#142b37 0,#08121b 60%);
+  color:var(--text);
+  font:15px system-ui,-apple-system,Segoe UI,sans-serif;
+  padding-bottom:82px;
+}
+
+header{
+  padding:20px 18px 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  background:#08121bee;
+  backdrop-filter:blur(10px);
+  z-index:10;
+  border-bottom:1px solid #1b303b;
+}
+
+.logo{
+  font-weight:1000;
+  font-style:italic;
+  font-size:20px;
+  letter-spacing:.4px;
+  color:var(--green);
+}
+
+.logo small{
+  display:block;
+  color:white;
+  font-size:10px;
+  letter-spacing:3px;
+  font-style:normal;
+  text-align:center;
+}
+
+.pill{
+  border:1px solid #36505c;
+  border-radius:30px;
+  padding:6px 10px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.wrap{
+  padding:16px;
+  max-width:760px;
+  margin:auto;
+}
+
+.hero{
+  border:1px solid #31505b;
+  border-radius:20px;
+  overflow:hidden;
+  background:linear-gradient(130deg,#1b3945,#10222f 60%,#1a352b);
+  padding:20px;
+  position:relative;
+  min-height:180px;
+}
+
+.hero:after{
+  content:'⛰';
+  position:absolute;
+  right:4px;
+  bottom:-32px;
+  font-size:145px;
+  opacity:.18;
+}
+
+.eyebrow{
+  color:var(--green);
+  font-weight:800;
+  letter-spacing:1.5px;
+  font-size:11px;
+}
+
+.hero h1{
+  font-size:28px;
+  line-height:1.06;
+  margin:10px 0;
+  max-width:320px;
+}
+
+.hero p{
+  color:#c0d1d5;
+  max-width:300px;
+  margin:0 0 15px;
+}
+
+.btn{
+  background:var(--green);
+  color:#10200b;
+  border:0;
+  border-radius:13px;
+  padding:13px 16px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.btn.secondary{
+  background:#203642;
+  color:#f2f7f4;
+  border:1px solid #3a5663;
+}
+
+.btn.danger{
+  background:#321d24;
+  color:#ff9b9b;
+  border:1px solid #713b43;
+}
+
+.btn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+.sectionhead{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:24px 0 12px;
+}
+
+.sectionhead h2{
+  font-size:18px;
+  margin:0;
+}
+
+.muted{
+  color:var(--muted);
+  font-size:12px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.tile,
+.exercise,
+.stat,
+.planstep{
+  background:linear-gradient(145deg,var(--panel2),var(--panel));
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:14px;
+}
+
+.tile{
+  cursor:pointer;
+  min-height:112px;
+}
+
+.tile .emoji{
+  font-size:27px;
+}
+
+.tile strong{
+  display:block;
+  margin-top:8px;
+}
+
+.tile small{
+  color:var(--muted);
+}
+
+.cards{
+  display:grid;
+  gap:10px;
+}
+
+.exercise{
+  display:grid;
+  grid-template-columns:78px 1fr;
+  gap:12px;
+  align-items:center;
+  cursor:pointer;
+}
+
+.art{
+  height:82px;
+  border-radius:12px;
+  background:linear-gradient(145deg,#294b54,#172a36);
+  display:grid;
+  place-items:center;
+  font-size:40px;
+  border:1px solid #3a5962;
+}
+
+.exercise h3{
+  margin:0 0 5px;
+  font-size:15px;
+}
+
+.exercise p{
+  margin:0 0 8px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.tag{
+  display:inline-block;
+  font-size:10px;
+  color:var(--green);
+  border:1px solid #477d3b;
+  padding:3px 7px;
+  border-radius:30px;
+}
+
+.tabs{
+  display:flex;
+  gap:7px;
+  overflow:auto;
+  padding:3px 0 12px;
+}
+
+.tab{
+  white-space:nowrap;
+  background:#152834;
+  color:#b8c9ce;
+  border:1px solid #304651;
+  padding:8px 12px;
+  border-radius:24px;
+}
+
+.tab.active{
+  background:var(--green);
+  color:#14220e;
+  border-color:var(--green);
+  font-weight:800;
+}
+
+.nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:space-around;
+  background:#09151df5;
+  border-top:1px solid #29414b;
+  padding:10px 5px max(10px,env(safe-area-inset-bottom));
+  z-index:20;
+}
+
+.nav button{
+  background:none;
+  border:0;
+  color:#a8bbc4;
+  font-size:11px;
+  display:grid;
+  gap:4px;
+  justify-items:center;
+}
+
+.nav button span{
+  font-size:20px;
+}
+
+.nav button.active{
+  color:var(--green);
+}
+
+.hide{
+  display:none!important;
+}
+
+.timer{
+  text-align:center;
+  padding:22px 8px;
+}
+
+.clock{
+  width:210px;
+  height:210px;
+  border:8px solid var(--green);
+  border-radius:50%;
+  display:grid;
+  place-content:center;
+  margin:20px auto;
+  box-shadow:0 0 35px #7cff4520;
+}
+
+.clock strong{
+  font-size:48px;
+  font-variant-numeric:tabular-nums;
+}
+
+.clock span{
+  color:var(--muted);
+}
+
+input,
+select{
+  background:#0d1d27;
+  color:white;
+  border:1px solid #36505c;
+  border-radius:10px;
+  padding:10px;
+  max-width:100%;
+}
+
+.row{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.stat strong{
+  font-size:23px;
+  display:block;
+}
+
+.stat span{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.notice{
+  padding:12px;
+  border-radius:12px;
+  background:#1e302c;
+  color:#d6f8cc;
+  font-size:12px;
+  line-height:1.5;
+}
+
+.notice.warning{
+  background:#342d1c;
+  color:#ffe3a3;
+}
+
+.notice.error{
+  background:#321d24;
+  color:#ffb2b2;
+}
+
+.footer{
+  text-align:center;
+  color:#627985;
+  font-size:10px;
+  padding:22px;
+}
+
+/* WH-C06 */
+
+.whc-card{
+  background:linear-gradient(145deg,#162d37,#0d1d27);
+  border:1px solid #31505b;
+  border-radius:20px;
+  padding:18px;
+  margin-top:16px;
+}
+
+.whc-status{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin-bottom:18px;
+}
+
+.status-dot{
+  width:11px;
+  height:11px;
+  border-radius:50%;
+  background:#667780;
+  box-shadow:0 0 0 4px #66778020;
+}
+
+.status-dot.connected{
+  background:var(--green);
+  box-shadow:0 0 0 4px #7cff4520;
+}
+
+.status-dot.error{
+  background:var(--danger);
+  box-shadow:0 0 0 4px #ff626220;
+}
+
+.force-display{
+  text-align:center;
+  padding:15px 5px 22px;
+}
+
+.force-value{
+  font-size:72px;
+  line-height:1;
+  font-weight:1000;
+  color:var(--green);
+  font-variant-numeric:tabular-nums;
+  text-shadow:0 0 25px #7cff4525;
+}
+
+.force-unit{
+  font-size:18px;
+  color:var(--muted);
+  margin-top:5px;
+}
+
+.force-bar{
+  height:14px;
+  background:#172b35;
+  border-radius:20px;
+  overflow:hidden;
+  margin:15px 0;
+  border:1px solid #29434f;
+}
+
+.force-bar i{
+  display:block;
+  height:100%;
+  width:0%;
+  background:var(--green);
+  transition:width .15s ease;
+}
+
+.wh-stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.wh-stat{
+  background:#10232d;
+  border:1px solid #29424f;
+  border-radius:13px;
+  padding:12px 7px;
+  text-align:center;
+}
+
+.wh-stat strong{
+  display:block;
+  font-size:18px;
+}
+
+.wh-stat span{
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+  margin-top:3px;
+}
+
+.device-name{
+  color:white;
+  font-weight:800;
+}
+
+.bluetooth-help{
+  margin-top:14px;
+  padding:12px;
+  border-radius:12px;
+  background:#132932;
+  border:1px solid #29424f;
+  color:#bcd0d7;
+  font-size:12px;
+  line-height:1.5;
+}
+
+@media(max-width:420px){
+  .force-value{
+    font-size:60px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">
+    SOLIDO
+    <small>CLIMBING TRAINING</small>
+  </div>
+  <div class="pill">VERSIÓN 0.2</div>
+</header>
+
 <main class="wrap">
-<section id="home"><div class="hero"><div class="eyebrow">ENTRENA · PROGRESA · DISFRUTA</div><h1>Tu próximo nivel empieza hoy.</h1><p>Entrenamientos de escalada, fuerza y montaña en un solo lugar.</p><button class="btn" onclick="show('plans')">Ver mi plan →</button></div>
-<div class="sectionhead"><h2>Tu actividad</h2><span class="muted">Guardado en este dispositivo</span></div><div class="grid"><div class="stat"><strong id="sessionCount">0</strong><span>Sesiones completadas</span></div><div class="stat"><strong id="minuteCount">0 min</strong><span>Tiempo entrenado</span></div></div>
-<div class="sectionhead"><h2>Entrena por objetivo</h2></div><div class="grid"><div class="tile" onclick="filterExercises('Fuerza')"><div class="emoji">🧗</div><strong>Fuerza</strong><small>Dominadas y dedos</small></div><div class="tile" onclick="filterExercises('Core')"><div class="emoji">💪</div><strong>Core</strong><small>Estabilidad y control</small></div><div class="tile" onclick="show('library')"><div class="emoji">📚</div><strong>Ejercicios</strong><small>Biblioteca ilustrada</small></div><div class="tile" onclick="show('progress')"><div class="emoji">📈</div><strong>Progreso</strong><small>Tu historial</small></div></div>
-<div class="sectionhead"><h2>Consejo de hoy</h2></div><div class="notice">Calienta entre 10 y 15 minutos antes de los ejercicios intensos. Si aparece dolor agudo en dedos, codos u hombros, detén la sesión. Aumenta la carga gradualmente.</div></section>
-<section id="plans" class="hide"><div class="sectionhead"><h2>Plan de entrenamiento</h2><span class="tag">45 MIN</span></div><p class="muted">Sesión general de fuerza. Ajusta la carga a tu experiencia y recuperación.</p><div class="cards" id="planList"></div><div style="margin-top:14px"><button class="btn" onclick="startPlan()">▶ Comenzar sesión</button></div></section>
-<section id="library" class="hide"><div class="sectionhead"><h2>Biblioteca de ejercicios</h2></div><div class="tabs" id="filters"><button class="tab active" onclick="filterExercises('Todos',this)">Todos</button><button class="tab" onclick="filterExercises('Fuerza',this)">Fuerza</button><button class="tab" onclick="filterExercises('Dedos',this)">Dedos</button><button class="tab" onclick="filterExercises('Core',this)">Core</button><button class="tab" onclick="filterExercises('Movilidad',this)">Movilidad</button><button class="tab" onclick="filterExercises('Resistencia',this)">Resistencia</button></div><div class="cards" id="exerciseList"></div></section>
-<section id="detail" class="hide"><button class="btn secondary" onclick="show('library')">← Biblioteca</button><div id="detailContent"></div></section>
-<section id="timerPage" class="hide"><div class="sectionhead"><h2 id="timerTitle">Temporizador</h2><span class="tag">SERIES / DESCANSO</span></div><div class="timer"><div class="clock"><div><strong id="clock">00:30</strong><br><span id="timerLabel">Preparado</span></div></div><div class="row" style="justify-content:center"><label>Segundos <input id="secondsInput" type="number" min="5" max="600" value="30" style="width:85px"></label><button class="btn" id="startPause" onclick="toggleTimer()">▶ Iniciar</button><button class="btn secondary" onclick="resetTimer()">Reiniciar</button></div><p class="muted">Mantén el control del movimiento. El temporizador no sustituye una planificación adaptada a tu nivel.</p></div></section>
-<section id="progress" class="hide"><div class="sectionhead"><h2>Tu progreso</h2></div><div class="grid"><div class="stat"><strong id="pSessions">0</strong><span>Sesiones</span></div><div class="stat"><strong id="pMinutes">0 min</strong><span>Minutos acumulados</span></div></div><div class="sectionhead"><h2>Historial</h2><button class="btn secondary" onclick="clearHistory()">Borrar</button></div><div id="history" class="cards"></div></section>
-<section id="profile" class="hide"><div class="sectionhead"><h2>Perfil y objetivos</h2></div><div class="tile"><strong>Tu nivel</strong><p class="muted">Elige un nivel para orientar las sugerencias.</p><select id="level"><option>Principiante</option><option selected>Intermedio</option><option>Avanzado</option></select><div style="height:14px"></div><strong>Objetivo principal</strong><p><select id="goal"><option>Fuerza general</option><option>Fuerza de dedos</option><option>Resistencia</option><option>Preparación para vías ferratas</option></select></p><button class="btn" onclick="saveProfile()">Guardar preferencias</button></div><div class="sectionhead"><h2>Acerca de</h2></div><div class="notice">SOLIDO CLIMBING TRAINING · Prototipo inicial. Los ejercicios y planes son orientativos, no una prescripción médica ni un plan individualizado.</div></section>
-<div class="footer">SOLIDO CLIMBING · ENTRENAMIENTO RESPONSABLE</div></main>
-<nav class="nav"><button class="active" data-page="home" onclick="show('home',this)"><span>⌂</span>Inicio</button><button data-page="plans" onclick="show('plans',this)"><span>▣</span>Planes</button><button data-page="library" onclick="show('library',this)"><span>▤</span>Ejercicios</button><button data-page="progress" onclick="show('progress',this)"><span>↗</span>Progreso</button><button data-page="profile" onclick="show('profile',this)"><span>◎</span>Perfil</button></nav>
+
+<!-- ================= INICIO ================= -->
+
+<section id="home">
+
+  <div class="hero">
+    <div class="eyebrow">ENTRENA · PROGRESA · DISFRUTA</div>
+    <h1>Tu próximo nivel empieza hoy.</h1>
+    <p>Entrenamientos de escalada, fuerza y montaña en un solo lugar.</p>
+
+    <button class="btn" onclick="show('plans')">
+      Ver mi plan →
+    </button>
+  </div>
+
+  <div class="sectionhead">
+    <h2>Tu actividad</h2>
+    <span class="muted">Guardado en este dispositivo</span>
+  </div>
+
+  <div class="grid">
+
+    <div class="stat">
+      <strong id="sessionCount">0</strong>
+      <span>Sesiones completadas</span>
+    </div>
+
+    <div class="stat">
+      <strong id="minuteCount">0 min</strong>
+      <span>Tiempo entrenado</span>
+    </div>
+
+  </div>
+
+  <div class="sectionhead">
+    <h2>Entrena por objetivo</h2>
+  </div>
+
+  <div class="grid">
+
+    <div class="tile" onclick="filterExercises('Fuerza')">
+      <div class="emoji">🧗</div>
+      <strong>Fuerza</strong>
+      <small>Dominadas y dedos</small>
+    </div>
+
+    <div class="tile" onclick="filterExercises('Core')">
+      <div class="emoji">💪</div>
+      <strong>Core</strong>
+      <small>Estabilidad y control</small>
+    </div>
+
+    <div class="tile" onclick="show('library')">
+      <div class="emoji">📚</div>
+      <strong>Ejercicios</strong>
+      <small>Biblioteca ilustrada</small>
+    </div>
+
+    <div class="tile" onclick="show('progress')">
+      <div class="emoji">📈</div>
+      <strong>Progreso</strong>
+      <small>Tu historial</small>
+    </div>
+
+  </div>
+
+  <!-- NUEVO WH-C06 -->
+
+  <div class="sectionhead">
+    <h2>Fuerza de dedos</h2>
+    <span class="tag">WH-C06</span>
+  </div>
+
+  <div class="tile" onclick="show('whc06')">
+
+    <div class="emoji">🟢</div>
+
+    <strong>
+      Medidor WH-C06
+    </strong>
+
+    <small>
+      Conecta IF_B7 y mide tu fuerza en kg
+    </small>
+
+    <div style="margin-top:12px">
+      <span class="tag">BLUETOOTH</span>
+    </div>
+
+  </div>
+
+  <div class="sectionhead">
+    <h2>Consejo de hoy</h2>
+  </div>
+
+  <div class="notice">
+    Calienta entre 10 y 15 minutos antes de los ejercicios intensos.
+    Si aparece dolor agudo en dedos, codos u hombros, detén la sesión.
+    Aumenta la carga gradualmente.
+  </div>
+
+</section>
+
+
+<!-- ================= PLANES ================= -->
+
+<section id="plans" class="hide">
+
+  <div class="sectionhead">
+    <h2>Plan de entrenamiento</h2>
+    <span class="tag">45 MIN</span>
+  </div>
+
+  <p class="muted">
+    Sesión general de fuerza. Ajusta la carga a tu experiencia y recuperación.
+  </p>
+
+  <div class="cards" id="planList"></div>
+
+  <div style="margin-top:14px">
+
+    <button class="btn" onclick="startPlan()">
+      ▶ Comenzar sesión
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- ================= BIBLIOTECA ================= -->
+
+<section id="library" class="hide">
+
+  <div class="sectionhead">
+    <h2>Biblioteca de ejercicios</h2>
+  </div>
+
+  <div class="tabs" id="filters">
+
+    <button class="tab active"
+      onclick="filterExercises('Todos',this)">
+      Todos
+    </button>
+
+    <button class="tab"
+      onclick="filterExercises('Fuerza',this)">
+      Fuerza
+    </button>
+
+    <button class="tab"
+      onclick="filterExercises('Dedos',this)">
+      Dedos
+    </button>
+
+    <button class="tab"
+      onclick="filterExercises('Core',this)">
+      Core
+    </button>
+
+    <button class="tab"
+      onclick="filterExercises('Movilidad',this)">
+      Movilidad
+    </button>
+
+    <button class="tab"
+      onclick="filterExercises('Resistencia',this)">
+      Resistencia
+    </button>
+
+  </div>
+
+  <div class="cards" id="exerciseList"></div>
+
+</section>
+
+
+<!-- ================= DETALLE ================= -->
+
+<section id="detail" class="hide">
+
+  <button class="btn secondary" onclick="show('library')">
+    ← Biblioteca
+  </button>
+
+  <div id="detailContent"></div>
+
+</section>
+
+
+<!-- ================= TEMPORIZADOR ================= -->
+
+<section id="timerPage" class="hide">
+
+  <div class="sectionhead">
+
+    <h2 id="timerTitle">
+      Temporizador
+    </h2>
+
+    <span class="tag">
+      SERIES / DESCANSO
+    </span>
+
+  </div>
+
+  <div class="timer">
+
+    <div class="clock">
+
+      <div>
+
+        <strong id="clock">
+          00:30
+        </strong>
+
+        <br>
+
+        <span id="timerLabel">
+          Preparado
+        </span>
+
+      </div>
+
+    </div>
+
+    <div class="row" style="justify-content:center">
+
+      <label>
+        Segundos
+
+        <input
+          id="secondsInput"
+          type="number"
+          min="5"
+          max="600"
+          value="30"
+          style="width:85px"
+        >
+      </label>
+
+      <button
+        class="btn"
+        id="startPause"
+        onclick="toggleTimer()">
+
+        ▶ Iniciar
+
+      </button>
+
+      <button
+        class="btn secondary"
+        onclick="resetTimer()">
+
+        Reiniciar
+
+      </button>
+
+    </div>
+
+    <p class="muted">
+      Mantén el control del movimiento.
+      El temporizador no sustituye una planificación adaptada a tu nivel.
+    </p>
+
+  </div>
+
+</section>
+
+
+<!-- ================= PROGRESO ================= -->
+
+<section id="progress" class="hide">
+
+  <div class="sectionhead">
+    <h2>Tu progreso</h2>
+  </div>
+
+  <div class="grid">
+
+    <div class="stat">
+      <strong id="pSessions">0</strong>
+      <span>Sesiones</span>
+    </div>
+
+    <div class="stat">
+      <strong id="pMinutes">0 min</strong>
+      <span>Minutos acumulados</span>
+    </div>
+
+  </div>
+
+  <div class="sectionhead">
+
+    <h2>Historial</h2>
+
+    <button
+      class="btn secondary"
+      onclick="clearHistory()">
+
+      Borrar
+
+    </button>
+
+  </div>
+
+  <div id="history" class="cards"></div>
+
+</section>
+
+
+<!-- ================= PERFIL ================= -->
+
+<section id="profile" class="hide">
+
+  <div class="sectionhead">
+    <h2>Perfil y objetivos</h2>
+  </div>
+
+  <div class="tile">
+
+    <strong>Tu nivel</strong>
+
+    <p class="muted">
+      Elige un nivel para orientar las sugerencias.
+    </p>
+
+    <select id="level">
+
+      <option>Principiante</option>
+      <option selected>Intermedio</option>
+      <option>Avanzado</option>
+
+    </select>
+
+    <div style="height:14px"></div>
+
+    <strong>
+      Objetivo principal
+    </strong>
+
+    <p>
+
+      <select id="goal">
+
+        <option>Fuerza general</option>
+        <option>Fuerza de dedos</option>
+        <option>Resistencia</option>
+        <option>Preparación para vías ferratas</option>
+
+      </select>
+
+    </p>
+
+    <button
+      class="btn"
+      onclick="saveProfile()">
+
+      Guardar preferencias
+
+    </button>
+
+  </div>
+
+  <div class="sectionhead">
+    <h2>Acerca de</h2>
+  </div>
+
+  <div class="notice">
+
+    SOLIDO CLIMBING TRAINING · Prototipo inicial.
+
+    Los ejercicios y planes son orientativos,
+    no una prescripción médica ni un plan individualizado.
+
+  </div>
+
+</section>
+
+
+<!-- ================= WH-C06 ================= -->
+
+<section id="whc06" class="hide">
+
+  <div class="sectionhead">
+
+    <div>
+
+      <h2>
+        Fuerza de dedos
+      </h2>
+
+      <div class="muted">
+        Medidor Weiheng WH-C06
+      </div>
+
+    </div>
+
+    <span class="tag">
+      IF_B7
+    </span>
+
+  </div>
+
+
+  <div class="whc-card">
+
+    <div class="whc-status">
+
+      <div
+        id="whStatusDot"
+        class="status-dot">
+      </div>
+
+      <div>
+
+        <div
+          id="whStatus"
+          class="device-name">
+
+          Desconectado
+
+        </div>
+
+        <div
+          id="whDeviceName"
+          class="muted">
+
+          Busca el WH-C06 / IF_B7
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="force-display">
+
+      <div
+        id="forceValue"
+        class="force-value">
+
+        0.00
+
+      </div>
+
+      <div class="force-unit">
+        kg
+      </div>
+
+      <div class="force-bar">
+        <i id="forceBar"></i>
+      </div>
+
+      <div class="muted">
+        Fuerza instantánea
+      </div>
+
+    </div>
+
+
+    <div class="wh-stats">
+
+      <div class="wh-stat">
+
+        <strong id="whPeak">
+          0.00
+        </strong>
+
+        <span>
+          PICO kg
+        </span>
+
+      </div>
+
+
+      <div class="wh-stat">
+
+        <strong id="whAverage">
+          0.00
+        </strong>
+
+        <span>
+          MEDIA kg
+        </span>
+
+      </div>
+
+
+      <div class="wh-stat">
+
+        <strong id="whSamples">
+          0
+        </strong>
+
+        <span>
+          MUESTRAS
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <div
+      class="row"
+      style="justify-content:center;margin-top:20px">
+
+      <button
+        id="whConnectButton"
+        class="btn"
+        onclick="connectWHC06()">
+
+        🟢 Conectar IF_B7
+
+      </button>
+
+
+      <button
+        id="whDisconnectButton"
+        class="btn danger"
+        onclick="disconnectWHC06()"
+        disabled>
+
+        Desconectar
+
+      </button>
+
+    </div>
+
+
+    <div
+      id="whMessage"
+      class="notice"
+      style="margin-top:15px">
+
+      Pulsa "Conectar IF_B7" y selecciona el dispositivo WH-C06.
+
+    </div>
+
+
+    <div class="bluetooth-help">
+
+      <strong>WH-C06 detectado como IF_B7</strong><br><br>
+
+      El WH-C06 transmite la fuerza mediante
+      <strong>Bluetooth Low Energy</strong> usando datos de fabricante.
+
+      La aplicación busca el identificador de fabricante
+      <strong>0x0100</strong> y obtiene el valor de fuerza de los bytes
+      utilizados por el protocolo del dispositivo.
+
+      <br><br>
+
+      En Chrome/Web Bluetooth puede ser necesario permitir
+      las funciones experimentales de Bluetooth.
+
+    </div>
+
+  </div>
+
+
+  <div class="sectionhead">
+    <h2>Sesión de fuerza</h2>
+  </div>
+
+
+  <div class="grid">
+
+    <div class="stat">
+
+      <strong id="sessionPeak">
+        0.00 kg
+      </strong>
+
+      <span>
+        Mejor fuerza
+      </span>
+
+    </div>
+
+
+    <div class="stat">
+
+      <strong id="sessionSamples">
+        0
+      </strong>
+
+      <span>
+        Lecturas recibidas
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <div style="margin-top:14px">
+
+    <button
+      class="btn"
+      onclick="saveWHC06Session()">
+
+      ✓ Guardar sesión
+
+    </button>
+
+  </div>
+
+
+  <div class="notice warning" style="margin-top:14px">
+
+    No hagas pruebas máximas si tienes dolor o fatiga.
+    La medición es una herramienta de entrenamiento y no sustituye
+    una valoración profesional.
+
+  </div>
+
+</section>
+
+
+<div class="footer">
+  SOLIDO CLIMBING · ENTRENAMIENTO RESPONSABLE
+</div>
+
+</main>
+
+
+<!-- ================= NAVEGACIÓN ================= -->
+
+<nav class="nav">
+
+  <button
+    class="active"
+    data-page="home"
+    onclick="show('home',this)">
+
+    <span>⌂</span>
+    Inicio
+
+  </button>
+
+
+  <button
+    data-page="plans"
+    onclick="show('plans',this)">
+
+    <span>▣</span>
+    Planes
+
+  </button>
+
+
+  <button
+    data-page="library"
+    onclick="show('library',this)">
+
+    <span>▤</span>
+    Ejercicios
+
+  </button>
+
+
+  <button
+    data-page="progress"
+    onclick="show('progress',this)">
+
+    <span>↗</span>
+    Progreso
+
+  </button>
+
+
+  <button
+    data-page="profile"
+    onclick="show('profile',this)">
+
+    <span>◎</span>
+    Perfil
+
+  </button>
+
+</nav>
+
+
 <script>
-const exercises=[
-{id:1,name:'Dominadas asistidas o estrictas',cat:'Fuerza',emoji:'🏋️',muscles:'Espalda · Bíceps · Escápulas',sets:'3 series · 5–8 repeticiones',rest:120,desc:'Usa una variante que puedas realizar con técnica controlada. Inicia desde una posición estable, evita balancearte y baja de forma controlada.',tip:'Deja 2–3 repeticiones en reserva; no entrenes hasta el fallo si compromete la técnica.'},
-{id:2,name:'Suspensiones en regleta',cat:'Dedos',emoji:'🪨',muscles:'Dedos · Antebrazo',sets:'Solo para escaladores experimentados',rest:180,desc:'Utiliza una regleta adecuada, hombros activos y pies asistidos si lo necesitas. La carga y duración dependen de tu experiencia.',tip:'No recomendadas para principiantes. Nunca hagas suspensiones máximas con dolor o fatiga de dedos.'},
-{id:3,name:'Plancha abdominal',cat:'Core',emoji:'🧍',muscles:'Abdomen · Estabilidad',sets:'3 series · 20–40 segundos',rest:60,desc:'Mantén cabeza, cadera y tobillos alineados. Respira de forma continua y evita hundir la zona lumbar.',tip:'Acorta el tiempo si pierdes la posición.'},
-{id:4,name:'Flexiones',cat:'Fuerza',emoji:'💪',muscles:'Pecho · Tríceps · Hombros',sets:'3 series · 6–12 repeticiones',rest:90,desc:'Coloca las manos bajo los hombros y mantén el cuerpo alineado. Utiliza una superficie elevada si necesitas reducir la dificultad.',tip:'Movimiento sin dolor y con control.'},
-{id:5,name:'Zancadas',cat:'Resistencia',emoji:'🦵',muscles:'Piernas · Glúteos · Equilibrio',sets:'3 series · 8 por pierna',rest:90,desc:'Da un paso estable, baja de forma controlada y mantén la rodilla alineada con el pie. Sujétate si necesitas equilibrio.',tip:'Prioriza la estabilidad antes que la profundidad.'},
-{id:6,name:'Movilidad de hombros',cat:'Movilidad',emoji:'🔄',muscles:'Hombros · Espalda alta',sets:'2 series · 8–10 repeticiones',rest:30,desc:'Realiza círculos lentos y movimientos cómodos sin forzar el rango articular.',tip:'Ideal como parte del calentamiento; no debe provocar dolor.'},
-{id:7,name:'Elevaciones de rodillas',cat:'Core',emoji:'🧗',muscles:'Abdomen · Flexores de cadera',sets:'3 series · 8–12 repeticiones',rest:60,desc:'Desde una barra estable o tumbado en el suelo, eleva las rodillas sin impulso y baja lentamente. Escoge la variante segura para ti.',tip:'Evita balancearte o arquear excesivamente la espalda.'},
-{id:8,name:'Cardio suave',cat:'Resistencia',emoji:'🥾',muscles:'Sistema cardiovascular · Piernas',sets:'15–25 minutos',rest:0,desc:'Camina a paso vivo, sube escaleras con control o pedalea a una intensidad que te permita hablar.',tip:'Aumenta duración de forma gradual y adapta el esfuerzo a tu condición.'}
+
+/* =========================================================
+   DATOS DE EJERCICIOS
+========================================================= */
+
+const exercises = [
+
+  {
+    id:1,
+    name:'Dominadas asistidas o estrictas',
+    cat:'Fuerza',
+    emoji:'🏋️',
+    muscles:'Espalda · Bíceps · Escápulas',
+    sets:'3 series · 5–8 repeticiones',
+    rest:120,
+    desc:'Usa una variante que puedas realizar con técnica controlada. Inicia desde una posición estable, evita balancearte y baja de forma controlada.',
+    tip:'Deja 2–3 repeticiones en reserva; no entrenes hasta el fallo si compromete la técnica.'
+  },
+
+  {
+    id:2,
+    name:'Suspensiones en regleta',
+    cat:'Dedos',
+    emoji:'🪨',
+    muscles:'Dedos · Antebrazo',
+    sets:'Solo para escaladores experimentados',
+    rest:180,
+    desc:'Utiliza una regleta adecuada, hombros activos y pies asistidos si lo necesitas. La carga y duración dependen de tu experiencia.',
+    tip:'No recomendadas para principiantes. Nunca hagas suspensiones máximas con dolor o fatiga de dedos.'
+  },
+
+  {
+    id:3,
+    name:'Plancha abdominal',
+    cat:'Core',
+    emoji:'🧍',
+    muscles:'Abdomen · Estabilidad',
+    sets:'3 series · 20–40 segundos',
+    rest:60,
+    desc:'Mantén cabeza, cadera y tobillos alineados. Respira de forma continua y evita hundir la zona lumbar.',
+    tip:'Acorta el tiempo si pierdes la posición.'
+  },
+
+  {
+    id:4,
+    name:'Flexiones',
+    cat:'Fuerza',
+    emoji:'💪',
+    muscles:'Pecho · Tríceps · Hombros',
+    sets:'3 series · 6–12 repeticiones',
+    rest:90,
+    desc:'Coloca las manos bajo los hombros y mantén el cuerpo alineado. Utiliza una superficie elevada si necesitas reducir la dificultad.',
+    tip:'Movimiento sin dolor y con control.'
+  },
+
+  {
+    id:5,
+    name:'Zancadas',
+    cat:'Resistencia',
+    emoji:'🦵',
+    muscles:'Piernas · Glúteos · Equilibrio',
+    sets:'3 series · 8 por pierna',
+    rest:90,
+    desc:'Da un paso estable, baja de forma controlada y mantén la rodilla alineada con el pie.',
+    tip:'Prioriza la estabilidad antes que la profundidad.'
+  },
+
+  {
+    id:6,
+    name:'Movilidad de hombros',
+    cat:'Movilidad',
+    emoji:'🔄',
+    muscles:'Hombros · Espalda alta',
+    sets:'2 series · 8–10 repeticiones',
+    rest:30,
+    desc:'Realiza círculos lentos y movimientos cómodos sin forzar el rango articular.',
+    tip:'Ideal como parte del calentamiento; no debe provocar dolor.'
+  },
+
+  {
+    id:7,
+    name:'Elevaciones de rodillas',
+    cat:'Core',
+    emoji:'🧗',
+    muscles:'Abdomen · Flexores de cadera',
+    sets:'3 series · 8–12 repeticiones',
+    rest:60,
+    desc:'Desde una barra estable o tumbado en el suelo, eleva las rodillas sin impulso y baja lentamente.',
+    tip:'Evita balancearte o arquear excesivamente la espalda.'
+  },
+
+  {
+    id:8,
+    name:'Cardio suave',
+    cat:'Resistencia',
+    emoji:'🥾',
+    muscles:'Sistema cardiovascular · Piernas',
+    sets:'15–25 minutos',
+    rest:0,
+    desc:'Camina a paso vivo, sube escaleras con control o pedalea a una intensidad que te permita hablar.',
+    tip:'Aumenta duración de forma gradual y adapta el esfuerzo a tu condición.'
+  }
+
 ];
-const plan=[{name:'Calentamiento y movilidad',time:'10 min',emoji:'🔥',desc:'Movilidad de hombros y muñecas, activación y movimientos suaves.'},{name:'Fuerza general',time:'15 min',emoji:'💪',desc:'Dominadas adaptadas y flexiones, descansando entre series.'},{name:'Core y estabilidad',time:'10 min',emoji:'🧍',desc:'Plancha y elevaciones de rodillas con técnica controlada.'},{name:'Vuelta a la calma',time:'10 min',emoji:'🌿',desc:'Respiración, movilidad cómoda y registro de sensaciones.'}];
-let sessions=JSON.parse(localStorage.getItem('solidoSessions')||'[]'), timerId=null, remaining=30, running=false, selectedExercise=null;
-function save(){localStorage.setItem('solidoSessions',JSON.stringify(sessions));renderStats()}
-function show(page,btn){document.querySelectorAll('main section').forEach(s=>s.classList.add('hide'));document.getElementById(page).classList.remove('hide');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));if(btn&&btn.dataset&&btn.dataset.page)btn.classList.add('active');if(page==='progress')renderHistory();if(page==='library')renderExercises();window.scrollTo(0,0)}
-function renderPlan(){document.getElementById('planList').innerHTML=plan.map((p,i)=>`<div class="planstep"><div class="row"><span style="font-size:25px">${p.emoji}</span><div style="flex:1"><strong>${i+1}. ${p.name}</strong><div class="muted">${p.desc}</div></div><span class="tag">${p.time}</span></div></div>`).join('')}
-function renderExercises(category='Todos'){document.getElementById('exerciseList').innerHTML=exercises.filter(e=>category==='Todos'||e.cat===category).map(e=>`<article class="exercise" onclick="openExercise(${e.id})"><div class="art">${e.emoji}</div><div><h3>${e.name}</h3><p>${e.muscles}</p><span class="tag">${e.cat}</span> <span class="muted">› Detalles</span></div></article>`).join('')}
-function filterExercises(cat,btn){show('library');renderExercises(cat);document.querySelectorAll('#filters .tab').forEach(b=>b.classList.toggle('active',b.textContent===cat));}
-function openExercise(id){selectedExercise=exercises.find(e=>e.id===id);document.getElementById('detailContent').innerHTML=`<div class="hero" style="margin-top:16px"><div class="eyebrow">${selectedExercise.cat.toUpperCase()}</div><div style="font-size:64px;margin:8px 0">${selectedExercise.emoji}</div><h1>${selectedExercise.name}</h1><p>${selectedExercise.muscles}</p></div><div class="sectionhead"><h2>Cómo hacerlo</h2></div><div class="tile"><p>${selectedExercise.desc}</p><strong>${selectedExercise.sets}</strong><p class="muted">Descanso sugerido: ${selectedExercise.rest?selectedExercise.rest+' segundos':'según esfuerzo'}.</p></div><div class="sectionhead"><h2>Consejo técnico</h2></div><div class="notice">${selectedExercise.tip}</div><div class="row" style="margin-top:16px"><button class="btn" onclick="openTimer('${selectedExercise.name}',${selectedExercise.rest||60})">⏱ Temporizador</button><button class="btn secondary" onclick="logSession('${selectedExercise.name}',5)">✓ Registrar ejercicio</button></div>`;show('detail')}
-function openTimer(name='Temporizador',seconds=30){show('timerPage');document.getElementById('timerTitle').textContent=name;document.getElementById('secondsInput').value=seconds||30;remaining=seconds||30;running=false;clearInterval(timerId);updateClock();document.getElementById('startPause').textContent='▶ Iniciar';document.getElementById('timerLabel').textContent='Preparado'}
-function updateClock(){document.getElementById('clock').textContent=String(Math.floor(remaining/60)).padStart(2,'0')+':'+String(remaining%60).padStart(2,'0')}
-function toggleTimer(){if(running){clearInterval(timerId);running=false;document.getElementById('startPause').textContent='▶ Continuar';return}if(remaining<=0)remaining=Math.max(5,Number(document.getElementById('secondsInput').value)||30);running=true;document.getElementById('timerLabel').textContent='En marcha';document.getElementById('startPause').textContent='Ⅱ Pausar';timerId=setInterval(()=>{remaining--;updateClock();if(remaining<=0){clearInterval(timerId);running=false;document.getElementById('timerLabel').textContent='¡Tiempo!';document.getElementById('startPause').textContent='↻ Repetir';if(navigator.vibrate)navigator.vibrate([200,100,200]);}},1000)}
-function resetTimer(){clearInterval(timerId);running=false;remaining=Math.max(5,Number(document.getElementById('secondsInput').value)||30);updateClock();document.getElementById('timerLabel').textContent='Preparado';document.getElementById('startPause').textContent='▶ Iniciar'}
-function logSession(name,mins){sessions.unshift({name,mins,date:new Date().toLocaleString('es-ES')});save();alert('Ejercicio registrado en tu historial.');}
-function startPlan(){sessions.unshift({name:'Sesión de fuerza general',mins:45,date:new Date().toLocaleString('es-ES')});save();openTimer('Calentamiento · sesión de fuerza',600)}
-function renderStats(){let n=sessions.length,m=sessions.reduce((a,s)=>a+(s.mins||0),0);document.getElementById('sessionCount').textContent=n;document.getElementById('minuteCount').textContent=m+' min';document.getElementById('pSessions').textContent=n;document.getElementById('pMinutes').textContent=m+' min'}
-function renderHistory(){document.getElementById('history').innerHTML=sessions.length?sessions.map(s=>`<div class="tile"><strong>${s.name}</strong><p class="muted">${s.date} · ${s.mins} min</p></div>`).join(''):'<div class="tile muted">Todavía no hay sesiones registradas. Completa un ejercicio para empezar.</div>'}
-function clearHistory(){if(confirm('¿Borrar todo el historial de este dispositivo?')){sessions=[];save();renderHistory()}}
-function saveProfile(){localStorage.setItem('solidoLevel',document.getElementById('level').value);localStorage.setItem('solidoGoal',document.getElementById('goal').value);alert('Preferencias guardadas en este dispositivo.')}
-document.getElementById('level').value=localStorage.getItem('solidoLevel')||'Intermedio';document.getElementById('goal').value=localStorage.getItem('solidoGoal')||'Fuerza general';renderPlan();renderExercises();renderStats();
-</script></body></html>
+
+
+/* =========================================================
+   PLAN
+========================================================= */
+
+const plan = [
+
+  {
+    name:'Calentamiento y movilidad',
+    time:'10 min',
+    emoji:'🔥',
+    desc:'Movilidad de hombros y muñecas, activación y movimientos suaves.'
+  },
+
+  {
+    name:'Fuerza general',
+    time:'15 min',
+    emoji:'💪',
+    desc:'Dominadas adaptadas y flexiones, descansando entre series.'
+  },
+
+  {
+    name:'Core y estabilidad',
+    time:'10 min',
+    emoji:'🧍',
+    desc:'Plancha y elevaciones de rodillas con técnica controlada.'
+  },
+
+  {
+    name:'Vuelta a la calma',
+    time:'10 min',
+    emoji:'🌿',
+    desc:'Respiración, movilidad cómoda y registro de sensaciones.'
+  }
+
+];
+
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let sessions =
+  JSON.parse(localStorage.getItem('solidoSessions') || '[]');
+
+let timerId = null;
+let remaining = 30;
+let running = false;
+let selectedExercise = null;
+
+
+/* =========================================================
+   VARIABLES WH-C06
+========================================================= */
+
+let whc06Device = null;
+let whc06AdvertisementHandler = null;
+
+let whPeak = 0;
+let whSum = 0;
+let whSamples = 0;
+
+
+/*
+ * Datos conocidos del WH-C06.
+ *
+ * Manufacturer ID:
+ * 0x0100 = 256
+ *
+ * Peso:
+ * offset 10
+ *
+ * Valor:
+ * dos bytes BIG ENDIAN
+ *
+ * resultado / 100 = kg
+ */
+
+const WHC06_MANUFACTURER_ID = 0x0100;
+const WHC06_WEIGHT_OFFSET = 10;
+
+
+/* =========================================================
+   GUARDADO GENERAL
+========================================================= */
+
+function save(){
+
+  localStorage.setItem(
+    'solidoSessions',
+    JSON.stringify(sessions)
+  );
+
+  renderStats();
+}
+
+
+/* =========================================================
+   CAMBIO DE PÁGINA
+========================================================= */
+
+function show(page,btn){
+
+  document
+    .querySelectorAll('main section')
+    .forEach(s => s.classList.add('hide'));
+
+  const target = document.getElementById(page);
+
+  if(target){
+    target.classList.remove('hide');
+  }
+
+  document
+    .querySelectorAll('.nav button')
+    .forEach(b =>
+      b.classList.toggle(
+        'active',
+        b.dataset.page === page
+      )
+    );
+
+  if(
+    btn &&
+    btn.dataset &&
+    btn.dataset.page
+  ){
+    btn.classList.add('active');
+  }
+
+  if(page === 'progress'){
+    renderHistory();
+  }
+
+  if(page === 'library'){
+    renderExercises();
+  }
+
+  window.scrollTo(0,0);
+}
+
+
+/* =========================================================
+   PLAN
+========================================================= */
+
+function renderPlan(){
+
+  document.getElementById('planList').innerHTML =
+    plan.map((p,i) => `
+
+      <div class="planstep">
+
+        <div class="row">
+
+          <span style="font-size:25px">
+            ${p.emoji}
+          </span>
+
+          <div style="flex:1">
+
+            <strong>
+              ${i+1}. ${p.name}
+            </strong>
+
+            <div class="muted">
+              ${p.desc}
+            </div>
+
+          </div>
+
+          <span class="tag">
+            ${p.time}
+          </span>
+
+        </div>
+
+      </div>
+
+    `).join('');
+}
+
+
+/* =========================================================
+   EJERCICIOS
+========================================================= */
+
+function renderExercises(category='Todos'){
+
+  document.getElementById('exerciseList').innerHTML =
+
+    exercises
+
+      .filter(
+        e =>
+          category === 'Todos' ||
+          e.cat === category
+      )
+
+      .map(e => `
+
+        <article
+          class="exercise"
+          onclick="openExercise(${e.id})">
+
+          <div class="art">
+            ${e.emoji}
+          </div>
+
+          <div>
+
+            <h3>
+              ${e.name}
+            </h3>
+
+            <p>
+              ${e.muscles}
+            </p>
+
+            <span class="tag">
+              ${e.cat}
+            </span>
+
+            <span class="muted">
+              › Detalles
+            </span>
+
+          </div>
+
+        </article>
+
+      `).join('');
+}
+
+
+/* =========================================================
+   FILTROS
+========================================================= */
+
+function filterExercises(cat,btn){
+
+  show('library');
+
+  renderExercises(cat);
+
+  document
+    .querySelectorAll('#filters .tab')
+    .forEach(b =>
+      b.classList.toggle(
+        'active',
+        b.textContent === cat
+      )
+    );
+}
+
+
+/* =========================================================
+   DETALLE EJERCICIO
+========================================================= */
+
+function openExercise(id){
+
+  selectedExercise =
+    exercises.find(e => e.id === id);
+
+  document.getElementById(
+    'detailContent'
+  ).innerHTML = `
+
+    <div
+      class="hero"
+      style="margin-top:16px">
+
+      <div class="eyebrow">
+        ${selectedExercise.cat.toUpperCase()}
+      </div>
+
+      <div style="font-size:64px;margin:8px 0">
+        ${selectedExercise.emoji}
+      </div>
+
+      <h1>
+        ${selectedExercise.name}
+      </h1>
+
+      <p>
+        ${selectedExercise.muscles}
+      </p>
+
+    </div>
+
+
+    <div class="sectionhead">
+      <h2>Cómo hacerlo</h2>
+    </div>
+
+
+    <div class="tile">
+
+      <p>
+        ${selectedExercise.desc}
+      </p>
+
+      <strong>
+        ${selectedExercise.sets}
+      </strong>
+
+      <p class="muted">
+        Descanso sugerido:
+        ${
+          selectedExercise.rest
+            ? selectedExercise.rest+' segundos'
+            : 'según esfuerzo'
+        }.
+      </p>
+
+    </div>
+
+
+    <div class="sectionhead">
+      <h2>Consejo técnico</h2>
+    </div>
+
+
+    <div class="notice">
+      ${selectedExercise.tip}
+    </div>
+
+
+    <div
+      class="row"
+      style="margin-top:16px">
+
+      <button
+        class="btn"
+        onclick="openTimer(
+          '${selectedExercise.name.replace(/'/g,"\\'")}',
+          ${selectedExercise.rest || 60}
+        )">
+
+        ⏱ Temporizador
+
+      </button>
+
+
+      <button
+        class="btn secondary"
+        onclick="logSession(
+          '${selectedExercise.name.replace(/'/g,"\\'")}',
+          5
+        )">
+
+        ✓ Registrar ejercicio
+
+      </button>
+
+    </div>
+
+  `;
+
+  show('detail');
+}
+
+
+/* =========================================================
+   TEMPORIZADOR
+========================================================= */
+
+function openTimer(
+  name='Temporizador',
+  seconds=30
+){
+
+  show('timerPage');
+
+  document.getElementById(
+    'timerTitle'
+  ).textContent = name;
+
+  document.getElementById(
+    'secondsInput'
+  ).value = seconds || 30;
+
+  remaining = seconds || 30;
+
+  running = false;
+
+  clearInterval(timerId);
+
+  updateClock();
+
+  document.getElementById(
+    'startPause'
+  ).textContent = '▶ Iniciar';
+
+  document.getElementById(
+    'timerLabel'
+  ).textContent = 'Preparado';
+}
+
+
+function updateClock(){
+
+  document.getElementById(
+    'clock'
+  ).textContent =
+
+    String(
+      Math.floor(remaining / 60)
+    ).padStart(2,'0')
+
+    + ':'
+
+    +
+
+    String(
+      remaining % 60
+    ).padStart(2,'0');
+}
+
+
+function toggleTimer(){
+
+  if(running){
+
+    clearInterval(timerId);
+
+    running = false;
+
+    document.getElementById(
+      'startPause'
+    ).textContent = '▶ Continuar';
+
+    return;
+  }
+
+  if(remaining <= 0){
+
+    remaining =
+      Math.max(
+        5,
+        Number(
+          document.getElementById(
+            'secondsInput'
+          ).value
+        ) || 30
+      );
+  }
+
+  running = true;
+
+  document.getElementById(
+    'timerLabel'
+  ).textContent = 'En marcha';
+
+  document.getElementById(
+    'startPause'
+  ).textContent = 'Ⅱ Pausar';
+
+  timerId =
+    setInterval(() => {
+
+      remaining--;
+
+      updateClock();
+
+      if(remaining <= 0){
+
+        clearInterval(timerId);
+
+        running = false;
+
+        document.getElementById(
+          'timerLabel'
+        ).textContent = '¡Tiempo!';
+
+        document.getElementById(
+          'startPause'
+        ).textContent = '↻ Repetir';
+
+        if(navigator.vibrate){
+
+          navigator.vibrate([
+            200,
+            100,
+            200
+          ]);
+
+        }
+
+      }
+
+    },1000);
+}
+
+
+function resetTimer(){
+
+  clearInterval(timerId);
+
+  running = false;
+
+  remaining =
+    Math.max(
+      5,
+      Number(
+        document.getElementById(
+          'secondsInput'
+        ).value
+      ) || 30
+    );
+
+  updateClock();
+
+  document.getElementById(
+    'timerLabel'
+  ).textContent = 'Preparado';
+
+  document.getElementById(
+    'startPause'
+  ).textContent = '▶ Iniciar';
+}
+
+
+/* =========================================================
+   SESIONES
+========================================================= */
+
+function logSession(name,mins){
+
+  sessions.unshift({
+
+    name,
+    mins,
+
+    date:
+      new Date()
+        .toLocaleString('es-ES')
+
+  });
+
+  save();
+
+  alert(
+    'Ejercicio registrado en tu historial.'
+  );
+}
+
+
+function startPlan(){
+
+  sessions.unshift({
+
+    name:
+      'Sesión de fuerza general',
+
+    mins:45,
+
+    date:
+      new Date()
+        .toLocaleString('es-ES')
+
+  });
+
+  save();
+
+  openTimer(
+    'Calentamiento · sesión de fuerza',
+    600
+  );
+}
+
+
+function renderStats(){
+
+  const n = sessions.length;
+
+  const m =
+    sessions.reduce(
+      (a,s) =>
+        a + (s.mins || 0),
+      0
+    );
+
+  document.getElementById(
+    'sessionCount'
+  ).textContent = n;
+
+  document.getElementById(
+    'minuteCount'
+  ).textContent =
+    m + ' min';
+
+  document.getElementById(
+    'pSessions'
+  ).textContent = n;
+
+  document.getElementById(
+    'pMinutes'
+  ).textContent =
+    m + ' min';
+}
+
+
+function renderHistory(){
+
+  document.getElementById(
+    'history'
+  ).innerHTML =
+
+    sessions.length
+
+      ?
+
+      sessions.map(s => `
+
+        <div class="tile">
+
+          <strong>
+            ${s.name}
+          </strong>
+
+          <p class="muted">
+            ${s.date} · ${s.mins} min
+          </p>
+
+        </div>
+
+      `).join('')
+
+      :
+
+      `<div class="tile muted">
+        Todavía no hay sesiones registradas.
+        Completa un ejercicio para empezar.
+      </div>`;
+}
+
+
+function clearHistory(){
+
+  if(
+    confirm(
+      '¿Borrar todo el historial de este dispositivo?'
+    )
+  ){
+
+    sessions = [];
+
+    save();
+
+    renderHistory();
+  }
+}
+
+
+/* =========================================================
+   PERFIL
+========================================================= */
+
+function saveProfile(){
+
+  localStorage.setItem(
+    'solidoLevel',
+    document.getElementById(
+      'level'
+    ).value
+  );
+
+  localStorage.setItem(
+    'solidoGoal',
+    document.getElementById(
+      'goal'
+    ).value
+  );
+
+  alert(
+    'Preferencias guardadas en este dispositivo.'
+  );
+}
+
+
+/* =========================================================
+   WH-C06
+========================================================= */
+
+
+/*
+ * Comprueba si Web Bluetooth está disponible.
+ */
+
+function isBluetoothAvailable(){
+
+  return (
+    typeof navigator !== 'undefined' &&
+    'bluetooth' in navigator
+  );
+}
+
+
+/*
+ * Actualiza el texto de estado.
+ */
+
+function setWHStatus(
+  text,
+  mode=''
+){
+
+  const status =
+    document.getElementById(
+      'whStatus'
+    );
+
+  const dot =
+    document.getElementById(
+      'whStatusDot'
+    );
+
+  status.textContent = text;
+
+  dot.className =
+    'status-dot' +
+    (mode ? ' ' + mode : '');
+}
+
+
+/*
+ * Mensaje de la pantalla WH-C06.
+ */
+
+function setWHMessage(
+  text,
+  type=''
+){
+
+  const box =
+    document.getElementById(
+      'whMessage'
+    );
+
+  box.className =
+    'notice' +
+    (type ? ' ' + type : '');
+
+  box.textContent = text;
+}
+
+
+/*
+ * Actualiza la pantalla de fuerza.
+ */
+
+function updateWHForce(
+  kg
+){
+
+  const safeKg =
+    Number.isFinite(kg)
+      ? Math.max(0,kg)
+      : 0;
+
+  document.getElementById(
+    'forceValue'
+  ).textContent =
+    safeKg.toFixed(2);
+
+  /*
+   * Barra visual.
+   * 100 kg = 100%.
+   * Se limita al 100%.
+   */
+
+  const percent =
+    Math.min(
+      100,
+      (safeKg / 100) * 100
+    );
+
+  document.getElementById(
+    'forceBar'
+  ).style.width =
+    percent + '%';
+
+  /*
+   * Estadísticas
+   */
+
+  whPeak =
+    Math.max(
+      whPeak,
+      safeKg
+    );
+
+  whSum += safeKg;
+
+  whSamples++;
+
+  const average =
+    whSamples
+      ? whSum / whSamples
+      : 0;
+
+  document.getElementById(
+    'whPeak'
+  ).textContent =
+    whPeak.toFixed(2);
+
+  document.getElementById(
+    'whAverage'
+  ).textContent =
+    average.toFixed(2);
+
+  document.getElementById(
+    'whSamples'
+  ).textContent =
+    whSamples;
+
+  document.getElementById(
+    'sessionPeak'
+  ).textContent =
+    whPeak.toFixed(2) + ' kg';
+
+  document.getElementById(
+    'sessionSamples'
+  ).textContent =
+    whSamples;
+}
+
+
+/*
+ * Extrae la fuerza del paquete
+ * WH-C06.
+ *
+ * Offset 10
+ * y offset 11
+ *
+ * BIG ENDIAN.
+ */
+
+function parseWHC06Force(
+  data
+){
+
+  if(!data){
+
+    return null;
+
+  }
+
+  try{
+
+    if(
+      data.byteLength <
+      WHC06_WEIGHT_OFFSET + 2
+    ){
+
+      return null;
+
+    }
+
+    const view =
+      new DataView(
+        data.buffer,
+        data.byteOffset,
+        data.byteLength
+      );
+
+    const raw =
+      view.getUint16(
+        WHC06_WEIGHT_OFFSET,
+        false
+      );
+
+    return raw / 100;
+
+  }catch(error){
+
+    console.error(
+      'Error leyendo WH-C06:',
+      error
+    );
+
+    return null;
+  }
+}
+
+
+/*
+ * Convierte los datos de fabricante
+ * en una fuerza.
+ */
+
+function handleWHC06Advertisement(
+  event
+){
+
+  try{
+
+    if(!event.manufacturerData){
+
+      return;
+
+    }
+
+    const data =
+      event.manufacturerData.get(
+        WHC06_MANUFACTURER_ID
+      );
+
+    if(!data){
+
+      return;
+
+    }
+
+    const kg =
+      parseWHC06Force(data);
+
+    if(
+      kg === null ||
+      !Number.isFinite(kg)
+    ){
+
+      return;
+
+    }
+
+    updateWHForce(kg);
+
+    setWHMessage(
+      'Recibiendo fuerza del WH-C06 correctamente.',
+      ''
+    );
+
+  }catch(error){
+
+    console.error(
+      'Error en anuncio WH-C06:',
+      error
+    );
+
+  }
+}
+
+
+/*
+ * Conectar WH-C06.
+ */
+
+async function connectWHC06(){
+
+  if(!isBluetoothAvailable()){
+
+    setWHStatus(
+      'Bluetooth no disponible',
+      'error'
+    );
+
+    setWHMessage(
+      'Este entorno Android/WebView no expone Web Bluetooth. El siguiente paso será conectar el WH-C06 mediante el puente Bluetooth nativo del APK.',
+      'error'
+    );
+
+    return;
+  }
+
+
+  const button =
+    document.getElementById(
+      'whConnectButton'
+    );
+
+  button.disabled = true;
+
+  setWHStatus(
+    'Buscando IF_B7...'
+  );
+
+  setWHMessage(
+    'Selecciona IF_B7 en la ventana de Bluetooth.'
+  );
+
+
+  try{
+
+    /*
+     * Solicitar dispositivo.
+     *
+     * Usamos manufacturerData 0x0100.
+     * El nombre IF_B7 puede variar.
+     */
+
+    whc06Device =
+      await navigator.bluetooth.requestDevice({
+
+        filters:[
+          {
+            manufacturerData:[
+              {
+                companyIdentifier:
+                  WHC06_MANUFACTURER_ID
+              }
+            ]
+          }
+        ],
+
+        optionalManufacturerData:[
+          WHC06_MANUFACTURER_ID
+        ]
+
+      });
+
+
+    if(!whc06Device){
+
+      throw new Error(
+        'No se seleccionó ningún dispositivo.'
+      );
+
+    }
+
+
+    document.getElementById(
+      'whDeviceName'
+    ).textContent =
+      whc06Device.name ||
+      'IF_B7';
+
+
+    setWHStatus(
+      'IF_B7 seleccionado',
+      'connected'
+    );
+
+
+    /*
+     * Para WH-C06 los datos llegan
+     * por advertising.
+     */
+
+    whc06AdvertisementHandler =
+      handleWHC06Advertisement;
+
+
+    whc06Device.addEventListener(
+      'advertisementreceived',
+      whc06AdvertisementHandler
+    );
+
+
+    /*
+     * Algunos navegadores necesitan
+     * watchAdvertisements().
+     */
+
+    if(
+      typeof whc06Device.watchAdvertisements ===
+      'function'
+    ){
+
+      await whc06Device.watchAdvertisements();
+
+    }else{
+
+      throw new Error(
+        'watchAdvertisements() no está disponible en este navegador.'
+      );
+
+    }
+
+
+    setWHStatus(
+      'Conectado · recibiendo datos',
+      'connected'
+    );
+
+    setWHMessage(
+      'WH-C06 conectado. Aprieta el dispositivo para comprobar la lectura en kg.'
+    );
+
+
+    document.getElementById(
+      'whConnectButton'
+    ).disabled = true;
+
+
+    document.getElementById(
+      'whDisconnectButton'
+    ).disabled = false;
+
+
+  }catch(error){
+
+    console.error(
+      'WH-C06:',
+      error
+    );
+
+    setWHStatus(
+      'No conectado',
+      'error'
+    );
+
+
+    let message =
+      error &&
+      error.message
+        ? error.message
+        : String(error);
+
+
+    setWHMessage(
+      'No se pudo conectar: ' + message,
+      'error'
+    );
+
+
+    button.disabled = false;
+
+  }
+
+}
+
+
+/*
+ * Desconectar WH-C06.
+ */
+
+function disconnectWHC06(){
+
+  try{
+
+    if(
+      whc06Device &&
+      whc06AdvertisementHandler
+    ){
+
+      whc06Device.removeEventListener(
+        'advertisementreceived',
+        whc06AdvertisementHandler
+      );
+
+    }
+
+    if(
+      whc06Device &&
+      typeof whc06Device.unwatchAdvertisements ===
+      'function'
+    ){
+
+      whc06Device
+        .unwatchAdvertisements()
+        .catch(() => {});
+
+    }
+
+  }catch(error){
+
+    console.warn(
+      'Error desconectando WH-C06:',
+      error
+    );
+
+  }
+
+
+  whc06Device = null;
+
+  whc06AdvertisementHandler = null;
+
+  setWHStatus(
+    'Desconectado'
+  );
+
+  document.getElementById(
+    'whDeviceName'
+  ).textContent =
+    'Busca el WH-C06 / IF_B7';
+
+
+  document.getElementById(
+    'whConnectButton'
+  ).disabled = false;
+
+
+  document.getElementById(
+    'whDisconnectButton'
+  ).disabled = true;
+
+
+  setWHMessage(
+    'WH-C06 desconectado.'
+  );
+}
+
+
+/*
+ * Guarda la sesión de fuerza.
+ */
+
+function saveWHC06Session(){
+
+  if(whSamples <= 0){
+
+    alert(
+      'Todavía no hay mediciones del WH-C06.'
+    );
+
+    return;
+  }
+
+
+  const minutes = 1;
+
+
+  sessions.unshift({
+
+    name:
+      'Fuerza de dedos · WH-C06',
+
+    mins:minutes,
+
+    peak:
+      Number(
+        whPeak.toFixed(2)
+      ),
+
+    average:
+      Number(
+        (
+          whSum / whSamples
+        ).toFixed(2)
+      ),
+
+    samples:
+      whSamples,
+
+    date:
+      new Date()
+        .toLocaleString('es-ES')
+
+  });
+
+
+  save();
+
+
+  alert(
+    'Sesión WH-C06 guardada en tu historial.'
+  );
+}
+
+
+/*
+ * Si el dispositivo se desconecta.
+ */
+
+function setupBluetoothDisconnect(){
+
+  if(!whc06Device){
+
+    return;
+
+  }
+
+  whc06Device.addEventListener(
+    'gattserverdisconnected',
+    () => {
+
+      setWHStatus(
+        'Desconectado',
+        'error'
+      );
+
+      setWHMessage(
+        'El WH-C06 ha dejado de emitir datos.',
+        'warning'
+      );
+
+      document.getElementById(
+        'whConnectButton'
+      ).disabled = false;
+
+      document.getElementById(
+        'whDisconnectButton'
+      ).disabled = true;
+
+    }
+  );
+}
+
+
+/* =========================================================
+   INICIALIZACIÓN
+========================================================= */
+
+document.getElementById(
+  'level'
+).value =
+  localStorage.getItem(
+    'solidoLevel'
+  ) || 'Intermedio';
+
+
+document.getElementById(
+  'goal'
+).value =
+  localStorage.getItem(
+    'solidoGoal'
+  ) || 'Fuerza general';
+
+
+renderPlan();
+
+renderExercises();
+
+renderStats();
+
+
+/*
+ * Mensaje inicial Bluetooth.
+ */
+
+if(!isBluetoothAvailable()){
+
+  setWHMessage(
+    'Web Bluetooth no está disponible en este entorno. La interfaz está preparada; para el APK necesitaremos el puente Bluetooth nativo.'
+  );
+
+}
+
+
+/*
+ * Intentamos preparar el listener
+ * de desconexión cuando se seleccione
+ * el dispositivo.
+ */
+
+const originalConnect =
+  connectWHC06;
+
+</script>
+
+</body>
+</html>
+```
