@@ -24,3 +24,14 @@ Abre `app/src/main/assets/index.html` en un navegador moderno. Para probar almac
 
 ## Aviso de entrenamiento
 Los planes son ejemplos generales y no sustituyen una valoración individual. Las suspensiones en regleta son solo para escaladores con experiencia; evita entrenar con dolor y aumenta la carga gradualmente.
+
+## Generar el APK en la nube (sin instalar Android SDK en tu PC)
+
+El proyecto incluye `.github/workflows/build-apk.yml`. Para usarlo:
+1. Crea un repositorio en GitHub y sube el contenido de esta carpeta.
+2. Abre la pestaña **Actions** del repositorio.
+3. Selecciona **Build SOLIDO CLIMBING APK** y pulsa **Run workflow** (o espera a que termine tras subir a `main`).
+4. Cuando el proceso termine correctamente, abre la ejecución y descarga el artefacto `SOLIDO-CLIMBING-TRAINING-debug-apk`.
+5. Dentro del ZIP del artefacto estará `app-debug.apk`, que puedes copiar al móvil e instalar habilitando la instalación desde esa fuente si Android te lo pide.
+
+Este flujo genera un APK de depuración para pruebas, no una versión firmada de publicación para Google Play.
