@@ -12,8 +12,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import org.json.JSONObject
 
 class WHC06Bridge(
@@ -55,7 +53,7 @@ class WHC06Bridge(
 
     private fun hasRequiredPermissions(): Boolean =
         requiredPermissions().all { permission ->
-            ContextCompat.checkSelfPermission(activity, permission) ==
+            activity.checkSelfPermission(permission) ==
                 PackageManager.PERMISSION_GRANTED
         }
 
@@ -68,7 +66,7 @@ class WHC06Bridge(
                 ContextCompat.checkSelfPermission(activity, permission) !=
                     PackageManager.PERMISSION_GRANTED
             }.toTypedArray()
-            ActivityCompat.requestPermissions(activity, missing, PERMISSION_REQUEST)
+            activity.requestPermissions(missing, PERMISSION_REQUEST)
             return
         }
 
