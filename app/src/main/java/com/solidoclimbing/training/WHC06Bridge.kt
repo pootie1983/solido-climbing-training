@@ -63,7 +63,7 @@ class WHC06Bridge(
         if (!hasRequiredPermissions()) {
             sendStatus("Solicitando permisos Bluetooth…")
             val missing = requiredPermissions().filter { permission ->
-                ContextCompat.checkSelfPermission(activity, permission) !=
+                activity.checkSelfPermission(permission) !=
                     PackageManager.PERMISSION_GRANTED
             }.toTypedArray()
             activity.requestPermissions(missing, PERMISSION_REQUEST)
