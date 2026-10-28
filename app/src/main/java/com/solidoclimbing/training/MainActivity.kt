@@ -1,73 +1,54 @@
-```kotlin
 package com.solidoclimbing.training
 
 import android.Manifest
-import android.annotation.SuppressLint
+import android.app.Activity
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.webkit.JavascriptInterface
-import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.activity.ComponentActivity
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import org.json.JSONObject
 
-class MainActivity : ComponentActivity() {
+class MainActivity : Activity() {
 
-    private lateinit var webView: WebView
-    private lateinit var whc06Bridge: WHC06Bridge
+    private lateinit var web: WebView
 
     companion object {
         private const val BLUETOOTH_PERMISSION_REQUEST = 1001
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         requestBluetoothPermissions()
 
-        webView = WebView(this)
+        web = WebView(this)
 
-        webView.settings.apply {
-            javaScriptEnabled = true
-            domStorageEnabled = true
-            allowFileAccess = true
-            allowContentAccess = true
-        }
+        web.settings.javaScriptEnabled = true
+        web.settings.domStorageEnabled = true
+        web.settings.allowFileAccess = true
+        web.settings.allowContentAccess = true
 
-        webView.webViewClient = WebViewClient()
-        webView.webChromeClient = WebChromeClient()
+        web.webViewClient = WebViewClient()
 
-        whc06Bridge = WHC06Bridge(this)
-
-        whc06Bridge.setCallback { json ->
-
-            runOnUiThread {
-
-                val escapedJson =
-                    JSONObject.quote(json)
-
-                webView.evaluateJavascript(
-                    "window.onWHC06Data && window.onWHC06Data($escapedJson);",
-                    null
-                )
-            }
-        }
-
-        webView.addJavascriptInterface(
-            whc06Bridge,
-            "WHC06"
+        web.setBackgroundColor(
+            android.graphics.Color.rgb(8, 18, 27)
         )
 
-        setContentView(webView)
-
-        webView.loadUrl(
-            "file:///android_asset/index.html"
+        web.addJavascriptInterface(
+            BluetoothBridge(this),
+            "SolidoBluetooth"
         )
+
+        setContentView(web)
+
+        web.loadUrl("file:///android_asset/index.html")
     }
 
     private fun requestBluetoothPermissions() {
@@ -79,54 +60,69 @@ class MainActivity : ComponentActivity() {
                 Manifest.permission.BLUETOOTH_CONNECT
             )
 
-            val missingPermissions =
-                permissions.filter {
-                    ContextCompat.checkSelfPermission(
-                        this,
-                        it
-                    ) != PackageManager.PERMISSION_GRANTED
-                }
-
-            if (missingPermissions.isNotEmpty()) {
-
-                ActivityCompat.requestPermissions(
-                    this,
-                    missingPermissions.toTypedArray(),
-                    BLUETOOTH_PERMISSION_REQUEST
-                )
-            }
-        } else {
-
-            val locationPermission =
-                Manifest.permission.ACCESS_FINE_LOCATION
-
-            if (
+            val missing = permissions.filter {
                 ContextCompat.checkSelfPermission(
                     this,
-                    locationPermission
+                    it
                 ) != PackageManager.PERMISSION_GRANTED
-            ) {
+            }
 
+            if (missing.isNotEmpty()) {
                 ActivityCompat.requestPermissions(
                     this,
-                    arrayOf(locationPermission),
+                    missing.toTypedArray(),
                     BLUETOOTH_PERMISSION_REQUEST
                 )
             }
         }
     }
 
-    override fun onDestroy() {
+    @Deprecated("Deprecated in Android")
+    override fun onBackPressed() {
 
-        if (::whc06Bridge.isInitialized) {
-            whc06Bridge.release()
+        if (::web.isInitialized && web.canGoBack()) {
+            web.goBack()
+        } else {
+            super.onBackPressed()
+        }
+    }
+
+    class BluetoothBridge(
+        private val activity: Activity
+    ) {
+
+        @JavascriptInterface
+        fun isBluetoothAvailable(): Boolean {
+
+            val manager =
+                activity.getSystemService(
+                    Context.BLUETOOTH_SERVICE
+                ) as BluetoothManager
+
+            return manager.adapter != null
         }
 
-        if (::webView.isInitialized) {
-            webView.destroy()
+        @JavascriptInterface
+        fun isBluetoothEnabled(): Boolean {
+
+            val manager =
+                activity.getSystemService(
+                    Context.BLUETOOTH_SERVICE
+                ) as BluetoothManager
+
+            return manager.adapter?.isEnabled == true
         }
 
-        super.onDestroy()
+        @JavascriptInterface
+        fun showMessage(message: String) {
+
+            activity.runOnUiThread {
+                Toast.makeText(
+                    activity,
+                    message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 }
-```
