@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 168 150" role="img" aria-label="Suspensión activa">
+ <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#294b54"/><stop offset="1" stop-color="#12232e"/></linearGradient></defs>
+ <rect width="168" height="150" rx="14" fill="url(#bg)"/>
+ <g fill="none" stroke="#eef3f1" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"><circle cx='84' cy='39' r='11'/><path d='M84 51 L84 94 M84 59 L55 22 L35 22 M84 59 L113 22 L133 22 M84 94 L67 119 L60 137 M84 94 L102 119 L111 137'/></g>
+ <g fill="none" stroke="#ff5b52" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d='M25 18 L145 18'/></g>
+ <g fill="#7cff45"><circle cx="22" cy="22" r="3"/><circle cx="146" cy="22" r="3"/><circle cx="22" cy="130" r="3"/></g>
+ </svg>
