@@ -16,7 +16,7 @@
   --text:#f2f7f4;
   --muted:#a8bbc4;
   --line:#29424f;
-  --danger:#ff6262;
+  --danger:#ff6b6b;
 }
 
 *{box-sizing:border-box}
@@ -38,7 +38,7 @@ header{
   top:0;
   background:#08121bee;
   backdrop-filter:blur(10px);
-  z-index:10;
+  z-index:3;
   border-bottom:1px solid #1b303b;
 }
 
@@ -103,12 +103,12 @@ header{
   font-size:28px;
   line-height:1.06;
   margin:10px 0;
-  max-width:320px;
+  max-width:280px;
 }
 
 .hero p{
   color:#c0d1d5;
-  max-width:300px;
+  max-width:270px;
   margin:0 0 15px;
 }
 
@@ -129,13 +129,13 @@ header{
 }
 
 .btn.danger{
-  background:#321d24;
-  color:#ff9b9b;
-  border:1px solid #713b43;
+  background:#42252a;
+  color:#ffb7b7;
+  border:1px solid #704047;
 }
 
 .btn:disabled{
-  opacity:.45;
+  opacity:.5;
   cursor:not-allowed;
 }
 
@@ -200,7 +200,6 @@ header{
   grid-template-columns:78px 1fr;
   gap:12px;
   align-items:center;
-  cursor:pointer;
 }
 
 .art{
@@ -266,7 +265,7 @@ header{
   background:#09151df5;
   border-top:1px solid #29414b;
   padding:10px 5px max(10px,env(safe-area-inset-bottom));
-  z-index:20;
+  z-index:5;
 }
 
 .nav button{
@@ -333,6 +332,21 @@ select{
   flex-wrap:wrap;
 }
 
+.progress{
+  height:8px;
+  background:#253c46;
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.progress i{
+  display:block;
+  background:var(--green);
+  height:100%;
+  width:0%;
+  transition:width .2s;
+}
+
 .stat strong{
   font-size:23px;
   display:block;
@@ -352,16 +366,6 @@ select{
   line-height:1.5;
 }
 
-.notice.warning{
-  background:#342d1c;
-  color:#ffe3a3;
-}
-
-.notice.error{
-  background:#321d24;
-  color:#ffb2b2;
-}
-
 .footer{
   text-align:center;
   color:#627985;
@@ -371,18 +375,18 @@ select{
 
 /* WH-C06 */
 
-.whc-card{
-  background:linear-gradient(145deg,#162d37,#0d1d27);
-  border:1px solid #31505b;
+.force-card{
+  background:linear-gradient(145deg,#19352c,#10231f);
+  border:1px solid #365c49;
   border-radius:20px;
   padding:18px;
-  margin-top:16px;
 }
 
-.whc-status{
+.bluetooth-status{
   display:flex;
   align-items:center;
   gap:9px;
+  font-size:13px;
   margin-bottom:18px;
 }
 
@@ -390,102 +394,129 @@ select{
   width:11px;
   height:11px;
   border-radius:50%;
-  background:#667780;
-  box-shadow:0 0 0 4px #66778020;
+  background:#71818a;
+  box-shadow:0 0 0 4px #71818a18;
 }
 
 .status-dot.connected{
   background:var(--green);
-  box-shadow:0 0 0 4px #7cff4520;
+  box-shadow:0 0 14px #7cff45;
+}
+
+.status-dot.scanning{
+  background:#ffd45a;
+  box-shadow:0 0 14px #ffd45a;
 }
 
 .status-dot.error{
   background:var(--danger);
-  box-shadow:0 0 0 4px #ff626220;
-}
-
-.force-display{
-  text-align:center;
-  padding:15px 5px 22px;
 }
 
 .force-value{
-  font-size:72px;
+  text-align:center;
+  padding:12px 0 20px;
+}
+
+.force-value .number{
+  font-size:68px;
   line-height:1;
   font-weight:1000;
-  color:var(--green);
   font-variant-numeric:tabular-nums;
-  text-shadow:0 0 25px #7cff4525;
+  letter-spacing:-2px;
 }
 
-.force-unit{
-  font-size:18px;
+.force-value .unit{
   color:var(--muted);
-  margin-top:5px;
+  font-size:16px;
+  margin-top:7px;
 }
 
-.force-bar{
-  height:14px;
-  background:#172b35;
-  border-radius:20px;
-  overflow:hidden;
-  margin:15px 0;
-  border:1px solid #29434f;
-}
-
-.force-bar i{
-  display:block;
-  height:100%;
-  width:0%;
-  background:var(--green);
-  transition:width .15s ease;
-}
-
-.wh-stats{
+.force-stats{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:8px;
+  margin-top:8px;
 }
 
-.wh-stat{
-  background:#10232d;
-  border:1px solid #29424f;
+.force-stat{
+  background:#0d1d27;
+  border:1px solid #29434b;
   border-radius:13px;
-  padding:12px 7px;
+  padding:11px;
   text-align:center;
 }
 
-.wh-stat strong{
+.force-stat strong{
   display:block;
-  font-size:18px;
+  font-size:19px;
 }
 
-.wh-stat span{
+.force-stat span{
   display:block;
+  margin-top:3px;
   color:var(--muted);
   font-size:10px;
-  margin-top:3px;
 }
 
 .device-name{
-  color:white;
-  font-weight:800;
+  color:var(--green);
+  font-weight:900;
 }
 
-.bluetooth-help{
+.big-action{
+  width:100%;
+  font-size:15px;
+  margin-top:5px;
+}
+
+.live-indicator{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  color:var(--green);
+  font-size:11px;
+}
+
+.live-indicator:before{
+  content:'';
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--green);
+  animation:pulse 1s infinite;
+}
+
+@keyframes pulse{
+  0%,100%{opacity:.3}
+  50%{opacity:1}
+}
+
+.force-help{
   margin-top:14px;
-  padding:12px;
-  border-radius:12px;
-  background:#132932;
-  border:1px solid #29424f;
-  color:#bcd0d7;
-  font-size:12px;
+  color:var(--muted);
+  font-size:11px;
   line-height:1.5;
 }
 
+.connection-box{
+  background:#0d1d27;
+  border:1px solid #29434b;
+  border-radius:13px;
+  padding:12px;
+  margin-top:12px;
+}
+
+.connection-box strong{
+  color:white;
+}
+
 @media(max-width:420px){
-  .force-value{
-    font-size:60px;
+  .force-value .number{
+    font-size:58px;
+  }
+
+  .force-stats{
+    grid-template-columns:1fr;
   }
 }
 </style>
@@ -503,14 +534,19 @@ select{
 
 <main class="wrap">
 
-<!-- ================= INICIO ================= -->
+<!-- INICIO -->
 
 <section id="home">
 
   <div class="hero">
     <div class="eyebrow">ENTRENA · PROGRESA · DISFRUTA</div>
+
     <h1>Tu próximo nivel empieza hoy.</h1>
-    <p>Entrenamientos de escalada, fuerza y montaña en un solo lugar.</p>
+
+    <p>
+      Entrenamientos de escalada, fuerza y montaña
+      en un solo lugar.
+    </p>
 
     <button class="btn" onclick="show('plans')">
       Ver mi plan →
@@ -568,31 +604,6 @@ select{
 
   </div>
 
-  <!-- NUEVO WH-C06 -->
-
-  <div class="sectionhead">
-    <h2>Fuerza de dedos</h2>
-    <span class="tag">WH-C06</span>
-  </div>
-
-  <div class="tile" onclick="show('whc06')">
-
-    <div class="emoji">🟢</div>
-
-    <strong>
-      Medidor WH-C06
-    </strong>
-
-    <small>
-      Conecta IF_B7 y mide tu fuerza en kg
-    </small>
-
-    <div style="margin-top:12px">
-      <span class="tag">BLUETOOTH</span>
-    </div>
-
-  </div>
-
   <div class="sectionhead">
     <h2>Consejo de hoy</h2>
   </div>
@@ -606,7 +617,7 @@ select{
 </section>
 
 
-<!-- ================= PLANES ================= -->
+<!-- PLANES -->
 
 <section id="plans" class="hide">
 
@@ -622,17 +633,155 @@ select{
   <div class="cards" id="planList"></div>
 
   <div style="margin-top:14px">
-
     <button class="btn" onclick="startPlan()">
       ▶ Comenzar sesión
     </button>
+  </div>
+
+</section>
+
+
+<!-- FUERZA DE DEDOS -->
+
+<section id="fingerStrength" class="hide">
+
+  <div class="sectionhead">
+    <h2>Fuerza de dedos</h2>
+    <span class="tag">WH-C06</span>
+  </div>
+
+  <div class="force-card">
+
+    <div class="bluetooth-status">
+
+      <span
+        id="bluetoothDot"
+        class="status-dot">
+      </span>
+
+      <span id="bluetoothStatus">
+        Desconectado
+      </span>
+
+    </div>
+
+    <div class="force-value">
+
+      <div
+        id="forceValue"
+        class="number">
+        0.00
+      </div>
+
+      <div class="unit">
+        kg
+      </div>
+
+    </div>
+
+    <div class="force-stats">
+
+      <div class="force-stat">
+        <strong id="peakValue">0.00</strong>
+        <span>PICO kg</span>
+      </div>
+
+      <div class="force-stat">
+        <strong id="samplesValue">0</strong>
+        <span>MEDICIONES</span>
+      </div>
+
+      <div class="force-stat">
+        <strong id="deviceValue">—</strong>
+        <span>DISPOSITIVO</span>
+      </div>
+
+    </div>
+
+    <div style="margin-top:18px">
+
+      <button
+        id="connectButton"
+        class="btn big-action"
+        onclick="connectWHC06()">
+
+        🔵 Conectar WH-C06
+
+      </button>
+
+      <button
+        id="stopButton"
+        class="btn danger big-action"
+        onclick="disconnectWHC06()"
+        style="display:none">
+
+        ■ Detener lectura
+
+      </button>
+
+    </div>
+
+    <div class="connection-box">
+
+      <strong>Estado:</strong>
+
+      <span id="connectionMessage">
+        Pulsa «Conectar WH-C06» para buscar IF_B7.
+      </span>
+
+    </div>
+
+    <div class="force-help">
+
+      El WH-C06 se detecta mediante sus anuncios Bluetooth.
+      No necesitas abrir Chrome ni utilizar Web Bluetooth.
+      Mantén el dispositivo encendido y cerca del teléfono.
+
+    </div>
+
+  </div>
+
+  <div class="sectionhead">
+    <h2>Entrenamiento</h2>
+  </div>
+
+  <div class="tile">
+
+    <strong>Suspensiones / fuerza máxima</strong>
+
+    <p class="muted">
+      Utiliza el valor mostrado por el WH-C06 para registrar
+      tus mediciones de fuerza.
+    </p>
+
+    <div class="progress">
+      <i id="forceProgress"></i>
+    </div>
+
+    <p class="muted">
+      Pico de esta sesión:
+      <strong id="peakText">0.00 kg</strong>
+    </p>
+
+  </div>
+
+  <div class="sectionhead">
+    <h2>Consejo</h2>
+  </div>
+
+  <div class="notice">
+
+    Realiza un calentamiento adecuado antes de las mediciones
+    máximas. Si aparece dolor en los dedos, detén la prueba.
+    El dispositivo mide fuerza; la aplicación no sustituye
+    una valoración profesional.
 
   </div>
 
 </section>
 
 
-<!-- ================= BIBLIOTECA ================= -->
+<!-- BIBLIOTECA -->
 
 <section id="library" class="hide">
 
@@ -642,32 +791,38 @@ select{
 
   <div class="tabs" id="filters">
 
-    <button class="tab active"
+    <button
+      class="tab active"
       onclick="filterExercises('Todos',this)">
       Todos
     </button>
 
-    <button class="tab"
+    <button
+      class="tab"
       onclick="filterExercises('Fuerza',this)">
       Fuerza
     </button>
 
-    <button class="tab"
+    <button
+      class="tab"
       onclick="filterExercises('Dedos',this)">
       Dedos
     </button>
 
-    <button class="tab"
+    <button
+      class="tab"
       onclick="filterExercises('Core',this)">
       Core
     </button>
 
-    <button class="tab"
+    <button
+      class="tab"
       onclick="filterExercises('Movilidad',this)">
       Movilidad
     </button>
 
-    <button class="tab"
+    <button
+      class="tab"
       onclick="filterExercises('Resistencia',this)">
       Resistencia
     </button>
@@ -679,11 +834,13 @@ select{
 </section>
 
 
-<!-- ================= DETALLE ================= -->
+<!-- DETALLE -->
 
 <section id="detail" class="hide">
 
-  <button class="btn secondary" onclick="show('library')">
+  <button
+    class="btn secondary"
+    onclick="show('library')">
     ← Biblioteca
   </button>
 
@@ -692,7 +849,7 @@ select{
 </section>
 
 
-<!-- ================= TEMPORIZADOR ================= -->
+<!-- TEMPORIZADOR -->
 
 <section id="timerPage" class="hide">
 
@@ -728,7 +885,9 @@ select{
 
     </div>
 
-    <div class="row" style="justify-content:center">
+    <div
+      class="row"
+      style="justify-content:center">
 
       <label>
         Segundos
@@ -739,8 +898,7 @@ select{
           min="5"
           max="600"
           value="30"
-          style="width:85px"
-        >
+          style="width:85px">
       </label>
 
       <button
@@ -764,7 +922,8 @@ select{
 
     <p class="muted">
       Mantén el control del movimiento.
-      El temporizador no sustituye una planificación adaptada a tu nivel.
+      El temporizador no sustituye una planificación
+      adaptada a tu nivel.
     </p>
 
   </div>
@@ -772,7 +931,7 @@ select{
 </section>
 
 
-<!-- ================= PROGRESO ================= -->
+<!-- PROGRESO -->
 
 <section id="progress" class="hide">
 
@@ -801,19 +960,20 @@ select{
     <button
       class="btn secondary"
       onclick="clearHistory()">
-
       Borrar
-
     </button>
 
   </div>
 
-  <div id="history" class="cards"></div>
+  <div
+    id="history"
+    class="cards">
+  </div>
 
 </section>
 
 
-<!-- ================= PERFIL ================= -->
+<!-- PERFIL -->
 
 <section id="profile" class="hide">
 
@@ -839,9 +999,7 @@ select{
 
     <div style="height:14px"></div>
 
-    <strong>
-      Objetivo principal
-    </strong>
+    <strong>Objetivo principal</strong>
 
     <p>
 
@@ -873,251 +1031,8 @@ select{
   <div class="notice">
 
     SOLIDO CLIMBING TRAINING · Prototipo inicial.
-
     Los ejercicios y planes son orientativos,
     no una prescripción médica ni un plan individualizado.
-
-  </div>
-
-</section>
-
-
-<!-- ================= WH-C06 ================= -->
-
-<section id="whc06" class="hide">
-
-  <div class="sectionhead">
-
-    <div>
-
-      <h2>
-        Fuerza de dedos
-      </h2>
-
-      <div class="muted">
-        Medidor Weiheng WH-C06
-      </div>
-
-    </div>
-
-    <span class="tag">
-      IF_B7
-    </span>
-
-  </div>
-
-
-  <div class="whc-card">
-
-    <div class="whc-status">
-
-      <div
-        id="whStatusDot"
-        class="status-dot">
-      </div>
-
-      <div>
-
-        <div
-          id="whStatus"
-          class="device-name">
-
-          Desconectado
-
-        </div>
-
-        <div
-          id="whDeviceName"
-          class="muted">
-
-          Busca el WH-C06 / IF_B7
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <div class="force-display">
-
-      <div
-        id="forceValue"
-        class="force-value">
-
-        0.00
-
-      </div>
-
-      <div class="force-unit">
-        kg
-      </div>
-
-      <div class="force-bar">
-        <i id="forceBar"></i>
-      </div>
-
-      <div class="muted">
-        Fuerza instantánea
-      </div>
-
-    </div>
-
-
-    <div class="wh-stats">
-
-      <div class="wh-stat">
-
-        <strong id="whPeak">
-          0.00
-        </strong>
-
-        <span>
-          PICO kg
-        </span>
-
-      </div>
-
-
-      <div class="wh-stat">
-
-        <strong id="whAverage">
-          0.00
-        </strong>
-
-        <span>
-          MEDIA kg
-        </span>
-
-      </div>
-
-
-      <div class="wh-stat">
-
-        <strong id="whSamples">
-          0
-        </strong>
-
-        <span>
-          MUESTRAS
-        </span>
-
-      </div>
-
-    </div>
-
-
-    <div
-      class="row"
-      style="justify-content:center;margin-top:20px">
-
-      <button
-        id="whConnectButton"
-        class="btn"
-        onclick="connectWHC06()">
-
-        🟢 Conectar IF_B7
-
-      </button>
-
-
-      <button
-        id="whDisconnectButton"
-        class="btn danger"
-        onclick="disconnectWHC06()"
-        disabled>
-
-        Desconectar
-
-      </button>
-
-    </div>
-
-
-    <div
-      id="whMessage"
-      class="notice"
-      style="margin-top:15px">
-
-      Pulsa "Conectar IF_B7" y selecciona el dispositivo WH-C06.
-
-    </div>
-
-
-    <div class="bluetooth-help">
-
-      <strong>WH-C06 detectado como IF_B7</strong><br><br>
-
-      El WH-C06 transmite la fuerza mediante
-      <strong>Bluetooth Low Energy</strong> usando datos de fabricante.
-
-      La aplicación busca el identificador de fabricante
-      <strong>0x0100</strong> y obtiene el valor de fuerza de los bytes
-      utilizados por el protocolo del dispositivo.
-
-      <br><br>
-
-      En Chrome/Web Bluetooth puede ser necesario permitir
-      las funciones experimentales de Bluetooth.
-
-    </div>
-
-  </div>
-
-
-  <div class="sectionhead">
-    <h2>Sesión de fuerza</h2>
-  </div>
-
-
-  <div class="grid">
-
-    <div class="stat">
-
-      <strong id="sessionPeak">
-        0.00 kg
-      </strong>
-
-      <span>
-        Mejor fuerza
-      </span>
-
-    </div>
-
-
-    <div class="stat">
-
-      <strong id="sessionSamples">
-        0
-      </strong>
-
-      <span>
-        Lecturas recibidas
-      </span>
-
-    </div>
-
-  </div>
-
-
-  <div style="margin-top:14px">
-
-    <button
-      class="btn"
-      onclick="saveWHC06Session()">
-
-      ✓ Guardar sesión
-
-    </button>
-
-  </div>
-
-
-  <div class="notice warning" style="margin-top:14px">
-
-    No hagas pruebas máximas si tienes dolor o fatiga.
-    La medición es una herramienta de entrenamiento y no sustituye
-    una valoración profesional.
 
   </div>
 
@@ -1131,7 +1046,7 @@ select{
 </main>
 
 
-<!-- ================= NAVEGACIÓN ================= -->
+<!-- NAVEGACIÓN -->
 
 <nav class="nav">
 
@@ -1145,7 +1060,6 @@ select{
 
   </button>
 
-
   <button
     data-page="plans"
     onclick="show('plans',this)">
@@ -1155,6 +1069,14 @@ select{
 
   </button>
 
+  <button
+    data-page="fingerStrength"
+    onclick="show('fingerStrength',this)">
+
+    <span>✊</span>
+    Fuerza
+
+  </button>
 
   <button
     data-page="library"
@@ -1165,7 +1087,6 @@ select{
 
   </button>
 
-
   <button
     data-page="progress"
     onclick="show('progress',this)">
@@ -1174,7 +1095,6 @@ select{
     Progreso
 
   </button>
-
 
   <button
     data-page="profile"
@@ -1252,7 +1172,7 @@ const exercises = [
     muscles:'Piernas · Glúteos · Equilibrio',
     sets:'3 series · 8 por pierna',
     rest:90,
-    desc:'Da un paso estable, baja de forma controlada y mantén la rodilla alineada con el pie.',
+    desc:'Da un paso estable, baja de forma controlada y mantén la rodilla alineada con el pie. Sujétate si necesitas equilibrio.',
     tip:'Prioriza la estabilidad antes que la profundidad.'
   },
 
@@ -1333,11 +1253,13 @@ const plan = [
 
 
 /* =========================================================
-   VARIABLES
+   ESTADO GENERAL
 ========================================================= */
 
 let sessions =
-  JSON.parse(localStorage.getItem('solidoSessions') || '[]');
+  JSON.parse(
+    localStorage.getItem('solidoSessions') || '[]'
+  );
 
 let timerId = null;
 let remaining = 30;
@@ -1346,38 +1268,23 @@ let selectedExercise = null;
 
 
 /* =========================================================
-   VARIABLES WH-C06
+   ESTADO WH-C06
 ========================================================= */
 
-let whc06Device = null;
-let whc06AdvertisementHandler = null;
+let whc06Connected = false;
+let whc06Scanning = false;
 
-let whPeak = 0;
-let whSum = 0;
-let whSamples = 0;
+let currentForce = 0;
+let peakForce = 0;
+let sampleCount = 0;
 
+let lastDeviceName = '';
 
-/*
- * Datos conocidos del WH-C06.
- *
- * Manufacturer ID:
- * 0x0100 = 256
- *
- * Peso:
- * offset 10
- *
- * Valor:
- * dos bytes BIG ENDIAN
- *
- * resultado / 100 = kg
- */
-
-const WHC06_MANUFACTURER_ID = 0x0100;
-const WHC06_WEIGHT_OFFSET = 10;
+let forceHistory = [];
 
 
 /* =========================================================
-   GUARDADO GENERAL
+   GUARDADO
 ========================================================= */
 
 function save(){
@@ -1392,16 +1299,19 @@ function save(){
 
 
 /* =========================================================
-   CAMBIO DE PÁGINA
+   NAVEGACIÓN
 ========================================================= */
 
 function show(page,btn){
 
   document
     .querySelectorAll('main section')
-    .forEach(s => s.classList.add('hide'));
+    .forEach(
+      s => s.classList.add('hide')
+    );
 
-  const target = document.getElementById(page);
+  const target =
+    document.getElementById(page);
 
   if(target){
     target.classList.remove('hide');
@@ -1409,11 +1319,12 @@ function show(page,btn){
 
   document
     .querySelectorAll('.nav button')
-    .forEach(b =>
-      b.classList.toggle(
-        'active',
-        b.dataset.page === page
-      )
+    .forEach(
+      b =>
+        b.classList.toggle(
+          'active',
+          b.dataset.page === page
+        )
     );
 
   if(
@@ -1443,37 +1354,39 @@ function show(page,btn){
 function renderPlan(){
 
   document.getElementById('planList').innerHTML =
-    plan.map((p,i) => `
+    plan.map(
+      (p,i) => `
 
-      <div class="planstep">
+        <div class="planstep">
 
-        <div class="row">
+          <div class="row">
 
-          <span style="font-size:25px">
-            ${p.emoji}
-          </span>
+            <span style="font-size:25px">
+              ${p.emoji}
+            </span>
 
-          <div style="flex:1">
+            <div style="flex:1">
 
-            <strong>
-              ${i+1}. ${p.name}
-            </strong>
+              <strong>
+                ${i+1}. ${p.name}
+              </strong>
 
-            <div class="muted">
-              ${p.desc}
+              <div class="muted">
+                ${p.desc}
+              </div>
+
             </div>
+
+            <span class="tag">
+              ${p.time}
+            </span>
 
           </div>
 
-          <span class="tag">
-            ${p.time}
-          </span>
-
         </div>
 
-      </div>
-
-    `).join('');
+      `
+    ).join('');
 }
 
 
@@ -1493,45 +1406,43 @@ function renderExercises(category='Todos'){
           e.cat === category
       )
 
-      .map(e => `
+      .map(
+        e => `
 
-        <article
-          class="exercise"
-          onclick="openExercise(${e.id})">
+          <article
+            class="exercise"
+            onclick="openExercise(${e.id})">
 
-          <div class="art">
-            ${e.emoji}
-          </div>
+            <div class="art">
+              ${e.emoji}
+            </div>
 
-          <div>
+            <div>
 
-            <h3>
-              ${e.name}
-            </h3>
+              <h3>
+                ${e.name}
+              </h3>
 
-            <p>
-              ${e.muscles}
-            </p>
+              <p>
+                ${e.muscles}
+              </p>
 
-            <span class="tag">
-              ${e.cat}
-            </span>
+              <span class="tag">
+                ${e.cat}
+              </span>
 
-            <span class="muted">
-              › Detalles
-            </span>
+              <span class="muted">
+                › Detalles
+              </span>
 
-          </div>
+            </div>
 
-        </article>
+          </article>
 
-      `).join('');
+        `
+      ).join('');
 }
 
-
-/* =========================================================
-   FILTROS
-========================================================= */
 
 function filterExercises(cat,btn){
 
@@ -1541,11 +1452,12 @@ function filterExercises(cat,btn){
 
   document
     .querySelectorAll('#filters .tab')
-    .forEach(b =>
-      b.classList.toggle(
-        'active',
-        b.textContent === cat
-      )
+    .forEach(
+      b =>
+        b.classList.toggle(
+          'active',
+          b.textContent === cat
+        )
     );
 }
 
@@ -1557,7 +1469,13 @@ function filterExercises(cat,btn){
 function openExercise(id){
 
   selectedExercise =
-    exercises.find(e => e.id === id);
+    exercises.find(
+      e => e.id === id
+    );
+
+  if(!selectedExercise){
+    return;
+  }
 
   document.getElementById(
     'detailContent'
@@ -1571,7 +1489,8 @@ function openExercise(id){
         ${selectedExercise.cat.toUpperCase()}
       </div>
 
-      <div style="font-size:64px;margin:8px 0">
+      <div
+        style="font-size:64px;margin:8px 0">
         ${selectedExercise.emoji}
       </div>
 
@@ -1585,11 +1504,9 @@ function openExercise(id){
 
     </div>
 
-
     <div class="sectionhead">
       <h2>Cómo hacerlo</h2>
     </div>
-
 
     <div class="tile">
 
@@ -1605,23 +1522,20 @@ function openExercise(id){
         Descanso sugerido:
         ${
           selectedExercise.rest
-            ? selectedExercise.rest+' segundos'
+            ? selectedExercise.rest + ' segundos'
             : 'según esfuerzo'
         }.
       </p>
 
     </div>
 
-
     <div class="sectionhead">
       <h2>Consejo técnico</h2>
     </div>
 
-
     <div class="notice">
       ${selectedExercise.tip}
     </div>
-
 
     <div
       class="row"
@@ -1630,7 +1544,7 @@ function openExercise(id){
       <button
         class="btn"
         onclick="openTimer(
-          '${selectedExercise.name.replace(/'/g,"\\'")}',
+          '${selectedExercise.name}',
           ${selectedExercise.rest || 60}
         )">
 
@@ -1638,11 +1552,10 @@ function openExercise(id){
 
       </button>
 
-
       <button
         class="btn secondary"
         onclick="logSession(
-          '${selectedExercise.name.replace(/'/g,"\\'")}',
+          '${selectedExercise.name}',
           5
         )">
 
@@ -1651,7 +1564,6 @@ function openExercise(id){
       </button>
 
     </div>
-
   `;
 
   show('detail');
@@ -1677,7 +1589,8 @@ function openTimer(
     'secondsInput'
   ).value = seconds || 30;
 
-  remaining = seconds || 30;
+  remaining =
+    seconds || 30;
 
   running = false;
 
@@ -1687,11 +1600,13 @@ function openTimer(
 
   document.getElementById(
     'startPause'
-  ).textContent = '▶ Iniciar';
+  ).textContent =
+    '▶ Iniciar';
 
   document.getElementById(
     'timerLabel'
-  ).textContent = 'Preparado';
+  ).textContent =
+    'Preparado';
 }
 
 
@@ -1702,7 +1617,9 @@ function updateClock(){
   ).textContent =
 
     String(
-      Math.floor(remaining / 60)
+      Math.floor(
+        remaining / 60
+      )
     ).padStart(2,'0')
 
     + ':'
@@ -1725,7 +1642,8 @@ function toggleTimer(){
 
     document.getElementById(
       'startPause'
-    ).textContent = '▶ Continuar';
+    ).textContent =
+      '▶ Continuar';
 
     return;
   }
@@ -1747,46 +1665,48 @@ function toggleTimer(){
 
   document.getElementById(
     'timerLabel'
-  ).textContent = 'En marcha';
+  ).textContent =
+    'En marcha';
 
   document.getElementById(
     'startPause'
-  ).textContent = 'Ⅱ Pausar';
+  ).textContent =
+    'Ⅱ Pausar';
 
   timerId =
-    setInterval(() => {
+    setInterval(
+      () => {
 
-      remaining--;
+        remaining--;
 
-      updateClock();
+        updateClock();
 
-      if(remaining <= 0){
+        if(remaining <= 0){
 
-        clearInterval(timerId);
+          clearInterval(timerId);
 
-        running = false;
+          running = false;
 
-        document.getElementById(
-          'timerLabel'
-        ).textContent = '¡Tiempo!';
+          document.getElementById(
+            'timerLabel'
+          ).textContent =
+            '¡Tiempo!';
 
-        document.getElementById(
-          'startPause'
-        ).textContent = '↻ Repetir';
+          document.getElementById(
+            'startPause'
+          ).textContent =
+            '↻ Repetir';
 
-        if(navigator.vibrate){
-
-          navigator.vibrate([
-            200,
-            100,
-            200
-          ]);
-
+          if(navigator.vibrate){
+            navigator.vibrate(
+              [200,100,200]
+            );
+          }
         }
 
-      }
-
-    },1000);
+      },
+      1000
+    );
 }
 
 
@@ -1810,11 +1730,13 @@ function resetTimer(){
 
   document.getElementById(
     'timerLabel'
-  ).textContent = 'Preparado';
+  ).textContent =
+    'Preparado';
 
   document.getElementById(
     'startPause'
-  ).textContent = '▶ Iniciar';
+  ).textContent =
+    '▶ Iniciar';
 }
 
 
@@ -1822,16 +1744,19 @@ function resetTimer(){
    SESIONES
 ========================================================= */
 
-function logSession(name,mins){
+function logSession(
+  name,
+  mins
+){
 
   sessions.unshift({
 
-    name,
-    mins,
+    name:name,
 
-    date:
-      new Date()
-        .toLocaleString('es-ES')
+    mins:mins,
+
+    date:new Date()
+      .toLocaleString('es-ES')
 
   });
 
@@ -1847,14 +1772,12 @@ function startPlan(){
 
   sessions.unshift({
 
-    name:
-      'Sesión de fuerza general',
+    name:'Sesión de fuerza general',
 
     mins:45,
 
-    date:
-      new Date()
-        .toLocaleString('es-ES')
+    date:new Date()
+      .toLocaleString('es-ES')
 
   });
 
@@ -1869,7 +1792,8 @@ function startPlan(){
 
 function renderStats(){
 
-  const n = sessions.length;
+  const n =
+    sessions.length;
 
   const m =
     sessions.reduce(
@@ -1906,30 +1830,32 @@ function renderHistory(){
 
     sessions.length
 
-      ?
+      ? sessions.map(
+          s => `
 
-      sessions.map(s => `
+            <div class="tile">
 
-        <div class="tile">
+              <strong>
+                ${s.name}
+              </strong>
 
-          <strong>
-            ${s.name}
-          </strong>
+              <p class="muted">
+                ${s.date} · ${s.mins} min
+              </p>
 
-          <p class="muted">
-            ${s.date} · ${s.mins} min
-          </p>
+            </div>
 
-        </div>
-
-      `).join('')
+          `
+        ).join('')
 
       :
 
-      `<div class="tile muted">
-        Todavía no hay sesiones registradas.
-        Completa un ejercicio para empezar.
-      </div>`;
+        `
+        <div class="tile muted">
+          Todavía no hay sesiones registradas.
+          Completa un ejercicio para empezar.
+        </div>
+        `;
 }
 
 
@@ -1978,617 +1904,514 @@ function saveProfile(){
 
 /* =========================================================
    WH-C06
+   PUENTE ANDROID
 ========================================================= */
 
+window.SOLIDO_WH_C06 = {
 
-/*
- * Comprueba si Web Bluetooth está disponible.
- */
+  onStatus:function(status){
 
-function isBluetoothAvailable(){
-
-  return (
-    typeof navigator !== 'undefined' &&
-    'bluetooth' in navigator
-  );
-}
-
-
-/*
- * Actualiza el texto de estado.
- */
-
-function setWHStatus(
-  text,
-  mode=''
-){
-
-  const status =
-    document.getElementById(
-      'whStatus'
+    console.log(
+      'WH-C06 status:',
+      status
     );
+
+    const dot =
+      document.getElementById(
+        'bluetoothDot'
+      );
+
+    const statusText =
+      document.getElementById(
+        'bluetoothStatus'
+      );
+
+    const message =
+      document.getElementById(
+        'connectionMessage'
+      );
+
+    const connect =
+      document.getElementById(
+        'connectButton'
+      );
+
+    const stop =
+      document.getElementById(
+        'stopButton'
+      );
+
+
+    dot.className =
+      'status-dot';
+
+
+    if(status === 'scanning'){
+
+      whc06Scanning = true;
+
+      dot.classList.add(
+        'scanning'
+      );
+
+      statusText.textContent =
+        'Buscando WH-C06 / IF_B7…';
+
+      message.textContent =
+        'Escaneando dispositivos Bluetooth cercanos…';
+
+      connect.style.display =
+        'none';
+
+      stop.style.display =
+        'block';
+
+      return;
+    }
+
+
+    if(status === 'stopped'){
+
+      whc06Scanning = false;
+
+      if(!whc06Connected){
+
+        statusText.textContent =
+          'Desconectado';
+
+        message.textContent =
+          'Lectura detenida.';
+      }
+
+      connect.style.display =
+        'block';
+
+      stop.style.display =
+        'none';
+
+      return;
+    }
+
+
+    if(status === 'permission'){
+
+      statusText.textContent =
+        'Permiso Bluetooth necesario';
+
+      message.textContent =
+        'Android necesita permiso para buscar dispositivos Bluetooth.';
+
+      connect.style.display =
+        'block';
+
+      stop.style.display =
+        'none';
+
+      return;
+    }
+
+
+    if(status === 'disabled'){
+
+      statusText.textContent =
+        'Bluetooth apagado';
+
+      message.textContent =
+        'Activa Bluetooth en el teléfono y vuelve a intentarlo.';
+
+      connect.style.display =
+        'block';
+
+      stop.style.display =
+        'none';
+
+      return;
+    }
+
+
+    if(status === 'unsupported'){
+
+      statusText.textContent =
+        'Bluetooth no disponible';
+
+      message.textContent =
+        'Este teléfono no dispone de Bluetooth compatible.';
+
+      connect.style.display =
+        'block';
+
+      stop.style.display =
+        'none';
+
+      return;
+    }
+
+
+    if(
+      typeof status === 'string' &&
+      status.indexOf('scan_error:') === 0
+    ){
+
+      whc06Scanning = false;
+
+      dot.classList.add(
+        'error'
+      );
+
+      statusText.textContent =
+        'Error Bluetooth';
+
+      message.textContent =
+        'No se pudo iniciar el escaneo: ' +
+        status;
+
+      connect.style.display =
+        'block';
+
+      stop.style.display =
+        'none';
+
+      return;
+    }
+  },
+
+
+  onMeasurement:function(
+    deviceName,
+    kilograms
+  ){
+
+    const kg =
+      Number(kilograms);
+
+
+    if(!Number.isFinite(kg)){
+      return;
+    }
+
+
+    whc06Connected = true;
+    whc06Scanning = false;
+
+    currentForce = kg;
+
+    if(
+      kg > peakForce
+    ){
+      peakForce = kg;
+    }
+
+    sampleCount++;
+
+
+    lastDeviceName =
+      deviceName || 'IF_B7';
+
+
+    forceHistory.push({
+
+      kg:kg,
+
+      time:Date.now()
+
+    });
+
+
+    if(
+      forceHistory.length > 500
+    ){
+
+      forceHistory.shift();
+
+    }
+
+
+    updateForceUI();
+  }
+
+};
+
+
+/* =========================================================
+   ACTUALIZAR PANTALLA WH-C06
+========================================================= */
+
+function updateForceUI(){
 
   const dot =
     document.getElementById(
-      'whStatusDot'
+      'bluetoothDot'
     );
 
-  status.textContent = text;
+  const statusText =
+    document.getElementById(
+      'bluetoothStatus'
+    );
+
+  const message =
+    document.getElementById(
+      'connectionMessage'
+    );
+
+  const connect =
+    document.getElementById(
+      'connectButton'
+    );
+
+  const stop =
+    document.getElementById(
+      'stopButton'
+    );
+
 
   dot.className =
-    'status-dot' +
-    (mode ? ' ' + mode : '');
-}
+    'status-dot connected';
 
 
-/*
- * Mensaje de la pantalla WH-C06.
- */
-
-function setWHMessage(
-  text,
-  type=''
-){
-
-  const box =
-    document.getElementById(
-      'whMessage'
-    );
-
-  box.className =
-    'notice' +
-    (type ? ' ' + type : '');
-
-  box.textContent = text;
-}
+  statusText.innerHTML =
+    '<span class="live-indicator">RECIBIENDO</span>';
 
 
-/*
- * Actualiza la pantalla de fuerza.
- */
+  message.innerHTML =
+    'Dispositivo detectado: ' +
+    '<span class="device-name">' +
+    escapeHtml(lastDeviceName) +
+    '</span>';
 
-function updateWHForce(
-  kg
-){
-
-  const safeKg =
-    Number.isFinite(kg)
-      ? Math.max(0,kg)
-      : 0;
 
   document.getElementById(
     'forceValue'
   ).textContent =
-    safeKg.toFixed(2);
+    currentForce.toFixed(2);
 
-  /*
-   * Barra visual.
-   * 100 kg = 100%.
-   * Se limita al 100%.
-   */
 
-  const percent =
+  document.getElementById(
+    'peakValue'
+  ).textContent =
+    peakForce.toFixed(2);
+
+
+  document.getElementById(
+    'peakText'
+  ).textContent =
+    peakForce.toFixed(2) +
+    ' kg';
+
+
+  document.getElementById(
+    'samplesValue'
+  ).textContent =
+    sampleCount;
+
+
+  document.getElementById(
+    'deviceValue'
+  ).textContent =
+    lastDeviceName || 'IF_B7';
+
+
+  connect.style.display =
+    'none';
+
+  stop.style.display =
+    'block';
+
+
+  const progress =
     Math.min(
       100,
-      (safeKg / 100) * 100
+      Math.max(
+        0,
+        (peakForce / 100) * 100
+      )
     );
 
-  document.getElementById(
-    'forceBar'
-  ).style.width =
-    percent + '%';
 
-  /*
-   * Estadísticas
-   */
-
-  whPeak =
-    Math.max(
-      whPeak,
-      safeKg
-    );
-
-  whSum += safeKg;
-
-  whSamples++;
-
-  const average =
-    whSamples
-      ? whSum / whSamples
-      : 0;
-
-  document.getElementById(
-    'whPeak'
-  ).textContent =
-    whPeak.toFixed(2);
-
-  document.getElementById(
-    'whAverage'
-  ).textContent =
-    average.toFixed(2);
-
-  document.getElementById(
-    'whSamples'
-  ).textContent =
-    whSamples;
-
-  document.getElementById(
-    'sessionPeak'
-  ).textContent =
-    whPeak.toFixed(2) + ' kg';
-
-  document.getElementById(
-    'sessionSamples'
-  ).textContent =
-    whSamples;
+  document
+    .getElementById(
+      'forceProgress'
+    )
+    .style.width =
+    progress + '%';
 }
 
 
-/*
- * Extrae la fuerza del paquete
- * WH-C06.
- *
- * Offset 10
- * y offset 11
- *
- * BIG ENDIAN.
- */
+/* =========================================================
+   CONECTAR WH-C06
+========================================================= */
 
-function parseWHC06Force(
-  data
-){
+function connectWHC06(){
 
-  if(!data){
-
-    return null;
-
-  }
-
-  try{
-
-    if(
-      data.byteLength <
-      WHC06_WEIGHT_OFFSET + 2
-    ){
-
-      return null;
-
-    }
-
-    const view =
-      new DataView(
-        data.buffer,
-        data.byteOffset,
-        data.byteLength
-      );
-
-    const raw =
-      view.getUint16(
-        WHC06_WEIGHT_OFFSET,
-        false
-      );
-
-    return raw / 100;
-
-  }catch(error){
-
-    console.error(
-      'Error leyendo WH-C06:',
-      error
-    );
-
-    return null;
-  }
-}
+  show('fingerStrength');
 
 
-/*
- * Convierte los datos de fabricante
- * en una fuerza.
- */
+  if(
+    !window.AndroidWHC06
+  ){
 
-function handleWHC06Advertisement(
-  event
-){
+    document.getElementById(
+      'connectionMessage'
+    ).textContent =
+      'El puente Bluetooth nativo no está disponible. Comprueba que estás usando el APK actualizado.';
 
-  try{
-
-    if(!event.manufacturerData){
-
-      return;
-
-    }
-
-    const data =
-      event.manufacturerData.get(
-        WHC06_MANUFACTURER_ID
-      );
-
-    if(!data){
-
-      return;
-
-    }
-
-    const kg =
-      parseWHC06Force(data);
-
-    if(
-      kg === null ||
-      !Number.isFinite(kg)
-    ){
-
-      return;
-
-    }
-
-    updateWHForce(kg);
-
-    setWHMessage(
-      'Recibiendo fuerza del WH-C06 correctamente.',
-      ''
-    );
-
-  }catch(error){
-
-    console.error(
-      'Error en anuncio WH-C06:',
-      error
-    );
-
-  }
-}
-
-
-/*
- * Conectar WH-C06.
- */
-
-async function connectWHC06(){
-
-  if(!isBluetoothAvailable()){
-
-    setWHStatus(
-      'Bluetooth no disponible',
-      'error'
-    );
-
-    setWHMessage(
-      'Este entorno Android/WebView no expone Web Bluetooth. El siguiente paso será conectar el WH-C06 mediante el puente Bluetooth nativo del APK.',
-      'error'
-    );
+    document.getElementById(
+      'bluetoothStatus'
+    ).textContent =
+      'Puente Android no disponible';
 
     return;
   }
 
 
-  const button =
-    document.getElementById(
-      'whConnectButton'
-    );
+  peakForce = 0;
+  sampleCount = 0;
+  currentForce = 0;
+  forceHistory = [];
 
-  button.disabled = true;
+  document.getElementById(
+    'forceValue'
+  ).textContent =
+    '0.00';
 
-  setWHStatus(
-    'Buscando IF_B7...'
-  );
+  document.getElementById(
+    'peakValue'
+  ).textContent =
+    '0.00';
 
-  setWHMessage(
-    'Selecciona IF_B7 en la ventana de Bluetooth.'
-  );
+  document.getElementById(
+    'samplesValue'
+  ).textContent =
+    '0';
+
+  document.getElementById(
+    'peakText'
+  ).textContent =
+    '0.00 kg';
+
+  document.getElementById(
+    'deviceValue'
+  ).textContent =
+    '—';
+
+
+  document.getElementById(
+    'connectionMessage'
+  ).textContent =
+    'Iniciando búsqueda de IF_B7…';
 
 
   try{
 
-    /*
-     * Solicitar dispositivo.
-     *
-     * Usamos manufacturerData 0x0100.
-     * El nombre IF_B7 puede variar.
-     */
-
-    whc06Device =
-      await navigator.bluetooth.requestDevice({
-
-        filters:[
-          {
-            manufacturerData:[
-              {
-                companyIdentifier:
-                  WHC06_MANUFACTURER_ID
-              }
-            ]
-          }
-        ],
-
-        optionalManufacturerData:[
-          WHC06_MANUFACTURER_ID
-        ]
-
-      });
-
-
-    if(!whc06Device){
-
-      throw new Error(
-        'No se seleccionó ningún dispositivo.'
-      );
-
-    }
-
-
-    document.getElementById(
-      'whDeviceName'
-    ).textContent =
-      whc06Device.name ||
-      'IF_B7';
-
-
-    setWHStatus(
-      'IF_B7 seleccionado',
-      'connected'
-    );
-
-
-    /*
-     * Para WH-C06 los datos llegan
-     * por advertising.
-     */
-
-    whc06AdvertisementHandler =
-      handleWHC06Advertisement;
-
-
-    whc06Device.addEventListener(
-      'advertisementreceived',
-      whc06AdvertisementHandler
-    );
-
-
-    /*
-     * Algunos navegadores necesitan
-     * watchAdvertisements().
-     */
-
-    if(
-      typeof whc06Device.watchAdvertisements ===
-      'function'
-    ){
-
-      await whc06Device.watchAdvertisements();
-
-    }else{
-
-      throw new Error(
-        'watchAdvertisements() no está disponible en este navegador.'
-      );
-
-    }
-
-
-    setWHStatus(
-      'Conectado · recibiendo datos',
-      'connected'
-    );
-
-    setWHMessage(
-      'WH-C06 conectado. Aprieta el dispositivo para comprobar la lectura en kg.'
-    );
-
-
-    document.getElementById(
-      'whConnectButton'
-    ).disabled = true;
-
-
-    document.getElementById(
-      'whDisconnectButton'
-    ).disabled = false;
-
+    window.AndroidWHC06.startScan();
 
   }catch(error){
 
-    console.error(
-      'WH-C06:',
-      error
-    );
+    console.error(error);
 
-    setWHStatus(
-      'No conectado',
-      'error'
-    );
-
-
-    let message =
-      error &&
-      error.message
-        ? error.message
-        : String(error);
-
-
-    setWHMessage(
-      'No se pudo conectar: ' + message,
-      'error'
-    );
-
-
-    button.disabled = false;
-
+    document.getElementById(
+      'connectionMessage'
+    ).textContent =
+      'Error al iniciar Bluetooth: ' +
+      error.message;
   }
-
 }
 
 
-/*
- * Desconectar WH-C06.
- */
+/* =========================================================
+   DETENER WH-C06
+========================================================= */
 
 function disconnectWHC06(){
 
   try{
 
     if(
-      whc06Device &&
-      whc06AdvertisementHandler
+      window.AndroidWHC06
     ){
 
-      whc06Device.removeEventListener(
-        'advertisementreceived',
-        whc06AdvertisementHandler
-      );
-
-    }
-
-    if(
-      whc06Device &&
-      typeof whc06Device.unwatchAdvertisements ===
-      'function'
-    ){
-
-      whc06Device
-        .unwatchAdvertisements()
-        .catch(() => {});
+      window.AndroidWHC06.stopScan();
 
     }
 
   }catch(error){
 
-    console.warn(
-      'Error desconectando WH-C06:',
-      error
-    );
+    console.error(error);
 
   }
 
 
-  whc06Device = null;
+  whc06Connected = false;
+  whc06Scanning = false;
 
-  whc06AdvertisementHandler = null;
-
-  setWHStatus(
-    'Desconectado'
-  );
 
   document.getElementById(
-    'whDeviceName'
+    'bluetoothDot'
+  ).className =
+    'status-dot';
+
+
+  document.getElementById(
+    'bluetoothStatus'
   ).textContent =
-    'Busca el WH-C06 / IF_B7';
+    'Desconectado';
 
 
   document.getElementById(
-    'whConnectButton'
-  ).disabled = false;
+    'connectionMessage'
+  ).textContent =
+    'Lectura detenida.';
 
 
   document.getElementById(
-    'whDisconnectButton'
-  ).disabled = true;
+    'connectButton'
+  ).style.display =
+    'block';
 
 
-  setWHMessage(
-    'WH-C06 desconectado.'
-  );
-}
-
-
-/*
- * Guarda la sesión de fuerza.
- */
-
-function saveWHC06Session(){
-
-  if(whSamples <= 0){
-
-    alert(
-      'Todavía no hay mediciones del WH-C06.'
-    );
-
-    return;
-  }
-
-
-  const minutes = 1;
-
-
-  sessions.unshift({
-
-    name:
-      'Fuerza de dedos · WH-C06',
-
-    mins:minutes,
-
-    peak:
-      Number(
-        whPeak.toFixed(2)
-      ),
-
-    average:
-      Number(
-        (
-          whSum / whSamples
-        ).toFixed(2)
-      ),
-
-    samples:
-      whSamples,
-
-    date:
-      new Date()
-        .toLocaleString('es-ES')
-
-  });
-
-
-  save();
-
-
-  alert(
-    'Sesión WH-C06 guardada en tu historial.'
-  );
-}
-
-
-/*
- * Si el dispositivo se desconecta.
- */
-
-function setupBluetoothDisconnect(){
-
-  if(!whc06Device){
-
-    return;
-
-  }
-
-  whc06Device.addEventListener(
-    'gattserverdisconnected',
-    () => {
-
-      setWHStatus(
-        'Desconectado',
-        'error'
-      );
-
-      setWHMessage(
-        'El WH-C06 ha dejado de emitir datos.',
-        'warning'
-      );
-
-      document.getElementById(
-        'whConnectButton'
-      ).disabled = false;
-
-      document.getElementById(
-        'whDisconnectButton'
-      ).disabled = true;
-
-    }
-  );
+  document.getElementById(
+    'stopButton'
+  ).style.display =
+    'none';
 }
 
 
 /* =========================================================
-   INICIALIZACIÓN
+   SEGURIDAD HTML
+========================================================= */
+
+function escapeHtml(value){
+
+  return String(value)
+
+    .replace(
+      /&/g,
+      '&amp;'
+    )
+
+    .replace(
+      /</g,
+      '&lt;'
+    )
+
+    .replace(
+      />/g,
+      '&gt;'
+    )
+
+    .replace(
+      /"/g,
+      '&quot;'
+    )
+
+    .replace(
+      /'/g,
+      '&#039;'
+    );
+}
+
+
+/* =========================================================
+   INICIO
 ========================================================= */
 
 document.getElementById(
@@ -2612,29 +2435,6 @@ renderPlan();
 renderExercises();
 
 renderStats();
-
-
-/*
- * Mensaje inicial Bluetooth.
- */
-
-if(!isBluetoothAvailable()){
-
-  setWHMessage(
-    'Web Bluetooth no está disponible en este entorno. La interfaz está preparada; para el APK necesitaremos el puente Bluetooth nativo.'
-  );
-
-}
-
-
-/*
- * Intentamos preparar el listener
- * de desconexión cuando se seleccione
- * el dispositivo.
- */
-
-const originalConnect =
-  connectWHC06;
 
 </script>
 
