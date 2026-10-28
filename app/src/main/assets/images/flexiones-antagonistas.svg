@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 168 150" role="img" aria-label="Flexiones antagonistas">
+ <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#294b54"/><stop offset="1" stop-color="#12232e"/></linearGradient></defs>
+ <rect width="168" height="150" rx="14" fill="url(#bg)"/>
+ <g fill="none" stroke="#eef3f1" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"><circle cx='130' cy='65' r='9'/><path d='M119 71 L85 89 L52 94 L26 110 M94 85 L80 111 L65 122 M52 94 L49 116 L38 126'/></g>
+ <g fill="none" stroke="#ff5b52" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d='M20 129 L150 129'/></g>
+ <g fill="#7cff45"><circle cx="22" cy="22" r="3"/><circle cx="146" cy="22" r="3"/><circle cx="22" cy="130" r="3"/></g>
+ </svg>
