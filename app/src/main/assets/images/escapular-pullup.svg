@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 168 150" role="img" aria-label="Dominadas escapulares">
+ <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#294b54"/><stop offset="1" stop-color="#12232e"/></linearGradient></defs>
+ <rect width="168" height="150" rx="14" fill="url(#bg)"/>
+ <g fill="none" stroke="#eef3f1" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"><circle cx='84' cy='40' r='11'/><path d='M84 52 L84 91 M84 61 L53 22 L28 22 M84 61 L115 22 L140 22 M84 91 L65 119 L52 135 M84 91 L105 119 L120 135'/></g>
+ <g fill="none" stroke="#ff5b52" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d='M68 57 Q84 67 100 57'/></g>
+ <g fill="#7cff45"><circle cx="22" cy="22" r="3"/><circle cx="146" cy="22" r="3"/><circle cx="22" cy="130" r="3"/></g>
+ </svg>
