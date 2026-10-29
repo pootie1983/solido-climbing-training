@@ -1857,6 +1857,12 @@ function show(page,btn){
 
   }
 
+  if(page === 'climbGame' && typeof brCanvasSize === 'function'){
+    requestAnimationFrame(() => {
+      brCanvasSize();
+      if(typeof brDrawScene === 'function') brDrawScene(Number(currentForce)||0);
+    });
+  }
 
   document
     .querySelectorAll('.nav button')
