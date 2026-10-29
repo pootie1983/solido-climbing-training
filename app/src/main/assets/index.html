@@ -1852,17 +1852,20 @@ function brDrawScene(force){
  // Puffy distant clouds and layered hills move at different speeds for parallax.
  for(let i=0;i<7;i++){const cx=((i*117-g.worldX*.18)%(w+150)+w+150)%(w+150)-35,cy=35+(i*37)%105;c.fillStyle='rgba(255,255,255,.66)';c.beginPath();c.arc(cx,cy,15,0,Math.PI*2);c.arc(cx+17,cy-8,20,0,Math.PI*2);c.arc(cx+38,cy,14,0,Math.PI*2);c.fill();}
  c.fillStyle='#a5e3cb';c.beginPath();c.moveTo(0,h*.69);for(let x=0;x<=w+10;x+=30)c.lineTo(x,h*.64+Math.sin((x+g.worldX*.12)*.012)*20);c.lineTo(w,h);c.lineTo(0,h);c.closePath();c.fill();
- // Draw all visible platforms.
+ // Draw the small mountain ledges instead of metal tubes.
  for(const p of g.platforms){
- const x=p.x-g.worldX+g.x;if(x>w+20||x+p.w< -20)continue;
- // Rounded tubular ledges with glossy highlights and metallic rings.
- const grad=c.createLinearGradient(x,p.y,x,p.y+p.h+7);grad.addColorStop(0,'#d9f5ff');grad.addColorStop(.22,'#65c9e9');grad.addColorStop(.55,'#237aa8');grad.addColorStop(1,'#17405f');
- c.fillStyle=grad;brRoundRect(c,x,p.y,p.w,p.h+5,7);c.fill();
- c.fillStyle='#e5fbff';brRoundRect(c,x-2,p.y-4,p.w+4,7,4);c.fill();
- c.fillStyle='#4ca8cc';c.fillRect(x+7,p.y-2,Math.max(8,p.w-14),2);
- c.fillStyle='#163c58';c.fillRect(x+9,p.y+p.h-1,Math.max(6,p.w-18),3);
- for(let rx=x+12;rx<x+p.w-8;rx+=25){c.fillStyle='rgba(255,255,255,.7)';c.fillRect(rx,p.y+2,2,p.h+1);}
-}
+  const x=p.x-g.worldX+g.x;if(x>w+20||x+p.w< -20)continue;
+  // Small rocky mountain peaks with layered stone and a grassy summit.
+  const top=p.y,base=p.y+p.h+19,pw=p.w;
+  c.fillStyle='#547b69';c.beginPath();c.moveTo(x-7,base);c.lineTo(x+pw*.12,top+8);c.lineTo(x+pw*.29,top-13);c.lineTo(x+pw*.43,top+2);c.lineTo(x+pw*.62,top-19);c.lineTo(x+pw*.78,top+4);c.lineTo(x+pw+8,base);c.closePath();c.fill();
+  c.fillStyle='#7fae83';c.beginPath();c.moveTo(x+pw*.12,top+8);c.lineTo(x+pw*.29,top-13);c.lineTo(x+pw*.43,top+2);c.lineTo(x+pw*.62,top-19);c.lineTo(x+pw*.78,top+4);c.lineTo(x+pw+2,top+10);c.lineTo(x+pw,top+16);c.lineTo(x,top+16);c.closePath();c.fill();
+  c.fillStyle='#a8d7a0';c.beginPath();c.moveTo(x+pw*.22,top+4);c.lineTo(x+pw*.29,top-13);c.lineTo(x+pw*.38,top-1);c.lineTo(x+pw*.33,top+1);c.lineTo(x+pw*.29,top-5);c.closePath();c.fill();
+  c.fillStyle='#365a50';c.beginPath();c.moveTo(x+pw*.43,top+2);c.lineTo(x+pw*.62,top-19);c.lineTo(x+pw*.78,top+4);c.lineTo(x+pw*.67,top+1);c.lineTo(x+pw*.62,top-8);c.lineTo(x+pw*.54,top+4);c.closePath();c.fill();
+  // Flat grassy landing shelf for reliable collision and clear gameplay.
+  c.fillStyle='#9ed58c';brRoundRect(c,x,top-2,pw,7,4);c.fill();
+  c.fillStyle='#d4f0b4';brRoundRect(c,x+5,top-2,Math.max(8,pw-10),2,1);c.fill();
+ }
+ // Carabiner enemies bob above the platforms; touching one ends the run.
  // Carabiner enemies bob above the platforms; touching one ends the run.
  for(const e of g.enemies){const x=e.x-g.worldX+g.x,y=e.y;if(x< -35||x>w+35)continue;c.save();c.translate(x,y);c.rotate(Math.sin(e.phase)*.16);c.lineCap='round';c.lineJoin='round';c.strokeStyle='#263746';c.lineWidth=10;c.beginPath();c.moveTo(-7,-16);c.quadraticCurveTo(17,-18,15,2);c.quadraticCurveTo(13,21,-5,17);c.quadraticCurveTo(-19,12,-13,-4);c.stroke();c.strokeStyle='#b8c9d4';c.lineWidth=5;c.beginPath();c.moveTo(-7,-16);c.quadraticCurveTo(17,-18,15,2);c.quadraticCurveTo(13,21,-5,17);c.quadraticCurveTo(-19,12,-13,-4);c.stroke();c.strokeStyle='#f4a62a';c.lineWidth=4;c.beginPath();c.moveTo(-11,-7);c.lineTo(4,9);c.stroke();c.strokeStyle='#edf4f7';c.lineWidth=3;c.beginPath();c.moveTo(-7,-15);c.lineTo(-1,-9);c.stroke();c.fillStyle='#263746';brRoundRect(c,4,-18,12,6,2);c.fill();c.fillStyle='#f4a62a';brRoundRect(c,6,-17,8,4,1);c.fill();c.restore();}
  // Figure-eight knot collectibles.
