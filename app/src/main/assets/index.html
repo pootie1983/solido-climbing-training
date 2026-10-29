@@ -2210,6 +2210,24 @@ function show(page,btn){
 }
 
 
+// Recalculate the game canvas after Android hides system bars or the device rotates.
+window.addEventListener('resize',()=>{
+  if(document.getElementById('climbGame')?.classList.contains('br-fullscreen-game')){
+    requestAnimationFrame(()=>{
+      if(typeof brCanvasSize==='function')brCanvasSize();
+      if(typeof brDrawScene==='function')brDrawScene(Number(currentForce)||0);
+    });
+  }
+});
+window.addEventListener('orientationchange',()=>{
+  if(document.getElementById('climbGame')?.classList.contains('br-fullscreen-game')){
+    setTimeout(()=>{
+      if(typeof brCanvasSize==='function')brCanvasSize();
+      if(typeof brDrawScene==='function')brDrawScene(Number(currentForce)||0);
+    },180);
+  }
+});
+
 /* =========================
    PLAN
 ========================= */
