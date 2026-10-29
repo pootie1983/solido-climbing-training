@@ -488,6 +488,19 @@ select{
 .exercise-detail-image{max-width:460px;margin:12px auto 18px;border-radius:16px;overflow:hidden;border:1px solid #3a5962;background:#172a36}
 .exercise-detail-image img{display:block;width:100%;height:auto;max-height:300px;object-fit:contain}
 
+
+/* Tendencia real de fuerza: historial filtrable */
+.trend-panel{margin:16px 0;background:linear-gradient(145deg,#172a35,#10212b);border:1px solid #304651;border-radius:16px;padding:14px}
+.trend-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.trend-filters label{display:grid;gap:5px;font-size:11px;color:var(--muted)}
+.trend-filters select{width:100%;min-width:0;padding:9px 5px;font-size:12px}
+.trend-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}
+.trend-metric{background:#0c1b24;border:1px solid #29414b;border-radius:12px;padding:11px}
+.trend-metric strong{display:block;font-size:20px;color:var(--green)}
+.trend-metric span{font-size:11px;color:var(--muted)}
+.trend-chart{width:100%;height:auto;display:block;overflow:visible}
+.trend-empty{padding:20px 8px;text-align:center;color:var(--muted);font-size:12px;line-height:1.5}
+@media(max-width:380px){.trend-filters{grid-template-columns:1fr}.trend-filters label{grid-template-columns:75px 1fr;align-items:center}}
 </style>
 </head>
 
@@ -824,6 +837,22 @@ select{
 
     </div>
 
+  </div>
+
+  <div class="sectionhead"><h2>Evolución de fuerza</h2><span class="tag">DATOS REALES</span></div>
+  <div class="trend-panel">
+    <p class="muted">Compara tus máximos registrados sin mezclar manos ni tamaños de agarre.</p>
+    <div class="trend-filters">
+      <label>Periodo<select id="trendPeriod" onchange="renderForceTrend()"><option value="1">1 mes</option><option value="3" selected>3 meses</option><option value="6">6 meses</option></select></label>
+      <label>Mano<select id="trendHand" onchange="renderForceTrend()"><option value="Todas">Todas</option><option value="Izquierda">Izquierda</option><option value="Derecha">Derecha</option><option value="Ambas">Ambas</option></select></label>
+      <label>Agarre<select id="trendGrip" onchange="renderForceTrend()"><option value="Todos">Todos</option><option value="5">5 mm</option><option value="10">10 mm</option><option value="20">20 mm</option></select></label>
+    </div>
+    <div class="trend-summary">
+      <div class="trend-metric"><strong id="trendBest">— kg</strong><span>Mejor marca del periodo</span></div>
+      <div class="trend-metric"><strong id="trendChange">—</strong><span>Variación frente al periodo anterior</span></div>
+    </div>
+    <div id="forceTrendChart" class="trend-empty">Registra máximos reales con el WH-C06 para ver tu evolución.</div>
+    <p id="trendCount" class="muted">Aún no hay mediciones registradas.</p>
   </div>
 
   <div class="sectionhead">
@@ -1344,43 +1373,22 @@ window.onWHC06Data =
 
 
 function recordForce(){
-
-  if(
-    currentForce === 0
-  ){
-
-    alert(
-      'Todavía no hay una lectura de fuerza.'
-    );
-
+  if(!Number.isFinite(maxForce) || maxForce <= 0){
+    alert('Todavía no hay una lectura real de fuerza máxima. Conecta el WH-C06 y realiza un intento.');
     return;
   }
-
-
+  const timestamp = new Date();
   sessions.unshift({
-
-    name:
-      'Fuerza de dedos WH-C06',
-
+    name:'Fuerza de dedos WH-C06',
     mins:0,
-
-    force:
-      Number(currentForce.toFixed(2)),
-
-    date:
-      new Date().toLocaleString('es-ES')
-
+    force:Number(maxForce.toFixed(2)),
+    hand:trainingHand,
+    grip:String(trainingGrip),
+    ts:timestamp.toISOString(),
+    date:timestamp.toLocaleString('es-ES')
   });
-
-
   save();
-
-  alert(
-    'Fuerza registrada: ' +
-    currentForce.toFixed(2) +
-    ' kg'
-  );
-
+  alert('Máximo registrado: '+maxForce.toFixed(2)+' kg · Mano '+trainingHand.toLowerCase()+' · Agarre '+trainingGrip+' mm');
 }
 
 
@@ -1433,6 +1441,7 @@ function show(page,btn){
   if(page === 'progress'){
 
     renderHistory();
+    renderForceTrend();
 
   }
 
@@ -1949,6 +1958,7 @@ function save(){
   );
 
   renderStats();
+  renderForceTrend();
 
 }
 
@@ -2041,6 +2051,65 @@ function renderHistory(){
 
 }
 
+
+function renderForceTrend(){
+  const chart=document.getElementById('forceTrendChart');
+  if(!chart) return;
+  const months=Number(document.getElementById('trendPeriod')?.value||3);
+  const hand=document.getElementById('trendHand')?.value||'Todas';
+  const grip=document.getElementById('trendGrip')?.value||'Todos';
+  const now=new Date();
+  const start=new Date(now);
+  start.setMonth(start.getMonth()-months);
+  const previousStart=new Date(start);
+  previousStart.setMonth(previousStart.getMonth()-months);
+  const forceEntries=sessions.filter(item=>{
+    const value=Number(item.force);
+    const stamp=item.ts?new Date(item.ts):null;
+    return Number.isFinite(value)&&value>0&&stamp&&!Number.isNaN(stamp.getTime())&&
+      (hand==='Todas'||item.hand===hand)&&
+      (grip==='Todos'||String(item.grip||'')===grip);
+  }).sort((a,b)=>new Date(a.ts)-new Date(b.ts));
+  const current=forceEntries.filter(item=>new Date(item.ts)>=start&&new Date(item.ts)<=now);
+  const previous=forceEntries.filter(item=>new Date(item.ts)>=previousStart&&new Date(item.ts)<start);
+  const best=current.reduce((value,item)=>Math.max(value,Number(item.force)),0);
+  document.getElementById('trendBest').textContent=best?best.toFixed(2)+' kg':'— kg';
+  if(current.length&&previous.length){
+    const previousBest=Math.max(...previous.map(item=>Number(item.force)));
+    const change=previousBest>0?((best-previousBest)/previousBest)*100:null;
+    document.getElementById('trendChange').textContent=change===null?'—':(change>0?'+':'')+change.toFixed(1)+'%';
+  }else{
+    document.getElementById('trendChange').textContent='—';
+  }
+  document.getElementById('trendCount').textContent=current.length+' medición'+(current.length===1?'':'es')+' en el periodo seleccionado.';
+  if(!current.length){
+    chart.className='trend-empty';
+    chart.textContent='No hay mediciones reales para estos filtros y este periodo. Registra una fuerza máxima con el WH-C06.';
+    return;
+  }
+  chart.className='';
+  if(current.length===1){
+    const one=current[0];
+    chart.innerHTML='<div class="trend-empty">Única medición: <strong>'+Number(one.force).toFixed(2)+' kg</strong><br>'+new Date(one.ts).toLocaleDateString('es-ES')+'. Registra más intentos para ver una tendencia.</div>';
+    return;
+  }
+  const values=current.map(item=>Number(item.force));
+  const min=Math.min(...values),max=Math.max(...values);
+  const span=Math.max(1,max-min);
+  const width=320,height=150,left=34,right=10,top=12,bottom=28;
+  const xStep=(width-left-right)/(current.length-1);
+  const points=values.map((value,index)=>({x:left+index*xStep,y:top+(max-value)/span*(height-top-bottom),value}));
+  const pathData=points.map((point,index)=>(index?'L':'M')+point.x.toFixed(1)+','+point.y.toFixed(1)).join(' ');
+  const grid=[0,0.5,1].map(f=>{
+    const y=top+f*(height-top-bottom);
+    const label=(max-f*span).toFixed(1);
+    return '<line x1="'+left+'" y1="'+y+'" x2="'+(width-right)+'" y2="'+y+'" stroke="#29414b" stroke-width="1"/><text x="'+(left-5)+'" y="'+(y+4)+'" fill="#a8bbc4" font-size="9" text-anchor="end">'+label+'</text>';
+  }).join('');
+  const dots=points.map(point=>'<circle cx="'+point.x+'" cy="'+point.y+'" r="3.5" fill="#7cff45"><title>'+point.value.toFixed(2)+' kg</title></circle>').join('');
+  const firstDate=new Date(current[0].ts).toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit'});
+  const lastDate=new Date(current[current.length-1].ts).toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit'});
+  chart.innerHTML='<svg class="trend-chart" viewBox="0 0 '+width+' '+height+'" role="img" aria-label="Gráfica de fuerza máxima en kilogramos">'+grid+'<path d="'+pathData+'" fill="none" stroke="#7cff45" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>'+dots+'<text x="'+left+'" y="'+(height-7)+'" fill="#a8bbc4" font-size="9">'+firstDate+'</text><text x="'+(width-right)+'" y="'+(height-7)+'" fill="#a8bbc4" font-size="9" text-anchor="end">'+lastDate+'</text></svg>';
+}
 
 function clearHistory(){
 
