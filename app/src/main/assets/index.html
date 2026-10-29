@@ -613,6 +613,7 @@ select{
 
 /* Solido Sky Hopper: plataformas con scroll lateral y personaje original cepillo */
 .br-hopper-scene{height:330px;overflow:hidden;position:relative;background:#82d5f5;border:3px solid #172647;border-radius:14px;isolation:isolate}
+.br-hopper-scene .br-canvas{position:absolute;inset:0;z-index:1;display:block;width:100%;height:100%;min-width:0;min-height:0}
 .br-hopper-scene:before{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,#76d5f7 0%,#b8efff 64%,#e3faff 100%);pointer-events:none}
 .br-hopper-scene:after{content:"";position:absolute;inset:0;z-index:0;opacity:.2;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:21px 21px;pointer-events:none}
 .br-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1;touch-action:pan-y}
@@ -1184,13 +1185,9 @@ select{
       <div class="br-stat"><span>⏱ TIEMPO</span><strong id="brTime">00:45</strong></div>
       <div class="br-stat"><span>💎 XP TOTAL</span><strong id="brXP">0</strong></div>
     </div>
-    <div class="br-scene br-hopper-scene" id="brScene" aria-label="Juego de saltos verticales controlado por la fuerza real">
-      <div class="br-stars"></div><div class="br-route"></div>
-      <div class="br-hold" style="left:17%;top:24%">✦</div><div class="br-hold pink" style="left:70%;top:19%">✦</div>
-      <div class="br-hold gold" style="left:37%;top:37%">★</div><div class="br-hold" style="left:76%;top:47%">✦</div>
-      <div class="br-hold pink" style="left:16%;top:57%">✦</div><div class="br-hold gold" style="left:56%;top:67%">★</div>
-      <div class="br-hopper-platform" style="left:9%;top:74%"></div><div class="br-hopper-platform" style="left:59%;top:59%"></div><div class="br-hopper-platform" style="left:22%;top:43%"></div><div class="br-hopper-platform" style="left:65%;top:27%"></div><div class="br-hopper-platform" style="left:35%;top:12%"></div><div class="br-climber resting" id="brClimber">🧗</div><div class="br-ground"></div>
-      <div class="br-overlay" id="brOverlay"><strong>¿Listo para el bloque?</strong><span>Conecta el WH-C06 en la pestaña Fuerza. La aguja responde a la lectura real del sensor. Entra en la zona verde para sumar puntos y mantén el objetivo para encadenar combos.</span><button class="btn" onclick="brStart()">▶ ¡A escalar!</button></div>
+    <div class="br-scene br-hopper-scene" id="brScene" aria-label="Juego de plataformas con cepillo escalador y polvo de magnesio">
+      <canvas id="brCanvas" class="br-canvas" role="img" aria-label="Escenario animado de Solido Sky Hopper"></canvas>
+      <div class="br-overlay" id="brOverlay"><strong>¡A por el magnesio!</strong><span>El cepillo avanza por las plataformas. Supera el umbral de fuerza configurado con el WH-C06 para saltar y recoge nubes de magnesio.</span><button class="btn" onclick="brStart()">▶ Empezar partida</button></div>
     </div>
     <div class="br-target-panel"><div><small>FUERZA PARA SALTAR</small><strong id="brTarget">3,0 kg</strong></div><div class="br-target-badge" id="brTargetState">ESPERANDO FUERZA</div></div>
     <div class="br-gauge"><div class="br-gauge-marker" id="brGaugeMarker"></div></div><div class="br-gauge-labels"><span>Sin impulso</span><span>Umbral de salto</span><span>Más fuerza = más impulso</span></div>
