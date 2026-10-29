@@ -691,6 +691,23 @@ body.br-fullscreen-active .br-close-game{display:flex}
 .profile-error{display:none;color:#ff8e8e;font-size:12px;margin-top:10px}
 .profile-error.visible{display:block}
 @media(max-width:380px){.profile-grid{grid-template-columns:1fr}}
+
+/* Meditación guiada SOLIDO */
+.meditation-hero{background:linear-gradient(140deg,#1a403e,#10252f 60%,#243a2b);border:1px solid #42665a;border-radius:18px;padding:18px;margin-bottom:14px}
+.meditation-list{display:grid;gap:10px;margin:14px 0}
+.meditation-card{background:linear-gradient(145deg,#1a303a,#10212b);border:1px solid #31505b;border-radius:16px;padding:14px;cursor:pointer}
+.meditation-card.active{border-color:var(--green);box-shadow:0 0 0 1px #7cff4530}
+.meditation-card h3{margin:4px 0 6px;font-size:15px}
+.meditation-card p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+.meditation-card .meditation-icon{font-size:25px}
+.meditation-player{background:#0d1d27;border:1px solid #31505b;border-radius:18px;padding:16px;margin-top:12px}
+.meditation-player h3{margin:0 0 6px;font-size:18px}
+.meditation-progress{height:7px;background:#203642;border-radius:8px;overflow:hidden;margin:16px 0 8px}
+.meditation-progress div{height:100%;width:0;background:var(--green);transition:width .3s}
+.meditation-controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.meditation-controls .btn{flex:1;min-width:100px}
+.meditation-status{min-height:20px;font-size:12px;color:var(--muted);line-height:1.5}
+.meditation-note{font-size:11px;line-height:1.5;color:var(--muted);margin-top:12px}
 </style>
 </head>
 
@@ -1406,6 +1423,43 @@ body.br-fullscreen-active .br-close-game{display:flex}
   </div>
 </section>
 
+
+<!-- MEDITACIÓN GUIADA -->
+<section id="meditation" class="hide">
+  <div class="sectionhead"><h2>Respira · Enfoca · Escala</h2><span class="tag">MENTE SOLIDO</span></div>
+  <div class="meditation-hero">
+    <div class="eyebrow">PAUSA CONSCIENTE</div>
+    <h2 style="font-size:25px;line-height:1.1;margin:10px 0">Entrena también tu mente.</h2>
+    <p style="color:#c0d1d5;line-height:1.5;margin-bottom:0">Elige una sesión guiada para prepararte antes de escalar, recuperar la calma después de entrenar o fortalecer tu concentración y confianza.</p>
+  </div>
+  <div class="meditation-list">
+    <article class="meditation-card active" id="medCard-focus" onclick="selectMeditation('focus')">
+      <div class="meditation-icon">⛰️</div><h3>1. Calma antes de escalar</h3><p>Respiración tranquila y visualización de la vía. Para llegar al primer movimiento con atención y serenidad.</p><div class="muted" style="margin-top:8px">≈ 5 min · Concentración</div>
+    </article>
+    <article class="meditation-card" id="medCard-recovery" onclick="selectMeditation('recovery')">
+      <div class="meditation-icon">🌿</div><h3>2. Recuperación después del entrenamiento</h3><p>Suelta la tensión, recorre el cuerpo con la atención y cierra la sesión con calma.</p><div class="muted" style="margin-top:8px">≈ 5 min · Recuperación</div>
+    </article>
+    <article class="meditation-card" id="medCard-confidence" onclick="selectMeditation('confidence')">
+      <div class="meditation-icon">🧗</div><h3>3. Concentración y confianza</h3><p>Vuelve al momento presente, reconoce tus límites y visualiza decisiones conscientes en la pared.</p><div class="muted" style="margin-top:8px">≈ 5 min · Confianza</div>
+    </article>
+  </div>
+  <div class="meditation-player">
+    <div class="muted">SESIÓN SELECCIONADA</div>
+    <h3 id="meditationTitle">Calma antes de escalar</h3>
+    <p id="meditationDescription" class="muted">Respiración y visualización para centrar la atención.</p>
+    <div class="meditation-progress"><div id="meditationProgress"></div></div>
+    <div class="row" style="justify-content:space-between"><span id="meditationElapsed" class="muted">00:00</span><span id="meditationRemaining" class="muted">Preparado</span></div>
+    <div class="meditation-controls">
+      <button class="btn" id="meditationPlay" onclick="startMeditation()">▶ Escuchar</button>
+      <button class="btn secondary" onclick="pauseMeditation()">Ⅱ Pausar</button>
+      <button class="btn secondary" onclick="stopMeditation()">■ Detener</button>
+    </div>
+    <div id="meditationStatus" class="meditation-status" role="status" aria-live="polite">Pulsa «Escuchar» para comenzar. Busca una posición cómoda y segura.</div>
+    <label class="row" style="margin-top:12px;font-size:12px;color:var(--muted)"><input id="meditationAmbient" type="checkbox" checked> Sonido ambiental suave</label>
+    <p class="meditation-note">La narración utiliza la voz española disponible en el dispositivo. Para escucharla sin conexión, el dispositivo debe tener una voz española instalada localmente; la disponibilidad depende de Android. No uses esta sesión mientras escalas, aseguras o realizas una actividad que requiera atención al entorno.</p>
+  </div>
+</section>
+
 <div class="footer">
   SOLIDO CLIMBING · ENTRENAMIENTO RESPONSABLE
 </div>
@@ -1461,6 +1515,13 @@ body.br-fullscreen-active .br-close-game{display:flex}
     <span>↗</span>
     Progreso
 
+  </button>
+
+  <button
+    data-page="meditation"
+    onclick="show('meditation',this)">
+    <span>◉</span>
+    Medita
   </button>
 
   <button
@@ -2328,6 +2389,7 @@ function brCloseFullscreenGame(){
   show('home');
 }
 function show(page,btn){
+  if(page !== 'meditation' && typeof stopMeditation === 'function') stopMeditation(true);
   if(page === 'climbGame'){
     document.body.classList.add('br-fullscreen-active');
     document.getElementById('climbGame').classList.add('br-fullscreen-game');
@@ -3249,6 +3311,176 @@ try {
 resetInlineTimer();
 
 renderStats();
+
+
+/* =========================
+   MEDITACIÓN GUIADA
+   Narración mediante voz del dispositivo; ambiente generado localmente.
+========================= */
+const guidedMeditations = {
+  focus: {
+    title: 'Calma antes de escalar',
+    description: 'Respiración tranquila y visualización de la vía.',
+    paragraphs: [
+      'Busca una posición cómoda y segura. Puedes sentarte con la espalda erguida, dejar caer los hombros y apoyar las manos sobre las piernas. Si estás en una zona de escalada, aléjate de la pared y de cualquier lugar expuesto antes de comenzar.',
+      'Deja que los ojos se cierren suavemente, si te resulta cómodo. Si prefieres mantenerlos abiertos, descansa la mirada en un punto tranquilo. No tienes que conseguir nada ahora. Durante estos minutos, basta con estar aquí.',
+      'Inspira despacio por la nariz, sin forzar. Nota cómo se mueve el abdomen. Deja salir el aire con suavidad. Otra vez, inspira con calma y suelta el aire un poco más lentamente. No retengas la respiración ni intentes llenarte al máximo. Encuentra un ritmo natural y cómodo.',
+      'Si aparece un pensamiento sobre el grado, el miedo, el resultado o lo que puedan pensar los demás, no luches contra él. Reconócelo y vuelve a sentir el aire entrando y saliendo. La atención se entrena igual que la fuerza: con paciencia, una repetición cada vez.',
+      'Imagina ahora la vía que te gustaría escalar. No necesitas verla perfectamente. Recuerda el inicio, las primeras presas y el lugar donde puedes descansar. Visualiza que observas antes de moverte, que respiras y eliges una presa a la vez. No hace falta resolver toda la vía de golpe.',
+      'Piensa en tres cosas que sí puedes controlar: revisar tu material, comunicarte con tu compañero y tomar decisiones acordes con tus capacidades. La roca puede sorprenderte; tu tarea es responder con atención, no demostrar nada.',
+      'Haz una última respiración cómoda. Nota los pies apoyados, las manos y el espacio a tu alrededor. Cuando estés listo, abre los ojos y vuelve poco a poco. Lleva contigo esta idea: una presa, una respiración, una decisión consciente. La seguridad va primero.'
+    ]
+  },
+  recovery: {
+    title: 'Recuperación después del entrenamiento',
+    description: 'Suelta la tensión y termina la sesión con calma.',
+    paragraphs: [
+      'Encuentra un lugar tranquilo y seguro, lejos de la pared y de los pasos de otras personas. Siéntate o túmbate de una manera cómoda. Deja las manos descansar y permite que los hombros bajen sin empujarlos.',
+      'Lleva la atención a la respiración. No hace falta cambiarla de inmediato. Nota el aire entrando y saliendo. Con cada exhalación, permite que el cuerpo abandone un poco del esfuerzo que ya terminó.',
+      'Relaja la frente. Separa suavemente los dientes. Deja descansar la lengua. Afloja los hombros y los brazos. No aprietes ni estires con fuerza los dedos cansados; simplemente permite que reposen en una posición cómoda.',
+      'Siente el contacto de los pies con el suelo o el peso del cuerpo sobre el apoyo. Recorre las piernas, la cadera, la espalda y el cuello. No necesitas que todas las sensaciones sean agradables. Solo observa lo que hay, sin juzgarlo.',
+      'Recuerda que entrenar bien también significa descansar. El cansancio no es una orden para seguir empujando. Puedes reconocer lo que has hecho hoy y dejar para otro día lo que no salió como esperabas. El progreso se construye con continuidad, recuperación y paciencia.',
+      'Si notas dolor agudo, mareo o una molestia inusual, no intentes resolverlo con esta meditación: detén la actividad y atiende la señal de tu cuerpo. Para el cansancio normal, deja que la respiración siga su curso y siente cómo se calma el ritmo.',
+      'Piensa en una cosa que hayas aprendido durante la sesión y una cosa que agradezcas de tu cuerpo. No hace falta que sean grandes logros. Respira con suavidad, mueve despacio manos y pies y vuelve a mirar a tu alrededor. La sesión ha terminado; ahora toca recuperarse.'
+    ]
+  },
+  confidence: {
+    title: 'Concentración y confianza',
+    description: 'Atención al presente y decisiones conscientes en la pared.',
+    paragraphs: [
+      'Colócate en una posición estable y segura, con los pies bien apoyados. Esta práctica no sustituye la revisión del material, las comprobaciones de seguridad ni el criterio de tu compañero. Es un momento para entrenar la atención antes de volver a la actividad.',
+      'Observa la respiración sin intentar hacerla perfecta. Nota el aire, los sonidos del lugar y los puntos de apoyo de tu cuerpo. Cuando la mente se adelante al final de la vía, vuelve al instante presente. Solo existe este momento y la siguiente decisión.',
+      'La confianza no significa ausencia de miedo. Puedes sentir nervios y aun así actuar con prudencia. Pregúntate qué información necesitas, qué puedes comprobar y qué opción es la más segura para ti. Si las condiciones no son adecuadas, cambiar de plan también es una decisión valiente.',
+      'Imagina una secuencia sencilla de movimientos. Observa la presa, coloca el pie con cuidado, busca equilibrio y después mueve la mano. Visualiza pausas para respirar y revisar la posición. Avanza de manera fluida, sin precipitarte. Si algo cambia, te detienes y vuelves a evaluar.',
+      'Recuerda una ocasión en la que resolviste una dificultad con paciencia. No necesitas repetir exactamente aquel resultado. Quédate con la habilidad que utilizaste: pedir información, descansar, observar o probar una alternativa. Esas capacidades también forman parte de tu experiencia como escalador.',
+      'Si aparece una imagen de caída o un pensamiento de fracaso, no te obligues a ignorarlo. Reconócelo y vuelve a lo que puedes comprobar aquí y ahora. Nunca uses esta práctica para convencerte de asumir un riesgo que no deseas asumir.',
+      'Haz una respiración tranquila. Nota el suelo bajo tus pies y el entorno a tu alrededor. Cuando estés listo, abre los ojos o levanta la mirada. Recuerda: atención antes que prisa, decisiones antes que ego y seguridad antes que el grado.'
+    ]
+  }
+};
+let activeMeditation='focus', meditationUtterance=null, meditationIndex=0, meditationRunning=false, meditationPaused=false, meditationStartedAt=0, meditationElapsedBase=0, meditationAmbientCtx=null, meditationAmbientNodes=[], meditationPauseTimer=null;
+function selectMeditation(id){
+  if(!guidedMeditations[id])return;
+  stopMeditation(true);
+  activeMeditation=id;
+  const m=guidedMeditations[id];
+  document.getElementById('meditationTitle').textContent=m.title;
+  document.getElementById('meditationDescription').textContent=m.description;
+  document.querySelectorAll('.meditation-card').forEach(el=>el.classList.toggle('active',el.id==='medCard-'+id));
+  document.getElementById('meditationProgress').style.width='0%';
+  document.getElementById('meditationElapsed').textContent='00:00';
+  document.getElementById('meditationRemaining').textContent='Preparado';
+  document.getElementById('meditationStatus').textContent='Pulsa «Escuchar» para comenzar.';
+}
+function startMeditation(){
+  if(!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)){
+    document.getElementById('meditationStatus').textContent='Este dispositivo no ofrece narración por voz. Prueba a instalar una voz española en los ajustes de texto a voz.';
+    return;
+  }
+  if(meditationPaused && window.speechSynthesis.speaking){
+    try{window.speechSynthesis.resume();}catch(e){}
+    meditationPaused=false;meditationRunning=true;meditationStartedAt=Date.now();
+    startMeditationAmbient();
+    document.getElementById('meditationStatus').textContent='Sesión en curso. Respira sin forzar.';
+    return;
+  }
+  if(meditationRunning)return;
+  if(meditationIndex===0)meditationElapsedBase=0;
+  meditationRunning=true;meditationPaused=false;meditationStartedAt=Date.now();
+  startMeditationAmbient();
+  document.getElementById('meditationStatus').textContent='Preparando la voz del dispositivo…';
+  speakMeditationParagraph();
+}
+function speakMeditationParagraph(){
+  const m=guidedMeditations[activeMeditation];
+  if(!meditationRunning || meditationIndex>=m.paragraphs.length){
+    if(meditationIndex>=m.paragraphs.length)finishMeditation();
+    return;
+  }
+  const utterance=new SpeechSynthesisUtterance(m.paragraphs[meditationIndex]);
+  meditationUtterance=utterance;
+  utterance.lang='es-ES';utterance.rate=0.82;utterance.pitch=0.92;utterance.volume=1;
+  const voices=window.speechSynthesis.getVoices();
+  const spanish=voices.filter(v=>/^es(-|_)/i.test(v.lang));
+  const preferred=spanish.find(v=>/female|femenina|monica|helena|lucia|paulina/i.test(v.name))||spanish[0];
+  if(preferred)utterance.voice=preferred;
+  utterance.onstart=()=>{document.getElementById('meditationStatus').textContent='Escucha con comodidad. Puedes pausar cuando quieras.';};
+  utterance.onend=()=>{
+    if(!meditationRunning)return;
+    meditationIndex++;
+    updateMeditationProgress();
+    if(meditationIndex< m.paragraphs.length){
+      meditationPauseTimer=setTimeout(speakMeditationParagraph,1800);
+    }else finishMeditation();
+  };
+  utterance.onerror=(e)=>{
+    if(e.error==='canceled'||e.error==='interrupted')return;
+    document.getElementById('meditationStatus').textContent='No se ha podido reproducir la voz. Comprueba que haya una voz española instalada en el dispositivo.';
+    stopMeditation(true);
+  };
+  try{window.speechSynthesis.speak(utterance);}catch(e){
+    document.getElementById('meditationStatus').textContent='No se ha podido iniciar la narración en este dispositivo.';
+    stopMeditation(true);
+  }
+}
+function updateMeditationProgress(){
+  const total=guidedMeditations[activeMeditation].paragraphs.length;
+  const pct=Math.min(100,Math.round(meditationIndex/total*100));
+  const elapsed=Math.max(0,Math.round((Date.now()-meditationStartedAt)/1000+meditationElapsedBase));
+  document.getElementById('meditationProgress').style.width=pct+'%';
+  document.getElementById('meditationElapsed').textContent=String(Math.floor(elapsed/60)).padStart(2,'0')+':'+String(elapsed%60).padStart(2,'0');
+  document.getElementById('meditationRemaining').textContent='Parte '+Math.min(meditationIndex+1,total)+' de '+total;
+}
+function pauseMeditation(){
+  if(!meditationRunning)return;
+  meditationRunning=false;meditationPaused=true;
+  meditationElapsedBase+=Math.max(0,(Date.now()-meditationStartedAt)/1000);
+  try{window.speechSynthesis.pause();}catch(e){}
+  if(meditationPauseTimer){clearTimeout(meditationPauseTimer);meditationPauseTimer=null;}
+  stopMeditationAmbient();
+  document.getElementById('meditationStatus').textContent='Pausado. Pulsa «Escuchar» para continuar.';
+}
+function stopMeditation(silent){
+  meditationRunning=false;meditationPaused=false;meditationIndex=0;meditationElapsedBase=0;
+  if(meditationPauseTimer){clearTimeout(meditationPauseTimer);meditationPauseTimer=null;}
+  try{if('speechSynthesis' in window)window.speechSynthesis.cancel();}catch(e){}
+  stopMeditationAmbient();
+  const p=document.getElementById('meditationProgress');
+  if(p)p.style.width='0%';
+  const e=document.getElementById('meditationElapsed');if(e)e.textContent='00:00';
+  const r=document.getElementById('meditationRemaining');if(r)r.textContent='Preparado';
+  if(!silent){const st=document.getElementById('meditationStatus');if(st)st.textContent='Sesión detenida. Puedes volver a escucharla cuando quieras.';}
+}
+function finishMeditation(){
+  meditationRunning=false;meditationPaused=false;meditationIndex=0;meditationElapsedBase=0;
+  stopMeditationAmbient();
+  document.getElementById('meditationProgress').style.width='100%';
+  document.getElementById('meditationRemaining').textContent='Completada';
+  document.getElementById('meditationStatus').textContent='Sesión completada. Tómate unos segundos antes de volver a la actividad.';
+}
+function startMeditationAmbient(){
+  if(!document.getElementById('meditationAmbient')?.checked)return;
+  try{
+    const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return;
+    if(!meditationAmbientCtx)meditationAmbientCtx=new Ctx();
+    if(meditationAmbientCtx.state==='suspended')meditationAmbientCtx.resume();
+    stopMeditationAmbientNodes();
+    const ctx=meditationAmbientCtx,master=ctx.createGain();master.gain.value=0.035;master.connect(ctx.destination);
+    const osc=ctx.createOscillator(),gain=ctx.createGain(),filter=ctx.createBiquadFilter();
+    osc.type='sine';osc.frequency.value=110;gain.gain.value=0.35;filter.type='lowpass';filter.frequency.value=240;
+    osc.connect(filter);filter.connect(gain);gain.connect(master);osc.start();
+    const lfo=ctx.createOscillator(),lfoGain=ctx.createGain();lfo.frequency.value=0.08;lfoGain.gain.value=14;lfo.connect(lfoGain);lfoGain.connect(osc.frequency);lfo.start();
+    meditationAmbientNodes=[master,osc,gain,filter,lfo,lfoGain];
+  }catch(e){}
+}
+function stopMeditationAmbientNodes(){
+  meditationAmbientNodes.forEach(n=>{try{if(n.stop)n.stop();}catch(e){}try{if(n.disconnect)n.disconnect();}catch(e){}});
+  meditationAmbientNodes=[];
+}
+function stopMeditationAmbient(){
+  stopMeditationAmbientNodes();
+  if(meditationAmbientCtx){try{meditationAmbientCtx.suspend();}catch(e){}}
+}
 
 </script>
 
