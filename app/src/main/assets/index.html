@@ -655,10 +655,54 @@ select{
 .home-sensor-dot{width:11px;height:11px;border-radius:50%;background:#ef6c6c;box-shadow:0 0 0 4px #ef6c6c20;flex-shrink:0}
 .home-sensor-dot.connected{background:#6bea9b;box-shadow:0 0 0 4px #6bea9b22}
 .home-connect-btn{width:100%;margin-top:5px}.home-sensor-card p{margin:10px 0 0;color:#aebfd0;font-size:11px;line-height:1.5}
+
+/* Perfil personal y registro inicial */
+.profile-form{display:grid;gap:14px}
+.profile-field{display:grid;gap:7px;color:#dbe7e8;font-size:13px;font-weight:700}
+.profile-field input{width:100%;min-width:0;font:inherit;font-weight:400;padding:13px}
+.profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.profile-summary{padding:15px;margin-bottom:14px;border:1px solid #36505c;border-radius:16px;background:#10232e}
+.profile-summary strong{font-size:20px;color:var(--green)}
+.profile-summary p{margin:7px 0 0;color:var(--muted);font-size:12px}
+.profile-gate{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:18px;background:#050d13ed;backdrop-filter:blur(12px);overflow:auto}
+.profile-gate.visible{display:flex}
+.profile-gate-card{width:100%;max-width:480px;max-height:calc(100dvh - 36px);overflow:auto;padding:22px;border:1px solid #365765;border-radius:22px;background:linear-gradient(145deg,#18313d,#0c1a24);box-shadow:0 24px 80px #0008}
+.profile-gate-card h1{font-size:25px;margin:8px 0 10px}
+.profile-gate-card>p{font-size:13px;line-height:1.55;color:var(--muted);margin:0 0 20px}
+.profile-gate-card .btn{width:100%;margin-top:18px}
+.profile-error{display:none;color:#ff8e8e;font-size:12px;margin-top:10px}
+.profile-error.visible{display:block}
+@media(max-width:380px){.profile-grid{grid-template-columns:1fr}}
 </style>
 </head>
 
 <body>
+
+<div id="profileGate" class="profile-gate" role="dialog" aria-modal="true" aria-labelledby="profileGateTitle">
+  <div class="profile-gate-card">
+    <div class="eyebrow">SOLIDO CLIMBING · TU PERFIL</div>
+    <h1 id="profileGateTitle">¡Vamos a conocerte!</h1>
+    <p>Antes de empezar, completa tus datos personales. Se guardarán solo en este dispositivo y podrás modificarlos cuando quieras en el apartado Personal.</p>
+    <form id="firstProfileForm" class="profile-form" onsubmit="completeFirstProfile(event)">
+      <label class="profile-field">Tu apodo
+        <input id="firstNickname" name="nickname" type="text" maxlength="24" placeholder="¿Cómo te llamamos?" autocomplete="nickname" required>
+      </label>
+      <div class="profile-grid">
+        <label class="profile-field">Altura (cm)
+          <input id="firstHeight" name="height" type="number" min="100" max="230" step="1" placeholder="175" inputmode="numeric" required>
+        </label>
+        <label class="profile-field">Edad (años)
+          <input id="firstAge" name="age" type="number" min="10" max="100" step="1" placeholder="35" inputmode="numeric" required>
+        </label>
+      </div>
+      <label class="profile-field">Peso (kg)
+        <input id="firstWeight" name="weight" type="number" min="30" max="250" step="0.1" placeholder="70" inputmode="decimal" required>
+      </label>
+      <div id="firstProfileError" class="profile-error" role="alert">Revisa los datos: apodo y valores válidos para altura, edad y peso.</div>
+      <button class="btn" type="submit">Guardar y empezar →</button>
+    </form>
+  </div>
+</div>
 
 <header>
   <div class="logo">
@@ -1087,7 +1131,37 @@ select{
 <section id="profile" class="hide">
 
   <div class="sectionhead">
-    <h2>Perfil y objetivos</h2>
+    <h2>Personal</h2>
+    <span class="tag">TU PERFIL</span>
+  </div>
+
+  <div class="profile-summary">
+    <strong id="profileGreeting">Tu perfil personal</strong>
+    <p>Estos datos se guardan en este dispositivo. Puedes modificarlos cuando quieras.</p>
+  </div>
+
+  <div class="tile" style="margin-bottom:12px">
+    <form id="personalProfileForm" class="profile-form" onsubmit="savePersonalProfile(event)">
+      <label class="profile-field">Tu apodo
+        <input id="profileNickname" name="nickname" type="text" maxlength="24" autocomplete="nickname" required>
+      </label>
+      <div class="profile-grid">
+        <label class="profile-field">Altura (cm)
+          <input id="profileHeight" name="height" type="number" min="100" max="230" step="1" required>
+        </label>
+        <label class="profile-field">Edad (años)
+          <input id="profileAge" name="age" type="number" min="10" max="100" step="1" required>
+        </label>
+      </div>
+      <label class="profile-field">Peso (kg)
+        <input id="profileWeight" name="weight" type="number" min="30" max="250" step="0.1" required>
+      </label>
+      <button class="btn" type="submit">Guardar datos personales</button>
+    </form>
+  </div>
+
+  <div class="sectionhead">
+    <h2>Perfil de entrenamiento</h2>
   </div>
 
   <div class="tile">
@@ -2726,6 +2800,86 @@ function clearHistory(){
    PERFIL
 ========================= */
 
+function readPersonalProfile(){
+  try{
+    return {
+      nickname:(localStorage.getItem('solidoNickname')||'').trim(),
+      height:localStorage.getItem('solidoHeight')||'',
+      age:localStorage.getItem('solidoAge')||'',
+      weight:localStorage.getItem('solidoWeight')||''
+    };
+  }catch(e){return {nickname:'',height:'',age:'',weight:''};}
+}
+
+function validPersonalProfile(p){
+  return !!(p.nickname && Number(p.height)>=100 && Number(p.height)<=230 &&
+    Number(p.age)>=10 && Number(p.age)<=100 &&
+    Number(p.weight)>=30 && Number(p.weight)<=250);
+}
+
+function fillPersonalProfileFields(p){
+  document.getElementById('profileNickname').value=p.nickname||'';
+  document.getElementById('profileHeight').value=p.height||'';
+  document.getElementById('profileAge').value=p.age||'';
+  document.getElementById('profileWeight').value=p.weight||'';
+  document.getElementById('profileGreeting').textContent=p.nickname ? '¡Hola, '+p.nickname+'!' : 'Tu perfil personal';
+}
+
+function savePersonalProfile(event){
+  if(event) event.preventDefault();
+  const p={
+    nickname:document.getElementById('profileNickname').value.trim(),
+    height:document.getElementById('profileHeight').value,
+    age:document.getElementById('profileAge').value,
+    weight:document.getElementById('profileWeight').value
+  };
+  if(!validPersonalProfile(p)){
+    alert('Revisa los datos: apodo y valores válidos para altura, edad y peso.');
+    return;
+  }
+  try{
+    localStorage.setItem('solidoNickname',p.nickname);
+    localStorage.setItem('solidoHeight',String(p.height));
+    localStorage.setItem('solidoAge',String(p.age));
+    localStorage.setItem('solidoWeight',String(p.weight));
+  }catch(e){
+    alert('No se pudieron guardar los datos en este dispositivo.');
+    return;
+  }
+  fillPersonalProfileFields(p);
+  alert('Datos personales guardados.');
+}
+
+function completeFirstProfile(event){
+  if(event) event.preventDefault();
+  const p={
+    nickname:document.getElementById('firstNickname').value.trim(),
+    height:document.getElementById('firstHeight').value,
+    age:document.getElementById('firstAge').value,
+    weight:document.getElementById('firstWeight').value
+  };
+  const error=document.getElementById('firstProfileError');
+  if(!validPersonalProfile(p)){
+    error.classList.add('visible');
+    return;
+  }
+  try{
+    localStorage.setItem('solidoNickname',p.nickname);
+    localStorage.setItem('solidoHeight',String(p.height));
+    localStorage.setItem('solidoAge',String(p.age));
+    localStorage.setItem('solidoWeight',String(p.weight));
+  }catch(e){
+    error.textContent='No se pudieron guardar los datos. Comprueba el almacenamiento del dispositivo.';
+    error.classList.add('visible');
+    return;
+  }
+  fillPersonalProfileFields(p);
+  document.getElementById('profileGate').classList.remove('visible');
+  document.getElementById('profileGate').setAttribute('aria-hidden','true');
+  document.getElementById('home').classList.remove('hide');
+  document.getElementById('firstNickname').blur();
+}
+
 function saveProfile(){
 
   localStorage.setItem(
@@ -2745,7 +2899,7 @@ function saveProfile(){
 
 
   alert(
-    'Preferencias guardadas en este dispositivo.'
+    'Preferencias de entrenamiento guardadas en este dispositivo.'
   );
 
 }
@@ -2776,6 +2930,19 @@ document.getElementById(
 renderPlan();
 
 renderExercises();
+const savedPersonalProfile=readPersonalProfile();
+fillPersonalProfileFields(savedPersonalProfile);
+if(validPersonalProfile(savedPersonalProfile)){
+  document.getElementById('profileGate').classList.remove('visible');
+  document.getElementById('profileGate').setAttribute('aria-hidden','true');
+}else{
+  document.getElementById('profileGate').classList.add('visible');
+  document.getElementById('profileGate').setAttribute('aria-hidden','false');
+  document.getElementById('firstNickname').value=savedPersonalProfile.nickname||'';
+  document.getElementById('firstHeight').value=savedPersonalProfile.height||'';
+  document.getElementById('firstAge').value=savedPersonalProfile.age||'';
+  document.getElementById('firstWeight').value=savedPersonalProfile.weight||'';
+}
 try {
   trainingHand=localStorage.getItem('solidoFingerHand')||'Derecha';
   trainingGrip=localStorage.getItem('solidoFingerGrip')||'10';
