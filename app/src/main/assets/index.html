@@ -1053,12 +1053,12 @@ html[data-theme="light"] .tile .emoji{background:linear-gradient(145deg,#f7fff7,
 html[data-theme="light"] .hand-icon{fill:#5b9d5722}
 
 .hand-choice .hand-both{width:60px;height:44px}
-#workoutSwitchOverlay{position:fixed;inset:0;z-index:99990;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(3,8,5,.82);backdrop-filter:blur(7px)}
+#workoutSwitchOverlay{position:fixed;inset:0;z-index:99990;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(0,0,0,.94);backdrop-filter:blur(7px)}
 #workoutSwitchOverlay.show{display:flex}
-.workout-switch-card{width:min(100%,360px);border:2px solid #c3f36b;border-radius:26px;background:linear-gradient(150deg,#1c2b21,#0c130f);padding:28px 22px;text-align:center;box-shadow:0 0 40px #c3f36b35;color:#fff;animation:workoutSwitchPop .25s ease-out}
-.workout-switch-card h2{margin:8px 0 6px;font-size:27px;line-height:1.1;color:#c3f36b}
+.workout-switch-card{width:min(100%,360px);border:2px solid var(--green);border-radius:26px;background:#08121b;padding:28px 22px;text-align:center;box-shadow:0 0 32px #7cff4530;color:#fff;animation:workoutSwitchPop .25s ease-out}
+.workout-switch-card h2{margin:8px 0 6px;font-size:27px;line-height:1.1;color:var(--green)}
 .workout-switch-card p{margin:8px 0;color:#e0e8e1}
-.workout-switch-hand{width:100px;height:100px;margin:6px auto 12px;color:#c3f36b;display:block;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:#c3f36b22}
+.workout-switch-hand{width:100px;height:100px;margin:6px auto 12px;color:var(--green);display:block;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:#7cff4522}
 #workoutSwitchCountdown{font-size:46px;font-weight:900;font-variant-numeric:tabular-nums;color:#fff;margin-top:8px}
 @keyframes workoutSwitchPop{from{transform:scale(.88);opacity:.3}to{transform:scale(1);opacity:1}}
 </style>
@@ -1067,7 +1067,7 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
 <body>
 <div id="workoutSwitchOverlay" role="alertdialog" aria-live="assertive" aria-label="Aviso para cambiar de mano">
   <div class="workout-switch-card">
-    <div style="font-size:12px;font-weight:800;letter-spacing:2px;color:#c3f36b">SOLIDO CLIMBING</div>
+    <div style="font-size:12px;font-weight:800;letter-spacing:2px;color:var(--green)">SOLIDO CLIMBING</div>
     <h2>¡CAMBIA DE MANO!</h2>
     <p id="workoutSwitchInstruction">Pasa el sensor a la mano izquierda</p>
     <svg id="workoutSwitchHandIcon" class="workout-switch-hand" viewBox="0 0 48 48" aria-hidden="true"><path d="M34 24V12a3 3 0 0 0-6 0v9-13a3 3 0 0 0-6 0v13-11a3 3 0 0 0-6 0v12-8a3 3 0 0 0-6 0v13c0 9 5 15 14 15h2c5 0 8-3 10-7l5-9a3 3 0 0 0-5-3l-4 5"/></svg>
