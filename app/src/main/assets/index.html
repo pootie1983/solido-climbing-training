@@ -1778,7 +1778,7 @@ function brStart(){
    else{
      clearInterval(brCountdownTimer);brCountdownTimer=null;
      overlay.style.display='none';brGameForce=0;brLastForce=0;
-     brActive=true;brLast=performance.now();brLastRender=0;
+     brActive=true;brLast=performance.now();brLastRender=0;brStartMusic();
      document.getElementById('brStartButton').textContent='Ⅱ Pausar';
      brFrame=requestAnimationFrame(brLoop);
    }
@@ -1786,9 +1786,10 @@ function brStart(){
 }
 function brLoop(now){
  if(!brActive)return;const dt=Math.min(.03,Math.max(.001,(now-brLast)/1000));brLast=now;
- const rawForce=Math.abs(Number(currentForce)||0),d=brLevelData(),g=brGame;
+ const rawForce=Math.max(0,Number(currentForce)||0),d=brLevelData(),g=brGame;
  // Read the latest WH-C06 sample directly; smoothing here added noticeable control lag.
- brGameForce=rawForce;
+  // Clamp negative sensor noise to zero; never turn a negative sample into positive force.
+  brGameForce=rawForce;
  const force=rawForce;
  brTime=Math.max(0,brTime-dt);
  const thresholdCross=force>=brThreshold&&brLastForce<brThreshold;
@@ -1800,8 +1801,8 @@ function brLoop(now){
  }
  brLastForce=force;
  if(g&&!g.dead){
-   // Force is the control: above threshold lifts the GRIGRI; below it falls faster.
-   if(g.airborne){if(force<brThreshold){g.vy=Math.min(g.vy+(d.gravity*2.35)*dt,1200);}else if(g.vy> -d.jump*.35){g.vy-=d.gravity*.72*dt;}}
+    // Responsive force control: releasing below threshold immediately increases downward acceleration; force above threshold sustains lift.
+   if(g.airborne){if(force<brThreshold){g.vy=Math.min(g.vy+(d.gravity*3.4)*dt,1450);}else{const lift=Math.min(1.8,force/Math.max(.5,brThreshold));g.vy=Math.max(g.vy-(d.gravity*(.85+lift*.42))*dt,-d.jump*1.3);}}
    else{g.vy=Math.min(g.vy+d.gravity*dt,1050);}
    g.y+=g.vy*dt;
    if(g.y<24){g.y=24;if(g.vy<0)g.vy=0;}
@@ -1832,17 +1833,19 @@ function brLoop(now){
 }
 function brRoundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
 function brDrawGrigri(ctx,x,y,scale=1){
+  // More recognisable GRIGRI silhouette: cast-metal body, rope channel, cam and handle.
   ctx.save();ctx.translate(x,y);ctx.rotate(Number(brGame&&brGame.jumpTilt)||0);ctx.scale(scale,scale);
-  ctx.shadowColor='rgba(5,18,35,.32)';ctx.shadowBlur=5;ctx.shadowOffsetY=3;
-  ctx.fillStyle='#263746';ctx.beginPath();ctx.moveTo(-13,-18);ctx.quadraticCurveTo(-19,-10,-16,5);ctx.lineTo(-10,22);ctx.quadraticCurveTo(0,29,12,20);ctx.lineTo(17,4);ctx.quadraticCurveTo(19,-9,10,-18);ctx.quadraticCurveTo(0,-24,-13,-18);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#f04f45';ctx.beginPath();ctx.moveTo(-11,-15);ctx.quadraticCurveTo(-2,-22,9,-15);ctx.lineTo(14,3);ctx.lineTo(7,17);ctx.quadraticCurveTo(0,22,-7,16);ctx.lineTo(-13,2);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#e7eef2';ctx.beginPath();ctx.ellipse(-1,0,7,12,-.25,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#304858';ctx.beginPath();ctx.ellipse(-1,0,3.2,8,-.25,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle='#c7d6df';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(9,-13);ctx.lineTo(18,-20);ctx.lineTo(22,-16);ctx.stroke();
-  ctx.fillStyle='#172a39';brRoundRect(ctx,-8,7,16,7,3);ctx.fill();
-  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(-5,-6,2.7,0,Math.PI*2);ctx.arc(4,-7,2.7,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#102c3b';ctx.beginPath();ctx.arc(-4,-6,1.2,0,Math.PI*2);ctx.arc(5,-7,1.2,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle='#102c3b';ctx.lineWidth=1.6;ctx.beginPath();ctx.arc(0,0,4,.25,2.7);ctx.stroke();
+  ctx.shadowColor='rgba(0,0,0,.28)';ctx.shadowBlur=4;ctx.shadowOffsetY=3;
+  ctx.fillStyle='#252d35';ctx.beginPath();ctx.moveTo(-13,-20);ctx.quadraticCurveTo(-19,-17,-18,-7);ctx.lineTo(-12,17);ctx.quadraticCurveTo(-7,25,4,22);ctx.lineTo(15,15);ctx.quadraticCurveTo(19,10,16,0);ctx.lineTo(11,-17);ctx.quadraticCurveTo(2,-26,-13,-20);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#e94b43';ctx.beginPath();ctx.moveTo(-12,-18);ctx.quadraticCurveTo(-3,-23,7,-17);ctx.lineTo(13,1);ctx.lineTo(10,13);ctx.lineTo(1,19);ctx.lineTo(-7,15);ctx.lineTo(-14,-5);ctx.closePath();ctx.fill();
+  // Rope path and large circular cam.
+  ctx.strokeStyle='#f2d7a1';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-13,-12);ctx.bezierCurveTo(-4,-5,7,-4,10,8);ctx.stroke();
+  ctx.fillStyle='#343e48';ctx.beginPath();ctx.arc(0,-1,8,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#b9c5cd';ctx.beginPath();ctx.arc(0,-1,5.5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#687985';ctx.beginPath();ctx.arc(0,-1,2.2,0,Math.PI*2);ctx.fill();
+  // Distinctive silver handle/lever extending from the lower body.
+  ctx.strokeStyle='#bfcbd2';ctx.lineWidth=4;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(6,13);ctx.lineTo(17,22);ctx.lineTo(20,19);ctx.stroke();
+  ctx.strokeStyle='#f7f9fa';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(-9,-17);ctx.lineTo(-3,-19);ctx.stroke();
   ctx.shadowBlur=0;ctx.shadowOffsetY=0;ctx.restore();
 }
 function brDrawScene(force){
@@ -1867,9 +1870,20 @@ function brDrawScene(force){
  }
  // Carabiner enemies bob above the platforms; touching one ends the run.
  // Carabiner enemies bob above the platforms; touching one ends the run.
- for(const e of g.enemies){const x=e.x-g.worldX+g.x,y=e.y;if(x< -35||x>w+35)continue;c.save();c.translate(x,y);c.rotate(Math.sin(e.phase)*.16);c.lineCap='round';c.lineJoin='round';c.strokeStyle='#263746';c.lineWidth=10;c.beginPath();c.moveTo(-7,-16);c.quadraticCurveTo(17,-18,15,2);c.quadraticCurveTo(13,21,-5,17);c.quadraticCurveTo(-19,12,-13,-4);c.stroke();c.strokeStyle='#b8c9d4';c.lineWidth=5;c.beginPath();c.moveTo(-7,-16);c.quadraticCurveTo(17,-18,15,2);c.quadraticCurveTo(13,21,-5,17);c.quadraticCurveTo(-19,12,-13,-4);c.stroke();c.strokeStyle='#f4a62a';c.lineWidth=4;c.beginPath();c.moveTo(-11,-7);c.lineTo(4,9);c.stroke();c.strokeStyle='#edf4f7';c.lineWidth=3;c.beginPath();c.moveTo(-7,-15);c.lineTo(-1,-9);c.stroke();c.fillStyle='#263746';brRoundRect(c,4,-18,12,6,2);c.fill();c.fillStyle='#f4a62a';brRoundRect(c,6,-17,8,4,1);c.fill();c.restore();}
+  for(const e of g.enemies){const x=e.x-g.worldX+g.x,y=e.y;if(x< -35||x>w+35)continue;c.save();c.translate(x,y);c.rotate(Math.sin(e.phase)*.12);c.lineCap='round';c.lineJoin='round';
+   // D-shaped aluminium carabiner with a clear gate and locking sleeve.
+   c.strokeStyle='#28343d';c.lineWidth=11;c.beginPath();c.moveTo(-8,-17);c.quadraticCurveTo(13,-21,16,-4);c.quadraticCurveTo(20,11,7,18);c.quadraticCurveTo(-8,22,-15,9);c.quadraticCurveTo(-20,-1,-8,-17);c.stroke();
+   c.strokeStyle='#c5d0d6';c.lineWidth=6;c.beginPath();c.moveTo(-8,-17);c.quadraticCurveTo(13,-21,16,-4);c.quadraticCurveTo(20,11,7,18);c.quadraticCurveTo(-8,22,-15,9);c.quadraticCurveTo(-20,-1,-8,-17);c.stroke();
+   c.strokeStyle='#f1a52b';c.lineWidth=4;c.beginPath();c.moveTo(-13,4);c.lineTo(1,14);c.stroke();
+   c.strokeStyle='#f4f7f8';c.lineWidth=3;c.beginPath();c.moveTo(-8,-14);c.lineTo(-1,-8);c.stroke();
+   c.fillStyle='#36434c';brRoundRect(c,2,-20,12,7,2);c.fill();c.fillStyle='#f1a52b';brRoundRect(c,4,-19,8,5,1);c.fill();
+   c.restore();}
  // Figure-eight knot collectibles.
- for(const p of g.powders){if(p.got)continue;const x=p.x-g.worldX+g.x,y=p.y+Math.sin(nowSafeTime()*.004+p.phase)*3;if(x< -35||x>w+35)continue;c.save();c.translate(x,y);c.rotate(Math.sin(nowSafeTime()*.002+p.phase)*.12);c.lineCap='round';c.lineJoin='round';c.strokeStyle='#174b70';c.lineWidth=10;c.beginPath();c.moveTo(-11,-12);c.bezierCurveTo(-24,-24,-24,-2,-8,1);c.bezierCurveTo(7,4,16,-17,5,-18);c.bezierCurveTo(-8,-19,-11,-3,2,8);c.bezierCurveTo(15,20,24,1,10,-2);c.stroke();c.strokeStyle='#49c8f2';c.lineWidth=6;c.beginPath();c.moveTo(-11,-12);c.bezierCurveTo(-24,-24,-24,-2,-8,1);c.bezierCurveTo(7,4,16,-17,5,-18);c.bezierCurveTo(-8,-19,-11,-3,2,8);c.bezierCurveTo(15,20,24,1,10,-2);c.stroke();c.strokeStyle='#d9f8ff';c.lineWidth=2;c.beginPath();c.moveTo(-13,-13);c.quadraticCurveTo(-20,-18,-17,-9);c.stroke();c.fillStyle='#fff';c.fillRect(-17,-23,3,3);c.fillRect(15,-18,3,3);c.restore();}
+  for(const p of g.powders){if(p.got)continue;const x=p.x-g.worldX+g.x,y=p.y+Math.sin(nowSafeTime()*.004+p.phase)*3;if(x< -35||x>w+35)continue;c.save();c.translate(x,y);c.rotate(Math.sin(nowSafeTime()*.002+p.phase)*.08);
+   // Figure-eight knot rendered as doubled climbing rope with two recognisable lobes.
+   c.lineCap='round';c.lineJoin='round';c.strokeStyle='#174b70';c.lineWidth=11;c.beginPath();c.moveTo(-10,-12);c.bezierCurveTo(-25,-25,-26,-2,-9,1);c.bezierCurveTo(2,4,12,-12,6,-17);c.bezierCurveTo(-2,-24,-12,-10,-1,1);c.bezierCurveTo(9,12,19,17,21,6);c.bezierCurveTo(23,-4,10,-7,2,2);c.stroke();
+   c.strokeStyle='#f2c66d';c.lineWidth=6;c.beginPath();c.moveTo(-10,-12);c.bezierCurveTo(-25,-25,-26,-2,-9,1);c.bezierCurveTo(2,4,12,-12,6,-17);c.bezierCurveTo(-2,-24,-12,-10,-1,1);c.bezierCurveTo(9,12,19,17,21,6);c.bezierCurveTo(23,-4,10,-7,2,2);c.stroke();
+   c.strokeStyle='#fff0c7';c.lineWidth=2;c.beginPath();c.moveTo(-14,-16);c.quadraticCurveTo(-20,-17,-19,-9);c.stroke();c.restore();}
  // Spark particles when a figure-eight knot is collected.
  for(const p of g.particles){c.globalAlpha=Math.max(0,p.t/.45);c.fillStyle='#fffdf3';c.beginPath();c.arc(p.x,p.y,2.5,0,Math.PI*2);c.fill();c.globalAlpha=1;}
  // Force halo shows live input strength.
@@ -1881,6 +1895,33 @@ function brDrawScene(force){
 function nowSafeTime(){return typeof performance!=='undefined'?performance.now():Date.now();}
 function brSpawnFloat(label){const scene=document.getElementById('brScene');const el=document.createElement('div');el.className='br-float';el.textContent=label;el.style.left=(35+Math.random()*30)+'%';el.style.top=(35+Math.random()*30)+'%';scene.appendChild(el);setTimeout(()=>el.remove(),900);}
 function brMoveHolds(){brSpawnFloat('✧ +100');}
+function brEnsureAudio(){
+ const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;
+ if(!brAudioContext)brAudioContext=new AC();
+ if(brAudioContext.state==='suspended')brAudioContext.resume();
+ return brAudioContext;
+}
+let brMusicTimer=null,brMusicStep=0;
+function brStartMusic(){
+ const ac=brEnsureAudio();if(!ac||brMusicTimer)return;
+ const notes=[261.63,329.63,392,329.63,293.66,349.23,440,349.23,261.63,329.63,392,523.25,440,392,329.63,293.66];
+ brMusicStep=0;
+ const tick=()=>{
+  if(!brActive){brStopMusic();return;}
+  const t=ac.currentTime,base=notes[brMusicStep%notes.length];
+  const osc=ac.createOscillator(),gain=ac.createGain();osc.type='triangle';osc.frequency.setValueAtTime(base,t);
+  gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.045,t+.025);gain.gain.exponentialRampToValueAtTime(.0001,t+.24);
+  osc.connect(gain);gain.connect(ac.destination);osc.start(t);osc.stop(t+.26);
+  if(brMusicStep%2===0){const bass=ac.createOscillator(),bg=ac.createGain();bass.type='sine';bass.frequency.setValueAtTime(base/2,t);bg.gain.setValueAtTime(.0001,t);bg.gain.exponentialRampToValueAtTime(.025,t+.02);bg.gain.exponentialRampToValueAtTime(.0001,t+.22);bass.connect(bg);bg.connect(ac.destination);bass.start(t);bass.stop(t+.23);}
+  brMusicStep++;
+ };
+ tick();brMusicTimer=setInterval(tick,260);
+}
+function brStopMusic(){if(brMusicTimer){clearInterval(brMusicTimer);brMusicTimer=null;}}
+function brPlayDeathSound(){
+ const ac=brEnsureAudio();if(!ac)return;const t=ac.currentTime;
+ [220,164.81,110].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain(),start=t+i*.13;o.type='sawtooth';o.frequency.setValueAtTime(f,start);g.gain.setValueAtTime(.0001,start);g.gain.exponentialRampToValueAtTime(.09,start+.025);g.gain.exponentialRampToValueAtTime(.0001,start+.32);o.connect(g);g.connect(ac.destination);o.start(start);o.stop(start+.34);});
+}
  function brPlayCollectSound(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!brAudioContext)brAudioContext=new AC();if(brAudioContext.state==='suspended')brAudioContext.resume();const t=brAudioContext.currentTime,osc=brAudioContext.createOscillator(),gain=brAudioContext.createGain();osc.type='sine';osc.frequency.setValueAtTime(880,t);osc.frequency.exponentialRampToValueAtTime(1320,t+.09);gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.16,t+.012);gain.gain.exponentialRampToValueAtTime(.0001,t+.18);osc.connect(gain);gain.connect(brAudioContext.destination);osc.start(t);osc.stop(t+.19);}catch(e){console.warn('Sonido de magnesio no disponible',e);}}
 function brRender(force){
  const d=brLevelData(),score=Math.floor(brScore);
@@ -1894,6 +1935,7 @@ function brRender(force){
 }
 function brUpdateProgress(){const d=brLevelData();document.getElementById('brProgress').style.width=Math.min(100,Math.max(0,brScore/(d.seconds*20)*100))+'%';}
 function brFinishRound(){
+  brStopMusic();if(brGame&&brGame.dead)brPlayDeathSound();
  brActive=false;if(brFrame)cancelAnimationFrame(brFrame);brFrame=null;const score=Math.floor(brScore);brSessionScores.push(score);
  if(brMode==='session'&&brRound<3){const overlay=document.getElementById('brOverlay');overlay.style.display='grid';overlay.innerHTML='<strong>¡Ronda '+brRound+' completada!</strong><span>Has conseguido '+brFmt(score)+' puntos y recogido '+brHolds+' nudos de ocho. Descansa y continúa cuando estés listo.</span><button class="btn" onclick="brNextRound()">▶ Siguiente ronda</button>';document.getElementById('brStartButton').textContent='▶ Siguiente ronda';return;}
  brComplete();
