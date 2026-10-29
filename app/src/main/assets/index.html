@@ -386,42 +386,39 @@ select{
 .config-feedback{text-align:center;margin:12px 0}.connection-box .force-value strong{font-size:48px}
 @media(max-width:420px){.force-heading h2{font-size:15px}.choice{font-size:13px}.timer-controls{gap:6px}}
 
-/* Pantalla completa del entrenamiento por intervalos */
-.workout-screen-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
-.workout-screen-heading h3{margin:0;min-width:0}
-.workout-fullscreen-enter{flex:0 0 auto;border:1px solid #477d3b;border-radius:10px;background:#203d32;color:var(--green);padding:9px 10px;font-size:12px;font-weight:800;cursor:pointer}
-.workout-fullscreen-exit{display:none;flex:0 0 42px;width:42px;height:42px;border:1px solid #47606a;border-radius:50%;background:#203642;color:#fff;font-size:30px;line-height:1;cursor:pointer}
+/* Pantalla de entrenamiento compacta: todos los controles visibles */
+.workout-screen-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
+.workout-screen-heading h3{margin:0;min-width:0;font-size:17px;line-height:1.2}
+.workout-fullscreen-enter{flex:0 0 auto;border:1px solid #477d3b;border-radius:10px;background:#203d32;color:var(--green);padding:8px 10px;font-size:12px;font-weight:800;cursor:pointer}
+.workout-fullscreen-exit{display:none;flex:0 0 40px;width:40px;height:40px;border:1px solid #47606a;border-radius:50%;background:#203642;color:#fff;font-size:29px;line-height:1;cursor:pointer}
 .workout-force-table-panel{display:none!important}
-.workout-force-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0;padding:12px 14px;background:linear-gradient(120deg,#17352b,#102a25);border:1px solid #3e7440;border-radius:14px}
-.workout-force-summary>span:first-child{font-size:10px;letter-spacing:1px;color:#b4c9bd;font-weight:800}
-.workout-force-summary>strong{font-size:25px;color:var(--green);font-variant-numeric:tabular-nums;white-space:nowrap}
-.workout-force-target{font-size:11px;color:var(--muted);text-align:right}.workout-force-target b{color:#fff;white-space:nowrap}
 body.workout-fullscreen-active{overflow:hidden!important}
-#intervalWorkout.workout-fullscreen-active{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;max-width:none!important;max-height:none!important;z-index:100000!important;margin:0!important;padding:calc(12px + env(safe-area-inset-top)) 14px calc(12px + env(safe-area-inset-bottom))!important;border:0!important;border-radius:0!important;overflow-y:auto!important;overscroll-behavior:contain;background:radial-gradient(ellipse at top,#142b37 0,#08121b 68%)!important;display:flex!important;flex-direction:column;gap:7px}
+#intervalWorkout.workout-fullscreen-active{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;max-width:none!important;max-height:none!important;z-index:100000!important;box-sizing:border-box!important;margin:0!important;padding:calc(8px + env(safe-area-inset-top)) 12px calc(8px + env(safe-area-inset-bottom))!important;border:0!important;border-radius:0!important;overflow:hidden!important;overscroll-behavior:contain;background:radial-gradient(ellipse at top,#142b37 0,#08121b 68%)!important;display:flex!important;flex-direction:column;gap:5px}
 #intervalWorkout.workout-fullscreen-active .workout-fullscreen-enter{display:none}
 #intervalWorkout.workout-fullscreen-active .workout-fullscreen-exit{display:block}
-#intervalWorkout.workout-fullscreen-active .workout-screen-heading{position:sticky;top:0;z-index:4;background:#08121bf2;padding:4px 0 10px;margin:0}
+#intervalWorkout.workout-fullscreen-active .workout-screen-heading{flex:0 0 auto;padding:2px 0 6px;margin:0}
 #intervalWorkout.workout-fullscreen-active .workout-description{display:none}
-#intervalWorkout.workout-fullscreen-active .attempt-settings{gap:8px;margin:4px 0}
-#intervalWorkout.workout-fullscreen-active .attempt-settings label{font-size:12px}
-#intervalWorkout.workout-fullscreen-active .attempt-settings input{width:100%;min-height:40px}
-#intervalWorkout.workout-fullscreen-active .timer-inline-clock{font-size:clamp(38px,8vh,58px);line-height:1.05;margin:4px 0}
-#intervalWorkout.workout-fullscreen-active .attempt-live{margin-top:4px;padding:10px;gap:6px}
-#intervalWorkout.workout-fullscreen-active #workoutLiveForce{font-size:19px}
-#intervalWorkout.workout-fullscreen-active #workoutPhaseLabel{flex-basis:100%;text-align:center;font-size:11px}
-#intervalWorkout.workout-fullscreen-active .br-progress{margin:4px 0 8px}
-#intervalWorkout.workout-fullscreen-active .workout-force-summary{margin:0;padding:10px 12px}
-#intervalWorkout.workout-fullscreen-active .attempt-actions{margin:4px 0;gap:8px}
-#intervalWorkout.workout-fullscreen-active .attempt-actions .btn{min-height:44px}
-#intervalWorkout.workout-fullscreen-active #workoutResult{font-size:12px;line-height:1.45;margin-top:3px}
+#intervalWorkout.workout-fullscreen-active .attempt-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:0}
+#intervalWorkout.workout-fullscreen-active .attempt-settings label{font-size:11px;line-height:1.2;min-width:0}
+#intervalWorkout.workout-fullscreen-active .attempt-settings input{box-sizing:border-box;width:100%;min-height:34px;padding:6px 8px;margin-top:4px;font-size:15px}
+#intervalWorkout.workout-fullscreen-active .timer-inline-clock{flex:0 0 auto;font-size:clamp(38px,8vh,58px);line-height:1;margin:0;padding:2px 0}
+#intervalWorkout.workout-fullscreen-active .attempt-live{flex:0 0 auto;display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center;gap:5px 8px;margin:0;padding:8px}
+#intervalWorkout.workout-fullscreen-active .attempt-live>span:first-child{font-size:11px}
+#intervalWorkout.workout-fullscreen-active #workoutLiveForce{font-size:clamp(18px,4vh,24px);line-height:1.1}
+#intervalWorkout.workout-fullscreen-active #workoutPhaseLabel{flex-basis:100%;text-align:center;font-size:11px;line-height:1.25}
+#intervalWorkout.workout-fullscreen-active .br-progress{flex:0 0 10px;margin:0 0 2px}
+#intervalWorkout.workout-fullscreen-active .attempt-actions{flex:0 0 auto;display:flex;gap:8px;margin:0}
+#intervalWorkout.workout-fullscreen-active .attempt-actions .btn{flex:1;min-width:0;min-height:46px;padding:10px 7px;font-size:14px}
+#intervalWorkout.workout-fullscreen-active #workoutResult{flex:0 0 auto;font-size:11px;line-height:1.3;margin:0;text-align:center}
 @media(max-height:650px){
- #intervalWorkout.workout-fullscreen-active{gap:4px;padding-top:calc(6px + env(safe-area-inset-top))!important;padding-bottom:calc(6px + env(safe-area-inset-bottom))!important}
- #intervalWorkout.workout-fullscreen-active .attempt-settings{gap:5px}
- #intervalWorkout.workout-fullscreen-active .attempt-settings input{padding:7px;min-height:34px}
- #intervalWorkout.workout-fullscreen-active .workout-force-summary{padding:7px 10px}
- #intervalWorkout.workout-fullscreen-active .timer-inline-clock{font-size:36px}
+ #intervalWorkout.workout-fullscreen-active{gap:3px;padding-top:calc(4px + env(safe-area-inset-top))!important;padding-bottom:calc(4px + env(safe-area-inset-bottom))!important}
+ #intervalWorkout.workout-fullscreen-active .workout-screen-heading h3{font-size:15px}
+ #intervalWorkout.workout-fullscreen-active .attempt-settings input{min-height:29px;padding:4px 7px}
+ #intervalWorkout.workout-fullscreen-active .timer-inline-clock{font-size:34px}
+ #intervalWorkout.workout-fullscreen-active .attempt-live{padding:5px}
+ #intervalWorkout.workout-fullscreen-active .attempt-actions .btn{min-height:40px;padding:7px 5px}
+ #intervalWorkout.workout-fullscreen-active #workoutResult{font-size:10px}
 }
-
 /* WH-C06 */
 
 .force-card{
@@ -1482,8 +1479,6 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
     <div class="timer-inline-clock" id="workoutClock">00:07</div>
     <div class="attempt-live"><span>Fuerza actual / objetivo</span><strong id="workoutLiveForce">0,00 / 3,00 kg</strong><span id="workoutPhaseLabel">Preparado · mano derecha · agarre 10 mm</span></div>
     <div class="br-progress"><div id="workoutForceBar" style="width:0%"></div></div>
-    <div class="workout-force-summary" aria-live="polite"><span>FUERZA ACTUAL</span><strong id="workoutCurrentForce">— kg</strong><span class="workout-force-target">Objetivo: <b id="workoutTargetSummary">3,00 kg</b></span></div>
-</div>
     <div class="attempt-actions"><button class="btn" id="workoutStartBtn" onclick="startIntervalWorkout()">▶ Iniciar entrenamiento</button><button class="btn secondary" id="workoutStopBtn" onclick="stopIntervalWorkout()" disabled>■ Finalizar</button></div>
     <div class="muted" id="workoutResult">Las series completadas aparecerán en Progreso, filtradas por mano y tamaño de agarre.</div>
   </div>
@@ -2085,9 +2080,7 @@ function workoutUi(){
  if(phase)phase.textContent=workoutPhase==='hold'?'SERIE '+workoutRep+'/'+workoutTotalReps+' · MANO '+workoutActiveHand.toUpperCase()+' · MANTÉN LA FUERZA':workoutPhase==='switch'?'¡CAMBIA A LA MANO '+(workoutActiveHand==='Derecha'?'IZQUIERDA':'DERECHA')+'!':workoutPhase==='rest'?'DESCANSO · PREPARA LA SIGUIENTE SERIE':workoutPhase==='done'?'ENTRENAMIENTO COMPLETADO':'Preparado · mano '+trainingHand.toLowerCase()+' · agarre '+trainingGrip+' mm';
  const f=Math.max(0,Number(currentForce)||0);
  if(live)live.textContent=f.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' / '+workoutTarget.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' kg';
- const current=document.getElementById('workoutCurrentForce'),target=document.getElementById('workoutTargetSummary');
- if(current)current.textContent=f.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' kg';
- if(target)target.textContent=workoutTarget.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' kg';
+
  if(bar){bar.style.width=Math.min(100,f/Math.max(.5,workoutTarget)*100)+'%';bar.style.background=f>=workoutTarget?'#7cff45':'#ffb84d';}
 }
 function enterWorkoutFullscreen(){
