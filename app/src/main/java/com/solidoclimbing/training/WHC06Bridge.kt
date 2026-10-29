@@ -10,6 +10,8 @@ import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import org.json.JSONObject
@@ -30,6 +32,10 @@ class WHC06Bridge(
     private var scanCallback: ScanCallback? = null
     private var scanning = false
     private var released = false
+    private val mainHandler = Handler(Looper.getMainLooper())
+    // Coalesce frequent BLE advertisements so the WebView always receives the newest sample without a UI queue backlog.
+    @Volatile private var pendingWeightJson: String? = null
+    @Volatile private var weightDispatchQueued = false
 
     @JavascriptInterface
     fun startScan() {
@@ -167,16 +173,36 @@ class WHC06Bridge(
         sendData(JSONObject().put("type", "error").put("message", message))
     }
 
+    private fun deliverToWebView(json: String) {
+        if (released) return
+        webView.evaluateJavascript(
+            "window.onWHC06Data && window.onWHC06Data(${JSONObject.quote(json)});",
+            null
+        )
+    }
+
     private fun sendData(payload: JSONObject) {
         if (released) return
         val json = payload.toString()
-        activity.runOnUiThread {
-            if (!released) {
-                webView.evaluateJavascript(
-                    "window.onWHC06Data && window.onWHC06Data(${JSONObject.quote(json)});",
-                    null
-                )
+
+        // Sensor packets can arrive faster than JavaScript can process them. Keep only the newest
+        // weight sample and deliver it on the main thread at ~60 Hz instead of flooding the WebView.
+        if (payload.optString("type") == "weight") {
+            pendingWeightJson = json
+            if (!weightDispatchQueued) {
+                weightDispatchQueued = true
+                mainHandler.postDelayed({
+                    val latest = pendingWeightJson
+                    pendingWeightJson = null
+                    weightDispatchQueued = false
+                    if (latest != null && !released) deliverToWebView(latest)
+                }, 16L)
             }
+            return
+        }
+
+        mainHandler.post {
+            if (!released) deliverToWebView(json)
         }
     }
 
