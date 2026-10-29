@@ -2851,16 +2851,28 @@ function brDrawScene(force){
   c.fillStyle='#9ed58c';brRoundRect(c,x,top-2,pw,7,4);c.fill();
   c.fillStyle='#d4f0b4';brRoundRect(c,x+5,top-2,Math.max(8,pw-10),2,1);c.fill();
  }
- // Enemigos: bolas rojas con pinchos y ojos expresivos.
- for(const e of g.enemies){const x=e.x-g.worldX+g.x,y=e.y;if(x< -40||x>w+40)continue;c.save();c.translate(x,y);c.rotate(Math.sin(e.phase)*.12);
+ // Enemigo: bola negra redonda con pinchos blancos, estilo arcade clásico.
+ for(const e of g.enemies){const x=e.x-g.worldX+g.x,y=e.y;if(x< -40||x>w+40)continue;c.save();c.translate(x,y);c.rotate(Math.sin(e.phase)*.08);
   const r=e.r||17;
-  c.fillStyle='#401b35';c.beginPath();c.arc(0,0,r+2,0,Math.PI*2);c.fill();
-  for(let k=0;k<10;k++){const a=k*Math.PI*2/10;c.save();c.rotate(a);c.fillStyle='#7d1838';c.beginPath();c.moveTo(r*.62,-r*.34);c.lineTo(r*1.48,0);c.lineTo(r*.62,r*.34);c.closePath();c.fill();c.strokeStyle='#ff8aab';c.lineWidth=1.5;c.stroke();c.restore();}
-  const grad=c.createRadialGradient(-r*.35,-r*.42,2,0,0,r);grad.addColorStop(0,'#ff8297');grad.addColorStop(.58,'#e83457');grad.addColorStop(1,'#8d1239');c.fillStyle=grad;c.beginPath();c.arc(0,0,r,0,Math.PI*2);c.fill();c.strokeStyle='#ffb0c0';c.lineWidth=1.5;c.stroke();
-  for(const ex of [-r*.32,r*.32]){c.fillStyle='#fff';c.beginPath();c.ellipse(ex,-r*.12,r*.22,r*.29,0,0,Math.PI*2);c.fill();c.fillStyle='#21142a';c.beginPath();c.arc(ex+r*.04,-r*.08,r*.12,0,Math.PI*2);c.fill();c.fillStyle='#fff';c.beginPath();c.arc(ex+r*.08,-r*.18,r*.045,0,Math.PI*2);c.fill();}
-  c.strokeStyle='#501127';c.lineWidth=2.5;c.beginPath();c.arc(0,r*.3,r*.25,.15,Math.PI-.15);c.stroke();c.restore();}
- // Flores de turbo coleccionables.
- for(const f of (g.flowers||[])){if(f.got)continue;const x=f.x-g.worldX+g.x,y=f.y+Math.sin(nowSafeTime()*.005+f.phase)*3;if(x< -35||x>w+35)continue;c.save();c.translate(x,y);c.rotate(Math.sin(nowSafeTime()*.003+f.phase)*.08);c.shadowColor='#ff4f9a';c.shadowBlur=14;for(let petal=0;petal<6;petal++){c.save();c.rotate(petal*Math.PI/3);const grad=c.createRadialGradient(0,-8,1,0,-8,9);grad.addColorStop(0,'#fff6fb');grad.addColorStop(.6,'#ff75b7');grad.addColorStop(1,'#d92679');c.fillStyle=grad;c.beginPath();c.ellipse(0,-8,5.5,9,0,0,Math.PI*2);c.fill();c.restore();}c.shadowBlur=0;c.fillStyle='#ffd94d';c.beginPath();c.arc(0,0,5,0,Math.PI*2);c.fill();c.strokeStyle='#fff5a8';c.lineWidth=1.5;c.stroke();c.restore();}
+  // Pinchos triangulares blancos/gris claro alrededor de la silueta.
+  for(let k=0;k<12;k++){const a=k*Math.PI*2/12;c.save();c.rotate(a);c.fillStyle='#e9edf2';c.strokeStyle='#69727e';c.lineWidth=1.3;c.beginPath();c.moveTo(-r*.25,-r*.68);c.lineTo(0,-r*1.52);c.lineTo(r*.25,-r*.68);c.closePath();c.fill();c.stroke();c.restore();}
+  const shell=c.createRadialGradient(-r*.34,-r*.4,1,0,0,r*1.08);shell.addColorStop(0,'#555b65');shell.addColorStop(.34,'#20242b');shell.addColorStop(1,'#050608');c.fillStyle=shell;c.beginPath();c.arc(0,0,r,0,Math.PI*2);c.fill();c.strokeStyle='#858c97';c.lineWidth=1.4;c.stroke();
+  // Ojos blancos pequeños con mirada desafiante.
+  for(const ex of [-r*.31,r*.31]){c.fillStyle='#fff';c.beginPath();c.ellipse(ex,-r*.12,r*.2,r*.27,ex<0?-.12:.12,0,Math.PI*2);c.fill();c.fillStyle='#111318';c.beginPath();c.arc(ex+r*.035,-r*.06,r*.105,0,Math.PI*2);c.fill();c.fillStyle='#fff';c.beginPath();c.arc(ex+r*.06,-r*.14,r*.04,0,Math.PI*2);c.fill();}
+  c.strokeStyle='#08090b';c.lineWidth=2.5;c.beginPath();c.moveTo(-r*.24,r*.34);c.lineTo(-r*.08,r*.25);c.lineTo(r*.08,r*.34);c.lineTo(r*.24,r*.25);c.stroke();c.restore();}
+ // Flor de turbo: diseño pixelado de flor de fuego de plataformas clásicas.
+ for(const f of (g.flowers||[])){if(f.got)continue;const x=f.x-g.worldX+g.x,y=f.y+Math.sin(nowSafeTime()*.005+f.phase)*3;if(x< -35||x>w+35)continue;c.save();c.translate(x,y);c.rotate(Math.sin(nowSafeTime()*.003+f.phase)*.04);
+  c.shadowColor='#ff7a22';c.shadowBlur=13;
+  // Tallo y dos hojas verdes.
+  c.shadowBlur=0;c.fillStyle='#269447';c.fillRect(-3,5,6,12);c.fillStyle='#42c85b';c.fillRect(-2,6,4,9);
+  c.fillStyle='#16813b';c.beginPath();c.moveTo(-2,12);c.lineTo(-13,7);c.lineTo(-11,15);c.lineTo(-3,16);c.closePath();c.fill();c.beginPath();c.moveTo(2,10);c.lineTo(12,5);c.lineTo(10,13);c.lineTo(3,15);c.closePath();c.fill();
+  // Pétalos en bloques rojos/naranjas, silueta fácilmente reconocible.
+  c.fillStyle='#e52b22';c.fillRect(-7,-15,14,7);c.fillRect(-13,-9,8,13);c.fillRect(5,-9,8,13);c.fillRect(-10,2,20,6);c.fillRect(-5,-20,10,7);
+  c.fillStyle='#ff6a21';c.fillRect(-5,-16,10,6);c.fillRect(-10,-8,6,10);c.fillRect(4,-8,6,10);c.fillRect(-7,1,14,4);
+  // Centro amarillo y pequeños brillos en estilo pixel art.
+  c.fillStyle='#ffd83d';c.fillRect(-5,-9,10,11);c.fillRect(-3,-12,6,3);c.fillStyle='#fff4a0';c.fillRect(-3,-7,3,4);
+  c.fillStyle='#fff';c.fillRect(-10,-13,3,3);c.fillRect(7,-11,3,3);
+  c.restore();}
  // Monedas doradas coleccionables.
  for(const p of g.powders){if(p.got)continue;const x=p.x-g.worldX+g.x,y=p.y+Math.sin(nowSafeTime()*.004+p.phase)*4;if(x< -35||x>w+35)continue;c.save();c.translate(x,y);c.rotate(Math.sin(nowSafeTime()*.003+p.phase)*.12);
   const r=p.r||11;const gold=c.createRadialGradient(-r*.35,-r*.4,1,0,0,r*1.2);gold.addColorStop(0,'#fff5a6');gold.addColorStop(.42,'#ffcf35');gold.addColorStop(1,'#c87908');
