@@ -644,6 +644,16 @@ select{
 .br-hopper-scene .br-hold{opacity:.35;pointer-events:none}
 .br-hopper-scene .br-gauge-marker{transition:none}
 @media(prefers-reduced-motion:reduce){.br-float{animation:none}.br-hopper-platform{will-change:auto}}
+
+/* Conexión WH-C06 accesible desde inicio */
+.home-sensor-card{margin:16px 0;padding:15px;border:1px solid var(--line,#31405a);border-radius:16px;background:linear-gradient(135deg,#142b3c,#101d2a);box-shadow:0 8px 22px #0002}
+.home-sensor-top{display:flex;align-items:center;gap:11px;margin-bottom:13px}
+.home-sensor-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:#173c54;color:#9ce5ff;font-size:25px;flex-shrink:0}
+.home-sensor-copy{display:flex;flex:1;flex-direction:column;gap:4px;min-width:0}
+.home-sensor-copy strong{font-size:14px}.home-sensor-copy span{font-size:11px;line-height:1.4;color:#b5c6d8}
+.home-sensor-dot{width:11px;height:11px;border-radius:50%;background:#ef6c6c;box-shadow:0 0 0 4px #ef6c6c20;flex-shrink:0}
+.home-sensor-dot.connected{background:#6bea9b;box-shadow:0 0 0 4px #6bea9b22}
+.home-connect-btn{width:100%;margin-top:5px}.home-sensor-card p{margin:10px 0 0;color:#aebfd0;font-size:11px;line-height:1.5}
 </style>
 </head>
 
@@ -682,6 +692,20 @@ select{
     <button class="btn" onclick="show('plans')">
       Ver mi plan →
     </button>
+  </div>
+
+  <div class="home-sensor-card">
+    <div class="home-sensor-top">
+      <div class="home-sensor-icon">ᛒ</div>
+      <div class="home-sensor-copy">
+        <strong>Sensor de fuerza WH-C06</strong>
+        <span id="homeWHStatus" role="status">Desconectado · Conecta para medir tu fuerza real</span>
+      </div>
+      <span class="home-sensor-dot" id="homeWHDot" aria-label="Estado desconectado"></span>
+    </div>
+    <button class="btn home-connect-btn" id="homeConnectWH" onclick="homeConnectWHC06()">🔵 Conectar WH-C06</button>
+    <button class="btn secondary home-connect-btn" id="homeDisconnectWH" onclick="disconnectWHC06()" style="display:none">Desconectar sensor</button>
+    <p>Conéctalo aquí y podrás usar la lectura en directo en tus entrenamientos y en Solido Sky Hopper.</p>
   </div>
 
   <div class="sectionhead">
@@ -1407,6 +1431,7 @@ function connectWHC06(){
 
 
 function disconnectWHC06(){
+  updateHomeWHStatus(false, 'Desconectado · Conecta para medir tu fuerza real');
 
   try{
 
@@ -1469,6 +1494,7 @@ function setWHStatus(message,type){
 
 
 function processWHC06Data(raw){
+  updateHomeWHStatus(true, 'Conectado · Recibiendo fuerza real');
 
   console.log(
     'WH-C06 RAW:',
@@ -1833,6 +1859,25 @@ function brComplete(){
  try{localStorage.setItem('solidoBoulderXP',String(brTotalXP));const best=Number(localStorage.getItem('solidoBoulderBest')||0);if(score>best)localStorage.setItem('solidoBoulderBest',String(score));}catch(e){}
  document.getElementById('brXP').textContent=brFmt(brTotalXP);document.getElementById('brStartButton').textContent='↻ Repetir partida';
  const overlay=document.getElementById('brOverlay');overlay.style.display='grid';overlay.innerHTML='<strong>🏆 ¡PARTIDA COMPLETADA!</strong><span>Puntuación: '+brFmt(score)+' puntos · Magnesio recogido: '+brHolds+'<br>Recompensa: +'+xp+' XP.</span><button class="btn" onclick="brReset()">↻ Jugar otra vez</button>';
+}
+
+function homeConnectWHC06(){
+  // Reuse the app's existing WH-C06 bridge and connection workflow.
+  if(typeof connectWHC06 === 'function'){
+    connectWHC06();
+  }else{
+    show('fingerForce');
+  }
+}
+function updateHomeWHStatus(connected, message){
+  const status=document.getElementById('homeWHStatus');
+  const dot=document.getElementById('homeWHDot');
+  const connect=document.getElementById('homeConnectWH');
+  const disconnect=document.getElementById('homeDisconnectWH');
+  if(status)status.textContent=message||(connected?'Conectado · Recibiendo fuerza':'Desconectado · Conecta para medir tu fuerza real');
+  if(dot){dot.classList.toggle('connected',!!connected);dot.setAttribute('aria-label',connected?'Conectado':'Desconectado');}
+  if(connect)connect.style.display=connected?'none':'block';
+  if(disconnect)disconnect.style.display=connected?'block':'none';
 }
 /* =========================
    NAVEGACIÓN
