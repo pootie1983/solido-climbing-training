@@ -719,6 +719,25 @@ body.br-fullscreen-active .br-close-game{display:flex}
 .meditation-status{min-height:20px;font-size:12px;color:var(--muted);line-height:1.5}
 .meditation-note{font-size:11px;line-height:1.5;color:var(--muted);margin-top:12px}
 
+/* Iconografía principal: trazo técnico, limpio y consistente */
+.home-icon{width:28px;height:28px;display:block;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tile .emoji{width:48px;height:48px;display:grid;place-items:center;border:1px solid #395449;border-radius:13px;background:linear-gradient(145deg,#203b32,#152b2b);color:#91ed78}
+.tile .emoji .home-icon{width:25px;height:25px}
+.tile{transition:border-color .18s ease,transform .18s ease,box-shadow .18s ease}
+.tile:active{transform:translateY(1px)}
+.tile:focus-visible,.home-meditation-launch:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+.home-meditation-symbol{border:1px solid #47705a;color:#91ed78}
+.home-meditation-symbol .home-icon{width:26px;height:26px}
+.home-sensor-icon{border:1px solid #355c63;background:#142d35}
+.home-sensor-icon .home-icon{width:23px;height:23px}
+.home-connect-btn{display:flex;align-items:center;justify-content:center;gap:9px}
+.home-connect-btn .home-icon{width:18px;height:18px}
+html[data-theme="light"] .tile .emoji{background:linear-gradient(145deg,#e6f1e9,#f6f9f7);border-color:#c8d9cd;color:#287a36}
+html[data-theme="light"] .home-meditation-symbol{background:#e0eee3;border-color:#b8d2bd;color:#287a36}
+html[data-theme="light"] .home-sensor-icon{background:#e5eff0;border-color:#c1d5d7;color:#28616a}
+html[data-theme="light"] .home-sensor-card{background:linear-gradient(135deg,#f5f9f7,#e8f1ed);border-color:#cbdcd2}
+html[data-theme="light"] .home-sensor-copy span,html[data-theme="light"] .home-sensor-card p{color:#50665b}
+
 /* Tema claro/oscuro global, configurable desde Personal */
 html[data-theme="light"]{
   color-scheme:light;
@@ -960,21 +979,21 @@ html[data-theme="light"] .trend-chart path{stroke:#287a32}
   </div>
 
   <button class="home-meditation-launch" onclick="show('meditation');selectMeditation('focus')">
-    <span class="home-meditation-symbol">☁️</span>
+    <span class="home-meditation-symbol"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 17.5h9.2a4.3 4.3 0 0 0 .4-8.6A5.5 5.5 0 0 0 6.6 8a4.8 4.8 0 0 0 .9 9.5Z"/><path d="M9 12.2c.8-.8 1.6-.8 2.4 0s1.6.8 2.4 0 1.6-.8 2.4 0"/></svg></span>
     <span class="home-meditation-copy"><strong>MEDITACIÓN GUIADA</strong><small>Respira, enfoca tu mente y prepárate para escalar</small></span>
     <span class="home-meditation-arrow">→</span>
   </button>
 
   <div class="home-sensor-card">
     <div class="home-sensor-top">
-      <div class="home-sensor-icon">ᛒ</div>
+      <div class="home-sensor-icon"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M10 6h4M10 18h4M4 8v8M20 8v8"/></svg></div>
       <div class="home-sensor-copy">
         <strong>Sensor de fuerza WH-C06</strong>
         <span id="homeWHStatus" role="status">Desconectado · Conecta para medir tu fuerza real</span>
       </div>
       <span class="home-sensor-dot" id="homeWHDot" aria-label="Estado desconectado"></span>
     </div>
-    <button class="btn home-connect-btn" id="homeConnectWH" onclick="homeConnectWHC06()">🔵 Conectar WH-C06</button>
+    <button class="btn home-connect-btn" id="homeConnectWH" onclick="homeConnectWHC06()"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8.5 16 16M8 15.5 16 8.5"/><path d="M6 6a4 4 0 0 1 5.7 0l.3.3M12 17.7l.3.3a4 4 0 0 0 5.7-5.7l-.3-.3M6 18a4 4 0 0 1 0-5.7l.3-.3M17.7 12l.3-.3A4 4 0 0 0 12.3 6"/></svg>Conectar WH-C06</button>
     <button class="btn secondary home-connect-btn" id="homeDisconnectWH" onclick="disconnectWHC06()" style="display:none">Desconectar sensor</button>
     <p>Conéctalo aquí y podrás usar la lectura en directo en tus entrenamientos y en Solido Sky Hopper.</p>
   </div>
@@ -1008,34 +1027,34 @@ html[data-theme="light"] .trend-chart path{stroke:#287a32}
 
     <div class="tile"
          onclick="filterExercises('Fuerza')">
-      <div class="emoji">🧗</div>
+      <div class="emoji"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20 8 4l4 5 3-3 4 14"/><path d="M7 13h10M9 8l5 8"/></svg></div>
       <strong>Fuerza</strong>
       <small>Dominadas y dedos</small>
     </div>
 
     <div class="tile"
          onclick="filterExercises('Core')">
-      <div class="emoji">💪</div>
+      <div class="emoji"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 13V9a2 2 0 0 1 4 0v3-5a2 2 0 0 1 4 0v6-3a2 2 0 0 1 4 0v5c0 4-2.5 6-6.5 6H11c-2 0-3-1-4-2l-3-4a2 2 0 0 1 3-2l2 2"/></svg></div>
       <strong>Core</strong>
       <small>Estabilidad y control</small>
     </div>
 
     <div class="tile"
          onclick="show('library')">
-      <div class="emoji">📚</div>
+      <div class="emoji"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21Z"/><path d="M4 5.5v13A2.5 2.5 0 0 1 6.5 16H20M8 7h8M8 10h6"/></svg></div>
       <strong>Ejercicios</strong>
       <small>Biblioteca</small>
     </div>
 
     <div class="tile"
          onclick="show('progress')">
-      <div class="emoji">📈</div>
+      <div class="emoji"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5M4 19h17"/><path d="m7 15 4-4 3 2 6-7"/><path d="M16 6h4v4"/></svg></div>
       <strong>Progreso</strong>
       <small>Tu historial</small>
     </div>
 
     <div class="tile" onclick="show('climbGame')">
-      <div class="emoji">🎮</div>
+      <div class="emoji"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 8h10a4 4 0 0 1 3.8 5.2l-1.2 4a2 2 0 0 1-3.2 1l-2.4-2H10l-2.4 2a2 2 0 0 1-3.2-1l-1.2-4A4 4 0 0 1 7 8Z"/><path d="M7 11v4M5 13h4M15.5 12h.01M18 14h.01"/></svg></div>
       <strong>Juego de fuerza</strong>
       <small>Escala con el sensor</small>
     </div>
