@@ -1728,13 +1728,13 @@ function brLoop(now){
  brTime=Math.max(0,brTime-dt);
  // Fuerza continua: cuanto más supera el umbral, mayor aceleración ascendente.
  const effort=Math.max(0,Math.min(2.6,(force-brThreshold)/brThreshold));
- const thrust=force>=brThreshold?d.thrust*(.48+effort*.72):0;
+ const thrust=force>=brThreshold?(d.gravity*1.35+effort*d.thrust):0;
  brVelocity+=((d.gravity*-1)+thrust)*dt;
  brVelocity=Math.max(-650,Math.min(850,brVelocity));
  brY+=brVelocity*dt;
  // Altura en pantalla limitada; el mundo se desplaza hacia abajo al ganar altura.
  if(brY>150){const climb=brY-150;brY=150;brWorld+=climb;brScore+=climb*.12*d.points;brLastScoreHeight+=climb;}
- if(brY<0){brY=0;if(brVelocity<0)brVelocity=0;}
+ if(brY<0){brY=0;if(brVelocity<0){if(brWorld>8){brVelocity=d.gravity*.82;brHolds++;brCombo=Math.min(99,brCombo+1);brBestCombo=Math.max(brBestCombo,brCombo);brScore+=20*d.points;brSpawnFloat('⬆ +'+Math.round(20*d.points));}else{brVelocity=0;}}}
  // Detectar nuevos saltos/aterrizajes y sumar combo al superar el umbral desde abajo.
  if(force>=brThreshold&&brLastForce<brThreshold){brCombo=Math.min(99,brCombo+1);brBestCombo=Math.max(brBestCombo,brCombo);brLastJumpAt=now;}
  if(force<brThreshold*.35&&brLastForce>=brThreshold){brCombo=Math.max(0,brCombo-1);}
