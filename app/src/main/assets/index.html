@@ -1748,8 +1748,8 @@ function brCanvasSize(){
 }
 function brNewGame(){
  brCanvasSize();const w=brCanvasW,h=brCanvasH,ground=h-38;
- brGame={x:Math.max(65,w*.24),y:ground-28,vy:0,worldX:0,ground,platforms:[],powders:[],lastPlatform:0,airborne:false,dead:false,flash:0,particles:[],distance:0};
- brGame.platforms.push({x:0,y:ground,w:w*.52,h:13});
+ brGame={x:Math.max(65,w*.24),y:ground-28,vy:0,worldX:0,ground,platforms:[],powders:[],enemies:[],lastPlatform:0,airborne:false,dead:false,flash:0,particles:[],distance:0};
+ brGame.platforms.push({x:0,y:ground,w:w*.52,h:13});brGame.enemies.push({x:w*.9,y:ground-85,baseY:ground-85,r:15,phase:0,kind:'spike'});
  let x=w*.42,py=ground-58,i=0;
  while(x<w*3.5){const d=brLevelData();x+=d.gap*(.75+((i*37)%7)/10);py=Math.max(75,Math.min(ground-48,py+(((i*29)%3)-1)*52));brGame.platforms.push({x,y:py,w:75+((i*13)%34),h:12});if(i%1===0)brGame.powders.push({x:x+35,y:py-30,r:9,got:false,phase:i*.9});i++;}
  brGame.worldX=0;brGame.distance=0;brLastForce=0;brGameForce=0;
@@ -1799,7 +1799,9 @@ function brLoop(now){
  }
  brLastForce=force;
  if(g&&!g.dead){
-   g.vy=Math.min(g.vy+d.gravity*dt,1050);
+   // Force is the control: above threshold gives a gentle lift; below it makes the brush fall faster.
+   if(g.airborne){if(force<brThreshold){g.vy=Math.min(g.vy+(d.gravity*2.35)*dt,1200);}else if(g.vy> -d.jump*.35){g.vy-=d.gravity*.72*dt;}}
+   else{g.vy=Math.min(g.vy+d.gravity*dt,1050);}
    g.y+=g.vy*dt;
    if(g.y<24){g.y=24;if(g.vy<0)g.vy=0;}
    // Tilt the toothbrush nose-up while rising, then nose-down as it falls.
@@ -1810,12 +1812,14 @@ function brLoop(now){
    const leftEdge=g.worldX-70;
    g.platforms=g.platforms.filter(p=>p.x+p.w>leftEdge-30);
    let far=g.platforms.length?Math.max(...g.platforms.map(p=>p.x+p.w)):g.worldX+brCanvasW;
-   while(far<g.worldX+brCanvasW*2.1){const n=g.platforms.length, gap=d.gap*(.76+((n*17)%7)/10),prev=g.platforms[g.platforms.length-1];const py=Math.max(72,Math.min(g.ground-42,prev.y+(((n*19)%3)-1)*(d.gap*.32)));const x=far+gap;const w=64+((n*11)%32);g.platforms.push({x,y:py,w,h:12});g.powders.push({x:x+w*.5,y:py-28,r:9,got:false,phase:n*.8});far=x+w;}
+   while(far<g.worldX+brCanvasW*2.1){const n=g.platforms.length, gap=d.gap*(.76+((n*17)%7)/10),prev=g.platforms[g.platforms.length-1];const py=Math.max(72,Math.min(g.ground-42,prev.y+(((n*19)%3)-1)*(d.gap*.32)));const x=far+gap;const w=64+((n*11)%32);g.platforms.push({x,y:py,w,h:12});g.powders.push({x:x+w*.5,y:py-28,r:9,got:false,phase:n*.8});if(n%4===2)g.enemies.push({x:x+w+gap*.45,y:py-36,baseY:py-36,r:14,phase:n*.7,kind:'spike'});far=x+w;}
    // Landing collision: brush must be falling and cross a platform top.
    if(g.vy>0){for(const p of g.platforms){const sx=p.x-g.worldX+g.x;if(sx<g.x+24&&sx+p.w>g.x-8&&g.y+24>=p.y&&g.y+24<=p.y+g.vy*dt+10&&g.y<p.y){g.y=p.y-24;g.vy=0;g.airborne=false;g.jumpTilt=0;g.lastPlatform=p.x;break;}}}
    // Collect magnesium powder clouds.
    for(const c of g.powders){if(c.got)continue;const sx=c.x-g.worldX+g.x,sy=c.y;const dx=(g.x+12)-sx,dy=(g.y+12)-sy;if(Math.hypot(dx,dy)<25){c.got=true;brHolds++;brScore+=100*d.points;brCombo++;brBestCombo=Math.max(brBestCombo,brCombo);g.flash=.18;for(let k=0;k<7;k++)g.particles.push({x:sx,y:sy,vx:(Math.random()-.5)*100,vy:-20-Math.random()*70,t:.45});}}
    g.powders=g.powders.filter(c=>!c.got&&c.x>leftEdge-60);
+    for(const e of g.enemies){e.phase+=dt*2.1;e.y=e.baseY+Math.sin(e.phase)*13;const ex=e.x-g.worldX+g.x;if(Math.abs(ex-g.x)<25&&Math.abs(e.y-(g.y+10))<24){g.dead=true;brActive=false;brFinishRound();break;}}
+    g.enemies=g.enemies.filter(e=>e.x>leftEdge-80);
    if(g.flash>0)g.flash-=dt;
    g.particles.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.t-=dt;});g.particles=g.particles.filter(p=>p.t>0);
    brScore+=dt*(g.distance>0?d.points*2:0);
@@ -1860,12 +1864,15 @@ function brDrawScene(force){
  c.fillStyle='#163c58';c.fillRect(x+9,p.y+p.h-1,Math.max(6,p.w-18),3);
  for(let rx=x+12;rx<x+p.w-8;rx+=25){c.fillStyle='rgba(255,255,255,.7)';c.fillRect(rx,p.y+2,2,p.h+1);}
 }
+ // Purple spiky enemies bob above the pipes; touching one ends the run.
+ for(const e of g.enemies){const x=e.x-g.worldX+g.x,y=e.y;if(x< -35||x>w+35)continue;c.save();c.translate(x,y);c.fillStyle='#8b2be2';c.beginPath();c.arc(0,0,e.r,0,Math.PI*2);c.fill();c.fillStyle='#d9a7ff';c.beginPath();c.arc(-5,-5,5,0,Math.PI*2);c.arc(5,-5,5,0,Math.PI*2);c.fill();c.fillStyle='#fff';c.beginPath();c.arc(-4,-2,2.2,0,Math.PI*2);c.arc(4,-2,2.2,0,Math.PI*2);c.fill();c.fillStyle='#281047';c.beginPath();c.arc(-4,-2,1,0,Math.PI*2);c.arc(4,-2,1,0,Math.PI*2);c.fill();c.strokeStyle='#6c1eac';c.lineWidth=3;for(let a=0;a<8;a++){const ang=a*Math.PI/4;c.beginPath();c.moveTo(Math.cos(ang)*e.r,Math.sin(ang)*e.r);c.lineTo(Math.cos(ang)*(e.r+6),Math.sin(ang)*(e.r+6));c.stroke();}c.restore();}
  // Magnesium powder collectibles, fluffy white clouds with sparkle flecks.
  for(const p of g.powders){if(p.got)continue;const x=p.x-g.worldX+g.x,y=p.y+Math.sin(nowSafeTime()*.004+p.phase)*3;if(x< -35||x>w+35)continue;c.save();c.translate(x,y);c.fillStyle='#fffdf4';c.beginPath();c.arc(-8,2,7,0,Math.PI*2);c.arc(0,-3,10,0,Math.PI*2);c.arc(9,2,7,0,Math.PI*2);c.fill();c.fillStyle='#c4efff';c.fillRect(-3,-1,2,3);c.fillRect(5,1,2,2);c.fillStyle='#fff';c.fillRect(-15,-13,3,3);c.fillRect(12,-11,3,3);c.restore();}
  // Little dust particles when powder is collected.
  for(const p of g.particles){c.globalAlpha=Math.max(0,p.t/.45);c.fillStyle='#fffdf3';c.beginPath();c.arc(p.x,p.y,2.5,0,Math.PI*2);c.fill();c.globalAlpha=1;}
  // Force halo shows live input strength.
  if(force>=brThreshold){c.strokeStyle='rgba(255,218,75,'+Math.min(.8,.25+(force/brThreshold)*.15)+')';c.lineWidth=3;c.beginPath();c.arc(g.x,g.y+9,25+Math.min(12,(force-brThreshold)*2),0,Math.PI*2);c.stroke();}
+  c.fillStyle=force<brThreshold?'#16496b':'#08765d';c.font='bold 12px sans-serif';c.fillText(force<brThreshold?'↓ CAÍDA':'↑ IMPULSO',g.x-31,g.y+48);
  brDrawBrush(c,g.x,g.y+8,1.05);
  if(g.dead){c.fillStyle='rgba(18,32,61,.35)';c.fillRect(0,0,w,h);}
 }
