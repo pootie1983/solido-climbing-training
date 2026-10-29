@@ -1981,8 +1981,7 @@ function selectTrainingOption(type,value,button){
 function selectWorkoutStartHand(hand,button){
   workoutChosenStartHand=hand;
   document.querySelectorAll('.workout-start-hand').forEach(el=>el.classList.toggle('active',el===button));
-  try{localStorage.setItem('solidoWorkoutStartHand',hand);}catch(e){}
-  document.getElementById('trainingConfigSummary').textContent='Mano '+trainingHand.toLowerCase()+(trainingHand==='Ambas'?' · empieza con '+workoutChosenStartHand.toLowerCase():'')+' · Agarre de '+trainingGrip+' mm';
+    document.getElementById('trainingConfigSummary').textContent='Mano '+trainingHand.toLowerCase()+(trainingHand==='Ambas'?' · empieza con '+workoutChosenStartHand.toLowerCase():'')+' · Agarre de '+trainingGrip+' mm';
 }
 function useTrainingConfiguration(){
   const message='Configuración aplicada: mano '+trainingHand.toLowerCase()+', agarre de '+trainingGrip+' mm.';
@@ -1993,7 +1992,7 @@ function useTrainingConfiguration(){
 // Structured hold/rest protocol using live WH-C06 force samples.
 let workoutTimerId=null,workoutRunning=false,workoutPhase='idle',workoutRep=0,workoutTotalReps=4;
 let workoutPhaseRemaining=0,workoutTarget=3,workoutHold=7,workoutRest=60,workoutPeak=0,workoutTargetSeconds=0,workoutElapsed=0,workoutSessionStarted=0,workoutSessionPeak=0,workoutCompleted=0;
-let workoutActiveHand='Derecha',workoutStartHand='Derecha',workoutSwitchSeconds=10,workoutChosenStartHand=localStorage.getItem('solidoWorkoutStartHand')||'Derecha';
+let workoutActiveHand='Derecha',workoutStartHand='Derecha',workoutSwitchSeconds=10,workoutChosenStartHand='Derecha';
 function workoutFormatClock(n){n=Math.max(0,Math.ceil(Number(n)||0));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');}
 function workoutUi(){
  const clock=document.getElementById('workoutClock'),phase=document.getElementById('workoutPhaseLabel'),live=document.getElementById('workoutLiveForce'),bar=document.getElementById('workoutForceBar');
