@@ -904,6 +904,76 @@ header{background:#0a0d0bf2;border-bottom:1px solid #ffffff18}
 input,select{border-radius:5px}
 @media(max-width:420px){.hero{min-height:225px;padding:18px}.tile{min-height:120px}.tile strong{font-size:12px}}
 
+
+/* SOLIDO · INDUSTRIAL ALPINO — propuesta visual para probar */
+:root{
+  --bg:#101311;
+  --panel:#1b201d;
+  --panel2:#252b27;
+  --green:#c2f05a;
+  --text:#f4f3ec;
+  --muted:#a9afa6;
+  --line:#424941;
+  --danger:#ff695b;
+}
+body{
+  background-color:var(--bg);
+  background-image:linear-gradient(#ffffff05 1px,transparent 1px),linear-gradient(90deg,#ffffff05 1px,transparent 1px);
+  background-size:24px 24px;
+}
+header{background:#101311f2;border-bottom:1px solid #41483f}
+.logo{color:var(--green);letter-spacing:1.2px}
+.pill{border-radius:5px;border-color:#596052;color:#d0d4c9}
+.wrap{max-width:800px}
+.hero{
+  border-radius:7px;border:1px solid #555d50;
+  background:linear-gradient(125deg,#303730 0%,#202621 58%,#292b22 100%);
+  box-shadow:inset 4px 0 0 var(--green);
+}
+.hero:after{content:'//';font:900 120px/1 ui-monospace,monospace;color:#c2f05a;right:18px;bottom:12px;opacity:.09;transform:rotate(-12deg)}
+.eyebrow{letter-spacing:2.5px;color:var(--green)}
+.hero h1{letter-spacing:-1px;text-transform:uppercase}
+.btn{border-radius:5px;background:var(--green);box-shadow:0 3px 0 #718b32}
+.btn.secondary{border-radius:5px;background:#303730;border-color:#596052}
+.tile,.exercise,.stat,.planstep{
+  background:linear-gradient(145deg,#252b27,#1a1e1b);
+  border-color:#41483f;border-radius:7px;
+}
+.tile{position:relative}
+.tile:before{content:'';position:absolute;top:-1px;left:12px;width:28px;height:3px;background:var(--green)}
+.art{border-radius:5px;background:linear-gradient(145deg,#41483f,#222722);border-color:#535c4e}
+.tag{border-radius:3px;color:var(--green);border-color:#657a3d}
+.tabs{gap:5px}
+.tab{border-radius:4px;background:#202520;border-color:#41483f}
+.tab.active{background:var(--green);border-color:var(--green);color:#171b13}
+.nav{background:#111512f5;border-color:#41483f}
+.nav button.active{color:var(--green)}
+input,select{background:#171b18;border-color:#4b5449;border-radius:5px}
+.notice{border-radius:5px;background:#242d20;color:#e1f3bd;border-left:3px solid var(--green)}
+.force-card,.live-force-panel,.trend-panel,.hand-compare-panel,.climb-game{
+  background:#1b211d;border-color:#454e43;border-radius:7px;box-shadow:none;
+}
+.force-meter,.trend-metric,.live-force-stats>div,.attempt-live,.compare-difference{
+  background:#111612;border-color:#343c33;border-radius:4px;
+}
+.live-force-chart{background:#111612;border-radius:4px}
+.force-meter-fill{box-shadow:none}
+.clock{box-shadow:none}
+.choice,.max-display,.timer-inline,.connection-box{border-radius:6px}
+.choice{background:#242a24;border-color:#4b5448}
+.choice.active{background:#354529;border-color:var(--green)}
+.use-config{background:var(--green);color:#171b13}
+.force-heading,.config-block{border-color:#424941}
+.boulder-rush{border-radius:7px;box-shadow:none}
+.br-banner{border-radius:5px;background:linear-gradient(110deg,#333a30,#4b5137 70%,#6d733e)}
+.br-banner:after{content:'+';font-weight:900;transform:none}
+.br-mode,.br-game-type{border-radius:5px}
+.game-scene{border-radius:5px}
+@media(max-width:420px){
+ .hero{padding:17px}
+ .hero h1{font-size:25px}
+}
+
 </style>
 </head>
 
