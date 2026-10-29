@@ -679,7 +679,7 @@ body.br-fullscreen-active .br-close-game{display:flex}
 @media(max-width:390px){.br-hud{grid-template-columns:repeat(2,minmax(0,1fr))}.br-scene{height:285px}.br-banner h2{font-size:24px}}
 
 
-/* Solido Sky Hopper: plataformas con scroll lateral y personaje original cepillo */
+/* Solido Grigri Hopper: plataformas con scroll lateral y personaje original cepillo */
 .br-hopper-scene{height:330px;overflow:hidden;position:relative;background:#82d5f5;border:3px solid #172647;border-radius:14px;isolation:isolate}
 .br-hopper-scene .br-canvas{position:absolute;inset:0;z-index:1;display:block;width:100%;height:100%;min-width:0;min-height:0}
 .br-hopper-scene:before{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,#76d5f7 0%,#b8efff 64%,#e3faff 100%);pointer-events:none}
@@ -692,7 +692,7 @@ body.br-fullscreen-active .br-close-game{display:flex}
 .br-threshold-slider{cursor:pointer}
 @media(max-width:390px){.br-hopper-scene{height:300px}}
 
-/* Sky Hopper-inspired: movimiento vertical continuo controlado por fuerza */
+/* Grigri Hopper-inspired: movimiento vertical continuo controlado por fuerza */
 .br-hopper-config{margin:12px 0;padding:12px;background:#0b142a;border:1px solid #394975;border-radius:12px}
 .br-hopper-config .br-level-row{margin:0 0 9px}.br-hopper-config .br-level-row strong{font-size:18px;color:#caff70;font-variant-numeric:tabular-nums}
 .br-threshold-slider{display:block;width:100%;max-width:none;accent-color:#caff70;padding:0;margin:12px 0;touch-action:pan-y}
@@ -1171,11 +1171,11 @@ html[data-theme="light"] .br-banner p{color:#fff!important}
   <img src="splash-solido.jpg..png" alt="SOLIDO CLIMBING TRAINING" onerror="this.style.display='none'">
 </div>
 <style>
-#solidoWelcomePoster,#solidoSplash{position:fixed;inset:0;z-index:100000;background:#05090c;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .8s ease}
-#solidoWelcomePoster img,#solidoSplash img{width:100%;height:100%;object-fit:cover;display:block}
+#solidoWelcomePoster,#solidoSplash{position:fixed;inset:0;z-index:99999;background:#05090c;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .8s ease}
+#solidoWelcomePoster img,#solidoSplash img{width:100%;height:100%;object-fit:contain;display:block}
 #solidoWelcomePoster.hide,#solidoSplash.hide{opacity:0;pointer-events:none}
-#solidoSplash{z-index:99999;opacity:0;pointer-events:none}
-#solidoSplash.show{opacity:1;pointer-events:auto}
+#solidoWelcomePoster{z-index:100000}
+#solidoSplash{z-index:99999;opacity:1;pointer-events:none}
 </style>
 <script>
 (function(){
@@ -1256,7 +1256,6 @@ html[data-theme="light"] .br-banner p{color:#fff!important}
     if(poster){poster.classList.add('hide');}
     window.setTimeout(function(){
       if(poster&&poster.parentNode)poster.parentNode.removeChild(poster);
-      if(splash){splash.classList.add('show');}
       playOriginalIntro();
       window.setTimeout(function(){
         if(splash)splash.classList.add('hide');
@@ -1348,7 +1347,7 @@ html[data-theme="light"] .br-banner p{color:#fff!important}
     </div>
     <button class="btn home-connect-btn" id="homeConnectWH" onclick="homeConnectWHC06()"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8.5 16 16M8 15.5 16 8.5"/><path d="M6 6a4 4 0 0 1 5.7 0l.3.3M12 17.7l.3.3a4 4 0 0 0 5.7-5.7l-.3-.3M6 18a4 4 0 0 1 0-5.7l.3-.3M17.7 12l.3-.3A4 4 0 0 0 12.3 6"/></svg>Conectar WH-C06</button>
     <button class="btn secondary home-connect-btn" id="homeDisconnectWH" onclick="disconnectWHC06()" style="display:none">Desconectar sensor</button>
-    <p>Conéctalo aquí y podrás usar la lectura en directo en tus entrenamientos y en Solido Sky Hopper.</p>
+    <p>Conéctalo aquí y podrás usar la lectura en directo en tus entrenamientos y en Solido Grigri Hopper.</p>
   </div>
 
   <div class="sectionhead">
@@ -1865,9 +1864,9 @@ html[data-theme="light"] .br-banner p{color:#fff!important}
 
 <section id="climbGame" class="hide">
   <button class="br-close-game" type="button" aria-label="Cerrar juego" title="Cerrar juego" onclick="brCloseFullscreenGame()">×</button>
-  <div class="sectionhead"><h2>🎮 Solido Sky Hopper</h2><span class="tag">WH-C06 LIVE</span></div>
+  <div class="sectionhead"><h2>🎮 Solido Grigri Hopper</h2><span class="tag">WH-C06 LIVE</span></div>
   <div class="boulder-rush">
-    <div class="br-banner"><div class="br-kicker">SOLIDO ARCADE SERIES · 01</div><h2>SOLIDO SKY HOPPER</h2><p>Salta entre plataformas, recoge monedas y flores de turbo. ¡Mantén 20 kg durante el turbo para volar rápido 7 segundos!</p></div>
+    <div class="br-banner"><div class="br-kicker">SOLIDO ARCADE SERIES · 01</div><h2>SOLIDO Grigri Hopper</h2><p>Salta entre plataformas, recoge monedas y flores de turbo. ¡Mantén 20 kg durante el turbo para volar rápido 7 segundos!</p></div>
     <div class="br-hopper-config">
       <div class="br-level-row"><label>FUERZA NECESARIA PARA SALTAR</label><strong id="brThresholdValue">3,0 kg</strong></div>
       <input id="brThreshold" class="br-threshold-slider" type="range" min="0.5" max="20" step="0.5" value="3" oninput="brSetThreshold(this.value)" aria-label="Fuerza necesaria para saltar">
@@ -1891,8 +1890,8 @@ html[data-theme="light"] .br-banner p{color:#fff!important}
       <div class="br-stat"><span>💎 XP TOTAL</span><strong id="brXP">0</strong></div>
     </div>
     <div class="br-scene br-hopper-scene" id="brScene" aria-label="Juego de plataformas con monedas y bolas con pinchos">
-      <canvas id="brCanvas" class="br-canvas" role="img" aria-label="Escenario animado de Solido Sky Hopper"></canvas>
-      <div class="br-overlay" id="brOverlay"><strong>¡Goku y la nube voladora!</strong><span>Ayuda a Goku niño a volar sobre la nube Kinto, salta entre bloques, recoge monedas y esquiva las bolas negras con pinchos. Aprieta el WH-C06 para impulsarte.</span><button class="btn" onclick="brStart()">▶ Empezar partida</button></div>
+      <canvas id="brCanvas" class="br-canvas" role="img" aria-label="Escenario animado de Solido Grigri Hopper"></canvas>
+      <div class="br-overlay" id="brOverlay"><strong>¡El Grigri saltarín!</strong><span>Controla al Grigri y salta entre plataformas, salta entre bloques, recoge monedas y esquiva las bolas negras con pinchos. Aprieta el WH-C06 para impulsarte.</span><button class="btn" onclick="brStart()">▶ Empezar partida</button></div>
     </div>
     <div class="br-target-panel"><div><small>FUERZA PARA SALTAR</small><strong id="brTarget">3,0 kg</strong></div><div class="br-target-badge" id="brTargetState">ESPERANDO FUERZA</div></div>
     <div class="br-gauge"><div class="br-gauge-marker" id="brGaugeMarker"></div></div><div class="br-gauge-labels"><span>Sin impulso</span><span>Umbral de salto</span><span>Más fuerza = más impulso</span></div>
@@ -2644,7 +2643,7 @@ function startForceRest(){
 
 
 /* =========================
-   SOLIDO SKY HOPPER · fuerza real WH-C06
+   SOLIDO Grigri Hopper · fuerza real WH-C06
    Scroll horizontal, saltos por fuerza y recogida de magnesio
 ========================= */
 const brDifficulties={
