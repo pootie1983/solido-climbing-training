@@ -537,7 +537,7 @@ body.workout-fullscreen-active{overflow:hidden!important}
   }
 }
 
-.exercise-art{overflow:hidden;padding:0}
+.art-fallback{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:radial-gradient(circle at 50% 15%,#386c5c,#122832 72%)!important;border:1px solid #6eea82!important;font-size:38px!important}.exercise-art{overflow:hidden;padding:0}
 .exercise-art img{display:block;width:100%;height:100%;object-fit:cover}
 .exercise-detail-image{max-width:460px;margin:12px auto 18px;border-radius:16px;overflow:hidden;border:1px solid #3a5962;background:#172a36}
 .exercise-detail-image img{display:block;width:100%;height:auto;max-height:300px;object-fit:contain}
@@ -3211,7 +3211,7 @@ function renderExercises(
             onclick="openExercise(${e.id})">
 
             <div class="art exercise-art">
-              <img src="${e.image || ''}" alt="Ilustración: ${e.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.textContent='${e.emoji}'">
+              <img src="./${e.image || ''}" alt="Ilustración: ${e.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.classList.add('art-fallback');this.insertAdjacentText('afterend','${e.emoji}')">
             </div>
 
             <div>
@@ -3291,7 +3291,7 @@ function openExercise(id){
       </div>
 
       <div class="exercise-detail-image">
-        <img src="${selectedExercise.image || ''}" alt="Ilustración del ejercicio ${selectedExercise.name}" onerror="this.style.display='none';this.parentElement.textContent='${selectedExercise.emoji}'">
+        <img src="./${selectedExercise.image || ''}" alt="Ilustración del ejercicio ${selectedExercise.name}" onerror="this.style.display='none';this.parentElement.classList.add('art-fallback');this.insertAdjacentText('afterend','${selectedExercise.emoji}')">
       </div>
 
       <h1>
