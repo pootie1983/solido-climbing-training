@@ -1255,7 +1255,7 @@ body.br-fullscreen-active .br-close-game{display:flex}
   <button class="br-close-game" type="button" aria-label="Cerrar juego" title="Cerrar juego" onclick="brCloseFullscreenGame()">×</button>
   <div class="sectionhead"><h2>🎮 Solido Sky Hopper</h2><span class="tag">WH-C06 LIVE</span></div>
   <div class="boulder-rush">
-    <div class="br-banner"><div class="br-kicker">SOLIDO ARCADE SERIES · 01</div><h2>SOLIDO SKY HOPPER</h2><p>Salta de plataforma en plataforma con tu GRIGRI y recoge nudos de ocho.</p></div>
+    <div class="br-banner"><div class="br-kicker">SOLIDO ARCADE SERIES · 01</div><h2>SOLIDO SKY HOPPER</h2><p>Salta entre plataformas, recoge monedas doradas y esquiva bolas con pinchos y ojos.</p></div>
     <div class="br-hopper-config">
       <div class="br-level-row"><label>FUERZA NECESARIA PARA SALTAR</label><strong id="brThresholdValue">3,0 kg</strong></div>
       <input id="brThreshold" class="br-threshold-slider" type="range" min="0.5" max="20" step="0.5" value="3" oninput="brSetThreshold(this.value)" aria-label="Fuerza necesaria para saltar">
@@ -1289,7 +1289,7 @@ body.br-fullscreen-active .br-close-game{display:flex}
     <div class="br-challenge" id="brChallenge">Haz fuerza por encima del umbral para elevar al personaje. Relaja para dejarlo caer sobre la siguiente plataforma.</div>
     <div class="br-actions"><button class="btn" id="brStartButton" onclick="brStart()">▶ Empezar a saltar</button><button class="btn secondary" onclick="brReset()">↻ Reiniciar</button><button class="btn secondary" onclick="show('fingerForce')">✊ Sensor WH-C06</button></div>
     <div class="br-achievements"><div class="br-ach" id="brAchCombo"><strong>🔥</strong>Combo x5</div><div class="br-ach" id="brAchHolds"><strong>✦</strong>10 presas</div><div class="br-ach" id="brAchClean"><strong>🏆</strong>Ronda limpia</div></div>
-    <p class="game-hint">La fuerza real del WH-C06 controla los saltos. Avanza con tu GRIGRI, recoge nudos de ocho y evita los mosquetones. Entrena sin dolor y descansa entre rondas.</p>
+    <p class="game-hint">La fuerza real del WH-C06 controla los saltos. Recoge monedas doradas y esquiva las bolas con pinchos. Entrena sin dolor y descansa entre rondas.</p>
   </div>
 </section>
 
@@ -1851,7 +1851,7 @@ function brReset(){
  document.getElementById('brThresholdValue').textContent=brThreshold.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg';document.getElementById('brTarget').textContent=brThreshold.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg';
  ['easy','normal','hard'].forEach(k=>document.getElementById('brDiff'+k.charAt(0).toUpperCase()+k.slice(1)).classList.toggle('active',k===brDifficulty));
  brNewGame();
- const overlay=document.getElementById('brOverlay');overlay.style.display='grid';overlay.innerHTML='<strong>¡A por los nudos de ocho!</strong><span>Antes de jugar mediremos tu fuerza máxima durante 5 segundos para ajustar el salto a tu capacidad. Conecta el WH-C06 y aprieta fuerte de forma progresiva.</span><button class="btn" onclick="brStart()">⚖ Calibrar fuerza y empezar</button>';
+ const overlay=document.getElementById('brOverlay');overlay.style.display='grid';overlay.innerHTML='<strong>¡A por las monedas!</strong><span>Antes de jugar mediremos tu fuerza máxima durante 5 segundos para ajustar el salto a tu capacidad. Conecta el WH-C06 y aprieta fuerte de forma progresiva.</span><button class="btn" onclick="brStart()">⚖ Calibrar fuerza y empezar</button>';
  document.getElementById('brStartButton').textContent='⚖ Calibrar y empezar';brRender(0);brDrawScene(0);brUpdateProgress();
 }
 function brStart(){
@@ -2083,7 +2083,7 @@ function brUpdateProgress(){const d=brLevelData();document.getElementById('brPro
 function brFinishRound(){
   brStopMusic();if(brGame&&brGame.dead)brPlayDeathSound();
  brActive=false;if(brFrame)cancelAnimationFrame(brFrame);brFrame=null;const score=Math.floor(brScore);brSessionScores.push(score);
- if(brMode==='session'&&brRound<3){const overlay=document.getElementById('brOverlay');overlay.style.display='grid';overlay.innerHTML='<strong>¡Ronda '+brRound+' completada!</strong><span>Has conseguido '+brFmt(score)+' puntos y recogido '+brHolds+' nudos de ocho. Descansa y continúa cuando estés listo.</span><button class="btn" onclick="brNextRound()">▶ Siguiente ronda</button>';document.getElementById('brStartButton').textContent='▶ Siguiente ronda';return;}
+ if(brMode==='session'&&brRound<3){const overlay=document.getElementById('brOverlay');overlay.style.display='grid';overlay.innerHTML='<strong>¡Ronda '+brRound+' completada!</strong><span>Has conseguido '+brFmt(score)+' puntos y recogido '+brHolds+' monedas. Descansa y continúa cuando estés listo.</span><button class="btn" onclick="brNextRound()">▶ Siguiente ronda</button>';document.getElementById('brStartButton').textContent='▶ Siguiente ronda';return;}
  brComplete();
 }
 function brNextRound(){brRound++;brTime=brLevelData().seconds;brScore=0;brCombo=0;brHolds=0;brLastForce=0;brNewGame();document.getElementById('brOverlay').style.display='none';brStart();}
