@@ -695,6 +695,29 @@ body.br-fullscreen-active .br-close-game{display:flex}
 </head>
 
 <body>
+<div id="solidoSplash" aria-label="SOLIDO CLIMBING TRAINING">
+  <img src="splash-solido.jpg" alt="Entrenar también es escalar">
+</div>
+<style>
+#solidoSplash{position:fixed;inset:0;z-index:99999;background:#05090c;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .45s ease}
+#solidoSplash img{width:100%;height:100%;object-fit:contain;display:block}
+#solidoSplash.hide{opacity:0;pointer-events:none}
+</style>
+<script>
+(function(){
+  var splash=document.getElementById('solidoSplash');
+  document.documentElement.style.background='#05090c';
+  document.body.style.overflow='hidden';
+  window.setTimeout(function(){
+    if(!splash)return;
+    splash.classList.add('hide');
+    window.setTimeout(function(){
+      if(splash&&splash.parentNode)splash.parentNode.removeChild(splash);
+      document.body.style.overflow='';
+    },500);
+  },2800);
+})();
+</script>
 
 <div id="profileGate" class="profile-gate" role="dialog" aria-modal="true" aria-labelledby="profileGateTitle">
   <div class="profile-gate-card">
