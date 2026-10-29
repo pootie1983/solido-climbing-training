@@ -2863,10 +2863,25 @@ function brDrawGokuNimbus(ctx,x,y,scale){
 function brDrawScene(force){
  if(!brCtx||!brGame)return;const c=brCtx,w=brCanvasW,h=brCanvasH,g=brGame,d=brLevelData();
  c.clearRect(0,0,w,h);
- const sky=c.createLinearGradient(0,0,0,h);sky.addColorStop(0,'#78d9f7');sky.addColorStop(1,'#e2f8ff');c.fillStyle=sky;c.fillRect(0,0,w,h);
- // Puffy distant clouds and layered hills move at different speeds for parallax.
- for(let i=0;i<7;i++){const cx=((i*117-g.worldX*.18)%(w+150)+w+150)%(w+150)-35,cy=35+(i*37)%105;c.fillStyle='rgba(255,255,255,.66)';c.beginPath();c.arc(cx,cy,15,0,Math.PI*2);c.arc(cx+17,cy-8,20,0,Math.PI*2);c.arc(cx+38,cy,14,0,Math.PI*2);c.fill();}
- c.fillStyle='#a5e3cb';c.beginPath();c.moveTo(0,h*.69);for(let x=0;x<=w+10;x+=30)c.lineTo(x,h*.64+Math.sin((x+g.worldX*.12)*.012)*20);c.lineTo(w,h);c.lineTo(0,h);c.closePath();c.fill();
+ // Cielo azul vivo y paisaje de plataformas clásico en pixel art.
+ c.fillStyle='#5cbdff';c.fillRect(0,0,w,h);
+ // Resplandor claro cerca del horizonte.
+ const sky=c.createLinearGradient(0,0,0,h*.8);sky.addColorStop(0,'rgba(126,211,255,.12)');sky.addColorStop(1,'rgba(232,249,255,.72)');c.fillStyle=sky;c.fillRect(0,0,w,h*.8);
+ // Sol en bloques.
+ c.fillStyle='#fff5a6';c.fillRect(w-70,32,30,30);c.fillRect(w-76,38,42,18);c.fillStyle='#ffdf5c';c.fillRect(w-66,36,22,22);
+ // Nubes pixeladas con contornos claros.
+ for(let i=0;i<6;i++){const cx=((i*139-g.worldX*.16)%(w+120)+w+120)%(w+120)-35,cy=28+(i*43)%100;
+  c.fillStyle='rgba(255,255,255,.96)';c.fillRect(Math.round(cx),cy,42,13);c.fillRect(Math.round(cx+8),cy-8,23,9);c.fillRect(Math.round(cx+15),cy-13,13,7);c.fillRect(Math.round(cx+34),cy+3,15,8);
+  c.fillStyle='#d7f3ff';c.fillRect(Math.round(cx+3),cy+10,35,3);
+ }
+ // Colinas verdes redondeadas que se desplazan con paralaje.
+ for(let i=0;i<5;i++){const hx=((i*170-g.worldX*.10)%(w+240)+w+240)%(w+240)-100,hy=h*.62+(i%2)*24;
+  c.fillStyle='#2b9e47';c.beginPath();c.arc(hx+60,hy+28,68,Math.PI,Math.PI*2);c.arc(hx+116,hy+28,54,Math.PI,Math.PI*2);c.lineTo(hx+170,hy+45);c.lineTo(hx-8,hy+45);c.closePath();c.fill();
+  c.fillStyle='#6bd34b';c.fillRect(Math.round(hx+48),Math.round(hy-4),7,5);c.fillRect(Math.round(hx+67),Math.round(hy-15),7,5);c.fillRect(Math.round(hx+103),Math.round(hy-8),7,5);
+ }
+ // Setos de primer plano en bloques.
+ c.fillStyle='#23883e';c.fillRect(0,h*.79,w,h*.21);c.fillStyle='#43b94b';c.fillRect(0,h*.79,w,7);
+ for(let x=0;x<w;x+=34){c.fillStyle=x%68===0?'#2c9a42':'#37aa46';c.fillRect(x,h*.79-5,17,7);c.fillStyle='#69d84b';c.fillRect(x+4,h*.79-4,6,2);}
  // Plataformas de bloques estilo plataformas arcade clásicas.
  for(const p of g.platforms){
   const x=p.x-g.worldX+g.x;if(x>w+20||x+p.w< -20)continue;
