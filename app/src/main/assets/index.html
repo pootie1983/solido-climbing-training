@@ -1164,102 +1164,109 @@ html[data-theme="light"] .br-banner p{color:#fff!important}
   </div>
 </div>
 <div id="workoutNotice" role="alertdialog" aria-live="assertive" aria-modal="true"><div class="workout-notice-card"><div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--green)">SOLIDO CLIMBING</div><div id="workoutNoticeIcon" class="workout-notice-icon" aria-hidden="true">Ⅱ</div><h2 id="workoutNoticeTitle">DESCANSO</h2><p id="workoutNoticeMessage">Empieza el descanso.</p></div></div>
-<div id="solidoSplash" aria-label="SOLIDO CLIMBING TRAINING">
-  <img src="images/P%C3%B3ster%20c%C3%B3mic%20de%20escalada%20SOLIDO.png" alt="SOLIDO CLIMBING" onerror="document.getElementById('solidoSplash')?.remove();document.body.style.overflow=''">
+<div id="solidoWelcomePoster" aria-label="Bienvenida SOLIDO CLIMBING">
+  <img src="images/P%C3%B3ster%20c%C3%B3mic%20de%20escalada%20SOLIDO.png" alt="SOLIDO CLIMBING" onerror="this.style.display='none'">
+</div>
+<div id="solidoSplash" aria-label="Introducción SOLIDO CLIMBING TRAINING">
+  <img src="splash-solido.jpg..png" alt="SOLIDO CLIMBING TRAINING" onerror="this.style.display='none'">
 </div>
 <style>
-#solidoSplash{position:fixed;inset:0;z-index:99999;background:#05090c;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .45s ease}
-#solidoSplash img{width:100%;height:100%;object-fit:contain;display:block}
-#solidoSplash.hide{opacity:0;pointer-events:none}
+#solidoWelcomePoster,#solidoSplash{position:fixed;inset:0;z-index:100000;background:#05090c;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .8s ease}
+#solidoWelcomePoster img,#solidoSplash img{width:100%;height:100%;object-fit:cover;display:block}
+#solidoWelcomePoster.hide,#solidoSplash.hide{opacity:0;pointer-events:none}
+#solidoSplash{z-index:99999;opacity:0;pointer-events:none}
+#solidoSplash.show{opacity:1;pointer-events:auto}
 </style>
 <script>
 (function(){
+  var poster=document.getElementById('solidoWelcomePoster');
   var splash=document.getElementById('solidoSplash');
   document.documentElement.style.background='#05090c';
   document.body.style.overflow='hidden';
 
-  // Intro épica original: rugido grave, subida de tensión, golpe cinematográfico y brillo final.
-  // Se sintetiza localmente; no usa una melodía de terceros ni archivos externos.
-  // La reproducción automática puede estar limitada por Android/WebView.
-  try{
-    var AudioCtx=window.AudioContext||window.webkitAudioContext;
-    if(AudioCtx){
-      var audioCtx=new AudioCtx();
-      var playWelcome=function(){
+  var AudioCtx=window.AudioContext||window.webkitAudioContext;
+  var audioCtx=null;
+  function playBellWelcome(){
+    try{
+      if(!AudioCtx)return;
+      audioCtx=new AudioCtx();
+      var start=function(){
         var t=audioCtx.currentTime;
         var master=audioCtx.createGain();
-        master.gain.setValueAtTime(0.72,t);
+        master.gain.setValueAtTime(0.0001,t);
+        master.gain.linearRampToValueAtTime(0.48,t+0.12);
+        master.gain.setValueAtTime(0.48,t+2.0);
+        master.gain.exponentialRampToValueAtTime(0.0001,t+3.2);
         master.connect(audioCtx.destination);
-
-        function voice(type,freq,start,duration,volume,endFreq,detune){
-          var osc=audioCtx.createOscillator();
-          var gain=audioCtx.createGain();
-          var filter=audioCtx.createBiquadFilter();
-          osc.type=type;
-          osc.frequency.setValueAtTime(freq,t+start);
-          if(endFreq) osc.frequency.exponentialRampToValueAtTime(Math.max(20,endFreq),t+start+duration);
-          if(detune) osc.detune.value=detune;
-          filter.type='lowpass';
-          filter.frequency.setValueAtTime(type==='sawtooth'?900:1800,t+start);
-          filter.frequency.exponentialRampToValueAtTime(type==='sawtooth'?2600:900,t+start+Math.min(duration,1.5));
-          gain.gain.setValueAtTime(0.0001,t+start);
-          gain.gain.exponentialRampToValueAtTime(volume,t+start+0.08);
-          gain.gain.exponentialRampToValueAtTime(0.0001,t+start+duration);
-          osc.connect(filter);filter.connect(gain);gain.connect(master);
-          osc.start(t+start);osc.stop(t+start+duration+0.03);
+        // Campanillas cristalinas sintetizadas localmente.
+        function bell(freq,delay,vol){
+          [1,2.01,2.98,4.08].forEach(function(partial,i){
+            var osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+            osc.type='sine';osc.frequency.value=freq*partial;
+            gain.gain.setValueAtTime(0.0001,t+delay);
+            gain.gain.linearRampToValueAtTime(vol/(i+1),t+delay+0.012);
+            gain.gain.exponentialRampToValueAtTime(0.0001,t+delay+1.9/(i+1));
+            osc.connect(gain);gain.connect(master);
+            osc.start(t+delay);osc.stop(t+delay+2.0);
+          });
         }
-
-        // Subgrave ascendente y capa tipo metales para dar sensación de aventura.
-        voice('sawtooth',55,0,2.25,0.20,82,-7);
-        voice('triangle',41,0,2.4,0.27,58,0);
-        voice('sawtooth',110,0.18,1.8,0.085,165,5);
-        // Acorde amplio y sostenido, no una secuencia de pitidos.
-        [146.83,220,293.66,369.99].forEach(function(freq,index){
-          voice('sawtooth',freq,0.72,1.55,0.045,index===0?196:freq*1.12,index*3-4);
-        });
-        // Golpe cinematográfico con caída de tono.
-        voice('sine',95,0.58,0.85,0.38,32,0);
-        voice('triangle',740,1.48,0.85,0.045,1480,0);
-
-        // Barrido de ruido filtrado para simular un whoosh ascendente.
-        var length=Math.floor(audioCtx.sampleRate*1.7);
-        var buffer=audioCtx.createBuffer(1,length,audioCtx.sampleRate);
-        var data=buffer.getChannelData(0);
-        for(var i=0;i<length;i++) data[i]=(Math.random()*2-1)*(i/length);
-        var noise=audioCtx.createBufferSource();
-        noise.buffer=buffer;
-        var noiseFilter=audioCtx.createBiquadFilter();
-        noiseFilter.type='bandpass';
-        noiseFilter.Q.value=0.7;
-        noiseFilter.frequency.setValueAtTime(180,t+0.12);
-        noiseFilter.frequency.exponentialRampToValueAtTime(3200,t+1.65);
-        var noiseGain=audioCtx.createGain();
-        noiseGain.gain.setValueAtTime(0.0001,t+0.12);
-        noiseGain.gain.exponentialRampToValueAtTime(0.10,t+1.25);
-        noiseGain.gain.exponentialRampToValueAtTime(0.0001,t+1.78);
-        noise.connect(noiseFilter);noiseFilter.connect(noiseGain);noiseGain.connect(master);
-        noise.start(t+0.12);noise.stop(t+1.82);
-
-        // Cierre brillante y cola suave.
-        voice('sine',587.33,1.45,1.05,0.055,880,0);
-        voice('sine',880,1.52,0.95,0.035,1174.66,0);
-        master.gain.setValueAtTime(0.72,t+2.15);
-        master.gain.exponentialRampToValueAtTime(0.0001,t+2.75);
-        window.setTimeout(function(){audioCtx.close().catch(function(){});},3100);
+        bell(880,0,0.20);bell(1174.66,0.48,0.16);bell(987.77,0.96,0.18);bell(1318.51,1.42,0.15);bell(1174.66,1.92,0.13);
       };
-      if(audioCtx.state==='running') playWelcome();
-      else audioCtx.resume().then(playWelcome).catch(function(){});
-    }
-  }catch(e){}
+      if(audioCtx.state==='running')start();else audioCtx.resume().then(start).catch(function(){});
+    }catch(e){}
+  }
+  function playOriginalIntro(){
+    try{
+      if(!AudioCtx)return;
+      if(!audioCtx||audioCtx.state==='closed')audioCtx=new AudioCtx();
+      var start=function(){
+        var t=audioCtx.currentTime,master=audioCtx.createGain();
+        master.gain.setValueAtTime(0.72,t);master.connect(audioCtx.destination);
+        function voice(type,freq,delay,duration,volume,endFreq,detune){
+          var osc=audioCtx.createOscillator(),gain=audioCtx.createGain(),filter=audioCtx.createBiquadFilter();
+          osc.type=type;osc.frequency.setValueAtTime(freq,t+delay);
+          if(endFreq)osc.frequency.exponentialRampToValueAtTime(Math.max(20,endFreq),t+delay+duration);
+          if(detune)osc.detune.value=detune;
+          filter.type='lowpass';filter.frequency.setValueAtTime(type==='sawtooth'?900:1800,t+delay);
+          filter.frequency.exponentialRampToValueAtTime(type==='sawtooth'?2600:900,t+delay+Math.min(duration,1.5));
+          gain.gain.setValueAtTime(0.0001,t+delay);gain.gain.exponentialRampToValueAtTime(volume,t+delay+0.08);
+          gain.gain.exponentialRampToValueAtTime(0.0001,t+delay+duration);
+          osc.connect(filter);filter.connect(gain);gain.connect(master);osc.start(t+delay);osc.stop(t+delay+duration+0.03);
+        }
+        voice('sawtooth',55,0,2.25,0.20,82,-7);voice('triangle',41,0,2.4,0.27,58,0);voice('sawtooth',110,0.18,1.8,0.085,165,5);
+        [146.83,220,293.66,369.99].forEach(function(freq,index){voice('sawtooth',freq,0.72,1.55,0.045,index===0?196:freq*1.12,index*3-4);});
+        voice('sine',95,0.58,0.85,0.38,32,0);voice('triangle',740,1.48,0.85,0.045,1480,0);
+        var length=Math.floor(audioCtx.sampleRate*1.7),buffer=audioCtx.createBuffer(1,length,audioCtx.sampleRate),data=buffer.getChannelData(0);
+        for(var i=0;i<length;i++)data[i]=(Math.random()*2-1)*(i/length);
+        var noise=audioCtx.createBufferSource(),noiseFilter=audioCtx.createBiquadFilter(),noiseGain=audioCtx.createGain();
+        noise.buffer=buffer;noiseFilter.type='bandpass';noiseFilter.Q.value=0.7;
+        noiseFilter.frequency.setValueAtTime(180,t+0.12);noiseFilter.frequency.exponentialRampToValueAtTime(3200,t+1.65);
+        noiseGain.gain.setValueAtTime(0.0001,t+0.12);noiseGain.gain.exponentialRampToValueAtTime(0.10,t+1.25);noiseGain.gain.exponentialRampToValueAtTime(0.0001,t+1.78);
+        noise.connect(noiseFilter);noiseFilter.connect(noiseGain);noiseGain.connect(master);noise.start(t+0.12);noise.stop(t+1.82);
+        voice('sine',587.33,1.45,1.05,0.055,880,0);voice('sine',880,1.52,0.95,0.035,1174.66,0);
+        master.gain.setValueAtTime(0.72,t+2.15);master.gain.exponentialRampToValueAtTime(0.0001,t+2.75);
+        window.setTimeout(function(){if(audioCtx&&audioCtx.state!=='closed')audioCtx.close().catch(function(){});},3100);
+      };
+      if(audioCtx.state==='running')start();else audioCtx.resume().then(start).catch(function(){});
+    }catch(e){}
+  }
 
+  playBellWelcome();
   window.setTimeout(function(){
-    if(!splash)return;
-    splash.classList.add('hide');
+    if(poster){poster.classList.add('hide');}
     window.setTimeout(function(){
-      if(splash&&splash.parentNode)splash.parentNode.removeChild(splash);
-      document.body.style.overflow='';
-    },500);
-  },2800);
+      if(poster&&poster.parentNode)poster.parentNode.removeChild(poster);
+      if(splash){splash.classList.add('show');}
+      playOriginalIntro();
+      window.setTimeout(function(){
+        if(splash)splash.classList.add('hide');
+        window.setTimeout(function(){
+          if(splash&&splash.parentNode)splash.parentNode.removeChild(splash);
+          document.body.style.overflow='';
+        },850);
+      },2800);
+    },850);
+  },3000);
 })();
 </script>
 
