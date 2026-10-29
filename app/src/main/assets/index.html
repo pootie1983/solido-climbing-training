@@ -527,6 +527,26 @@ select{
 .live-force-note{font-size:10px;line-height:1.5;color:var(--muted);margin:12px 0 0}
 @media(max-width:380px){.live-force-panel{padding:10px}.live-force-stats{gap:4px}.live-force-stats>div{padding:8px 5px}.live-force-stats strong{font-size:13px}}
 
+
+/* Protocolo de intentos y comparativa de manos */
+.attempt-settings{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.attempt-settings label,.compare-grip-label{display:grid;gap:6px;color:var(--muted);font-size:11px}
+.attempt-settings input{width:100%;min-width:0}
+.attempt-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.attempt-start{background:linear-gradient(110deg,#a4f54f,#6fdc7b)!important;color:#102016!important;font-weight:800}
+.attempt-live{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;padding:11px;background:#0a1a22;border:1px solid #29414b;border-radius:10px}
+.attempt-live span{font-size:10px;color:var(--muted)}.attempt-live strong{font-size:17px;color:#b9fa72}
+.hand-compare-panel{background:linear-gradient(145deg,#172a35,#10212b);border:1px solid #304651;border-radius:16px;padding:14px;margin:12px 0 20px}
+.compare-grip-label select{margin-top:3px;max-width:150px}
+.compare-bars{display:grid;gap:15px;margin:20px 0 12px}
+.compare-row{display:grid;grid-template-columns:78px minmax(40px,1fr) 64px;align-items:center;gap:8px;font-size:11px}
+.compare-row strong{text-align:right;font-size:12px;color:#b9fa72}
+.compare-track{height:15px;border-radius:5px;background:#08151d;overflow:hidden;border:1px solid #29414b}
+.compare-fill{height:100%;width:0;background:linear-gradient(90deg,#28cda4,#9df653);transition:width .3s ease;border-radius:4px}
+.compare-fill.right{background:linear-gradient(90deg,#39a6f0,#9a8bff)}
+.compare-difference{padding:10px;background:#0a1a22;border-radius:9px;color:var(--muted);font-size:12px;line-height:1.5}
+@media(max-width:380px){.attempt-actions{grid-template-columns:1fr}.attempt-settings{grid-template-columns:1fr}.compare-row{grid-template-columns:68px minmax(30px,1fr) 58px;gap:6px}}
+
 </style>
 </head>
 
@@ -725,7 +745,12 @@ select{
   </div>
   <div class="max-display"><span>Fuerza máxima registrada</span><strong id="configMaxForce">— kg</strong><small id="configForceNote">Se mostrará al recibir datos reales del WH-C06</small></div>
   <div class="training-config-summary" id="trainingConfigSummary">Mano derecha · Agarre de 10 mm</div>
-  <div class="timer-inline"><p class="config-label">Temporizador de entrenamiento</p><div class="timer-inline-clock" id="inlineClock">00:30</div><div class="timer-controls"><label>Segundos <input id="inlineSeconds" type="number" min="5" max="600" value="30"></label><button class="btn" id="inlineStartPause" onclick="toggleInlineTimer()">▶ Iniciar</button><button class="btn secondary" onclick="resetInlineTimer()">Reiniciar</button></div><div id="inlineTimerLabel" class="muted">Preparado</div></div>
+  <div class="timer-inline"><p class="config-label">Protocolo de intentos</p>
+    <div class="attempt-settings"><label>Duración del intento (s)<input id="attemptSeconds" type="number" min="3" max="15" value="7"></label><label>Descanso (s)<input id="restSeconds" type="number" min="15" max="300" value="120"></label></div>
+    <div class="timer-inline-clock" id="inlineClock">00:07</div>
+    <div class="attempt-actions"><button class="btn attempt-start" id="attemptStartBtn" onclick="startForceAttempt()">⚡ Iniciar intento</button><button class="btn secondary" id="attemptRestBtn" onclick="startForceRest()">⏱ Iniciar descanso</button></div>
+    <div class="timer-controls"><button class="btn secondary" id="inlineStartPause" onclick="toggleInlineTimer()">▶ Temporizador libre</button><button class="btn secondary" onclick="resetInlineTimer()">Reiniciar</button></div>
+    <div id="inlineTimerLabel" class="muted">Haz un intento corto y máximo; descansa antes de repetir.</div><div class="attempt-live"><span>Pico del intento actual</span><strong id="attemptPeak">0.00 kg</strong><span id="attemptPhase">Listo para empezar</span></div></div>
   <div class="connection-box">
     <div class="force-status"><div id="whStatusDot" class="status-dot"></div><span id="whStatus">Desconectado</span></div>
     <div class="force-value"><strong id="forceKg">0.00</strong><span>kg de fuerza en tiempo real</span></div>
@@ -901,6 +926,12 @@ select{
     <p id="trendCount" class="muted">Aún no hay mediciones registradas.</p>
   </div>
 
+<div class="sectionhead"><h2>Comparativa por mano</h2><span class="tag">MEJORES MARCAS</span></div>
+  <div class="hand-compare-panel"><p class="muted">Compara tus mejores máximos registrados con el mismo tamaño de agarre. Solo se muestran datos guardados.</p>
+    <label class="compare-grip-label">Tamaño de agarre<select id="compareGrip" onchange="renderHandComparison()"><option value="5">5 mm</option><option value="10" selected>10 mm</option><option value="20">20 mm</option></select></label>
+    <div class="compare-bars"><div class="compare-row"><span>Izquierda</span><div class="compare-track"><div id="compareLeftBar" class="compare-fill"></div></div><strong id="compareLeftValue">— kg</strong></div><div class="compare-row"><span>Derecha</span><div class="compare-track"><div id="compareRightBar" class="compare-fill right"></div></div><strong id="compareRightValue">— kg</strong></div></div>
+    <div id="compareDifference" class="compare-difference">Registra intentos de ambas manos para compararlas.</div>
+  </div>
   <div class="sectionhead">
 
     <h2>Historial</h2>
@@ -1141,6 +1172,7 @@ let maxForce = 0;
 let forceSamples = [];
 let trainingHand = 'Derecha', trainingGrip = '10';
 let inlineTimerId = null, inlineRemaining = 30, inlineTimerRunning = false;
+let attemptActive=false, attemptPeak=0, attemptTimerId=null, attemptPhase='idle';
 function selectTrainingOption(type,value,button){
   document.querySelectorAll(type==='hand'?'.hand-choice':'.grip-choice').forEach(el=>el.classList.toggle('active',el===button));
   if(type==='hand') trainingHand=value; else trainingGrip=value;
@@ -1362,6 +1394,12 @@ function processWHC06Data(raw){
       weight
     );
 
+    if(attemptActive && currentForce > attemptPeak){
+      attemptPeak=currentForce;
+      const peakEl=document.getElementById('attemptPeak');
+      if(peakEl) peakEl.textContent=Math.max(0,attemptPeak).toFixed(2)+' kg';
+    }
+
     if(currentForce > maxForce){
 
       maxForce = currentForce;
@@ -1451,23 +1489,56 @@ function updateLiveForceVisuals(){
   low.textContent=min.toFixed(1)+' kg';high.textContent=max.toFixed(1)+' kg';
 }
 
-function recordForce(){
-  if(!Number.isFinite(maxForce) || maxForce <= 0){
-    alert('Todavía no hay una lectura real de fuerza máxima. Conecta el WH-C06 y realiza un intento.');
-    return;
-  }
-  const timestamp = new Date();
-  sessions.unshift({
-    name:'Fuerza de dedos WH-C06',
-    mins:0,
-    force:Number(maxForce.toFixed(2)),
-    hand:trainingHand,
-    grip:String(trainingGrip),
-    ts:timestamp.toISOString(),
-    date:timestamp.toLocaleString('es-ES')
-  });
+function storeForceResult(force,label){
+  if(!Number.isFinite(force)||force<=0){return false;}
+  const timestamp=new Date();
+  sessions.unshift({name:label||'Fuerza de dedos WH-C06',mins:0,force:Number(force.toFixed(2)),hand:trainingHand,grip:String(trainingGrip),ts:timestamp.toISOString(),date:timestamp.toLocaleString('es-ES')});
   save();
+  renderHistory();
+  renderHandComparison();
+  return true;
+}
+function recordForce(){
+  if(!Number.isFinite(maxForce)||maxForce<=0){alert('Todavía no hay una lectura real de fuerza máxima. Conecta el WH-C06 y realiza un intento.');return;}
+  storeForceResult(maxForce,'Máximo manual · WH-C06');
   alert('Máximo registrado: '+maxForce.toFixed(2)+' kg · Mano '+trainingHand.toLowerCase()+' · Agarre '+trainingGrip+' mm');
+}
+function startForceAttempt(){
+  if(attemptTimerId!==null)clearInterval(attemptTimerId);
+  if(inlineTimerId!==null){clearInterval(inlineTimerId);inlineTimerId=null;inlineTimerRunning=false;}
+  attemptPeak=0;attemptActive=true;attemptPhase='attempt';
+  const duration=Math.min(15,Math.max(3,Number(document.getElementById('attemptSeconds').value)||7));
+  inlineRemaining=duration;formatInlineClock();
+  document.getElementById('attemptPeak').textContent='0.00 kg';
+  document.getElementById('attemptPhase').textContent='APRIETA · intento en curso';
+  document.getElementById('inlineTimerLabel').textContent='Intenta alcanzar tu máximo sin tirones.';
+  document.getElementById('attemptStartBtn').disabled=true;
+  attemptTimerId=setInterval(()=>{
+    inlineRemaining=Math.max(0,inlineRemaining-1);formatInlineClock();
+    if(inlineRemaining<=0){
+      clearInterval(attemptTimerId);attemptTimerId=null;attemptActive=false;
+      document.getElementById('attemptStartBtn').disabled=false;
+      document.getElementById('attemptPhase').textContent='Intento terminado';
+      document.getElementById('inlineTimerLabel').textContent='Intento finalizado. Descansa antes de repetir.';
+      if(attemptPeak>0){storeForceResult(attemptPeak,'Intento cronometrado · WH-C06');document.getElementById('inlineTimerLabel').textContent='Guardado: '+attemptPeak.toFixed(2)+' kg · '+trainingHand+' · '+trainingGrip+' mm';}
+      else document.getElementById('inlineTimerLabel').textContent='No se recibió fuerza positiva durante el intento. No se guardó ningún dato.';
+    }
+  },1000);
+}
+function startForceRest(){
+  if(attemptTimerId!==null)clearInterval(attemptTimerId);
+  attemptTimerId=null;attemptActive=false;attemptPhase='rest';
+  if(inlineTimerId!==null){clearInterval(inlineTimerId);inlineTimerId=null;inlineTimerRunning=false;}
+  inlineRemaining=Math.min(300,Math.max(15,Number(document.getElementById('restSeconds').value)||120));
+  formatInlineClock();
+  document.getElementById('attemptStartBtn').disabled=false;
+  document.getElementById('attemptPhase').textContent='RECUPERACIÓN';
+  document.getElementById('inlineTimerLabel').textContent='Descansa, sacude las manos y prepárate para el siguiente intento.';
+  if(attemptTimerId!==null)clearInterval(attemptTimerId);
+  attemptTimerId=setInterval(()=>{
+    inlineRemaining=Math.max(0,inlineRemaining-1);formatInlineClock();
+    if(inlineRemaining<=0){clearInterval(attemptTimerId);attemptTimerId=null;attemptPhase='idle';document.getElementById('attemptPhase').textContent='Descanso terminado';document.getElementById('inlineTimerLabel').textContent='Recuperación completada. Ya puedes iniciar otro intento.';}
+  },1000);
 }
 
 
@@ -1521,6 +1592,7 @@ function show(page,btn){
 
     renderHistory();
     renderForceTrend();
+    renderHandComparison();
 
   }
 
@@ -2131,6 +2203,19 @@ function renderHistory(){
 }
 
 
+function renderHandComparison(){
+  const grip=document.getElementById('compareGrip')?.value||'10';
+  const bestFor=hand=>sessions.filter(s=>s.force>0&&String(s.grip||'')===grip&&s.hand===hand).reduce((m,s)=>Math.max(m,Number(s.force)||0),0);
+  const left=bestFor('Izquierda'),right=bestFor('Derecha'),max=Math.max(left,right,1);
+  document.getElementById('compareLeftValue').textContent=left?left.toFixed(2)+' kg':'— kg';
+  document.getElementById('compareRightValue').textContent=right?right.toFixed(2)+' kg':'— kg';
+  document.getElementById('compareLeftBar').style.width=(left/max*100)+'%';
+  document.getElementById('compareRightBar').style.width=(right/max*100)+'%';
+  const msg=document.getElementById('compareDifference');
+  if(!left||!right){msg.textContent='Falta registrar una marca de '+(!left?'mano izquierda':'mano derecha')+' con agarre de '+grip+' mm para comparar.';return;}
+  const stronger=Math.max(left,right),weaker=Math.min(left,right),diff=((stronger-weaker)/stronger)*100;
+  msg.textContent=left===right?'Las dos manos tienen la misma marca registrada: '+left.toFixed(2)+' kg.':(left>right?'La izquierda':'La derecha')+' supera a la otra en '+(stronger-weaker).toFixed(2)+' kg ('+diff.toFixed(1)+'% de diferencia).';
+}
 function renderForceTrend(){
   const chart=document.getElementById('forceTrendChart');
   if(!chart) return;
