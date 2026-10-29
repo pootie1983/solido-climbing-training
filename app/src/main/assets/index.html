@@ -134,6 +134,14 @@ header{
   cursor:not-allowed;
 }
 
+.home-meditation-launch{width:100%;display:flex;align-items:center;gap:13px;text-align:left;margin:14px 0 18px;padding:16px;border:1px solid #477d3b;border-radius:16px;background:linear-gradient(120deg,#203d32,#142a30);color:var(--text);cursor:pointer;box-shadow:0 6px 20px #0002}
+.home-meditation-symbol{width:48px;height:48px;flex:0 0 48px;display:grid;place-items:center;border-radius:13px;background:#7cff4520;font-size:27px}
+.home-meditation-copy{display:grid;gap:5px;flex:1;min-width:0}
+.home-meditation-copy strong{font-size:13px;letter-spacing:.5px;color:var(--green)}
+.home-meditation-copy small{font-size:12px;line-height:1.4;color:#c0d1d5}
+.home-meditation-arrow{font-size:25px;color:var(--green)}
+.home-meditation-launch:active{transform:scale(.99)}
+
 .sectionhead{
   display:flex;
   justify-content:space-between;
@@ -871,9 +879,14 @@ body.br-fullscreen-active .br-close-game{display:flex}
 
     <div class="row" style="margin-top:16px;position:relative;z-index:1">
       <button class="btn" onclick="show('plans')">Ver mi plan →</button>
-      <button class="btn secondary home-meditation-btn" onclick="show('meditation');selectMeditation('focus')">☁️ Meditación guiada</button>
     </div>
   </div>
+
+  <button class="home-meditation-launch" onclick="show('meditation');selectMeditation('focus')">
+    <span class="home-meditation-symbol">☁️</span>
+    <span class="home-meditation-copy"><strong>MEDITACIÓN GUIADA</strong><small>Respira, enfoca tu mente y prepárate para escalar</small></span>
+    <span class="home-meditation-arrow">→</span>
+  </button>
 
   <div class="home-sensor-card">
     <div class="home-sensor-top">
@@ -1490,15 +1503,6 @@ body.br-fullscreen-active .br-close-game{display:flex}
 
     <span>▣</span>
     Planes
-
-  </button>
-
-  <button
-    data-page="meditation"
-    onclick="show('meditation',this)">
-
-    <span>☁</span>
-    Medita
 
   </button>
 
