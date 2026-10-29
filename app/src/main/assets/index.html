@@ -501,6 +501,32 @@ select{
 .trend-chart{width:100%;height:auto;display:block;overflow:visible}
 .trend-empty{padding:20px 8px;text-align:center;color:var(--muted);font-size:12px;line-height:1.5}
 @media(max-width:380px){.trend-filters{grid-template-columns:1fr}.trend-filters label{grid-template-columns:75px 1fr;align-items:center}}
+
+/* Panel visual en tiempo real del sensor WH-C06 */
+.live-force-panel{margin:8px 0 16px;padding:14px;background:linear-gradient(150deg,#0b1b24,#102a33);border:1px solid #2c4b54;border-radius:16px;box-shadow:inset 0 1px 0 #ffffff08}
+.live-force-top,.live-chart-heading,.live-chart-foot{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.live-force-top{font-size:10px;letter-spacing:1px;color:var(--muted);font-weight:800}
+.live-force-top strong{font-size:10px;letter-spacing:0;color:#b8d4db}
+.live-pulse{display:inline-block;width:7px;height:7px;margin-right:5px;border-radius:50%;background:#5d7480;vertical-align:middle}
+.status-dot.connected~span .live-pulse{background:#9bff4c}
+.force-meter{height:20px;margin-top:13px;background:repeating-linear-gradient(90deg,#1b303a 0,#1b303a calc(10% - 2px),#0b1820 calc(10% - 2px),#0b1820 10%);border:1px solid #29434c;border-radius:7px;overflow:hidden;position:relative}
+.force-meter-fill{height:100%;width:0%;background:linear-gradient(90deg,#39d9a0 0%,#b5fa4a 62%,#ffbd4a 84%,#ff635d 100%);border-radius:5px;transition:width .12s linear;box-shadow:0 0 15px #62e9a55c}
+.force-meter-marker{position:absolute;top:0;bottom:0;left:0;width:2px;background:#fff;box-shadow:0 0 7px #fff;transition:left .12s linear}
+.force-meter-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:10px;margin-top:5px}
+.live-chart-heading{margin-top:18px;font-size:13px}.live-chart-heading span{font-size:10px;color:var(--muted)}
+.live-force-chart{display:block;width:100%;height:auto;margin-top:8px;border-radius:9px;background:#08151d;overflow:hidden}
+.chart-grid{fill:none;stroke:#263b45;stroke-width:1;stroke-dasharray:3 5}
+.live-force-area{fill:url(#liveForceGradient);fill:#38d9a033;stroke:none}
+.live-force-line{fill:none;stroke:#8cf45a;stroke-width:2.7;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 3px #8cf45a55)}
+.live-force-dot{fill:#eaffd8;stroke:#80ed4c;stroke-width:2}
+.live-chart-foot{font-size:10px;color:var(--muted);margin-top:5px}
+.live-force-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:13px}
+.live-force-stats>div{min-width:0;background:#0a1a22;border:1px solid #263e47;border-radius:10px;padding:9px 7px}
+.live-force-stats span{display:block;color:var(--muted);font-size:9px;line-height:1.35}
+.live-force-stats strong{display:block;color:#b9fa72;font-size:15px;margin-top:5px;overflow-wrap:anywhere}
+.live-force-note{font-size:10px;line-height:1.5;color:var(--muted);margin:12px 0 0}
+@media(max-width:380px){.live-force-panel{padding:10px}.live-force-stats{gap:4px}.live-force-stats>div{padding:8px 5px}.live-force-stats strong{font-size:13px}}
+
 </style>
 </head>
 
@@ -702,7 +728,27 @@ select{
   <div class="timer-inline"><p class="config-label">Temporizador de entrenamiento</p><div class="timer-inline-clock" id="inlineClock">00:30</div><div class="timer-controls"><label>Segundos <input id="inlineSeconds" type="number" min="5" max="600" value="30"></label><button class="btn" id="inlineStartPause" onclick="toggleInlineTimer()">▶ Iniciar</button><button class="btn secondary" onclick="resetInlineTimer()">Reiniciar</button></div><div id="inlineTimerLabel" class="muted">Preparado</div></div>
   <div class="connection-box">
     <div class="force-status"><div id="whStatusDot" class="status-dot"></div><span id="whStatus">Desconectado</span></div>
-    <div class="force-value"><strong id="forceKg">0.00</strong><span>kg</span></div><div id="whDeviceName" class="device-name"></div>
+    <div class="force-value"><strong id="forceKg">0.00</strong><span>kg de fuerza en tiempo real</span></div>
+    <div class="live-force-panel">
+      <div class="live-force-top"><span><i class="live-pulse"></i> FUERZA EN DIRECTO</span><strong id="forceScaleLabel">Escala 0–10 kg</strong></div>
+      <div class="force-meter" role="img" aria-label="Barra de fuerza en tiempo real"><div class="force-meter-fill" id="forceMeterFill"></div><div class="force-meter-marker" id="forceMeterMarker"></div></div>
+      <div class="force-meter-labels"><span>0 kg</span><span id="forceMeterMax">10 kg</span></div>
+      <div class="live-chart-heading"><strong>Curva de fuerza</strong><span id="forceSampleCount">0 lecturas reales</span></div>
+      <svg id="liveForceChart" class="live-force-chart" viewBox="0 0 360 112" role="img" aria-label="Gráfica de fuerza recibida en tiempo real">
+        <path class="chart-grid" d="M8 16H352 M8 42H352 M8 68H352 M8 94H352"></path>
+        <path id="liveForceArea" class="live-force-area" d=""></path>
+        <polyline id="liveForceLine" class="live-force-line" points=""></polyline>
+        <circle id="liveForceDot" class="live-force-dot" cx="8" cy="94" r="4"></circle>
+      </svg>
+      <div class="live-chart-foot"><span id="forceChartLow">0 kg</span><span>Últimas lecturas recibidas</span><span id="forceChartHigh">— kg</span></div>
+      <div class="live-force-stats">
+        <div><span>Pico de sesión</span><strong id="livePeak">0.00 kg</strong></div>
+        <div><span>Media reciente</span><strong id="liveAverage">— kg</strong></div>
+        <div><span>Lecturas</span><strong id="liveReadings">0</strong></div>
+      </div>
+      <p class="live-force-note">La gráfica solo dibuja datos recibidos del sensor. La escala se ajusta automáticamente; no se generan valores simulados.</p>
+    </div>
+    <div id="whDeviceName" class="device-name"></div>
     <div class="force-actions"><button id="connectWH" class="btn" onclick="connectWHC06()">🔵 Conectar WH-C06</button><button id="disconnectWH" class="btn secondary" onclick="disconnectWHC06()">Desconectar</button></div>
     <div id="whMessage" class="connection-message">Pulsa conectar para buscar IF_B7.</div><button class="btn secondary record-force" onclick="recordForce()">✓ Registrar fuerza máxima</button><div class="max-force">Máximo de esta sesión: <strong id="maxForce">0.00 kg</strong></div>
   </div>
@@ -1092,6 +1138,7 @@ let selectedExercise = null;
 
 let currentForce = 0;
 let maxForce = 0;
+let forceSamples = [];
 let trainingHand = 'Derecha', trainingGrip = '10';
 let inlineTimerId = null, inlineRemaining = 30, inlineTimerRunning = false;
 function selectTrainingOption(type,value,button){
@@ -1334,6 +1381,11 @@ function processWHC06Data(raw){
     ).textContent =
       currentForce.toFixed(2);
 
+    // Solo añadimos muestras reales recibidas del WH-C06.
+    forceSamples.push({t:Date.now(),kg:Math.max(0,currentForce)});
+    if(forceSamples.length>60) forceSamples.shift();
+    updateLiveForceVisuals();
+
 
     if(data.device){
 
@@ -1371,6 +1423,33 @@ window.onWHC06Data =
 
   };
 
+
+function updateLiveForceVisuals(){
+  const meter=document.getElementById('forceMeterFill');
+  if(!meter)return;
+  const positive=Math.max(0,currentForce);
+  const scale=Math.max(10,Math.ceil(Math.max(positive,maxForce)/10)*10);
+  const percent=Math.min(100,(positive/scale)*100);
+  meter.style.width=percent+'%';
+  document.getElementById('forceMeterMarker').style.left='calc('+percent+'% - 1px)';
+  document.getElementById('forceScaleLabel').textContent='Escala 0–'+scale+' kg';
+  document.getElementById('forceMeterMax').textContent=scale+' kg';
+  document.getElementById('forceSampleCount').textContent=forceSamples.length+' lecturas reales';
+  document.getElementById('livePeak').textContent=Math.max(0,maxForce).toFixed(2)+' kg';
+  document.getElementById('liveReadings').textContent=String(forceSamples.length);
+  const recent=forceSamples.slice(-20).map(s=>s.kg);
+  document.getElementById('liveAverage').textContent=recent.length?(recent.reduce((a,b)=>a+b,0)/recent.length).toFixed(2)+' kg':'— kg';
+  const line=document.getElementById('liveForceLine'), area=document.getElementById('liveForceArea'), dot=document.getElementById('liveForceDot');
+  const low=document.getElementById('forceChartLow'), high=document.getElementById('forceChartHigh');
+  if(!forceSamples.length){line.setAttribute('points','');area.setAttribute('d','');dot.setAttribute('opacity','0');low.textContent='0 kg';high.textContent='— kg';return;}
+  const vals=forceSamples.map(s=>s.kg), max=Math.max(1,...vals), min=Math.min(0,...vals), range=Math.max(1,max-min);
+  const pts=vals.map((v,i)=>({x:8+(i/Math.max(1,vals.length-1))*344,y:94-((v-min)/range)*78}));
+  const points=pts.map(p=>p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ');
+  line.setAttribute('points',points);
+  area.setAttribute('d','M '+pts[0].x.toFixed(1)+' 94 L '+pts.map(p=>p.x.toFixed(1)+' '+p.y.toFixed(1)).join(' L ')+' L '+pts[pts.length-1].x.toFixed(1)+' 94 Z');
+  const last=pts[pts.length-1];dot.setAttribute('cx',last.x);dot.setAttribute('cy',last.y);dot.setAttribute('opacity','1');
+  low.textContent=min.toFixed(1)+' kg';high.textContent=max.toFixed(1)+' kg';
+}
 
 function recordForce(){
   if(!Number.isFinite(maxForce) || maxForce <= 0){
