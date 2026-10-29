@@ -1813,9 +1813,10 @@ function startForceRest(){
    Scroll horizontal, saltos por fuerza y recogida de magnesio
 ========================= */
 const brDifficulties={
- easy:{name:'Fácil',gravity:1250,jump:390,speed:115,gap:145,seconds:60,points:1},
- normal:{name:'Medio',gravity:1450,jump:410,speed:145,gap:165,seconds:60,points:1.5},
- hard:{name:'Difícil',gravity:1650,jump:430,speed:175,gap:185,seconds:60,points:2}
+ // Tune the jump arc and platform spacing together so the jump can reach the next ledge.
+ easy:{name:'Fácil',gravity:900,jump:470,speed:80,gap:65,seconds:60,points:1},
+ normal:{name:'Medio',gravity:1050,jump:490,speed:95,gap:80,seconds:60,points:1.5},
+ hard:{name:'Difícil',gravity:1200,jump:510,speed:110,gap:95,seconds:60,points:2}
 };
 let brMode='quick',brDifficulty='easy',brActive=false,brFrame=null,brLast=0,brTime=60,brScore=0,brCombo=0,brBestCombo=0,brHolds=0,brRound=1,brTotalXP=0,brSessionScores=[],brCountdownTimer=null,brGameForce=0,brAudioContext=null;
 let brThreshold=3,brLastForce=0,brLastRender=0,brGame=null,brCanvas=null,brCtx=null,brCanvasW=600,brCanvasH=330,brDpr=1;
@@ -1936,7 +1937,8 @@ function brLoop(now){
  // Every fresh squeeze gives an immediate impulse, even while airborne, to regain lost height.
  if(thresholdCross&&g&&!g.dead){
    const intensity=Math.min(1.5,Math.max(0,(force-brThreshold)/Math.max(.5,brThreshold)));
-   const impulse=d.jump*(.78+Math.min(1.5,intensity)*.42);
+   // Keep a reliable minimum jump impulse; extra squeeze still adds height.
+   const impulse=d.jump*(.96+Math.min(1.5,intensity)*.30);
    if(!g.airborne){g.airborne=true;brCombo++;brBestCombo=Math.max(brBestCombo,brCombo);}
    // Reverse a fall immediately instead of waiting for gravity to reverse the velocity.
    g.vy=Math.min(g.vy,-impulse);
@@ -1946,9 +1948,10 @@ function brLoop(now){
  if(g&&!g.dead){
    // Stronger lift while squeezing; release still causes a quick descent.
    if(g.airborne){
-     if(force<brThreshold){g.vy=Math.min(g.vy+(d.gravity*3.0)*dt,1250);}
-     else{const lift=Math.min(2.2,force/Math.max(.5,brThreshold));g.vy=Math.max(g.vy-(d.gravity*(1.15+lift*.75))*dt,-d.jump*1.65);}
-   }else{g.vy=Math.min(g.vy+d.gravity*dt,1050);}
+     // Releasing the sensor should let the character descend, not make it plummet.
+     if(force<brThreshold){g.vy=Math.min(g.vy+(d.gravity*1.45)*dt,800);}
+     else{const lift=Math.min(2.2,force/Math.max(.5,brThreshold));g.vy=Math.max(g.vy-(d.gravity*(1.05+lift*.55))*dt,-d.jump*1.45);}
+   }else{g.vy=Math.min(g.vy+d.gravity*dt,800);}
    g.y+=g.vy*dt;
    if(g.y<24){g.y=24;if(g.vy<0)g.vy=0;}
    // Tilt the GRIGRI while rising and falling.
