@@ -1396,6 +1396,13 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
   <div class="config-block">
     <p class="config-label">¿Qué mano vas a entrenar?</p>
     <div class="choice-row"><button class="choice hand-choice" data-value="Izquierda" onclick="selectTrainingOption('hand','Izquierda',this)"><span><svg class="hand-icon hand-left" viewBox="0 0 48 48" aria-hidden="true"><path d="M14 24V12a3 3 0 0 1 6 0v9-13a3 3 0 0 1 6 0v13-11a3 3 0 0 1 6 0v12-8a3 3 0 0 1 6 0v13c0 9-5 15-14 15h-2c-5 0-8-3-10-7l-5-9a3 3 0 0 1 5-3l4 5"/></svg></span>Izquierda</button><button class="choice hand-choice active" data-value="Derecha" onclick="selectTrainingOption('hand','Derecha',this)"><span><svg class="hand-icon hand-right" viewBox="0 0 48 48" aria-hidden="true"><path d="M34 24V12a3 3 0 0 0-6 0v9-13a3 3 0 0 0-6 0v13-11a3 3 0 0 0-6 0v12-8a3 3 0 0 0-6 0v13c0 9 5 15 14 15h2c5 0 8-3 10-7l5-9a3 3 0 0 0-5-3l-4 5"/></svg></span>Derecha</button><button class="choice hand-choice" data-value="Ambas" onclick="selectTrainingOption('hand','Ambas',this)"><span><svg class="hand-icon hand-both" viewBox="0 0 80 48" aria-hidden="true"><g transform="translate(0 1) scale(.78 .88)"><path d="M14 24V12a3 3 0 0 1 6 0v9-13a3 3 0 0 1 6 0v13-11a3 3 0 0 1 6 0v12-8a3 3 0 0 1 6 0v13c0 9-5 15-14 15h-2c-5 0-8-3-10-7l-5-9a3 3 0 0 1 5-3l4 5"/></g><g transform="translate(80 1) scale(-.78 .88)"><path d="M14 24V12a3 3 0 0 1 6 0v9-13a3 3 0 0 1 6 0v13-11a3 3 0 0 1 6 0v12-8a3 3 0 0 1 6 0v13c0 9-5 15-14 15h-2c-5 0-8-3-10-7l-5-9a3 3 0 0 1 5-3l4 5"/></g></svg></span>Ambas</button></div>
+    <div id="workoutStartHandPicker" style="display:none;margin:-6px 0 18px">
+      <p class="config-label">¿Con qué mano quieres empezar?</p>
+      <div class="choice-row" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:0">
+        <button type="button" class="choice workout-start-hand active" onclick="selectWorkoutStartHand('Derecha',this)">Mano derecha</button>
+        <button type="button" class="choice workout-start-hand" onclick="selectWorkoutStartHand('Izquierda',this)">Mano izquierda</button>
+      </div>
+    </div>
     <p class="config-label">Tamaño del agarre</p>
     <div class="choice-row"><button class="choice grip-choice" data-value="5" onclick="selectTrainingOption('grip','5',this)">5 mm</button><button class="choice grip-choice active" data-value="10" onclick="selectTrainingOption('grip','10',this)">10 mm</button><button class="choice grip-choice" data-value="20" onclick="selectTrainingOption('grip','20',this)">20 mm</button></div>
   </div>
@@ -1967,7 +1974,15 @@ function selectTrainingOption(type,value,button){
   document.querySelectorAll(type==='hand'?'.hand-choice':'.grip-choice').forEach(el=>el.classList.toggle('active',el===button));
   if(type==='hand') trainingHand=value; else trainingGrip=value;
   try{localStorage.setItem(type==='hand'?'solidoFingerHand':'solidoFingerGrip',value);}catch(e){}
-  document.getElementById('trainingConfigSummary').textContent='Mano '+trainingHand.toLowerCase()+' · Agarre de '+trainingGrip+' mm';
+  const startPicker=document.getElementById('workoutStartHandPicker');
+  if(startPicker)startPicker.style.display=trainingHand==='Ambas'?'block':'none';
+  document.getElementById('trainingConfigSummary').textContent='Mano '+trainingHand.toLowerCase()+(trainingHand==='Ambas'?' · empieza con '+workoutChosenStartHand.toLowerCase():'')+' · Agarre de '+trainingGrip+' mm';
+}
+function selectWorkoutStartHand(hand,button){
+  workoutChosenStartHand=hand;
+  document.querySelectorAll('.workout-start-hand').forEach(el=>el.classList.toggle('active',el===button));
+  try{localStorage.setItem('solidoWorkoutStartHand',hand);}catch(e){}
+  document.getElementById('trainingConfigSummary').textContent='Mano '+trainingHand.toLowerCase()+(trainingHand==='Ambas'?' · empieza con '+workoutChosenStartHand.toLowerCase():'')+' · Agarre de '+trainingGrip+' mm';
 }
 function useTrainingConfiguration(){
   const message='Configuración aplicada: mano '+trainingHand.toLowerCase()+', agarre de '+trainingGrip+' mm.';
@@ -1978,7 +1993,7 @@ function useTrainingConfiguration(){
 // Structured hold/rest protocol using live WH-C06 force samples.
 let workoutTimerId=null,workoutRunning=false,workoutPhase='idle',workoutRep=0,workoutTotalReps=4;
 let workoutPhaseRemaining=0,workoutTarget=3,workoutHold=7,workoutRest=60,workoutPeak=0,workoutTargetSeconds=0,workoutElapsed=0,workoutSessionStarted=0,workoutSessionPeak=0,workoutCompleted=0;
-let workoutActiveHand='Derecha',workoutStartHand='Derecha',workoutSwitchSeconds=5;
+let workoutActiveHand='Derecha',workoutStartHand='Derecha',workoutSwitchSeconds=10,workoutChosenStartHand=localStorage.getItem('solidoWorkoutStartHand')||'Derecha';
 function workoutFormatClock(n){n=Math.max(0,Math.ceil(Number(n)||0));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');}
 function workoutUi(){
  const clock=document.getElementById('workoutClock'),phase=document.getElementById('workoutPhaseLabel'),live=document.getElementById('workoutLiveForce'),bar=document.getElementById('workoutForceBar');
@@ -2000,7 +2015,7 @@ function startIntervalWorkout(){
  document.getElementById('workoutRestSeconds').value=workoutRest;
  document.getElementById('workoutReps').value=workoutTotalReps;
  workoutRep=1;workoutCompleted=0;workoutPeak=0;workoutSessionPeak=0;workoutTargetSeconds=0;workoutElapsed=0;workoutSessionStarted=Date.now();
- workoutStartHand=trainingHand==='Ambas'?'Derecha':trainingHand;workoutActiveHand=workoutStartHand;
+ workoutStartHand=trainingHand==='Ambas'?workoutChosenStartHand:trainingHand;workoutActiveHand=workoutStartHand;
  workoutPhase='hold';workoutPhaseRemaining=workoutHold;workoutRunning=true;
  document.getElementById('workoutStartBtn').disabled=true;document.getElementById('workoutStopBtn').disabled=false;
  document.getElementById('workoutResult').textContent='Serie en curso: intenta mantener al menos '+workoutTarget.toFixed(1)+' kg de forma controlada.';
