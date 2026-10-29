@@ -576,6 +576,13 @@ select{
 .br-banner:after{content:'★';position:absolute;right:10px;top:-20px;font-size:85px;color:#ffffff22;transform:rotate(15deg)}
 .br-kicker{font-size:10px;font-weight:1000;letter-spacing:2px}.br-banner h2{margin:4px 0;font-size:27px;line-height:1}.br-banner p{font-size:11px;margin:7px 0 0;max-width:260px;color:#fff}
 .br-modes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.br-mode{background:#1a2442;color:#dfe5ff;border:1px solid #394975;border-radius:11px;padding:10px 8px;text-align:left;font-weight:800}.br-mode small{display:block;font-weight:500;color:#9eafd8;margin-top:3px}.br-mode.active{background:#283a67;border:2px solid #9dff5c;color:#caff9e}
+.br-game-types{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:12px 0 10px}
+.br-game-type{min-width:0;padding:10px 6px;border:1px solid #394975;border-radius:11px;background:#151e3a;color:#dfe5ff;text-align:center;font-size:11px;font-weight:900;cursor:pointer}
+.br-game-type span{display:block;font-size:21px;margin-bottom:4px}
+.br-game-type small{display:block;font-size:9px;line-height:1.35;color:#9eafd8;font-weight:500;margin-top:4px}
+.br-game-type.active{border:2px solid #9dff5c;background:#29375c;color:#d5ff9c;box-shadow:0 0 12px #9dff5c20}
+.br-mode-description{font-size:11px;line-height:1.45;color:#bdc9f0;padding:9px 10px;border-radius:9px;background:#0a1125;border:1px solid #29365f;margin:-3px 0 10px}
+@media(max-width:360px){.br-game-type{font-size:10px;padding:8px 3px}.br-game-type span{font-size:18px}}
 .br-hud{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:10px 0}.br-stat{background:#0a1125;border:1px solid #29365f;border-radius:10px;padding:8px 5px;text-align:center;min-width:0}.br-stat span{display:block;color:#9eafd8;font-size:9px;letter-spacing:.5px}.br-stat strong{display:block;font-size:18px;color:#fff;margin-top:3px;font-variant-numeric:tabular-nums}.br-stat.combo strong{color:#ffcb4d}
 .br-scene{height:310px;position:relative;overflow:hidden;border:2px solid #6575b5;border-radius:13px;background:linear-gradient(180deg,#222d5c 0%,#344a77 62%,#202b4c 100%);isolation:isolate}
 .br-scene:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 49%,#dce7ff12 50%,transparent 51%),repeating-linear-gradient(0deg,transparent 0 48px,#e4ecff13 49px 50px),repeating-linear-gradient(90deg,transparent 0 48px,#e4ecff13 49px 50px);z-index:-1}
@@ -1096,6 +1103,12 @@ select{
   <div class="sectionhead"><h2>🎮 Boulder Rush</h2><span class="tag">WH-C06 LIVE</span></div>
   <div class="boulder-rush">
     <div class="br-banner"><div class="br-kicker">SOLIDO ARCADE SERIES · 01</div><h2>BOULDER RUSH</h2><p>Lee la fuerza, clava el objetivo y encadena combos. ¡Cada presa cuenta!</p></div>
+    <div class="br-game-types" aria-label="Modalidad de juego">
+      <button class="br-game-type" id="brTypeClimb" onclick="brSetGameMode('climb')"><span>🧗</span>Ascenso vertical<small>Sube por el muro</small></button>
+      <button class="br-game-type" id="brTypeEnergy" onclick="brSetGameMode('energy')"><span>⚡</span>Carga de energía<small>Mantén la fuerza</small></button>
+      <button class="br-game-type active" id="brTypeHolds" onclick="brSetGameMode('holds')"><span>💎</span>Desafío de presas<small>Encadena combos</small></button>
+    </div>
+    <div class="br-mode-description" id="brModeDescription">Captura presas al entrar en la zona objetivo y encadena combos con lecturas reales del WH-C06.</div>
     <div class="br-modes">
       <button class="br-mode active" id="brModeQuick" onclick="brSetMode('quick')">⚡ Reto rápido<small>45 segundos · máxima puntuación</small></button>
       <button class="br-mode" id="brModeSession" onclick="brSetMode('session')">🏆 Sesión completa<small>3 rondas · sube de nivel</small></button>
@@ -1657,17 +1670,18 @@ const brLevels=[
  {name:'Zona roja',min:4,max:9,seconds:55,bonus:300},
  {name:'Élite',min:5,max:12,seconds:60,bonus:450}
 ];
-let brMode='quick',brLevel=0,brActive=false,brFrame=null,brLast=0,brTime=45,brScore=0,brCombo=0,brBestCombo=0,brHolds=0,brRound=1,brStable=0,brWasInZone=false,brTotalXP=0,brRoundClean=true,brLastForce=0,brSessionScores=[];
+let brMode='quick',brGameMode='holds',brLevel=0,brActive=false,brFrame=null,brLast=0,brTime=45,brScore=0,brCombo=0,brBestCombo=0,brHolds=0,brRound=1,brStable=0,brWasInZone=false,brRewardedThisZone=false,brTotalXP=0,brRoundClean=true,brLastForce=0,brSessionScores=[];
 try{brTotalXP=Number(localStorage.getItem('solidoBoulderXP')||0)||0;}catch(e){}
 function brFmt(n){return Math.max(0,Math.floor(n)).toLocaleString('es-ES');}
 function brLevelData(){return brLevels[brLevel]||brLevels[0];}
 function brSetMode(mode){if(brActive)return;brMode=mode;document.getElementById('brModeQuick').classList.toggle('active',mode==='quick');document.getElementById('brModeSession').classList.toggle('active',mode==='session');brReset();}
+function brSetGameMode(mode){if(brActive)return;brGameMode=mode;['climb','energy','holds'].forEach(key=>{const el=document.getElementById('brType'+key.charAt(0).toUpperCase()+key.slice(1));if(el)el.classList.toggle('active',key===mode);});const copy={climb:'Cada captura impulsa al escalador hacia arriba. Ajusta la fuerza al rango verde para progresar por el muro.',energy:'Mantén la fuerza dentro del rango objetivo para cargar energía. Al superar 1,1 segundos se libera una descarga de puntos y combo.',holds:'Captura presas al entrar en la zona objetivo y encadena combos con lecturas reales del WH-C06.'};document.getElementById('brModeDescription').textContent=copy[mode]||copy.holds;brReset();}
 function brSetLevel(){if(brActive)return;brLevel=Number(document.getElementById('brLevel').value)||0;brReset();}
 function brNextLevel(){if(brActive)return;brLevel=(brLevel+1)%brLevels.length;document.getElementById('brLevel').value=String(brLevel);brReset();}
 function brTargetRange(){const d=brLevelData();return {min:d.min,max:d.max};}
 function brReset(){
  brActive=false;if(brFrame)cancelAnimationFrame(brFrame);brFrame=null;
- const d=brLevelData();brTime=d.seconds;brScore=0;brCombo=0;brBestCombo=0;brHolds=0;brRound=1;brStable=0;brWasInZone=false;brRoundClean=true;brLastForce=0;brSessionScores=[];
+ const d=brLevelData();brTime=d.seconds;brScore=0;brCombo=0;brBestCombo=0;brHolds=0;brRound=1;brStable=0;brWasInZone=false;brRewardedThisZone=false;brRoundClean=true;brLastForce=0;brSessionScores=[];
  const overlay=document.getElementById('brOverlay');if(overlay){overlay.style.display='grid';overlay.innerHTML='<strong>¿Listo para el bloque?</strong><span>El objetivo de fuerza es '+d.min.toFixed(1)+'–'+d.max.toFixed(1)+' kg. Entra en la zona verde con el WH-C06, mantén el control y encadena combos.</span><button class="btn" onclick="brStart()">▶ ¡A escalar!</button>';}
  document.getElementById('brStartButton').textContent='▶ Empezar reto';document.getElementById('brClimber').classList.add('resting');
  brRender(0);brUpdateProgress();
@@ -1682,12 +1696,17 @@ function brLoop(now){
  const force=Math.max(0,Number(currentForce)||0),d=brLevelData(),range=brTargetRange(),inZone=force>=range.min&&force<=range.max,tooHigh=force>range.max;
  brTime=Math.max(0,brTime-dt);
  if(inZone){
-   brStable+=dt;
-   if(!brWasInZone){brCombo=Math.max(1,brCombo+1);brWasInZone=true;brHolds++;brScore+=25+brCombo*5;brSpawnFloat('+'+(25+brCombo*5)+' ✦');brMoveHolds();}
-   brScore+=dt*(18+Math.min(brCombo,12)*3); 
-   if(brStable>=1.1){brScore+=dt*20;}
+   brStable+=dt;brWasInZone=true;
+   if(brGameMode==='energy'){
+     brScore+=dt*(10+Math.min(brCombo,12)*2);
+     if(brStable>=1.1&&!brRewardedThisZone){brRewardedThisZone=true;brCombo=Math.max(1,brCombo+1);brBestCombo=Math.max(brBestCombo,brCombo);brHolds++;const burst=45+brCombo*10;brScore+=burst;brSpawnFloat('⚡ +'+burst);brMoveHolds();}
+   }else{
+     if(!brRewardedThisZone){brRewardedThisZone=true;brCombo=Math.max(1,brCombo+1);brHolds++;const points=25+brCombo*5;brScore+=points;brSpawnFloat('+'+points+(brGameMode==='climb'?' ⬆':' ✦'));brMoveHolds();if(brGameMode==='climb'){const climber=document.getElementById('brClimber');climber.style.bottom=(35+((brHolds*25)%205))+'px';}}
+     brScore+=dt*(brGameMode==='climb'?24:18+Math.min(brCombo,12)*3);
+     if(brStable>=1.1)brScore+=dt*20;
+   }
  }else{
-   brStable=0;
+   brStable=0;brRewardedThisZone=false;
    if(brWasInZone){if(force<range.min*.5){brCombo=0;}else{brCombo=Math.max(0,brCombo-1);}brWasInZone=false;}
    if(tooHigh){brRoundClean=false;document.getElementById('brTargetState').textContent='BAJA UN POCO';}
  }
@@ -1708,7 +1727,7 @@ function brRender(force){
  document.getElementById('brRound').textContent=brRound+'/'+(brMode==='session'?3:1);document.getElementById('brHolds').textContent=brHolds;
  let best=0;try{best=Number(localStorage.getItem('solidoBoulderBest')||0)||0;}catch(e){}document.getElementById('brBest').textContent=brFmt(best);
  const marker=document.getElementById('brGaugeMarker');marker.style.left=Math.min(99,Math.max(0,force/Math.max(1,range.max*1.4)*100))+'%';
- document.getElementById('brChallenge').innerHTML='🎯 <strong>Misión:</strong> mantén '+range.min.toFixed(1)+'–'+range.max.toFixed(1)+' kg durante 1,1 s. '+(brCombo>=5?'¡Combo caliente! Multiplicador x'+brCombo+'.':'Encadena presas para subir el multiplicador.')+' <span style="color:#caff70">Lectura: '+force.toFixed(1)+' kg</span>';
+ const mission=brGameMode==='climb'?'Misión: captura presas para ganar altura.':brGameMode==='energy'?'Misión: mantén la fuerza 1,1 s para descargar energía.':'Misión: entra en la zona verde para capturar presas.';document.getElementById('brChallenge').innerHTML='🎯 <strong>'+mission+'</strong> Objetivo '+range.min.toFixed(1)+'–'+range.max.toFixed(1)+' kg. '+(brCombo>=5?'¡Combo caliente! Multiplicador x'+brCombo+'.':'Encadena aciertos para subir el multiplicador.')+' <span style="color:#caff70">Lectura: '+force.toFixed(1)+' kg</span>';
  document.getElementById('brAchCombo').classList.toggle('unlocked',brBestCombo>=5);document.getElementById('brAchHolds').classList.toggle('unlocked',brHolds>=10);document.getElementById('brAchClean').classList.toggle('unlocked',brRoundClean&&brHolds>=5);
  document.getElementById('brProgress').style.width=Math.min(100,Math.max(0,brScore/(d.bonus*5)*100))+'%';
 }
