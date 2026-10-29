@@ -1732,7 +1732,7 @@ const brDifficulties={
  normal:{name:'Medio',gravity:1450,jump:410,speed:145,gap:165,seconds:60,points:1.5},
  hard:{name:'Difícil',gravity:1650,jump:430,speed:175,gap:185,seconds:60,points:2}
 };
-let brMode='quick',brDifficulty='easy',brActive=false,brFrame=null,brLast=0,brTime=60,brScore=0,brCombo=0,brBestCombo=0,brHolds=0,brRound=1,brTotalXP=0,brSessionScores=[],brCountdownTimer=null,brGameForce=0;
+let brMode='quick',brDifficulty='easy',brActive=false,brFrame=null,brLast=0,brTime=60,brScore=0,brCombo=0,brBestCombo=0,brHolds=0,brRound=1,brTotalXP=0,brSessionScores=[],brCountdownTimer=null,brGameForce=0,brAudioContext=null;
 let brThreshold=3,brLastForce=0,brLastRender=0,brGame=null,brCanvas=null,brCtx=null,brCanvasW=600,brCanvasH=330,brDpr=1;
 try{brTotalXP=Number(localStorage.getItem('solidoBoulderXP')||0)||0;brThreshold=Number(localStorage.getItem('solidoHopperThreshold')||3)||3;brDifficulty=localStorage.getItem('solidoHopperDifficulty')||'easy';if(!brDifficulties[brDifficulty])brDifficulty='easy';}catch(e){}
 function brFmt(n){return Math.max(0,Math.floor(n)).toLocaleString('es-ES');}
@@ -1787,8 +1787,9 @@ function brStart(){
 function brLoop(now){
  if(!brActive)return;const dt=Math.min(.03,Math.max(.001,(now-brLast)/1000));brLast=now;
  const rawForce=Math.abs(Number(currentForce)||0),d=brLevelData(),g=brGame;
- brGameForce+=(rawForce-brGameForce)*Math.min(1,dt*12);
- const force=brGameForce;
+ // Read the latest WH-C06 sample directly; smoothing here added noticeable control lag.
+ brGameForce=rawForce;
+ const force=rawForce;
  brTime=Math.max(0,brTime-dt);
  const thresholdCross=force>=brThreshold&&brLastForce<brThreshold;
  // Trigger from live sensor force; allow another jump after landing on a pipe.
@@ -1816,9 +1817,9 @@ function brLoop(now){
    // Landing collision: brush must be falling and cross a platform top.
    if(g.vy>0){for(const p of g.platforms){const sx=p.x-g.worldX+g.x;if(sx<g.x+24&&sx+p.w>g.x-8&&g.y+24>=p.y&&g.y+24<=p.y+g.vy*dt+10&&g.y<p.y){g.y=p.y-24;g.vy=0;g.airborne=false;g.jumpTilt=0;g.lastPlatform=p.x;break;}}}
    // Collect magnesium powder clouds.
-   for(const c of g.powders){if(c.got)continue;const sx=c.x-g.worldX+g.x,sy=c.y;const dx=(g.x+12)-sx,dy=(g.y+12)-sy;if(Math.hypot(dx,dy)<25){c.got=true;brHolds++;brScore+=100*d.points;brCombo++;brBestCombo=Math.max(brBestCombo,brCombo);g.flash=.18;for(let k=0;k<7;k++)g.particles.push({x:sx,y:sy,vx:(Math.random()-.5)*100,vy:-20-Math.random()*70,t:.45});}}
+   for(const c of g.powders){if(c.got)continue;const sx=c.x-g.worldX+g.x,sy=c.y;const dx=(g.x+12)-sx,dy=(g.y+12)-sy;if(Math.hypot(dx,dy)<29){c.got=true;brHolds++;brScore+=100;brCombo++;brBestCombo=Math.max(brBestCombo,brCombo);g.flash=.18;brPlayCollectSound();brSpawnFloat('+100');for(let k=0;k<7;k++)g.particles.push({x:sx,y:sy,vx:(Math.random()-.5)*100,vy:-20-Math.random()*70,t:.45});}}
    g.powders=g.powders.filter(c=>!c.got&&c.x>leftEdge-60);
-    for(const e of g.enemies){e.phase+=dt*2.1;e.y=e.baseY+Math.sin(e.phase)*13;const ex=e.x-g.worldX+g.x;if(Math.abs(ex-g.x)<25&&Math.abs(e.y-(g.y+10))<24){g.dead=true;brActive=false;brFinishRound();break;}}
+    for(const e of g.enemies){e.phase+=dt*2.1;e.y=e.baseY+Math.sin(e.phase)*13;const ex=e.x-g.worldX+g.x;const playerLeft=g.x-13,playerRight=g.x+17,playerTop=g.y-15,playerBottom=g.y+34,enemyRadius=e.r+3;if(ex+enemyRadius>playerLeft&&ex-enemyRadius<playerRight&&e.y+enemyRadius>playerTop&&e.y-enemyRadius<playerBottom){g.dead=true;brActive=false;brFinishRound();break;}}
     g.enemies=g.enemies.filter(e=>e.x>leftEdge-80);
    if(g.flash>0)g.flash-=dt;
    g.particles.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.t-=dt;});g.particles=g.particles.filter(p=>p.t>0);
@@ -1879,6 +1880,7 @@ function brDrawScene(force){
 function nowSafeTime(){return typeof performance!=='undefined'?performance.now():Date.now();}
 function brSpawnFloat(label){const scene=document.getElementById('brScene');const el=document.createElement('div');el.className='br-float';el.textContent=label;el.style.left=(35+Math.random()*30)+'%';el.style.top=(35+Math.random()*30)+'%';scene.appendChild(el);setTimeout(()=>el.remove(),900);}
 function brMoveHolds(){brSpawnFloat('✧ +100');}
+ function brPlayCollectSound(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!brAudioContext)brAudioContext=new AC();if(brAudioContext.state==='suspended')brAudioContext.resume();const t=brAudioContext.currentTime,osc=brAudioContext.createOscillator(),gain=brAudioContext.createGain();osc.type='sine';osc.frequency.setValueAtTime(880,t);osc.frequency.exponentialRampToValueAtTime(1320,t+.09);gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.16,t+.012);gain.gain.exponentialRampToValueAtTime(.0001,t+.18);osc.connect(gain);gain.connect(brAudioContext.destination);osc.start(t);osc.stop(t+.19);}catch(e){console.warn('Sonido de magnesio no disponible',e);}}
 function brRender(force){
  const d=brLevelData(),score=Math.floor(brScore);
  document.getElementById('brScore').textContent=brFmt(score).padStart(4,'0');document.getElementById('brCombo').textContent='x'+brCombo;
