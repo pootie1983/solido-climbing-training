@@ -12,6 +12,7 @@ class MainActivity : Activity() {
 
     private lateinit var web: WebView
     private lateinit var whc06Bridge: WHC06Bridge
+    private var gameFullscreenRequested = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,24 +36,36 @@ class MainActivity : Activity() {
     @JavascriptInterface
     fun enterGameFullscreen() {
         runOnUiThread {
-            window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-            window.decorView.systemUiVisibility = (
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                View.SYSTEM_UI_FLAG_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            )
+            gameFullscreenRequested = true
+            applyGameFullscreen()
         }
     }
 
     @JavascriptInterface
     fun exitGameFullscreen() {
         runOnUiThread {
+            gameFullscreenRequested = false
             window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
         }
+    }
+
+    // Android can reveal system bars again after focus changes; re-apply immersive mode while playing.
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus && gameFullscreenRequested) applyGameFullscreen()
+    }
+
+    private fun applyGameFullscreen() {
+        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        window.decorView.systemUiVisibility = (
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+            View.SYSTEM_UI_FLAG_FULLSCREEN or
+            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        )
     }
 
     override fun onRequestPermissionsResult(
