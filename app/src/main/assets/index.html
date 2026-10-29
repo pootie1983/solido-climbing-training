@@ -719,22 +719,23 @@ body.br-fullscreen-active .br-close-game{display:flex}
 .meditation-status{min-height:20px;font-size:12px;color:var(--muted);line-height:1.5}
 .meditation-note{font-size:11px;line-height:1.5;color:var(--muted);margin-top:12px}
 
-/* Iconografía principal: trazo técnico, limpio y consistente */
-.home-icon{width:28px;height:28px;display:block;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.tile .emoji{width:48px;height:48px;display:grid;place-items:center;border:1px solid #395449;border-radius:13px;background:linear-gradient(145deg,#203b32,#152b2b);color:#91ed78}
-.tile .emoji .home-icon{width:25px;height:25px}
+/* Iconos ilustrados premium para Inicio: volumen, materiales y sombras sutiles */
+.home-icon{width:28px;height:28px;display:block;overflow:visible}
+.tile .emoji{width:58px;height:58px;display:grid;place-items:center;border:1px solid #365449;border-radius:16px;background:radial-gradient(ellipse at 30% 15%,#315548 0,#1c352d 48%,#12251f 100%);color:#91ed78;box-shadow:inset 0 1px 0 #ffffff15,0 5px 12px #0002}
+.tile .emoji .home-icon{width:43px;height:43px;filter:drop-shadow(0 3px 2px #0004)}
 .tile{transition:border-color .18s ease,transform .18s ease,box-shadow .18s ease}
 .tile:active{transform:translateY(1px)}
 .tile:focus-visible,.home-meditation-launch:focus-visible{outline:2px solid var(--green);outline-offset:3px}
 .home-meditation-symbol{border:1px solid #47705a;color:#91ed78}
-.home-meditation-symbol .home-icon{width:26px;height:26px}
-.home-sensor-icon{border:1px solid #355c63;background:#142d35}
-.home-sensor-icon .home-icon{width:23px;height:23px}
+.home-meditation-symbol .home-icon{width:34px;height:34px}
+.home-sensor-icon{border:1px solid #355c63;background:radial-gradient(ellipse at 30% 15%,#27515b,#142d35 75%)}
+.home-sensor-icon .home-icon{width:30px;height:30px}
 .home-connect-btn{display:flex;align-items:center;justify-content:center;gap:9px}
-.home-connect-btn .home-icon{width:18px;height:18px}
-html[data-theme="light"] .tile .emoji{background:linear-gradient(145deg,#e6f1e9,#f6f9f7);border-color:#c8d9cd;color:#287a36}
+.home-connect-btn .home-icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+html[data-theme="light"] .tile .emoji{background:radial-gradient(ellipse at 30% 15%,#fff,#e1eee5 72%);border-color:#c5d9ca;color:#287a36;box-shadow:inset 0 1px 0 #fff,0 4px 10px #193c2010}
+html[data-theme="light"] .tile .emoji .home-icon{filter:drop-shadow(0 2px 1px #234a281c)}
 html[data-theme="light"] .home-meditation-symbol{background:#e0eee3;border-color:#b8d2bd;color:#287a36}
-html[data-theme="light"] .home-sensor-icon{background:#e5eff0;border-color:#c1d5d7;color:#28616a}
+html[data-theme="light"] .home-sensor-icon{background:radial-gradient(ellipse at 30% 15%,#f8ffff,#dcebed 75%);border-color:#c1d5d7;color:#28616a}
 html[data-theme="light"] .home-sensor-card{background:linear-gradient(135deg,#f5f9f7,#e8f1ed);border-color:#cbdcd2}
 html[data-theme="light"] .home-sensor-copy span,html[data-theme="light"] .home-sensor-card p{color:#50665b}
 
@@ -979,14 +980,14 @@ html[data-theme="light"] .trend-chart path{stroke:#287a32}
   </div>
 
   <button class="home-meditation-launch" onclick="show('meditation');selectMeditation('focus')">
-    <span class="home-meditation-symbol"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 17.5h9.2a4.3 4.3 0 0 0 .4-8.6A5.5 5.5 0 0 0 6.6 8a4.8 4.8 0 0 0 .9 9.5Z"/><path d="M9 12.2c.8-.8 1.6-.8 2.4 0s1.6.8 2.4 0 1.6-.8 2.4 0"/></svg></span>
+    <span class="home-meditation-symbol"><svg class="home-icon" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="medGlow" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e6ffd1"/><stop offset="1" stop-color="#68c982"/></linearGradient></defs><path d="M13 39q-8-1-8-9 0-8 9-9 3-13 17-13 13 0 17 13 11 0 11 10 0 8-9 9H13Z" fill="url(#medGlow)" opacity=".9" stroke="#d6ffdf" stroke-width="2"/><path d="M18 32q5-5 10 0t10 0 10 0" fill="none" stroke="#276b43" stroke-width="3" stroke-linecap="round"/><path d="M24 48q8 5 16 0M29 55q3 2 6 0" fill="none" stroke="#8fe9a1" stroke-width="2" stroke-linecap="round"/></svg></span>
     <span class="home-meditation-copy"><strong>MEDITACIÓN GUIADA</strong><small>Respira, enfoca tu mente y prepárate para escalar</small></span>
     <span class="home-meditation-arrow">→</span>
   </button>
 
   <div class="home-sensor-card">
     <div class="home-sensor-top">
-      <div class="home-sensor-icon"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M10 6h4M10 18h4M4 8v8M20 8v8"/></svg></div>
+      <div class="home-sensor-icon"><svg class="home-icon" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="sensorBody" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e3f6f5"/><stop offset=".45" stop-color="#78a9a9"/><stop offset="1" stop-color="#2f666b"/></linearGradient></defs><rect x="17" y="6" width="30" height="52" rx="8" fill="url(#sensorBody)" stroke="#d2f4ed" stroke-width="2"/><rect x="22" y="13" width="20" height="31" rx="3" fill="#18373d" stroke="#6eb3b0" stroke-width="1.5"/><path d="M27 34v-7l5-4 5 4v7M27 34h10" fill="none" stroke="#a4f4b5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="32" cy="51" r="2" fill="#d8fff1"/><path d="M9 20v24M55 20v24" stroke="#7ab8b5" stroke-width="2.5" stroke-linecap="round"/></svg></div>
       <div class="home-sensor-copy">
         <strong>Sensor de fuerza WH-C06</strong>
         <span id="homeWHStatus" role="status">Desconectado · Conecta para medir tu fuerza real</span>
@@ -1027,34 +1028,34 @@ html[data-theme="light"] .trend-chart path{stroke:#287a32}
 
     <div class="tile"
          onclick="filterExercises('Fuerza')">
-      <div class="emoji"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20 8 4l4 5 3-3 4 14"/><path d="M7 13h10M9 8l5 8"/></svg></div>
+      <div class="emoji"><svg class="home-icon" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="rock" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d7e4ce"/><stop offset=".45" stop-color="#8ba995"/><stop offset="1" stop-color="#345a48"/></linearGradient><linearGradient id="hold" x1="0" y1="0" x2="0.9" y2="1"><stop stop-color="#c8ff8b"/><stop offset="1" stop-color="#48a85b"/></linearGradient></defs><path d="M8 54 16 27 25 18 34 8 43 23 53 31 58 54Z" fill="url(#rock)" stroke="#c2d8c6" stroke-width="1.5"/><path d="m16 27 13 8-4 19M34 8l-5 27 14-12M43 23l-1 17 16 14" fill="none" stroke="#254a3b" stroke-width="2" opacity=".75"/><path d="M20 36q5-5 10 0l-2 5-8 1Z" fill="url(#hold)" stroke="#e1ffc2" stroke-width="1.3"/><path d="M39 44q5-5 10 0l-2 5-8 1Z" fill="url(#hold)" stroke="#e1ffc2" stroke-width="1.3"/><path d="m27 31 5-4 4 3-2 5-5 1Z" fill="#d4ff9c" stroke="#f1ffdc"/></svg></div>
       <strong>Fuerza</strong>
       <small>Dominadas y dedos</small>
     </div>
 
     <div class="tile"
          onclick="filterExercises('Core')">
-      <div class="emoji"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 13V9a2 2 0 0 1 4 0v3-5a2 2 0 0 1 4 0v6-3a2 2 0 0 1 4 0v5c0 4-2.5 6-6.5 6H11c-2 0-3-1-4-2l-3-4a2 2 0 0 1 3-2l2 2"/></svg></div>
+      <div class="emoji"><svg class="home-icon" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f5d0a4"/><stop offset=".55" stop-color="#d99468"/><stop offset="1" stop-color="#99583e"/></linearGradient><linearGradient id="grip" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d9ff9b"/><stop offset="1" stop-color="#50ad57"/></linearGradient></defs><path d="M17 52 12 43l5-10 3-18q1-5 5-4t4 5l-1 11 3-17q1-5 5-4t3 6l-2 17 4-13q2-4 5-2t2 6l-4 17 4-6q3-4 6-1t0 8l-8 12q-4 6-12 7l-7-1Z" fill="url(#skin)" stroke="#704632" stroke-width="1.5"/><path d="m18 34 7 6 8-1 8 5M27 27l-1 9M37 26l-2 9M46 29l-3 8" fill="none" stroke="#ffe0ba" stroke-width="2" stroke-linecap="round"/><path d="M9 20q9-7 18 0l-2 7q-7 3-14-1Z" fill="url(#grip)" stroke="#e7ffbf" stroke-width="1.5"/><path d="m12 21 12 2" stroke="#f5ffd9" stroke-width="1.5"/></svg></div>
       <strong>Core</strong>
       <small>Estabilidad y control</small>
     </div>
 
     <div class="tile"
          onclick="show('library')">
-      <div class="emoji"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21Z"/><path d="M4 5.5v13A2.5 2.5 0 0 1 6.5 16H20M8 7h8M8 10h6"/></svg></div>
+      <div class="emoji"><svg class="home-icon" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="book" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e8f2e8"/><stop offset="1" stop-color="#8eafa0"/></linearGradient><linearGradient id="pages" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#d6e4d9"/></linearGradient></defs><path d="M7 14q13-5 25 4v37Q19 47 7 52Z" fill="url(#book)" stroke="#517a62" stroke-width="1.5"/><path d="M57 14q-13-5-25 4v37q13-8 25-3Z" fill="url(#pages)" stroke="#517a62" stroke-width="1.5"/><path d="M32 18v37" stroke="#47745a" stroke-width="2"/><path d="M12 22q8-2 15 2M12 29q8-2 15 2M12 36q8-2 15 2M37 24q8-4 15-2M37 31q8-4 15-2M37 38q8-4 15-2" fill="none" stroke="#729985" stroke-width="1.7" stroke-linecap="round"/><path d="M8 13q12-4 24 4 12-8 24-4v4q-12-4-24 5-12-9-24-5Z" fill="#b5d4bb" opacity=".8"/></svg></div>
       <strong>Ejercicios</strong>
       <small>Biblioteca</small>
     </div>
 
     <div class="tile"
          onclick="show('progress')">
-      <div class="emoji"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5M4 19h17"/><path d="m7 15 4-4 3 2 6-7"/><path d="M16 6h4v4"/></svg></div>
+      <div class="emoji"><svg class="home-icon" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="bar" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#caff91"/><stop offset="1" stop-color="#429b53"/></linearGradient><linearGradient id="chartline" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#efffd0"/><stop offset="1" stop-color="#71e48a"/></linearGradient></defs><path d="M10 8v47h47" fill="none" stroke="#8cae99" stroke-width="2.5" stroke-linecap="round"/><rect x="16" y="36" width="9" height="15" rx="2" fill="url(#bar)"/><rect x="29" y="27" width="9" height="24" rx="2" fill="url(#bar)"/><rect x="42" y="16" width="9" height="35" rx="2" fill="url(#bar)"/><path d="m14 31 14-9 10 3 14-14" fill="none" stroke="url(#chartline)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="52" cy="11" r="4" fill="#e8ffb8" stroke="#5cb968" stroke-width="1.5"/></svg></div>
       <strong>Progreso</strong>
       <small>Tu historial</small>
     </div>
 
     <div class="tile" onclick="show('climbGame')">
-      <div class="emoji"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 8h10a4 4 0 0 1 3.8 5.2l-1.2 4a2 2 0 0 1-3.2 1l-2.4-2H10l-2.4 2a2 2 0 0 1-3.2-1l-1.2-4A4 4 0 0 1 7 8Z"/><path d="M7 11v4M5 13h4M15.5 12h.01M18 14h.01"/></svg></div>
+      <div class="emoji"><svg class="home-icon" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="pad" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dbe9dc"/><stop offset=".5" stop-color="#8aab98"/><stop offset="1" stop-color="#436a53"/></linearGradient><linearGradient id="btn" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d4ff9a"/><stop offset="1" stop-color="#54b663"/></linearGradient></defs><path d="M17 19h30q9 0 12 10l4 15q2 8-5 10-4 1-8-3l-7-7H21l-7 7q-4 4-8 2-6-2-4-10l4-14q2-10 11-10Z" transform="translate(1 -3) scale(.94)" fill="url(#pad)" stroke="#d0e5d3" stroke-width="2"/><path d="M17 29v14M10 36h14" stroke="#244d38" stroke-width="4" stroke-linecap="round"/><circle cx="43" cy="31" r="4" fill="url(#btn)" stroke="#eaffcf"/><circle cx="51" cy="39" r="4" fill="#caff91" stroke="#eaffcf"/><circle cx="38" cy="41" r="2" fill="#31583e"/><path d="M22 23h20" stroke="#f5fff2" stroke-width="1.5" opacity=".7"/></svg></div>
       <strong>Juego de fuerza</strong>
       <small>Escala con el sensor</small>
     </div>
