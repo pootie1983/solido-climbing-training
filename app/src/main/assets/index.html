@@ -588,13 +588,13 @@ select{
 body.br-fullscreen-active{overflow:hidden!important}
 #climbGame.br-fullscreen-game{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;z-index:99999!important;display:block!important;overflow:hidden!important;overscroll-behavior:contain;background:#08121b;padding:0!important;margin:0!important;box-sizing:border-box}
 #climbGame.br-fullscreen-game>.sectionhead{display:none}
-#climbGame.br-fullscreen-game .boulder-rush{margin:0!important;border:0;border-radius:0;box-shadow:none;padding:0 6px 4px!important;background:#08121b;height:100%;min-height:100%;box-sizing:border-box}
+#climbGame.br-fullscreen-game .boulder-rush{margin:0!important;border:0;border-radius:0;box-shadow:none;padding:0 6px 4px!important;background:#08121b;height:100dvh;min-height:100dvh;display:flex;flex-direction:column;gap:0;box-sizing:border-box;overflow:hidden}
 #climbGame.br-fullscreen-game .br-banner,#climbGame.br-fullscreen-game .br-hopper-config,#climbGame.br-fullscreen-game .br-difficulty,#climbGame.br-fullscreen-game .br-modes,#climbGame.br-fullscreen-game .br-target-panel,#climbGame.br-fullscreen-game .br-gauge,#climbGame.br-fullscreen-game .br-gauge-labels,#climbGame.br-fullscreen-game .br-progress,#climbGame.br-fullscreen-game .br-bottom,#climbGame.br-fullscreen-game .br-challenge,#climbGame.br-fullscreen-game .br-actions,#climbGame.br-fullscreen-game .br-achievements,#climbGame.br-fullscreen-game .game-hint{display:none!important}
 #climbGame.br-fullscreen-game .br-hud{margin:42px 0 5px;gap:5px}
 #climbGame.br-fullscreen-game .br-stat{padding:7px 3px}
 #climbGame.br-fullscreen-game .br-stat span{font-size:8px}
 #climbGame.br-fullscreen-game .br-stat strong{font-size:clamp(15px,4vw,22px)}
-#climbGame.br-fullscreen-game .br-scene{height:calc(100dvh - 105px);height:calc(100% - 105px);min-height:0;max-height:none;border-radius:8px;border-width:1px}
+#climbGame.br-fullscreen-game .br-hud{flex:0 0 auto}#climbGame.br-fullscreen-game .br-scene{height:auto;flex:1 1 auto;min-height:0;max-height:none;border-radius:8px;border-width:1px;margin:0}
 #climbGame.br-fullscreen-game .br-canvas{width:100%;height:100%;display:block}
 .br-close-game{display:none;position:fixed;top:max(8px,env(safe-area-inset-top));right:10px;z-index:100001;width:38px;height:38px;border:2px solid #fff8;border-radius:50%;background:#e43d55;color:#fff;font-size:27px;font-weight:900;line-height:1;box-shadow:0 3px 12px #0008;align-items:center;justify-content:center;cursor:pointer}
 body.br-fullscreen-active .br-close-game{display:flex}
@@ -935,6 +935,21 @@ body.br-fullscreen-active .br-close-game{display:flex}
   </div>
   <div class="max-display"><span>Fuerza máxima registrada</span><strong id="configMaxForce">— kg</strong><small id="configForceNote">Se mostrará al recibir datos reales del WH-C06</small></div>
   <div class="training-config-summary" id="trainingConfigSummary">Mano derecha · Agarre de 10 mm</div>
+  <div class="tile interval-workout" id="intervalWorkout">
+    <h3>Entrenamiento de fuerza por intervalos</h3>
+    <p class="muted">Elige una fuerza objetivo, mantenla durante el tiempo de trabajo y descansa antes de repetir. Los resultados reales del WH-C06 se guardan para tu progresión por mano y milímetros.</p>
+    <div class="attempt-settings">
+      <label>Fuerza objetivo (kg)<input id="workoutTargetKg" type="number" min="0.5" max="100" step="0.5" value="3"></label>
+      <label>Trabajo (segundos)<input id="workoutHoldSeconds" type="number" min="3" max="60" step="1" value="7"></label>
+      <label>Descanso (segundos)<input id="workoutRestSeconds" type="number" min="10" max="300" step="5" value="60"></label>
+      <label>Series<input id="workoutReps" type="number" min="1" max="12" step="1" value="4"></label>
+    </div>
+    <div class="timer-inline-clock" id="workoutClock">00:07</div>
+    <div class="attempt-live"><span>Fuerza actual / objetivo</span><strong id="workoutLiveForce">0,00 / 3,00 kg</strong><span id="workoutPhaseLabel">Preparado · mano derecha · agarre 10 mm</span></div>
+    <div class="br-progress"><div id="workoutForceBar" style="width:0%"></div></div>
+    <div class="attempt-actions"><button class="btn" id="workoutStartBtn" onclick="startIntervalWorkout()">▶ Iniciar entrenamiento</button><button class="btn secondary" id="workoutStopBtn" onclick="stopIntervalWorkout()" disabled>■ Finalizar</button></div>
+    <div class="muted" id="workoutResult">Las series completadas aparecerán en Progreso, filtradas por mano y tamaño de agarre.</div>
+  </div>
   <div class="timer-inline"><p class="config-label">Protocolo de intentos</p>
     <div class="attempt-settings"><label>Duración del intento (s)<input id="attemptSeconds" type="number" min="3" max="15" value="7"></label><label>Descanso (s)<input id="restSeconds" type="number" min="15" max="300" value="120"></label></div>
     <div class="timer-inline-clock" id="inlineClock">00:07</div>
@@ -1432,12 +1447,13 @@ let selectedExercise = null;
 let currentForce = 0;
 let maxForce = 0;
 let forceSamples = [];
-let trainingHand = 'Derecha', trainingGrip = '10';
+let trainingHand = localStorage.getItem('solidoFingerHand') || 'Derecha', trainingGrip = localStorage.getItem('solidoFingerGrip') || '10';
 let inlineTimerId = null, inlineRemaining = 30, inlineTimerRunning = false;
 let attemptActive=false, attemptPeak=0, attemptTimerId=null, attemptPhase='idle';
 function selectTrainingOption(type,value,button){
   document.querySelectorAll(type==='hand'?'.hand-choice':'.grip-choice').forEach(el=>el.classList.toggle('active',el===button));
   if(type==='hand') trainingHand=value; else trainingGrip=value;
+  try{localStorage.setItem(type==='hand'?'solidoFingerHand':'solidoFingerGrip',value);}catch(e){}
   document.getElementById('trainingConfigSummary').textContent='Mano '+trainingHand.toLowerCase()+' · Agarre de '+trainingGrip+' mm';
 }
 function useTrainingConfiguration(){
@@ -1445,6 +1461,83 @@ function useTrainingConfiguration(){
   document.getElementById('trainingConfigFeedback').textContent=message;
   try{localStorage.setItem('solidoFingerHand',trainingHand);localStorage.setItem('solidoFingerGrip',trainingGrip);}catch(e){}
 }
+
+// Structured hold/rest protocol using live WH-C06 force samples.
+let workoutTimerId=null,workoutRunning=false,workoutPhase='idle',workoutRep=0,workoutTotalReps=4;
+let workoutPhaseRemaining=0,workoutTarget=3,workoutHold=7,workoutRest=60,workoutPeak=0,workoutTargetSeconds=0,workoutElapsed=0,workoutSessionStarted=0,workoutSessionPeak=0,workoutCompleted=0;
+function workoutFormatClock(n){n=Math.max(0,Math.ceil(Number(n)||0));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');}
+function workoutUi(){
+ const clock=document.getElementById('workoutClock'),phase=document.getElementById('workoutPhaseLabel'),live=document.getElementById('workoutLiveForce'),bar=document.getElementById('workoutForceBar');
+ if(clock)clock.textContent=workoutFormatClock(workoutPhaseRemaining);
+ if(phase)phase.textContent=workoutPhase==='hold'?'SERIE '+workoutRep+'/'+workoutTotalReps+' · MANTÉN LA FUERZA':workoutPhase==='rest'?'DESCANSO · PREPARA LA SIGUIENTE SERIE':workoutPhase==='done'?'ENTRENAMIENTO COMPLETADO':'Preparado · mano '+trainingHand.toLowerCase()+' · agarre '+trainingGrip+' mm';
+ const f=Math.max(0,Number(currentForce)||0);
+ if(live)live.textContent=f.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' / '+workoutTarget.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' kg';
+ if(bar){bar.style.width=Math.min(100,f/Math.max(.5,workoutTarget)*100)+'%';bar.style.background=f>=workoutTarget?'#7cff45':'#ffb84d';}
+}
+function startIntervalWorkout(){
+ if(workoutRunning)return;
+ if(typeof currentForce!=='number'){return;}
+ workoutTarget=Math.max(.5,Math.min(100,Number(document.getElementById('workoutTargetKg').value)||3));
+ workoutHold=Math.max(3,Math.min(60,Math.round(Number(document.getElementById('workoutHoldSeconds').value)||7)));
+ workoutRest=Math.max(10,Math.min(300,Math.round(Number(document.getElementById('workoutRestSeconds').value)||60)));
+ workoutTotalReps=Math.max(1,Math.min(12,Math.round(Number(document.getElementById('workoutReps').value)||4)));
+ document.getElementById('workoutTargetKg').value=workoutTarget;
+ document.getElementById('workoutHoldSeconds').value=workoutHold;
+ document.getElementById('workoutRestSeconds').value=workoutRest;
+ document.getElementById('workoutReps').value=workoutTotalReps;
+ workoutRep=1;workoutCompleted=0;workoutPeak=0;workoutSessionPeak=0;workoutTargetSeconds=0;workoutElapsed=0;workoutSessionStarted=Date.now();
+ workoutPhase='hold';workoutPhaseRemaining=workoutHold;workoutRunning=true;
+ document.getElementById('workoutStartBtn').disabled=true;document.getElementById('workoutStopBtn').disabled=false;
+ document.getElementById('workoutResult').textContent='Serie en curso: intenta mantener al menos '+workoutTarget.toFixed(1)+' kg de forma controlada.';
+ workoutUi();
+ if(workoutTimerId!==null)clearInterval(workoutTimerId);
+ workoutTimerId=setInterval(workoutTick,1000);
+}
+function workoutTick(){
+ if(!workoutRunning)return;
+ const force=Math.max(0,Number(currentForce)||0);
+ if(workoutPhase==='hold'){
+   workoutPeak=Math.max(workoutPeak,force);workoutSessionPeak=Math.max(workoutSessionPeak,force);
+   if(force>=workoutTarget)workoutTargetSeconds++;
+   workoutElapsed++;
+ }
+ workoutPhaseRemaining=Math.max(0,workoutPhaseRemaining-1);
+ workoutUi();
+ if(workoutPhaseRemaining>0)return;
+ if(workoutPhase==='hold'){
+   const passed=workoutTargetSeconds/workoutHold>=.7;
+   workoutCompleted++;
+   if(workoutPeak>0){
+     storeForceResult(workoutPeak,'Intervalos · serie '+workoutRep+'/'+workoutTotalReps+' · objetivo '+workoutTarget.toFixed(1)+' kg'+(passed?' · objetivo mantenido':' · objetivo no mantenido'));
+   }
+   document.getElementById('workoutResult').textContent='Serie '+workoutRep+'/'+workoutTotalReps+': pico '+workoutPeak.toFixed(2)+' kg · objetivo alcanzado '+workoutTargetSeconds+'/'+workoutHold+' s.';
+   workoutTargetSeconds=0;workoutPeak=0;
+   if(workoutRep>=workoutTotalReps){finishIntervalWorkout();return;}
+   workoutPhase='rest';workoutPhaseRemaining=workoutRest;workoutUi();return;
+ }
+ if(workoutPhase==='rest'){
+   workoutRep++;workoutPhase='hold';workoutPhaseRemaining=workoutHold;
+   document.getElementById('workoutResult').textContent='Descanso terminado. Comienza la serie '+workoutRep+'/'+workoutTotalReps+'.';
+   workoutUi();
+ }
+}
+function finishIntervalWorkout(){
+ workoutRunning=false;workoutPhase='done';if(workoutTimerId!==null)clearInterval(workoutTimerId);workoutTimerId=null;
+ const minutes=Math.max(1,Math.round((Date.now()-workoutSessionStarted)/60000));
+ sessions.unshift({name:'Entrenamiento por intervalos · '+workoutCompleted+'/'+workoutTotalReps+' series · '+trainingHand+' · '+trainingGrip+' mm',mins:minutes,hand:trainingHand,grip:String(trainingGrip),ts:new Date().toISOString(),date:new Date().toLocaleString('es-ES')});
+ save();renderHistory();renderStats();renderForceTrend();renderHandComparison();
+ document.getElementById('workoutStartBtn').disabled=false;document.getElementById('workoutStopBtn').disabled=true;
+ document.getElementById('workoutResult').textContent='Entrenamiento guardado: '+workoutCompleted+' series · mano '+trainingHand.toLowerCase()+' · agarre '+trainingGrip+' mm. Consulta Progreso para ver tus marcas.';
+ workoutUi();
+}
+function stopIntervalWorkout(){
+ if(!workoutRunning)return;
+ workoutRunning=false;if(workoutTimerId!==null)clearInterval(workoutTimerId);workoutTimerId=null;workoutPhase='idle';
+ document.getElementById('workoutStartBtn').disabled=false;document.getElementById('workoutStopBtn').disabled=true;
+ document.getElementById('workoutResult').textContent='Entrenamiento detenido. Las series que terminaste ya están guardadas.';
+ workoutUi();
+}
+
 function formatInlineClock(){
   document.getElementById('inlineClock').textContent=String(Math.floor(Math.max(0,inlineRemaining)/60)).padStart(2,'0')+':'+String(Math.max(0,inlineRemaining)%60).padStart(2,'0');
 }
@@ -1462,6 +1555,15 @@ function toggleInlineTimer(){
   inlineTimerId=setInterval(()=>{inlineRemaining=Math.max(0,inlineRemaining-1);formatInlineClock();if(inlineRemaining===0){clearInterval(inlineTimerId);inlineTimerId=null;inlineTimerRunning=false;document.getElementById('inlineTimerLabel').textContent='¡Tiempo!';document.getElementById('inlineStartPause').textContent='▶ Repetir';}},1000);
 }
 
+
+// Restore the saved hand and edge size on the existing selector.
+document.querySelectorAll('.hand-choice').forEach(el=>el.classList.toggle('active',el.dataset.value===trainingHand));
+document.querySelectorAll('.grip-choice').forEach(el=>el.classList.toggle('active',el.dataset.value===trainingGrip));
+const trainingSummary=document.getElementById('trainingConfigSummary');
+if(trainingSummary)trainingSummary.textContent='Mano '+trainingHand.toLowerCase()+' · Agarre de '+trainingGrip+' mm';
+const savedTarget=document.getElementById('workoutTargetKg');
+if(savedTarget&&localStorage.getItem('solidoWorkoutTarget'))savedTarget.value=localStorage.getItem('solidoWorkoutTarget');
+if(savedTarget)savedTarget.addEventListener('change',()=>{try{localStorage.setItem('solidoWorkoutTarget',savedTarget.value);}catch(e){}});
 
 /* =========================
    PUENTE WH-C06
