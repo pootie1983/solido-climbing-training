@@ -749,7 +749,7 @@ select{
     <div class="attempt-settings"><label>Duración del intento (s)<input id="attemptSeconds" type="number" min="3" max="15" value="7"></label><label>Descanso (s)<input id="restSeconds" type="number" min="15" max="300" value="120"></label></div>
     <div class="timer-inline-clock" id="inlineClock">00:07</div>
     <div class="attempt-actions"><button class="btn attempt-start" id="attemptStartBtn" onclick="startForceAttempt()">⚡ Iniciar intento</button><button class="btn secondary" id="attemptRestBtn" onclick="startForceRest()">⏱ Iniciar descanso</button></div>
-    <div class="timer-controls"><button class="btn secondary" id="inlineStartPause" onclick="toggleInlineTimer()">▶ Temporizador libre</button><button class="btn secondary" onclick="resetInlineTimer()">Reiniciar</button></div>
+    <input id="inlineSeconds" type="hidden" value="30"><div class="timer-controls"><button class="btn secondary" id="inlineStartPause" onclick="toggleInlineTimer()">▶ Temporizador libre</button><button class="btn secondary" onclick="resetInlineTimer()">Reiniciar</button></div>
     <div id="inlineTimerLabel" class="muted">Haz un intento corto y máximo; descansa antes de repetir.</div><div class="attempt-live"><span>Pico del intento actual</span><strong id="attemptPeak">0.00 kg</strong><span id="attemptPhase">Listo para empezar</span></div></div>
   <div class="connection-box">
     <div class="force-status"><div id="whStatusDot" class="status-dot"></div><span id="whStatus">Desconectado</span></div>
