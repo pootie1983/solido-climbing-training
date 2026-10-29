@@ -398,6 +398,19 @@ body.workout-fullscreen-active{overflow:hidden!important}
 #intervalWorkout.workout-fullscreen-active .workout-fullscreen-exit{display:block}
 #intervalWorkout.workout-fullscreen-active .workout-screen-heading{flex:0 0 auto;padding:2px 0 6px;margin:0}
 #intervalWorkout.workout-fullscreen-active .workout-description{display:none}
+#intervalWorkout.workout-fullscreen-active .force-value{flex:0 0 auto;margin:0;padding:3px 0 1px}
+#intervalWorkout.workout-fullscreen-active .force-value strong{font-size:clamp(30px,6vh,44px);line-height:1}
+#intervalWorkout.workout-fullscreen-active .force-value span{font-size:10px;margin-top:3px}
+#intervalWorkout.workout-fullscreen-active .live-force-panel{flex:1 1 auto;min-height:100px;min-width:0;overflow:hidden;margin:0;padding:7px 9px;border-radius:12px;display:flex;flex-direction:column;gap:3px}
+#intervalWorkout.workout-fullscreen-active .live-force-top{font-size:9px;flex:0 0 auto}
+#intervalWorkout.workout-fullscreen-active .force-meter{flex:0 0 12px;height:12px;margin-top:3px}
+#intervalWorkout.workout-fullscreen-active .force-meter-labels{font-size:8px;margin-top:1px;flex:0 0 auto}
+#intervalWorkout.workout-fullscreen-active .live-chart-heading{margin-top:2px;font-size:10px;flex:0 0 auto}
+#intervalWorkout.workout-fullscreen-active .live-chart-heading span{font-size:8px}
+#intervalWorkout.workout-fullscreen-active .live-force-chart{flex:1 1 auto;width:100%;height:clamp(58px,12vh,100px);min-height:58px;min-width:0;margin:1px 0 0}
+#intervalWorkout.workout-fullscreen-active .live-chart-foot{font-size:8px;margin-top:0;flex:0 0 auto}
+#intervalWorkout.workout-fullscreen-active .live-force-stats,
+#intervalWorkout.workout-fullscreen-active .live-force-note{display:none!important}
 #intervalWorkout.workout-fullscreen-active .attempt-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:0}
 #intervalWorkout.workout-fullscreen-active .attempt-settings label{font-size:11px;line-height:1.2;min-width:0}
 #intervalWorkout.workout-fullscreen-active .attempt-settings input{box-sizing:border-box;width:100%;min-height:34px;padding:6px 8px;margin-top:4px;font-size:15px}
@@ -1086,9 +1099,9 @@ html[data-theme="light"] .tile .emoji{background:linear-gradient(145deg,#f7fff7,
 html[data-theme="light"] .hand-icon{fill:#5b9d5722}
 
 .hand-choice .hand-both{width:60px;height:44px}
-#workoutSwitchOverlay{position:fixed;inset:0;z-index:99990;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(0,0,0,.94);backdrop-filter:blur(7px)}
+#workoutSwitchOverlay{position:fixed;inset:0;z-index:100010;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(0,0,0,.94);backdrop-filter:blur(7px)}
 #workoutSwitchOverlay.show{display:flex}
-#workoutNotice{position:fixed;inset:0;z-index:99991;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(0,0,0,.92);backdrop-filter:blur(7px)}
+#workoutNotice{position:fixed;inset:0;z-index:100011;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(0,0,0,.92);backdrop-filter:blur(7px)}
 #workoutNotice.show{display:flex}
 .workout-notice-card{width:min(100%,360px);border:2px solid var(--green);border-radius:24px;background:#08121b;padding:26px 20px;text-align:center;box-shadow:0 0 32px #7cff4530;color:#fff;animation:workoutSwitchPop .22s ease-out}
 .workout-notice-icon{font-size:64px;line-height:1.2;color:var(--green);margin:4px 0 12px;text-shadow:0 0 18px #7cff4540}
@@ -2083,9 +2096,33 @@ function workoutUi(){
 
  if(bar){bar.style.width=Math.min(100,f/Math.max(.5,workoutTarget)*100)+'%';bar.style.background=f>=workoutTarget?'#7cff45':'#ffb84d';}
 }
+let workoutFullscreenMovedNodes=null;
+function moveWorkoutLiveForceIntoFullscreen(){
+ const panel=document.getElementById('intervalWorkout');
+ const live=document.querySelector('.connection-box .force-value');
+ const chart=document.querySelector('.connection-box .live-force-panel');
+ const anchor=document.getElementById('workoutLiveForce');
+ if(!panel||!live||!chart||!anchor||workoutFullscreenMovedNodes)return;
+ const livePlaceholder=document.createComment('force-value-original-position');
+ const chartPlaceholder=document.createComment('live-force-panel-original-position');
+ live.parentNode.insertBefore(livePlaceholder,live);
+ chart.parentNode.insertBefore(chartPlaceholder,chart);
+ anchor.closest('.attempt-live').insertAdjacentElement('afterend',live);
+ live.insertAdjacentElement('afterend',chart);
+ workoutFullscreenMovedNodes={live,chart,livePlaceholder,chartPlaceholder};
+}
+function restoreWorkoutLiveForceFromFullscreen(){
+ if(!workoutFullscreenMovedNodes)return;
+ const {live,chart,livePlaceholder,chartPlaceholder}=workoutFullscreenMovedNodes;
+ if(livePlaceholder.parentNode)livePlaceholder.parentNode.insertBefore(live,livePlaceholder);
+ if(chartPlaceholder.parentNode)chartPlaceholder.parentNode.insertBefore(chart,chartPlaceholder);
+ livePlaceholder.remove();chartPlaceholder.remove();
+ workoutFullscreenMovedNodes=null;
+}
 function enterWorkoutFullscreen(){
  const panel=document.getElementById('intervalWorkout');
  if(!panel)return;
+ moveWorkoutLiveForceIntoFullscreen();
  panel.classList.add('workout-fullscreen-active');
  document.body.classList.add('workout-fullscreen-active');
  const enter=document.getElementById('workoutFullscreenEnter');
@@ -2095,6 +2132,7 @@ function enterWorkoutFullscreen(){
 function exitWorkoutFullscreen(){
  const panel=document.getElementById('intervalWorkout');
  if(!panel)return;
+ restoreWorkoutLiveForceFromFullscreen();
  panel.classList.remove('workout-fullscreen-active');
  document.body.classList.remove('workout-fullscreen-active');
  const enter=document.getElementById('workoutFullscreenEnter');
