@@ -510,15 +510,15 @@ select{
 .live-pulse{display:inline-block;width:7px;height:7px;margin-right:5px;border-radius:50%;background:#5d7480;vertical-align:middle}
 .status-dot.connected~span .live-pulse{background:#9bff4c}
 .force-meter{height:20px;margin-top:13px;background:repeating-linear-gradient(90deg,#1b303a 0,#1b303a calc(10% - 2px),#0b1820 calc(10% - 2px),#0b1820 10%);border:1px solid #29434c;border-radius:7px;overflow:hidden;position:relative}
-.force-meter-fill{height:100%;width:0%;background:linear-gradient(90deg,#39d9a0 0%,#b5fa4a 62%,#ffbd4a 84%,#ff635d 100%);border-radius:5px;transition:width .12s linear;box-shadow:0 0 15px #62e9a55c}
-.force-meter-marker{position:absolute;top:0;bottom:0;left:0;width:2px;background:#fff;box-shadow:0 0 7px #fff;transition:left .12s linear}
+.force-meter-fill{height:100%;width:0%;background:linear-gradient(90deg,#39d9a0 0%,#b5fa4a 62%,#ffbd4a 84%,#ff635d 100%);border-radius:5px;transition:width .04s linear;box-shadow:0 0 15px #62e9a55c}
+.force-meter-marker{position:absolute;top:0;bottom:0;left:0;width:2px;background:#fff;box-shadow:0 0 7px #fff;transition:left .04s linear}
 .force-meter-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:10px;margin-top:5px}
 .live-chart-heading{margin-top:18px;font-size:13px}.live-chart-heading span{font-size:10px;color:var(--muted)}
-.live-force-chart{display:block;width:100%;height:auto;margin-top:8px;border-radius:9px;background:#08151d;overflow:hidden}
+.live-force-chart{display:block;width:100%;height:auto;margin-top:8px;border-radius:9px;background:#08151d;overflow:hidden;touch-action:pan-y}
 .chart-grid{fill:none;stroke:#263b45;stroke-width:1;stroke-dasharray:3 5}
 .live-force-area{fill:url(#liveForceGradient);fill:#38d9a033;stroke:none}
 .live-force-line{fill:none;stroke:#8cf45a;stroke-width:2.7;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 3px #8cf45a55)}
-.live-force-dot{fill:#eaffd8;stroke:#80ed4c;stroke-width:2}
+.live-force-dot{fill:#eaffd8;stroke:#80ed4c;stroke-width:2;transition:cx .04s linear,cy .04s linear}
 .live-chart-foot{font-size:10px;color:var(--muted);margin-top:5px}
 .live-force-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:13px}
 .live-force-stats>div{min-width:0;background:#0a1a22;border:1px solid #263e47;border-radius:10px;padding:9px 7px}
@@ -1465,12 +1465,17 @@ window.onWHC06Data =
 function updateLiveForceVisuals(){
   const meter=document.getElementById('forceMeterFill');
   if(!meter)return;
+  const now=Date.now();
   const positive=Math.max(0,currentForce);
-  const scale=Math.max(10,Math.ceil(Math.max(positive,maxForce)/10)*10);
-  const percent=Math.min(100,(positive/scale)*100);
+  // La escala usa el pico reciente, no el máximo histórico de la sesión:
+  // así los esfuerzos pequeños siguen siendo visibles y la barra responde a cada lectura.
+  const recentSamples=forceSamples.filter(s=>now-s.t<=5000);
+  const recentPeak=recentSamples.reduce((m,s)=>Math.max(m,s.kg),positive);
+  const scale=Math.max(5,Math.ceil(recentPeak/5)*5);
+  const percent=Math.max(0,Math.min(100,(positive/scale)*100));
   meter.style.width=percent+'%';
   document.getElementById('forceMeterMarker').style.left='calc('+percent+'% - 1px)';
-  document.getElementById('forceScaleLabel').textContent='Escala 0–'+scale+' kg';
+  document.getElementById('forceScaleLabel').textContent='Escala dinámica 0–'+scale+' kg';
   document.getElementById('forceMeterMax').textContent=scale+' kg';
   document.getElementById('forceSampleCount').textContent=forceSamples.length+' lecturas reales';
   document.getElementById('livePeak').textContent=Math.max(0,maxForce).toFixed(2)+' kg';
@@ -1480,13 +1485,17 @@ function updateLiveForceVisuals(){
   const line=document.getElementById('liveForceLine'), area=document.getElementById('liveForceArea'), dot=document.getElementById('liveForceDot');
   const low=document.getElementById('forceChartLow'), high=document.getElementById('forceChartHigh');
   if(!forceSamples.length){line.setAttribute('points','');area.setAttribute('d','');dot.setAttribute('opacity','0');low.textContent='0 kg';high.textContent='— kg';return;}
-  const vals=forceSamples.map(s=>s.kg), max=Math.max(1,...vals), min=Math.min(0,...vals), range=Math.max(1,max-min);
-  const pts=vals.map((v,i)=>({x:8+(i/Math.max(1,vals.length-1))*344,y:94-((v-min)/range)*78}));
+  // Ventana móvil de 8 segundos: la gráfica avanza según el tiempo real de llegada.
+  const windowMs=8000, visible=forceSamples.filter(s=>now-s.t<=windowMs);
+  const chartMax=Math.max(1,...visible.map(s=>s.kg));
+  const chartScale=Math.max(5,Math.ceil(chartMax/5)*5);
+  const pts=visible.map(s=>({x:8+Math.max(0,Math.min(1,(s.t-(now-windowMs))/windowMs))*344,y:94-(Math.min(chartScale,s.kg)/chartScale)*78}));
+  if(pts.length===1)pts.unshift({x:8,y:pts[0].y});
   const points=pts.map(p=>p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ');
   line.setAttribute('points',points);
   area.setAttribute('d','M '+pts[0].x.toFixed(1)+' 94 L '+pts.map(p=>p.x.toFixed(1)+' '+p.y.toFixed(1)).join(' L ')+' L '+pts[pts.length-1].x.toFixed(1)+' 94 Z');
   const last=pts[pts.length-1];dot.setAttribute('cx',last.x);dot.setAttribute('cy',last.y);dot.setAttribute('opacity','1');
-  low.textContent=min.toFixed(1)+' kg';high.textContent=max.toFixed(1)+' kg';
+  low.textContent='0 kg';high.textContent=chartScale+' kg';
 }
 
 function storeForceResult(force,label){
