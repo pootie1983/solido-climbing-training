@@ -1167,7 +1167,7 @@ select{
       <div class="br-level-row"><label>FUERZA NECESARIA PARA SALTAR</label><strong id="brThresholdValue">3,0 kg</strong></div>
       <input id="brThreshold" class="br-threshold-slider" type="range" min="0.5" max="20" step="0.5" value="3" oninput="brSetThreshold(this.value)" aria-label="Fuerza necesaria para saltar">
       <div class="br-threshold-labels"><span>0,5 kg · Sensible</span><span>20 kg · Exigente</span></div>
-      <p class="br-config-hint">Supera el umbral con el WH-C06 para saltar. Más fuerza genera más impulso; relaja para caer y aterrizar.</p>
+      <p class="br-config-hint">Supera el umbral con el WH-C06 para dar un salto corto y controlado. El cepillo no sale de la pantalla aunque mantengas la fuerza.</p>
     </div>
     <div class="br-difficulty" aria-label="Elegir dificultad">
       <button class="br-difficulty-btn active" id="brDiffEasy" onclick="brSetDifficulty('easy')"><span>🟢 FÁCIL</span><small>Plataformas amplias</small></button>
@@ -1728,9 +1728,9 @@ function startForceRest(){
    Scroll horizontal, saltos por fuerza y recogida de magnesio
 ========================= */
 const brDifficulties={
- easy:{name:'Fácil',gravity:760,jump:420,speed:135,gap:155,seconds:60,points:1},
- normal:{name:'Medio',gravity:900,jump:470,speed:175,gap:185,seconds:60,points:1.5},
- hard:{name:'Difícil',gravity:1040,jump:510,speed:215,gap:220,seconds:60,points:2}
+ easy:{name:'Fácil',gravity:1250,jump:390,speed:115,gap:145,seconds:60,points:1},
+ normal:{name:'Medio',gravity:1450,jump:410,speed:145,gap:165,seconds:60,points:1.5},
+ hard:{name:'Difícil',gravity:1650,jump:430,speed:175,gap:185,seconds:60,points:2}
 };
 let brMode='quick',brDifficulty='easy',brActive=false,brFrame=null,brLast=0,brTime=60,brScore=0,brCombo=0,brBestCombo=0,brHolds=0,brRound=1,brTotalXP=0,brSessionScores=[];
 let brThreshold=3,brLastForce=0,brLastRender=0,brGame=null,brCanvas=null,brCtx=null,brCanvasW=600,brCanvasH=330,brDpr=1;
@@ -1774,12 +1774,14 @@ function brLoop(now){
  const force=Math.max(0,Number(currentForce)||0),d=brLevelData(),g=brGame;
  brTime=Math.max(0,brTime-dt);
  const thresholdCross=force>=brThreshold&&brLastForce<brThreshold;
- if(thresholdCross&&g&&!g.dead){g.vy=-d.jump*(.72+Math.min(1.5,(force-brThreshold)/brThreshold)*.62);g.airborne=true;brCombo++;brBestCombo=Math.max(brBestCombo,brCombo);}
- // Extra force keeps lifting the brush while the sensor stays above the configured threshold.
- if(g&&!g.dead&&force>=brThreshold){const extra=Math.min(1.8,(force-brThreshold)/Math.max(.5,brThreshold));g.vy-=d.gravity*.78*extra*dt;}
+ // One bounded impulse per jump; holding force cannot keep the character airborne.
+ if(thresholdCross&&g&&!g.dead&&!g.airborne){
+   const intensity=Math.min(1,Math.max(0,(force-brThreshold)/Math.max(1,brThreshold)));
+   g.vy=-d.jump*(.9+intensity*.1);g.airborne=true;brCombo++;brBestCombo=Math.max(brBestCombo,brCombo);
+ }
  brLastForce=force;
  if(g&&!g.dead){
-   g.vy+=d.gravity*dt;g.y+=g.vy*dt;g.worldX+=d.speed*dt;g.distance+=d.speed*dt;
+   g.vy=Math.min(g.vy+d.gravity*dt,850);g.y+=g.vy*dt;if(g.y<24){g.y=24;if(g.vy<0)g.vy=0;}g.worldX+=d.speed*dt;g.distance+=d.speed*dt;
    // Scroll platforms left while the brush stays in a stable screen position.
    const leftEdge=g.worldX-70;
    g.platforms=g.platforms.filter(p=>p.x+p.w>leftEdge-30);
@@ -1801,16 +1803,18 @@ function brLoop(now){
 }
 function brRoundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
 function brDrawBrush(ctx,x,y,scale=1){
- ctx.save();ctx.translate(x,y);ctx.rotate(-.16);ctx.scale(scale,scale);
- // A friendly original climbing brush character, with wood handle and dark bristles.
- ctx.fillStyle='#302c35';brRoundRect(ctx,-9,-7,31,14,5);ctx.fill();
- ctx.fillStyle='#22212a';for(let i=0;i<7;i++){ctx.fillRect(15+i*2,-9,2,18);}
- ctx.fillStyle='#c8894b';brRoundRect(ctx,-34,-5,31,10,5);ctx.fill();
- ctx.fillStyle='#e6ad70';brRoundRect(ctx,-31,-3,24,3,2);ctx.fill();
- ctx.strokeStyle='#7e4d2b';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(-27,0);ctx.lineTo(-7,0);ctx.stroke();
- ctx.fillStyle='#f8fbff';ctx.beginPath();ctx.arc(-17,-7,5.5,0,Math.PI*2);ctx.arc(-5,-7,5.5,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='#15223c';ctx.beginPath();ctx.arc(-16,-6,2,0,Math.PI*2);ctx.arc(-4,-6,2,0,Math.PI*2);ctx.fill();
- ctx.strokeStyle='#633c2b';ctx.lineWidth=1.8;ctx.beginPath();ctx.arc(-11,0,4,.2,1.7);ctx.stroke();
+ ctx.save();ctx.translate(x,y);ctx.rotate(-.10);ctx.scale(scale,scale);
+ // Original climbing-brush mascot with wooden handle and a distinct bristled head.
+ ctx.shadowColor='rgba(9,20,42,.28)';ctx.shadowBlur=5;ctx.shadowOffsetY=3;
+ ctx.fillStyle='#28232b';brRoundRect(ctx,5,-13,27,26,6);ctx.fill();
+ ctx.fillStyle='#171820';for(let i=0;i<9;i++)ctx.fillRect(25+i*2.2,-15,2,30);
+ ctx.fillStyle='#bd7a3f';brRoundRect(ctx,-42,-7,49,14,7);ctx.fill();
+ ctx.fillStyle='#f0bd7d';brRoundRect(ctx,-37,-4,38,4,2);ctx.fill();
+ ctx.strokeStyle='#80502c';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(-34,2);ctx.lineTo(1,2);ctx.stroke();
+ ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+ ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(9,-6,5.2,0,Math.PI*2);ctx.arc(20,-6,5.2,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#16213d';ctx.beginPath();ctx.arc(10,-5,2,0,Math.PI*2);ctx.arc(21,-5,2,0,Math.PI*2);ctx.fill();
+ ctx.strokeStyle='#5a351e';ctx.lineWidth=1.8;ctx.beginPath();ctx.arc(16,2,4,.2,1.7);ctx.stroke();
  ctx.restore();
 }
 function brDrawScene(force){
@@ -1821,7 +1825,16 @@ function brDrawScene(force){
  for(let i=0;i<7;i++){const cx=((i*117-g.worldX*.18)%(w+150)+w+150)%(w+150)-35,cy=35+(i*37)%105;c.fillStyle='rgba(255,255,255,.66)';c.beginPath();c.arc(cx,cy,15,0,Math.PI*2);c.arc(cx+17,cy-8,20,0,Math.PI*2);c.arc(cx+38,cy,14,0,Math.PI*2);c.fill();}
  c.fillStyle='#a5e3cb';c.beginPath();c.moveTo(0,h*.69);for(let x=0;x<=w+10;x+=30)c.lineTo(x,h*.64+Math.sin((x+g.worldX*.12)*.012)*20);c.lineTo(w,h);c.lineTo(0,h);c.closePath();c.fill();
  // Draw all visible platforms.
- for(const p of g.platforms){const x=p.x-g.worldX+g.x;if(x>w+20||x+p.w< -20)continue;c.fillStyle='#317e68';brRoundRect(c,x,p.y,p.w,p.h,5);c.fill();c.fillStyle='#70d84e';brRoundRect(c,x,p.y-4,p.w,8,4);c.fill();c.fillStyle='rgba(255,255,255,.38)';c.fillRect(x+8,p.y-2,Math.max(10,p.w*.35),2);}
+ for(const p of g.platforms){
+ const x=p.x-g.worldX+g.x;if(x>w+20||x+p.w< -20)continue;
+ // Rounded tubular ledges with glossy highlights and metallic rings.
+ const grad=c.createLinearGradient(x,p.y,x,p.y+p.h+7);grad.addColorStop(0,'#d9f5ff');grad.addColorStop(.22,'#65c9e9');grad.addColorStop(.55,'#237aa8');grad.addColorStop(1,'#17405f');
+ c.fillStyle=grad;brRoundRect(c,x,p.y,p.w,p.h+5,7);c.fill();
+ c.fillStyle='#e5fbff';brRoundRect(c,x-2,p.y-4,p.w+4,7,4);c.fill();
+ c.fillStyle='#4ca8cc';c.fillRect(x+7,p.y-2,Math.max(8,p.w-14),2);
+ c.fillStyle='#163c58';c.fillRect(x+9,p.y+p.h-1,Math.max(6,p.w-18),3);
+ for(let rx=x+12;rx<x+p.w-8;rx+=25){c.fillStyle='rgba(255,255,255,.7)';c.fillRect(rx,p.y+2,2,p.h+1);}
+}
  // Magnesium powder collectibles, fluffy white clouds with sparkle flecks.
  for(const p of g.powders){if(p.got)continue;const x=p.x-g.worldX+g.x,y=p.y+Math.sin(nowSafeTime()*.004+p.phase)*3;if(x< -35||x>w+35)continue;c.save();c.translate(x,y);c.fillStyle='#fffdf4';c.beginPath();c.arc(-8,2,7,0,Math.PI*2);c.arc(0,-3,10,0,Math.PI*2);c.arc(9,2,7,0,Math.PI*2);c.fill();c.fillStyle='#c4efff';c.fillRect(-3,-1,2,3);c.fillRect(5,1,2,2);c.fillStyle='#fff';c.fillRect(-15,-13,3,3);c.fillRect(12,-11,3,3);c.restore();}
  // Little dust particles when powder is collected.
