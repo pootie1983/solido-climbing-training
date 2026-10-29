@@ -1040,6 +1040,18 @@ header{background:rgba(9,12,10,.91);border-bottom:1px solid #ffffff12;backdrop-f
 }
 @media(prefers-reduced-motion:reduce){.btn,.tile:before{transition:none}}
 
+
+/* PHOTO PREMIUM — recuperar iconografía y selección visual de manos */
+.tile .emoji{font-size:initial;height:58px;min-height:58px;width:58px;overflow:visible;display:grid;place-items:center;position:relative;z-index:2;margin-bottom:11px;border:1px solid #c3f36b44;border-radius:14px;background:linear-gradient(145deg,#25362aee,#101812ee);color:var(--green);box-shadow:inset 0 1px 0 #ffffff18,0 6px 18px #0004}
+.tile .emoji .home-icon{display:block;width:42px;height:42px;filter:drop-shadow(0 2px 4px #0005)}
+.hand-choice{gap:7px;min-height:92px}
+.hand-choice>span{display:grid;place-items:center;width:50px;height:48px;color:var(--green)}
+.hand-icon{display:block;width:44px;height:44px;fill:#c3f36b22;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.hand-choice.active .hand-icon{fill:#c3f36b35;filter:drop-shadow(0 0 5px #c3f36b30)}
+.hand-choice .hand-both{width:56px}
+html[data-theme="light"] .tile .emoji{background:linear-gradient(145deg,#f7fff7,#dcebdd);border-color:#b7d9b8}
+html[data-theme="light"] .hand-icon{fill:#5b9d5722}
+
 </style>
 </head>
 
@@ -1382,7 +1394,7 @@ header{background:rgba(9,12,10,.91);border-bottom:1px solid #ffffff12;backdrop-f
   <div class="force-heading"><div><div class="force-icon">▣</div><div><h2>FUERZA DE DEDOS</h2><span>SOLIDO CLIMBING · WH-C06</span></div></div><span class="bluetooth-icon">ᛒ</span></div>
   <div class="config-block">
     <p class="config-label">¿Qué mano vas a entrenar?</p>
-    <div class="choice-row"><button class="choice hand-choice" data-value="Izquierda" onclick="selectTrainingOption('hand','Izquierda',this)"><span>♧</span>Izquierda</button><button class="choice hand-choice active" data-value="Derecha" onclick="selectTrainingOption('hand','Derecha',this)"><span>♧</span>Derecha</button><button class="choice hand-choice" data-value="Ambas" onclick="selectTrainingOption('hand','Ambas',this)"><span>♧</span>Ambas</button></div>
+    <div class="choice-row"><button class="choice hand-choice" data-value="Izquierda" onclick="selectTrainingOption('hand','Izquierda',this)"><span><svg class="hand-icon hand-left" viewBox="0 0 48 48" aria-hidden="true"><path d="M14 24V12a3 3 0 0 1 6 0v9-13a3 3 0 0 1 6 0v13-11a3 3 0 0 1 6 0v12-8a3 3 0 0 1 6 0v13c0 9-5 15-14 15h-2c-5 0-8-3-10-7l-5-9a3 3 0 0 1 5-3l4 5"/></svg></span>Izquierda</button><button class="choice hand-choice active" data-value="Derecha" onclick="selectTrainingOption('hand','Derecha',this)"><span><svg class="hand-icon hand-right" viewBox="0 0 48 48" aria-hidden="true"><path d="M34 24V12a3 3 0 0 0-6 0v9-13a3 3 0 0 0-6 0v13-11a3 3 0 0 0-6 0v12-8a3 3 0 0 0-6 0v13c0 9 5 15 14 15h2c5 0 8-3 10-7l5-9a3 3 0 0 0-5-3l-4 5"/></svg></span>Derecha</button><button class="choice hand-choice" data-value="Ambas" onclick="selectTrainingOption('hand','Ambas',this)"><span><svg class="hand-icon hand-both" viewBox="0 0 64 48" aria-hidden="true"><g transform="translate(0 2) scale(.78 .88)">M14 24V12a3 3 0 0 1 6 0v9-13a3 3 0 0 1 6 0v13-11a3 3 0 0 1 6 0v12-8a3 3 0 0 1 6 0v13c0 9-5 15-14 15h-2c-5 0-8-3-10-7l-5-9a3 3 0 0 1 5-3l4 5</g><g transform="translate(64 2) scale(-.78 .88)"><path d="M14 24V12a3 3 0 0 1 6 0v9-13a3 3 0 0 1 6 0v13-11a3 3 0 0 1 6 0v12-8a3 3 0 0 1 6 0v13c0 9-5 15-14 15h-2c-5 0-8-3-10-7l-5-9a3 3 0 0 1 5-3l4 5"/></g></svg></span>Ambas</button></div>
     <p class="config-label">Tamaño del agarre</p>
     <div class="choice-row"><button class="choice grip-choice" data-value="5" onclick="selectTrainingOption('grip','5',this)">5 mm</button><button class="choice grip-choice active" data-value="10" onclick="selectTrainingOption('grip','10',this)">10 mm</button><button class="choice grip-choice" data-value="20" onclick="selectTrainingOption('grip','20',this)">20 mm</button></div>
   </div>
