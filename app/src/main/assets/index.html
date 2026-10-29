@@ -2106,7 +2106,7 @@ function workoutTick(){
  }
  if(workoutPhase==='rest'){
    workoutRep++;workoutPhase='hold';workoutPhaseRemaining=workoutHold;playWorkoutCue('round');
-   document.getElementById('workoutResult').textContent='Descanso terminado. Comienza la serie '+workoutRep+'/'+workoutTotalReps+' con la mano '+workoutActiveHand.toLowerCase()+'.';
+   document.getElementById('workoutResult').textContent='⏱ NUEVA SERIE · Descanso terminado. Comienza la serie '+workoutRep+'/'+workoutTotalReps+' con la mano '+workoutActiveHand.toLowerCase()+'.';
    workoutUi();
  }
 }
