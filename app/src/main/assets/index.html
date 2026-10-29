@@ -547,6 +547,28 @@ select{
 .compare-difference{padding:10px;background:#0a1a22;border-radius:9px;color:var(--muted);font-size:12px;line-height:1.5}
 @media(max-width:380px){.attempt-actions{grid-template-columns:1fr}.attempt-settings{grid-template-columns:1fr}.compare-row{grid-template-columns:68px minmax(30px,1fr) 58px;gap:6px}}
 
+
+/* Mini juego controlado por el sensor */
+.climb-game{margin-top:14px;background:linear-gradient(160deg,#10232d,#0a1720);border:1px solid #31505b;border-radius:18px;padding:14px}
+.game-hud{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:10px}
+.game-hud strong{color:var(--green)}
+.game-scene{height:330px;position:relative;overflow:hidden;border-radius:14px;border:1px solid #35515c;background:linear-gradient(#102b3a,#183b45 55%,#0b1b24)}
+.game-scene:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 45px,#d5f4ff0b 46px 47px),repeating-linear-gradient(90deg,transparent 0 44px,#d5f4ff0a 45px 46px)}
+.game-route{position:absolute;top:-40px;bottom:-40px;left:50%;width:5px;transform:translateX(-50%);background:#9cb3ad55;border-radius:4px}
+.game-target{position:absolute;left:calc(50% + 25px);font-size:23px;filter:drop-shadow(0 0 7px #a6ff70)}
+.game-climber{position:absolute;left:calc(50% - 23px);bottom:18px;font-size:38px;z-index:2;filter:drop-shadow(0 4px 5px #0008);transition:bottom .08s linear}
+.game-ground{position:absolute;bottom:0;height:14px;left:0;right:0;background:#294b43;border-top:2px solid #6a9c72}
+.game-overlay{position:absolute;inset:0;display:grid;place-content:center;text-align:center;padding:20px;background:#06121bbd;z-index:3}
+.game-overlay strong{font-size:24px;color:var(--green)}
+.game-overlay span{font-size:12px;color:#d3e0e2;max-width:240px;margin-top:8px;line-height:1.5}
+.game-controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.game-controls .btn{flex:1;min-width:125px}
+.game-meter{height:10px;border-radius:8px;background:#21343d;overflow:hidden;margin:12px 0 5px}
+.game-meter>div{height:100%;width:0;background:linear-gradient(90deg,#39d9a0,#b5fa4a,#ffbd4a);transition:width .05s linear}
+.game-hint{font-size:11px;line-height:1.5;color:var(--muted);margin-top:10px}
+.game-threshold{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12px;color:var(--muted)}
+.game-threshold input{flex:1;min-width:0}
+
 </style>
 </head>
 
@@ -640,6 +662,12 @@ select{
       <div class="emoji">📈</div>
       <strong>Progreso</strong>
       <small>Tu historial</small>
+    </div>
+
+    <div class="tile" onclick="show('climbGame')">
+      <div class="emoji">🎮</div>
+      <strong>Juego de fuerza</strong>
+      <small>Escala con el sensor</small>
     </div>
 
   </div>
@@ -1030,6 +1058,24 @@ select{
 
 </section>
 
+
+<section id="climbGame" class="hide">
+  <div class="sectionhead"><h2>🎮 Ascenso vertical</h2><span class="tag">WH-C06</span></div>
+  <p class="muted">Aprieta para subir. Suelta para detenerte. Llega a las presas verdes y consigue la mayor puntuación sin tirones.</p>
+  <div class="climb-game">
+    <div class="game-hud"><span>ALTURA <strong id="gameHeight">0 m</strong></span><span>PUNTOS <strong id="gameScore">0</strong></span><span>FUERZA <strong id="gameForce">0.0 kg</strong></span></div>
+    <div class="game-scene" id="gameScene">
+      <div class="game-route"></div><div class="game-target" id="gameTarget" style="top:38%">✦</div>
+      <div class="game-climber" id="gameClimber">🧗</div><div class="game-ground"></div>
+      <div class="game-overlay" id="gameOverlay"><strong>¿Listo para escalar?</strong><span>Conecta el WH-C06 desde la pantalla Fuerza. Al apretar, tu escalador asciende; al soltar, se queda quieto.</span></div>
+    </div>
+    <div class="game-meter"><div id="gameForceMeter"></div></div>
+    <div class="game-hud"><span>Fuerza mínima para subir</span><strong id="gameThresholdLabel">2.0 kg</strong></div>
+    <label class="game-threshold">Sensibilidad <input id="gameThreshold" type="range" min="0.5" max="10" step="0.5" value="2" oninput="updateGameThreshold()"></label>
+    <div class="game-controls"><button class="btn" id="gameStart" onclick="startClimbGame()">▶ Empezar</button><button class="btn secondary" onclick="resetClimbGame()">↻ Reiniciar</button><button class="btn secondary" onclick="show('fingerForce')">Conectar sensor</button></div>
+    <p class="game-hint">Consejo: empieza con una sensibilidad baja y ajústala hasta que el personaje suba cuando aprietes y se detenga al relajar la mano. El juego usa la lectura actual del sensor, no inventa fuerza.</p>
+  </div>
+</section>
 
 <div class="footer">
   SOLIDO CLIMBING · ENTRENAMIENTO RESPONSABLE
@@ -1550,6 +1596,56 @@ function startForceRest(){
   },1000);
 }
 
+
+
+/* =========================
+   JUEGO: ASCENSO VERTICAL
+   Lee currentForce, compartido con WH-C06.
+========================= */
+let climbGameActive=false, climbGameStarted=false, climbGameY=0, climbGameScore=0, climbGameLast=0, climbGameFrame=null, climbGameLastTarget=0;
+function updateGameThreshold(){
+  const v=Number(document.getElementById('gameThreshold')?.value||2);
+  const label=document.getElementById('gameThresholdLabel'); if(label) label.textContent=v.toFixed(1)+' kg';
+}
+function startClimbGame(){
+  climbGameActive=true;climbGameStarted=true;climbGameLast=0;
+  const overlay=document.getElementById('gameOverlay'); if(overlay) overlay.style.display='none';
+  const b=document.getElementById('gameStart');if(b)b.textContent='Ⅱ Pausar';
+  if(climbGameFrame)cancelAnimationFrame(climbGameFrame);
+  climbGameLast=performance.now();climbGameLoop(climbGameLast);
+}
+function resetClimbGame(){
+  climbGameActive=false;climbGameStarted=false;climbGameY=0;climbGameScore=0;climbGameLastTarget=0;
+  if(climbGameFrame)cancelAnimationFrame(climbGameFrame);
+  const overlay=document.getElementById('gameOverlay');if(overlay){overlay.style.display='grid';overlay.innerHTML='<strong>¿Listo para escalar?</strong><span>Conecta el WH-C06 desde la pantalla Fuerza. Al apretar, tu escalador asciende; al soltar, se queda quieto.</span>';}
+  const b=document.getElementById('gameStart');if(b)b.textContent='▶ Empezar';
+  renderClimbGame(0);
+}
+function climbGameLoop(now){
+  if(!climbGameActive)return;
+  const dt=Math.min(.08,Math.max(0,(now-climbGameLast)/1000));climbGameLast=now;
+  const threshold=Number(document.getElementById('gameThreshold')?.value||2);
+  const force=Math.max(0,Number(currentForce)||0);
+  if(force>=threshold){
+    climbGameY+=dt*(8+Math.min(force,20)*1.4);
+    climbGameScore+=Math.round(dt*10);
+  }
+  renderClimbGame(force);
+  if(climbGameY>=1000){
+    climbGameY=1000;climbGameActive=false;
+    const overlay=document.getElementById('gameOverlay');
+    overlay.style.display='grid';overlay.innerHTML='<strong>¡Cumbre alcanzada!</strong><span>Has conseguido '+climbGameScore+' puntos. Descansa antes de volver a intentarlo.</span>';
+    const b=document.getElementById('gameStart');if(b)b.textContent='▶ Otra partida';return;
+  }
+  climbGameFrame=requestAnimationFrame(climbGameLoop);
+}
+function renderClimbGame(force){
+  const h=document.getElementById('gameHeight'),s=document.getElementById('gameScore'),f=document.getElementById('gameForce'),meter=document.getElementById('gameForceMeter'),climber=document.getElementById('gameClimber'),target=document.getElementById('gameTarget'),scene=document.getElementById('gameScene');
+  if(h)h.textContent=Math.floor(climbGameY/10)+' m';if(s)s.textContent=String(climbGameScore);if(f)f.textContent=force.toFixed(1)+' kg';
+  if(meter)meter.style.width=Math.min(100,force/Math.max(1,Number(document.getElementById('gameThreshold')?.value||2)*4)*100)+'%';
+  if(climber)climber.style.bottom=(18+Math.min(250,climbGameY*.27))+'px';
+  if(target)target.style.top=(Math.max(8,Math.min(78,38-(climbGameY%250)*.18)))+'%';
+}
 
 /* =========================
    NAVEGACIÓN
