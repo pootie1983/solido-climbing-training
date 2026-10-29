@@ -2832,32 +2832,51 @@ function brDrawGrigri(ctx,x,y,scale=1){
   ctx.shadowBlur=0;ctx.shadowOffsetY=0;ctx.restore();
 }
 function brDrawGokuNimbus(ctx,x,y,scale){
- ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.scale(scale,scale);
- // Nube voladora amarilla: silueta redondeada en capas de píxeles.
- ctx.save();ctx.translate(0,18);
- ctx.fillStyle='#d99012';ctx.fillRect(-22,5,43,7);ctx.fillRect(-27,0,10,8);ctx.fillRect(17,-1,12,9);
- ctx.fillStyle='#ffd52e';ctx.fillRect(-24,0,48,8);ctx.fillRect(-18,-5,36,10);ctx.fillRect(-11,-9,22,8);ctx.fillRect(-29,3,12,5);ctx.fillRect(19,2,12,6);
- ctx.fillStyle='#fff18a';ctx.fillRect(-16,-4,25,3);ctx.fillRect(-22,1,9,3);
- ctx.fillStyle='#f7a91b';ctx.fillRect(-19,8,33,2);ctx.restore();
- // Cola de pelo negro puntiagudo, estilo anime de Goku niño.
- ctx.fillStyle='#15151b';ctx.fillRect(-9,-28,19,13);ctx.fillRect(-14,-25,8,9);ctx.fillRect(6,-34,8,12);ctx.fillRect(-4,-38,11,12);ctx.fillRect(-15,-34,9,10);ctx.fillRect(11,-27,8,8);
- ctx.fillStyle='#f4bd8b';ctx.fillRect(-9,-26,18,16);ctx.fillRect(-12,-23,4,9);ctx.fillRect(8,-23,4,9);
- // Gi naranja con cinturón azul.
- ctx.fillStyle='#ee7025';ctx.fillRect(-11,-12,22,20);ctx.fillRect(-14,-9,6,13);ctx.fillRect(8,-9,6,13);
- ctx.fillStyle='#ff9a35';ctx.fillRect(-8,-12,6,17);ctx.fillRect(2,-10,5,15);
- ctx.fillStyle='#1768c4';ctx.fillRect(-11,3,22,4);ctx.fillRect(-3,5,6,6);
- // Brazos y manos.
- ctx.fillStyle='#f4bd8b';ctx.fillRect(-15,-8,5,12);ctx.fillRect(10,-8,5,12);ctx.fillRect(-15,2,5,4);ctx.fillRect(10,2,5,4);
- // Pantalón naranja y botas azul oscuro.
- ctx.fillStyle='#e96b23';ctx.fillRect(-9,8,8,8);ctx.fillRect(2,8,8,8);
- ctx.fillStyle='#174b9b';ctx.fillRect(-10,14,9,5);ctx.fillRect(2,14,9,5);ctx.fillStyle='#4b91ec';ctx.fillRect(-9,14,5,2);ctx.fillRect(3,14,5,2);
- // Rostro, ojos y cejas.
- ctx.fillStyle='#17151a';ctx.fillRect(-7,-20,5,2);ctx.fillRect(3,-20,5,2);
- ctx.fillStyle='#fff';ctx.fillRect(-6,-18,4,4);ctx.fillRect(3,-18,4,4);
- ctx.fillStyle='#20202a';ctx.fillRect(-4,-17,2,3);ctx.fillRect(4,-17,2,3);
- ctx.fillStyle='#a74e35';ctx.fillRect(-2,-11,5,2);
- // Brillo de contorno.
- ctx.fillStyle='#fff0d2';ctx.fillRect(-10,-24,2,5);
+ // Rediseño 2D de aventura: Goku niño con volumen, contorno limpio y nube Nimbus luminosa.
+ // La escala se mantiene normal; solo mejora el acabado artístico.
+ ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);
+ const path=(points,fill,stroke='#3a2430',lw=1.4)=>{ctx.beginPath();points(ctx);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw;ctx.stroke();}};
+ const grad=(x1,y1,x2,y2,stops)=>{const g=ctx.createLinearGradient(x1,y1,x2,y2);for(const [p,c] of stops)g.addColorStop(p,c);return g;};
+ // Aura suave bajo el personaje.
+ ctx.save();ctx.globalAlpha=.28;ctx.fillStyle='#fff0a0';ctx.shadowColor='#fff4a6';ctx.shadowBlur=18;ctx.beginPath();ctx.ellipse(0,20,34,12,0,0,Math.PI*2);ctx.fill();ctx.restore();
+ // Nimbus: nube con varias masas, luces cálidas y sombra inferior.
+ ctx.save();ctx.translate(0,18);ctx.shadowColor='#6c3900';ctx.shadowBlur=7;ctx.shadowOffsetY=4;
+ path(c=>{c.moveTo(-29,4);c.bezierCurveTo(-34,-2,-27,-9,-19,-7);c.bezierCurveTo(-17,-18,-3,-19,3,-10);c.bezierCurveTo(12,-17,23,-10,22,-4);c.bezierCurveTo(34,-3,35,8,25,10);c.lineTo(-21,10);c.bezierCurveTo(-29,10,-33,8,-29,4);c.closePath();},grad(0,-18,0,12,[[0,'#fff7a8'],[.28,'#ffe65a'],[.67,'#ffbd22'],[1,'#e87a12']]),'#a95d13',1.3);
+ ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+ ctx.fillStyle='#fff9ca';ctx.beginPath();ctx.ellipse(-8,-7,9,4,-.2,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#ffdf50';ctx.beginPath();ctx.ellipse(13,-3,8,5,.15,0,Math.PI*2);ctx.fill();
+ ctx.strokeStyle='#fff4a0';ctx.lineWidth=1.3;ctx.beginPath();ctx.moveTo(-23,4);ctx.quadraticCurveTo(-10,9,5,7);ctx.stroke();ctx.restore();
+ // Legs and boots, with depth shading.
+ ctx.lineCap='round';ctx.lineJoin='round';
+ ctx.strokeStyle='#a94b22';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(-5,5);ctx.lineTo(-10,15);ctx.moveTo(5,5);ctx.lineTo(10,14);ctx.stroke();
+ ctx.strokeStyle=grad(0,6,0,18,[[0,'#ff9b35'],[1,'#d94b1c']]);ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(-5,5);ctx.lineTo(-10,14);ctx.moveTo(5,5);ctx.lineTo(10,13);ctx.stroke();
+ // Torso: orange gi with folds and blue sash.
+ path(c=>{c.moveTo(-10,-13);c.quadraticCurveTo(-15,-10,-13,-1);c.lineTo(-9,7);c.lineTo(9,7);c.lineTo(13,-2);c.quadraticCurveTo(14,-10,9,-13);c.closePath();},grad(-13,-8,12,4,[[0,'#c84418'],[.25,'#ff9a32'],[.62,'#f47722'],[1,'#b93619']]));
+ ctx.strokeStyle='#ffc06a';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(-8,-9);ctx.lineTo(-4,1);ctx.moveTo(3,-8);ctx.lineTo(7,0);ctx.stroke();
+ // Blue undershirt, belt and wrist wraps.
+ ctx.fillStyle='#1749a4';ctx.beginPath();ctx.moveTo(-10,-13);ctx.lineTo(-5,-16);ctx.lineTo(5,-16);ctx.lineTo(10,-13);ctx.lineTo(8,-8);ctx.lineTo(-8,-8);ctx.closePath();ctx.fill();
+ ctx.fillStyle=grad(0,2,0,8,[[0,'#43a4ff'],[1,'#1450ba']]);ctx.fillRect(-9,2,18,4);ctx.fillStyle='#ffd46a';ctx.fillRect(-2,2,4,4);
+ // Arms posed for flight.
+ ctx.strokeStyle='#bd7049';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(-10,-10);ctx.quadraticCurveTo(-17,-8,-17,-1);ctx.moveTo(10,-10);ctx.quadraticCurveTo(17,-8,17,-1);ctx.stroke();
+ ctx.strokeStyle=grad(-17,-10,-12,0,[[0,'#ffe0ad'],[1,'#d98b5c']]);ctx.lineWidth=4.5;ctx.beginPath();ctx.moveTo(-10,-10);ctx.quadraticCurveTo(-17,-8,-17,-1);ctx.moveTo(10,-10);ctx.quadraticCurveTo(17,-8,17,-1);ctx.stroke();
+ ctx.fillStyle='#1d54b6';ctx.fillRect(-19,-3,5,3);ctx.fillRect(14,-3,5,3);
+ // Neck and face.
+ ctx.fillStyle='#d98b5d';ctx.fillRect(-4,-19,8,7);
+ path(c=>{c.moveTo(-10,-29);c.quadraticCurveTo(-9,-36,0,-36);c.quadraticCurveTo(10,-35,11,-27);c.lineTo(8,-17);c.quadraticCurveTo(3,-12,-2,-16);c.lineTo(-8,-21);c.closePath();},grad(-9,-34,10,-17,[[0,'#ffe1b0'],[.55,'#f4b77f'],[1,'#ce7952']]),'#713e34',1.2);
+ // Ears and cheek light.
+ ctx.fillStyle='#eaa071';ctx.beginPath();ctx.ellipse(-10,-25,2.6,4,0,0,Math.PI*2);ctx.ellipse(10,-25,2.6,4,0,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#ffcf9c';ctx.beginPath();ctx.ellipse(-5,-21,3,2,0,0,Math.PI*2);ctx.fill();
+ // Expressive eyes, brows and confident smile.
+ ctx.fillStyle='#39211f';ctx.beginPath();ctx.moveTo(-8,-28);ctx.lineTo(-2,-29);ctx.lineTo(-2,-27);ctx.lineTo(-8,-26);ctx.closePath();ctx.fill();
+ ctx.beginPath();ctx.moveTo(2,-29);ctx.lineTo(8,-28);ctx.lineTo(8,-26);ctx.lineTo(2,-27);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(-5,-24.5,2.5,3,0,0,Math.PI*2);ctx.ellipse(5,-24.5,2.5,3,0,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#282b38';ctx.beginPath();ctx.ellipse(-4.4,-24,1.1,2.1,0,0,Math.PI*2);ctx.ellipse(5.6,-24,1.1,2.1,0,0,Math.PI*2);ctx.fill();
+ ctx.strokeStyle='#9a3e35';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(-2,-19);ctx.quadraticCurveTo(1,-17,4,-19);ctx.stroke();
+ // Iconic spiky black hair, layered silhouette and highlights.
+ path(c=>{c.moveTo(-10,-27);c.lineTo(-15,-35);c.lineTo(-8,-33);c.lineTo(-10,-43);c.lineTo(-2,-37);c.lineTo(2,-45);c.lineTo(5,-37);c.lineTo(13,-41);c.lineTo(10,-32);c.lineTo(14,-29);c.lineTo(9,-26);c.lineTo(6,-31);c.lineTo(2,-28);c.lineTo(-2,-31);c.lineTo(-7,-27);c.closePath();},grad(-10,-44,10,-27,[[0,'#10131d'],[.45,'#282b3a'],[1,'#080a12']]),'#05070d',1.6);
+ ctx.strokeStyle='#717a91';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(-7,-36);ctx.lineTo(-3,-39);ctx.moveTo(3,-38);ctx.lineTo(7,-37);ctx.stroke();
+ // Small specular edge to separate silhouette from the sky.
+ ctx.globalAlpha=.75;ctx.strokeStyle='#fff0c9';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(-12,-33);ctx.lineTo(-14,-36);ctx.moveTo(12,-30);ctx.lineTo(14,-32);ctx.stroke();
  ctx.restore();
 }
 function brDrawScene(force){
