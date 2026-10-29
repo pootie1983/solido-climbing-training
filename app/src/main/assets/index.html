@@ -1766,6 +1766,7 @@ function brReset(){
 }
 function brStart(){
  if(brCountdownTimer)return;
+ brEnsureAudio(); // Unlock audio during the user's tap before the countdown begins.
  if(brActive){brActive=false;if(brFrame)cancelAnimationFrame(brFrame);brFrame=null;document.getElementById('brStartButton').textContent='▶ Continuar';return;}
  if(brTime<=0)brReset();if(!brGame)brNewGame();
  const overlay=document.getElementById('brOverlay');overlay.style.display='grid';
