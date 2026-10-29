@@ -695,7 +695,9 @@ body.br-fullscreen-active .br-close-game{display:flex}
 /* Meditación guiada SOLIDO */
 .meditation-hero{background:linear-gradient(140deg,#1a403e,#10252f 60%,#243a2b);border:1px solid #42665a;border-radius:18px;padding:18px;margin-bottom:14px}
 .meditation-list{display:grid;gap:10px;margin:14px 0}
-.meditation-card{background:linear-gradient(145deg,#1a303a,#10212b);border:1px solid #31505b;border-radius:16px;padding:14px;cursor:pointer}
+.meditation-card{background:linear-gradient(145deg,#1a303a,#10212b);border:1px solid #31505b;border-radius:16px;padding:14px;cursor:pointer;touch-action:manipulation}
+.home-meditation-btn{background:#203b3b;color:#e7fff2;border:1px solid #5b8c7c}
+.meditation-card:active{transform:scale(.99)}
 .meditation-card.active{border-color:var(--green);box-shadow:0 0 0 1px #7cff4530}
 .meditation-card h3{margin:4px 0 6px;font-size:15px}
 .meditation-card p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
@@ -867,9 +869,10 @@ body.br-fullscreen-active .br-close-game{display:flex}
       Entrenamientos de escalada, fuerza y montaña en un solo lugar.
     </p>
 
-    <button class="btn" onclick="show('plans')">
-      Ver mi plan →
-    </button>
+    <div class="row" style="margin-top:16px;position:relative;z-index:1">
+      <button class="btn" onclick="show('plans')">Ver mi plan →</button>
+      <button class="btn secondary home-meditation-btn" onclick="show('meditation');selectMeditation('focus')">☁️ Meditación guiada</button>
+    </div>
   </div>
 
   <div class="home-sensor-card">
@@ -1515,13 +1518,6 @@ body.br-fullscreen-active .br-close-game{display:flex}
     <span>↗</span>
     Progreso
 
-  </button>
-
-  <button
-    data-page="meditation"
-    onclick="show('meditation',this)">
-    <span>◉</span>
-    Medita
   </button>
 
   <button
@@ -3370,7 +3366,8 @@ function selectMeditation(id){
   document.getElementById('meditationProgress').style.width='0%';
   document.getElementById('meditationElapsed').textContent='00:00';
   document.getElementById('meditationRemaining').textContent='Preparado';
-  document.getElementById('meditationStatus').textContent='Pulsa «Escuchar» para comenzar.';
+  document.getElementById('meditationStatus').textContent='Iniciando la meditación…';
+  startMeditation();
 }
 function startMeditation(){
   if(!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)){
@@ -3388,8 +3385,10 @@ function startMeditation(){
   if(meditationIndex===0)meditationElapsedBase=0;
   meditationRunning=true;meditationPaused=false;meditationStartedAt=Date.now();
   startMeditationAmbient();
-  document.getElementById('meditationStatus').textContent='Preparando la voz del dispositivo…';
-  speakMeditationParagraph();
+  document.getElementById('meditationStatus').textContent='Preparando una voz suave…';
+  try{window.speechSynthesis.cancel();}catch(e){}
+  // Un pequeño retraso ayuda a WebView/Android a inicializar el motor de voz tras el toque del usuario.
+  setTimeout(()=>{if(meditationRunning)speakMeditationParagraph();},120);
 }
 function speakMeditationParagraph(){
   const m=guidedMeditations[activeMeditation];
@@ -3399,10 +3398,13 @@ function speakMeditationParagraph(){
   }
   const utterance=new SpeechSynthesisUtterance(m.paragraphs[meditationIndex]);
   meditationUtterance=utterance;
-  utterance.lang='es-ES';utterance.rate=0.82;utterance.pitch=0.92;utterance.volume=1;
+  // Voz suave y pausada tipo ASMR. La voz femenina exacta depende de las voces instaladas en Android.
+  utterance.lang='es-ES';utterance.rate=0.76;utterance.pitch=1.08;utterance.volume=0.82;
   const voices=window.speechSynthesis.getVoices();
-  const spanish=voices.filter(v=>/^es(-|_)/i.test(v.lang));
-  const preferred=spanish.find(v=>/female|femenina|monica|helena|lucia|paulina/i.test(v.name))||spanish[0];
+  const spanish=voices.filter(v=>/^es([-_]|$)/i.test(v.lang));
+  const preferred=spanish.find(v=>/female|femenina|woman|mujer|monica|helena|luc[ií]a|paulina|elena|laura|sara|alia|google.*españa/i.test(v.name))
+    ||spanish.find(v=>/es-ES|es_ES/i.test(v.lang))
+    ||spanish[0];
   if(preferred)utterance.voice=preferred;
   utterance.onstart=()=>{document.getElementById('meditationStatus').textContent='Escucha con comodidad. Puedes pausar cuando quieras.';};
   utterance.onend=()=>{
