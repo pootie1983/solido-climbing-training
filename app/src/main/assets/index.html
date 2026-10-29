@@ -708,6 +708,35 @@ body.br-fullscreen-active .br-close-game{display:flex}
   var splash=document.getElementById('solidoSplash');
   document.documentElement.style.background='#05090c';
   document.body.style.overflow='hidden';
+
+  // Breve sonido original de bienvenida, sintetizado sin archivos externos.
+  // Se intenta reproducir al abrir la pantalla; el sistema puede bloquear audio automático.
+  try{
+    var AudioCtx=window.AudioContext||window.webkitAudioContext;
+    if(AudioCtx){
+      var audioCtx=new AudioCtx();
+      var playWelcome=function(){
+        var now=audioCtx.currentTime;
+        [[523.25,0],[659.25,0.16],[783.99,0.32],[1046.5,0.52]].forEach(function(note){
+          var osc=audioCtx.createOscillator();
+          var gain=audioCtx.createGain();
+          osc.type='sine';
+          osc.frequency.setValueAtTime(note[0],now+note[1]);
+          gain.gain.setValueAtTime(0.0001,now+note[1]);
+          gain.gain.exponentialRampToValueAtTime(0.12,now+note[1]+0.025);
+          gain.gain.exponentialRampToValueAtTime(0.0001,now+note[1]+0.42);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now+note[1]);
+          osc.stop(now+note[1]+0.44);
+        });
+        window.setTimeout(function(){audioCtx.close().catch(function(){});},1300);
+      };
+      if(audioCtx.state==='running') playWelcome();
+      else audioCtx.resume().then(playWelcome).catch(function(){});
+    }
+  }catch(e){}
+
   window.setTimeout(function(){
     if(!splash)return;
     splash.classList.add('hide');
