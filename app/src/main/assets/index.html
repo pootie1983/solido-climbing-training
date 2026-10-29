@@ -1838,7 +1838,7 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
   <button class="br-close-game" type="button" aria-label="Cerrar juego" title="Cerrar juego" onclick="brCloseFullscreenGame()">×</button>
   <div class="sectionhead"><h2>🎮 Solido Sky Hopper</h2><span class="tag">WH-C06 LIVE</span></div>
   <div class="boulder-rush">
-    <div class="br-banner"><div class="br-kicker">SOLIDO ARCADE SERIES · 01</div><h2>SOLIDO SKY HOPPER</h2><p>Salta entre plataformas, recoge monedas doradas y esquiva bolas con pinchos y ojos.</p></div>
+    <div class="br-banner"><div class="br-kicker">SOLIDO ARCADE SERIES · 01</div><h2>SOLIDO SKY HOPPER</h2><p>Salta entre plataformas, recoge monedas y flores de turbo. ¡Mantén 20 kg durante el turbo para volar rápido 7 segundos!</p></div>
     <div class="br-hopper-config">
       <div class="br-level-row"><label>FUERZA NECESARIA PARA SALTAR</label><strong id="brThresholdValue">3,0 kg</strong></div>
       <input id="brThreshold" class="br-threshold-slider" type="range" min="0.5" max="20" step="0.5" value="3" oninput="brSetThreshold(this.value)" aria-label="Fuerza necesaria para saltar">
@@ -1872,7 +1872,7 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
     <div class="br-challenge" id="brChallenge">Haz fuerza por encima del umbral para elevar al personaje. Relaja para dejarlo caer sobre la siguiente plataforma.</div>
     <div class="br-actions"><button class="btn" id="brStartButton" onclick="brStart()">▶ Empezar a saltar</button><button class="btn secondary" onclick="brReset()">↻ Reiniciar</button><button class="btn secondary" onclick="show('fingerForce')">✊ Sensor WH-C06</button></div>
     <div class="br-achievements"><div class="br-ach" id="brAchCombo"><strong>🔥</strong>Combo x5</div><div class="br-ach" id="brAchHolds"><strong>✦</strong>10 presas</div><div class="br-ach" id="brAchClean"><strong>🏆</strong>Ronda limpia</div></div>
-    <p class="game-hint">La fuerza real del WH-C06 controla los saltos. Recoge monedas doradas y esquiva las bolas con pinchos. Entrena sin dolor y descansa entre rondas.</p>
+    <p class="game-hint">La fuerza real del WH-C06 controla los saltos. Recoge monedas y flores: la flor activa 7 segundos de turbo; mantén 20 kg o más para avanzar rápido, volar sin obstáculos y recoger monedas automáticamente.</p>
   </div>
 </section>
 
@@ -2755,8 +2755,9 @@ function brLoop(now){
  }
  brLastForce=force;
  if(g&&!g.dead){
-   // Stronger lift while squeezing; release still causes a quick descent.
-   if(g.airborne){
+   // Durante los siete segundos de turbo, el GRIGRI vuela estable y no puede caer.
+   if(turboActive){g.airborne=true;g.vy=0;g.y=Math.min(g.ground-55,Math.max(42,g.y));}
+   else if(g.airborne){
      // Releasing the sensor should let the character descend, not make it plummet.
      if(force<brThreshold){g.vy=Math.min(g.vy+(d.gravity*1.45)*dt,800);}
      else{const lift=Math.min(2.2,force/Math.max(.5,brThreshold));g.vy=Math.max(g.vy-(d.gravity*(1.05+lift*.55))*dt,-d.jump*1.45);}
