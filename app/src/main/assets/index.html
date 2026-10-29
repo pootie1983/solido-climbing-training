@@ -1776,7 +1776,6 @@ function brStart(){
      brFrame=requestAnimationFrame(brLoop);
    }
   },1000);
- },1000);
 }
 function brLoop(now){
  if(!brActive)return;const dt=Math.min(.03,Math.max(.001,(now-brLast)/1000));brLast=now;
