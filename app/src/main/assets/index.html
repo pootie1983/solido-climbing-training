@@ -609,6 +609,28 @@ select{
 .br-level-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px 0}.br-level-row label{font-size:11px;color:#aab8df}.br-level-row select{background:#0b142a;border-color:#394975}
 .br-achievements{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}.br-ach{border:1px solid #303d68;background:#0b142a;border-radius:9px;padding:8px 5px;text-align:center;color:#8898c1;font-size:9px}.br-ach strong{display:block;font-size:20px;color:#53658f}.br-ach.unlocked{color:#c8fca0;border-color:#648a48}.br-ach.unlocked strong{color:#caff70}
 @media(max-width:390px){.br-hud{grid-template-columns:repeat(2,minmax(0,1fr))}.br-scene{height:285px}.br-banner h2{font-size:24px}}
+
+/* Sky Hopper-inspired: movimiento vertical continuo controlado por fuerza */
+.br-hopper-config{margin:12px 0;padding:12px;background:#0b142a;border:1px solid #394975;border-radius:12px}
+.br-hopper-config .br-level-row{margin:0 0 9px}.br-hopper-config .br-level-row strong{font-size:18px;color:#caff70;font-variant-numeric:tabular-nums}
+.br-threshold-slider{display:block;width:100%;max-width:none;accent-color:#caff70;padding:0;margin:12px 0;touch-action:pan-y}
+.br-threshold-labels{display:flex;justify-content:space-between;gap:8px;color:#9eafd8;font-size:9px}
+.br-config-hint{margin:10px 0 0;color:#bdc9f0;font-size:11px;line-height:1.45}
+.br-difficulty{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:10px 0 12px}
+.br-difficulty-btn{min-width:0;padding:10px 4px;background:#151e3a;color:#dfe5ff;border:1px solid #394975;border-radius:10px;text-align:center;cursor:pointer}
+.br-difficulty-btn span{display:block;font-size:10px;font-weight:900}.br-difficulty-btn small{display:block;margin-top:5px;font-size:9px;color:#9eafd8;line-height:1.3}
+.br-difficulty-btn.active{border:2px solid #caff70;background:#29375c;color:#d5ff9c;box-shadow:0 0 12px #9dff5c20}
+.br-hopper-scene{background:linear-gradient(180deg,#101d42 0%,#263b69 55%,#152342 100%);touch-action:pan-y}
+.br-hopper-scene:before{background:radial-gradient(ellipse at 50% 100%,#8b9fff20,transparent 55%),repeating-linear-gradient(0deg,transparent 0 48px,#e4ecff10 49px 50px)}
+.br-hopper-scene .br-route{left:0;right:0;background:linear-gradient(90deg,transparent 15%,#caff7014 50%,transparent 85%)}
+.br-hopper-platform{position:absolute;width:24%;height:10px;border-radius:7px;background:linear-gradient(180deg,#d8ff9d,#70d64d 65%,#397c45);border:2px solid #e7ffbe;box-shadow:0 5px 0 #203f39,0 0 12px #a7ff5b55;will-change:transform;z-index:2}
+.br-hopper-platform:nth-of-type(odd){width:28%}
+.br-hopper-scene .br-climber{left:calc(50% - 19px);bottom:26px;transition:none;will-change:transform;animation:none;font-size:35px}
+.br-hopper-scene .br-climber.resting{animation:none}
+.br-hopper-scene .br-ground{height:13px;opacity:.8}
+.br-hopper-scene .br-hold{opacity:.35;pointer-events:none}
+.br-hopper-scene .br-gauge-marker{transition:none}
+@media(prefers-reduced-motion:reduce){.br-float{animation:none}.br-hopper-platform{will-change:auto}}
 </style>
 </head>
 
@@ -1103,37 +1125,42 @@ select{
   <div class="sectionhead"><h2>🎮 Boulder Rush</h2><span class="tag">WH-C06 LIVE</span></div>
   <div class="boulder-rush">
     <div class="br-banner"><div class="br-kicker">SOLIDO ARCADE SERIES · 01</div><h2>BOULDER RUSH</h2><p>Lee la fuerza, clava el objetivo y encadena combos. ¡Cada presa cuenta!</p></div>
-    <div class="br-game-types" aria-label="Modalidad de juego">
-      <button class="br-game-type" id="brTypeClimb" onclick="brSetGameMode('climb')"><span>🧗</span>Ascenso vertical<small>Sube por el muro</small></button>
-      <button class="br-game-type" id="brTypeEnergy" onclick="brSetGameMode('energy')"><span>⚡</span>Carga de energía<small>Mantén la fuerza</small></button>
-      <button class="br-game-type active" id="brTypeHolds" onclick="brSetGameMode('holds')"><span>💎</span>Desafío de presas<small>Encadena combos</small></button>
+    <div class="br-hopper-config">
+      <div class="br-level-row"><label>FUERZA NECESARIA PARA SALTAR</label><strong id="brThresholdValue">3,0 kg</strong></div>
+      <input id="brThreshold" class="br-threshold-slider" type="range" min="0.5" max="20" step="0.5" value="3" oninput="brSetThreshold(this.value)" aria-label="Fuerza necesaria para saltar">
+      <div class="br-threshold-labels"><span>0,5 kg · Sensible</span><span>20 kg · Exigente</span></div>
+      <p class="br-config-hint">El personaje despega al superar el umbral. Cuanta más fuerza hagas por encima del objetivo, más impulso recibirá en tiempo real.</p>
     </div>
-    <div class="br-mode-description" id="brModeDescription">Captura presas al entrar en la zona objetivo y encadena combos con lecturas reales del WH-C06.</div>
+    <div class="br-difficulty" aria-label="Elegir dificultad">
+      <button class="br-difficulty-btn active" id="brDiffEasy" onclick="brSetDifficulty('easy')"><span>🟢 FÁCIL</span><small>Plataformas amplias</small></button>
+      <button class="br-difficulty-btn" id="brDiffNormal" onclick="brSetDifficulty('normal')"><span>🟡 MEDIO</span><small>Salto equilibrado</small></button>
+      <button class="br-difficulty-btn" id="brDiffHard" onclick="brSetDifficulty('hard')"><span>🔴 DIFÍCIL</span><small>Más precisión</small></button>
+    </div>
     <div class="br-modes">
       <button class="br-mode active" id="brModeQuick" onclick="brSetMode('quick')">⚡ Reto rápido<small>45 segundos · máxima puntuación</small></button>
       <button class="br-mode" id="brModeSession" onclick="brSetMode('session')">🏆 Sesión completa<small>3 rondas · sube de nivel</small></button>
     </div>
-    <div class="br-level-row"><label for="brLevel">DIFICULTAD / NIVEL</label><select id="brLevel" onchange="brSetLevel()"><option value="0">1 · Calentamiento</option><option value="1">2 · Bloque técnico</option><option value="2">3 · Desplome</option><option value="3">4 · Zona roja</option><option value="4">5 · Élite</option></select></div>
+    
     <div class="br-hud">
       <div class="br-stat"><span>🏁 PUNTOS</span><strong id="brScore">0000</strong></div>
       <div class="br-stat combo"><span>🔥 COMBO</span><strong id="brCombo">x0</strong></div>
       <div class="br-stat"><span>⏱ TIEMPO</span><strong id="brTime">00:45</strong></div>
       <div class="br-stat"><span>💎 XP TOTAL</span><strong id="brXP">0</strong></div>
     </div>
-    <div class="br-scene" id="brScene" aria-label="Muro de escalada arcade 2D">
+    <div class="br-scene br-hopper-scene" id="brScene" aria-label="Juego de saltos verticales controlado por la fuerza real">
       <div class="br-stars"></div><div class="br-route"></div>
       <div class="br-hold" style="left:17%;top:24%">✦</div><div class="br-hold pink" style="left:70%;top:19%">✦</div>
       <div class="br-hold gold" style="left:37%;top:37%">★</div><div class="br-hold" style="left:76%;top:47%">✦</div>
       <div class="br-hold pink" style="left:16%;top:57%">✦</div><div class="br-hold gold" style="left:56%;top:67%">★</div>
-      <div class="br-climber resting" id="brClimber">🧗</div><div class="br-ground"></div>
+      <div class="br-hopper-platform" style="left:9%;top:74%"></div><div class="br-hopper-platform" style="left:59%;top:59%"></div><div class="br-hopper-platform" style="left:22%;top:43%"></div><div class="br-hopper-platform" style="left:65%;top:27%"></div><div class="br-hopper-platform" style="left:35%;top:12%"></div><div class="br-climber resting" id="brClimber">🧗</div><div class="br-ground"></div>
       <div class="br-overlay" id="brOverlay"><strong>¿Listo para el bloque?</strong><span>Conecta el WH-C06 en la pestaña Fuerza. La aguja responde a la lectura real del sensor. Entra en la zona verde para sumar puntos y mantén el objetivo para encadenar combos.</span><button class="btn" onclick="brStart()">▶ ¡A escalar!</button></div>
     </div>
-    <div class="br-target-panel"><div><small>OBJETIVO DE FUERZA</small><strong id="brTarget">2,0–4,0 kg</strong></div><div class="br-target-badge" id="brTargetState">ESPERANDO</div></div>
-    <div class="br-gauge"><div class="br-gauge-marker" id="brGaugeMarker"></div></div><div class="br-gauge-labels"><span>Relaja</span><span>Zona objetivo</span><span>Controla el esfuerzo</span></div>
+    <div class="br-target-panel"><div><small>UMBRAL DE DESPEGUE</small><strong id="brTarget">3,0 kg</strong></div><div class="br-target-badge" id="brTargetState">ESPERANDO FUERZA</div></div>
+    <div class="br-gauge"><div class="br-gauge-marker" id="brGaugeMarker"></div></div><div class="br-gauge-labels"><span>Sin impulso</span><span>Umbral de salto</span><span>Más fuerza = más impulso</span></div>
     <div class="br-progress"><div id="brProgress"></div></div>
     <div class="br-bottom"><span>Ronda <strong id="brRound">1/1</strong></span><span>Récord <strong id="brBest">0</strong></span><span>Presas <strong id="brHolds">0</strong></span></div>
-    <div class="br-challenge" id="brChallenge">🎯 <strong>Misión:</strong> alcanza la zona verde durante 1 segundo para capturar tu primera presa. Mantén una fuerza controlada para crear combos.</div>
-    <div class="br-actions"><button class="btn" id="brStartButton" onclick="brStart()">▶ Empezar reto</button><button class="btn secondary" onclick="brReset()">↻ Reiniciar</button><button class="btn secondary" onclick="show('fingerForce')">✊ Sensor WH-C06</button><button class="btn secondary" onclick="brNextLevel()">⬆ Siguiente nivel</button></div>
+    <div class="br-challenge" id="brChallenge">Haz fuerza por encima del umbral para elevar al personaje. Relaja para dejarlo caer sobre la siguiente plataforma.</div>
+    <div class="br-actions"><button class="btn" id="brStartButton" onclick="brStart()">▶ Empezar a saltar</button><button class="btn secondary" onclick="brReset()">↻ Reiniciar</button><button class="btn secondary" onclick="show('fingerForce')">✊ Sensor WH-C06</button></div>
     <div class="br-achievements"><div class="br-ach" id="brAchCombo"><strong>🔥</strong>Combo x5</div><div class="br-ach" id="brAchHolds"><strong>✦</strong>10 presas</div><div class="br-ach" id="brAchClean"><strong>🏆</strong>Ronda limpia</div></div>
     <p class="game-hint">El juego usa la fuerza recibida en directo del WH-C06. Si no hay lectura del sensor, no se generan puntos. Ajusta el objetivo desde el nivel: juega sin dolor, sin tirones y descansando entre rondas.</p>
   </div>
@@ -1661,94 +1688,92 @@ function startForceRest(){
 
 
 /* =========================
-   BOULDER RUSH · fuerza real WH-C06
+   SOLIDO HOPPER · fuerza real WH-C06
+   Movimiento continuo con requestAnimationFrame
 ========================= */
-const brLevels=[
- {name:'Calentamiento',min:1,max:3,seconds:45,bonus:100},
- {name:'Bloque técnico',min:2,max:5,seconds:45,bonus:160},
- {name:'Desplome',min:3,max:7,seconds:50,bonus:220},
- {name:'Zona roja',min:4,max:9,seconds:55,bonus:300},
- {name:'Élite',min:5,max:12,seconds:60,bonus:450}
-];
-let brMode='quick',brGameMode='holds',brLevel=0,brActive=false,brFrame=null,brLast=0,brTime=45,brScore=0,brCombo=0,brBestCombo=0,brHolds=0,brRound=1,brStable=0,brWasInZone=false,brRewardedThisZone=false,brTotalXP=0,brRoundClean=true,brLastForce=0,brSessionScores=[];
-try{brTotalXP=Number(localStorage.getItem('solidoBoulderXP')||0)||0;}catch(e){}
+const brDifficulties={
+ easy:{name:'Fácil',gravity:430,thrust:900,gap:55,seconds:60,points:1.0},
+ normal:{name:'Medio',gravity:560,thrust:850,gap:75,seconds:60,points:1.5},
+ hard:{name:'Difícil',gravity:700,thrust:800,gap:96,seconds:60,points:2.0}
+};
+let brMode='quick',brDifficulty='easy',brActive=false,brFrame=null,brLast=0,brTime=60,brScore=0,brCombo=0,brBestCombo=0,brHolds=0,brRound=1,brTotalXP=0,brSessionScores=[];
+let brThreshold=3,brY=0,brVelocity=0,brWorld=0,brLastForce=0,brLastPlatform=-1,brLastJumpAt=0,brLastRender=0,brLastScoreHeight=0;
+try{brTotalXP=Number(localStorage.getItem('solidoBoulderXP')||0)||0;brThreshold=Number(localStorage.getItem('solidoHopperThreshold')||3)||3;brDifficulty=localStorage.getItem('solidoHopperDifficulty')||'easy';if(!brDifficulties[brDifficulty])brDifficulty='easy';}catch(e){}
 function brFmt(n){return Math.max(0,Math.floor(n)).toLocaleString('es-ES');}
-function brLevelData(){return brLevels[brLevel]||brLevels[0];}
+function brLevelData(){return brDifficulties[brDifficulty]||brDifficulties.easy;}
 function brSetMode(mode){if(brActive)return;brMode=mode;document.getElementById('brModeQuick').classList.toggle('active',mode==='quick');document.getElementById('brModeSession').classList.toggle('active',mode==='session');brReset();}
-function brSetGameMode(mode){if(brActive)return;brGameMode=mode;['climb','energy','holds'].forEach(key=>{const el=document.getElementById('brType'+key.charAt(0).toUpperCase()+key.slice(1));if(el)el.classList.toggle('active',key===mode);});const copy={climb:'Cada captura impulsa al escalador hacia arriba. Ajusta la fuerza al rango verde para progresar por el muro.',energy:'Mantén la fuerza dentro del rango objetivo para cargar energía. Al superar 1,1 segundos se libera una descarga de puntos y combo.',holds:'Captura presas al entrar en la zona objetivo y encadena combos con lecturas reales del WH-C06.'};document.getElementById('brModeDescription').textContent=copy[mode]||copy.holds;brReset();}
-function brSetLevel(){if(brActive)return;brLevel=Number(document.getElementById('brLevel').value)||0;brReset();}
-function brNextLevel(){if(brActive)return;brLevel=(brLevel+1)%brLevels.length;document.getElementById('brLevel').value=String(brLevel);brReset();}
-function brTargetRange(){const d=brLevelData();return {min:d.min,max:d.max};}
+function brSetThreshold(value){brThreshold=Math.max(.5,Math.min(20,Number(value)||3));document.getElementById('brThresholdValue').textContent=brThreshold.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg';document.getElementById('brTarget').textContent=brThreshold.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg';try{localStorage.setItem('solidoHopperThreshold',String(brThreshold));}catch(e){}if(!brActive)brReset();}
+function brSetDifficulty(level){if(brActive)return;if(!brDifficulties[level])return;brDifficulty=level;['easy','normal','hard'].forEach(k=>document.getElementById('brDiff'+k.charAt(0).toUpperCase()+k.slice(1)).classList.toggle('active',k===level));try{localStorage.setItem('solidoHopperDifficulty',level);}catch(e){}brReset();}
+function brTargetRange(){return {min:brThreshold,max:brThreshold};}
 function brReset(){
  brActive=false;if(brFrame)cancelAnimationFrame(brFrame);brFrame=null;
- const d=brLevelData();brTime=d.seconds;brScore=0;brCombo=0;brBestCombo=0;brHolds=0;brRound=1;brStable=0;brWasInZone=false;brRewardedThisZone=false;brRoundClean=true;brLastForce=0;brSessionScores=[];
- const overlay=document.getElementById('brOverlay');if(overlay){overlay.style.display='grid';overlay.innerHTML='<strong>¿Listo para el bloque?</strong><span>El objetivo de fuerza es '+d.min.toFixed(1)+'–'+d.max.toFixed(1)+' kg. Entra en la zona verde con el WH-C06, mantén el control y encadena combos.</span><button class="btn" onclick="brStart()">▶ ¡A escalar!</button>';}
- document.getElementById('brStartButton').textContent='▶ Empezar reto';document.getElementById('brClimber').classList.add('resting');
- brRender(0);brUpdateProgress();
+ const d=brLevelData();brTime=d.seconds;brScore=0;brCombo=0;brBestCombo=0;brHolds=0;brRound=1;brY=0;brVelocity=0;brWorld=0;brLastForce=0;brLastPlatform=-1;brLastJumpAt=0;brLastScoreHeight=0;brSessionScores=[];
+ const slider=document.getElementById('brThreshold');if(slider)slider.value=String(brThreshold);
+ document.getElementById('brThresholdValue').textContent=brThreshold.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg';
+ document.getElementById('brTarget').textContent=brThreshold.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg';
+ ['easy','normal','hard'].forEach(k=>document.getElementById('brDiff'+k.charAt(0).toUpperCase()+k.slice(1)).classList.toggle('active',k===brDifficulty));
+ const scene=document.getElementById('brScene');scene.querySelectorAll('.br-hopper-platform').forEach((p,i)=>{p.style.top=(78-i*16)+'%';p.style.left=([8,58,23,66,37][i%5])+'%';p.style.transform='translate3d(0,0,0)';});
+ const climber=document.getElementById('brClimber');climber.style.transform='translate3d(0,0,0)';climber.style.left='calc(50% - 19px)';climber.classList.add('resting');
+ const overlay=document.getElementById('brOverlay');overlay.style.display='grid';overlay.innerHTML='<strong>¡Prepárate para saltar!</strong><span>Configura los kg en la barra y elige dificultad. Al superar '+brThreshold.toLocaleString('es-ES')+' kg, el impulso responderá a la fuerza real del WH-C06. Relaja para caer y aterrizar en las plataformas.</span><button class="btn" onclick="brStart()">▶ ¡A saltar!</button>';
+ document.getElementById('brStartButton').textContent='▶ Empezar a saltar';brRender(0);brUpdateProgress();
 }
 function brStart(){
- if(brActive){brActive=false;if(brFrame)cancelAnimationFrame(brFrame);document.getElementById('brStartButton').textContent='▶ Continuar';document.getElementById('brClimber').classList.add('resting');return;}
+ if(brActive){brActive=false;if(brFrame)cancelAnimationFrame(brFrame);brFrame=null;document.getElementById('brStartButton').textContent='▶ Continuar';document.getElementById('brClimber').classList.add('resting');return;}
  if(brTime<=0)brReset();
- brActive=true;brLast=performance.now();document.getElementById('brOverlay').style.display='none';document.getElementById('brStartButton').textContent='Ⅱ Pausar';document.getElementById('brClimber').classList.remove('resting');brFrame=requestAnimationFrame(brLoop);
+ brActive=true;brLast=performance.now();brLastRender=0;document.getElementById('brOverlay').style.display='none';document.getElementById('brStartButton').textContent='Ⅱ Pausar';document.getElementById('brClimber').classList.remove('resting');brFrame=requestAnimationFrame(brLoop);
 }
 function brLoop(now){
- if(!brActive)return;const dt=Math.min(.08,Math.max(0,(now-brLast)/1000));brLast=now;
- const force=Math.max(0,Number(currentForce)||0),d=brLevelData(),range=brTargetRange(),inZone=force>=range.min&&force<=range.max,tooHigh=force>range.max;
+ if(!brActive)return;const dt=Math.min(.035,Math.max(.001,(now-brLast)/1000));brLast=now;
+ const force=Math.max(0,Number(currentForce)||0),d=brLevelData(),ratio=force/brThreshold;
  brTime=Math.max(0,brTime-dt);
- if(inZone){
-   brStable+=dt;brWasInZone=true;
-   if(brGameMode==='energy'){
-     brScore+=dt*(10+Math.min(brCombo,12)*2);
-     if(brStable>=1.1&&!brRewardedThisZone){brRewardedThisZone=true;brCombo=Math.max(1,brCombo+1);brBestCombo=Math.max(brBestCombo,brCombo);brHolds++;const burst=45+brCombo*10;brScore+=burst;brSpawnFloat('⚡ +'+burst);brMoveHolds();}
-   }else{
-     if(!brRewardedThisZone){brRewardedThisZone=true;brCombo=Math.max(1,brCombo+1);brHolds++;const points=25+brCombo*5;brScore+=points;brSpawnFloat('+'+points+(brGameMode==='climb'?' ⬆':' ✦'));brMoveHolds();if(brGameMode==='climb'){const climber=document.getElementById('brClimber');climber.style.bottom=(35+((brHolds*25)%205))+'px';}}
-     brScore+=dt*(brGameMode==='climb'?24:18+Math.min(brCombo,12)*3);
-     if(brStable>=1.1)brScore+=dt*20;
-   }
- }else{
-   brStable=0;brRewardedThisZone=false;
-   if(brWasInZone){if(force<range.min*.5){brCombo=0;}else{brCombo=Math.max(0,brCombo-1);}brWasInZone=false;}
-   if(tooHigh){brRoundClean=false;document.getElementById('brTargetState').textContent='BAJA UN POCO';}
- }
- if(force>0&&force<range.min){document.getElementById('brTargetState').textContent='SUBE FUERZA';}
- else if(inZone){document.getElementById('brTargetState').textContent=brStable>=1.1?'¡COMBO!':'¡EN ZONA!';}
- else if(!tooHigh){document.getElementById('brTargetState').textContent=force===0?'ESPERANDO':'AJUSTA';}
- brBestCombo=Math.max(brBestCombo,brCombo);brRender(force);brUpdateProgress();
+ // Fuerza continua: cuanto más supera el umbral, mayor aceleración ascendente.
+ const effort=Math.max(0,Math.min(2.6,(force-brThreshold)/brThreshold));
+ const thrust=force>=brThreshold?d.thrust*(.48+effort*.72):0;
+ brVelocity+=((d.gravity*-1)+thrust)*dt;
+ brVelocity=Math.max(-650,Math.min(850,brVelocity));
+ brY+=brVelocity*dt;
+ // Altura en pantalla limitada; el mundo se desplaza hacia abajo al ganar altura.
+ if(brY>150){const climb=brY-150;brY=150;brWorld+=climb;brScore+=climb*.12*d.points;brLastScoreHeight+=climb;}
+ if(brY<0){brY=0;if(brVelocity<0)brVelocity=0;}
+ // Detectar nuevos saltos/aterrizajes y sumar combo al superar el umbral desde abajo.
+ if(force>=brThreshold&&brLastForce<brThreshold){brCombo=Math.min(99,brCombo+1);brBestCombo=Math.max(brBestCombo,brCombo);brLastJumpAt=now;}
+ if(force<brThreshold*.35&&brLastForce>=brThreshold){brCombo=Math.max(0,brCombo-1);}
+ brLastForce=force;
+ const climber=document.getElementById('brClimber');climber.style.transform='translate3d(0,'+(-brY)+'px,0)';
+ const platforms=document.querySelectorAll('#brScene .br-hopper-platform');
+ platforms.forEach((p,i)=>{let base=(78-i*16);let y=((base+brWorld*.32)%112);if(y< -8)y+=112;p.style.top=y+'%';});
+ const marker=document.getElementById('brGaugeMarker');marker.style.left=Math.min(99,Math.max(0,force/Math.max(1,brThreshold*2.5)*100))+'%';
+ document.getElementById('brTargetState').textContent=force>=brThreshold?'¡IMPULSO!':force>0?'AUMENTA FUERZA':'ESPERANDO';
+ if(force>=brThreshold)document.getElementById('brScene').style.setProperty('--hopper-glow','#caff70');
+ else document.getElementById('brScene').style.setProperty('--hopper-glow','#aab8df');
+ if(now-brLastRender>50){brRender(force);brUpdateProgress();brLastRender=now;}
  if(brTime<=0){brFinishRound();return;}
  brFrame=requestAnimationFrame(brLoop);
 }
 function brSpawnFloat(label){const scene=document.getElementById('brScene');const el=document.createElement('div');el.className='br-float';el.textContent=label;el.style.left=(35+Math.random()*30)+'%';el.style.top=(35+Math.random()*30)+'%';scene.appendChild(el);setTimeout(()=>el.remove(),1050);}
-function brMoveHolds(){const holds=document.querySelectorAll('#brScene .br-hold');holds.forEach((h,i)=>{h.style.top=(14+((i*17+brHolds*11)%68))+'%';h.style.left=(10+((i*23+brHolds*19)%76))+'%';});const climber=document.getElementById('brClimber');climber.style.bottom=(25+((brHolds*19)%180))+'px';climber.style.left=(25+((brHolds*13)%48))+'%';}
+function brMoveHolds(){brSpawnFloat('⬆ +'+Math.round(10*brLevelData().points));}
 function brRender(force){
- const d=brLevelData(),range=brTargetRange(),score=Math.floor(brScore);
+ const d=brLevelData(),score=Math.floor(brScore);
  document.getElementById('brScore').textContent=brFmt(score).padStart(4,'0');document.getElementById('brCombo').textContent='x'+brCombo;
  document.getElementById('brTime').textContent='00:'+String(Math.ceil(brTime)).padStart(2,'0');document.getElementById('brXP').textContent=brFmt(brTotalXP);
- document.getElementById('brTarget').textContent=range.min.toFixed(1).replace('.',',')+'–'+range.max.toFixed(1).replace('.',',')+' kg';
+ document.getElementById('brTarget').textContent=brThreshold.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg';
  document.getElementById('brRound').textContent=brRound+'/'+(brMode==='session'?3:1);document.getElementById('brHolds').textContent=brHolds;
  let best=0;try{best=Number(localStorage.getItem('solidoBoulderBest')||0)||0;}catch(e){}document.getElementById('brBest').textContent=brFmt(best);
- const marker=document.getElementById('brGaugeMarker');marker.style.left=Math.min(99,Math.max(0,force/Math.max(1,range.max*1.4)*100))+'%';
- const mission=brGameMode==='climb'?'Misión: captura presas para ganar altura.':brGameMode==='energy'?'Misión: mantén la fuerza 1,1 s para descargar energía.':'Misión: entra en la zona verde para capturar presas.';document.getElementById('brChallenge').innerHTML='🎯 <strong>'+mission+'</strong> Objetivo '+range.min.toFixed(1)+'–'+range.max.toFixed(1)+' kg. '+(brCombo>=5?'¡Combo caliente! Multiplicador x'+brCombo+'.':'Encadena aciertos para subir el multiplicador.')+' <span style="color:#caff70">Lectura: '+force.toFixed(1)+' kg</span>';
- document.getElementById('brAchCombo').classList.toggle('unlocked',brBestCombo>=5);document.getElementById('brAchHolds').classList.toggle('unlocked',brHolds>=10);document.getElementById('brAchClean').classList.toggle('unlocked',brRoundClean&&brHolds>=5);
- document.getElementById('brProgress').style.width=Math.min(100,Math.max(0,brScore/(d.bonus*5)*100))+'%';
+ document.getElementById('brChallenge').innerHTML='🎮 <strong>'+d.name+':</strong> umbral '+brThreshold.toFixed(1)+' kg. '+(force>=brThreshold?'¡Impulso activo! Aumenta fuerza para subir más rápido.':'Necesitas '+Math.max(0,brThreshold-force).toFixed(1)+' kg más para despegar.')+' <span style="color:#caff70">Lectura: '+force.toFixed(1)+' kg</span>';
+ document.getElementById('brAchCombo').classList.toggle('unlocked',brBestCombo>=5);document.getElementById('brAchHolds').classList.toggle('unlocked',brHolds>=10);document.getElementById('brAchClean').classList.toggle('unlocked',brTime>0&&brHolds>=5);
 }
-function brUpdateProgress(){const d=brLevelData();document.getElementById('brProgress').style.width=Math.min(100,Math.max(0,brScore/(d.bonus*5)*100))+'%';}
+function brUpdateProgress(){const d=brLevelData();document.getElementById('brProgress').style.width=Math.min(100,Math.max(0,brScore/(d.seconds*20)*100))+'%';}
 function brFinishRound(){
  brActive=false;if(brFrame)cancelAnimationFrame(brFrame);brFrame=null;const score=Math.floor(brScore);brSessionScores.push(score);
- if(brMode==='session'&&brRound<3){
-   const overlay=document.getElementById('brOverlay');overlay.style.display='grid';overlay.innerHTML='<strong>¡Ronda '+brRound+' completada!</strong><span>Has sumado '+brFmt(score)+' puntos. Descansa, prepara la mano y continúa cuando estés listo para la siguiente ronda.</span><button class="btn" onclick="brNextRound()">▶ Siguiente ronda</button>';
-   document.getElementById('brStartButton').textContent='▶ Siguiente ronda';document.getElementById('brClimber').classList.add('resting');return;
- }
+ if(brMode==='session'&&brRound<3){const overlay=document.getElementById('brOverlay');overlay.style.display='grid';overlay.innerHTML='<strong>¡Ronda '+brRound+' completada!</strong><span>Has sumado '+brFmt(score)+' puntos. Descansa y continúa cuando estés listo.</span><button class="btn" onclick="brNextRound()">▶ Siguiente ronda</button>';document.getElementById('brStartButton').textContent='▶ Siguiente ronda';document.getElementById('brClimber').classList.add('resting');return;}
  brComplete();
 }
-function brNextRound(){
- brRound++;brTime=brLevelData().seconds;brScore=0;brStable=0;brWasInZone=false;brRewardedThisZone=false;brCombo=0;brRoundClean=true;
- document.getElementById('brOverlay').style.display='none';document.getElementById('brClimber').classList.remove('resting');brStart();
-}
+function brNextRound(){brRound++;brTime=brLevelData().seconds;brScore=0;brCombo=0;brHolds=0;brY=0;brVelocity=0;brWorld=0;brLastForce=0;document.getElementById('brOverlay').style.display='none';document.getElementById('brClimber').classList.remove('resting');brStart();}
 function brComplete(){
- const score=brSessionScores.reduce((a,b)=>a+b,0),xp=Math.floor(score/10)+brHolds*3+brBestCombo*5;
- brTotalXP+=xp;try{localStorage.setItem('solidoBoulderXP',String(brTotalXP));const best=Number(localStorage.getItem('solidoBoulderBest')||0);if(score>best)localStorage.setItem('solidoBoulderBest',String(score));}catch(e){}
+ const score=brSessionScores.reduce((a,b)=>a+b,0),xp=Math.floor(score/10)+brHolds*3+brBestCombo*5;brTotalXP+=xp;
+ try{localStorage.setItem('solidoBoulderXP',String(brTotalXP));const best=Number(localStorage.getItem('solidoBoulderBest')||0);if(score>best)localStorage.setItem('solidoBoulderBest',String(score));}catch(e){}
  document.getElementById('brXP').textContent=brFmt(brTotalXP);document.getElementById('brStartButton').textContent='↻ Repetir partida';document.getElementById('brClimber').classList.add('resting');
- const overlay=document.getElementById('brOverlay');overlay.style.display='grid';overlay.innerHTML='<strong>🏆 '+(brHolds>=10?'¡MAESTRO DE PRESAS!':'¡FIN DEL RETO!')+'</strong><span>Puntuación: '+brFmt(score)+' puntos · Presas: '+brHolds+' · Mejor combo: x'+brBestCombo+'<br>Recompensa: +'+xp+' XP. '+(brBestCombo>=5?'¡Combo explosivo!':'Prueba a mantenerte más tiempo en la zona verde para aumentar el combo.')+'</span><button class="btn" onclick="brReset()">↻ Jugar otra vez</button>';
+ const overlay=document.getElementById('brOverlay');overlay.style.display='grid';overlay.innerHTML='<strong>🏆 ¡RETO COMPLETADO!</strong><span>Puntuación: '+brFmt(score)+' puntos · Mejor combo: x'+brBestCombo+'<br>Recompensa: +'+xp+' XP.</span><button class="btn" onclick="brReset()">↻ Jugar otra vez</button>';
 }
 function brSetModeSafe(){brSetMode(brMode);}
 /* =========================
