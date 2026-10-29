@@ -2831,162 +2831,60 @@ function brDrawGrigri(ctx,x,y,scale=1){
   ctx.strokeStyle='#f7f9fa';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(-9,-17);ctx.lineTo(-3,-19);ctx.stroke();
   ctx.shadowBlur=0;ctx.shadowOffsetY=0;ctx.restore();
 }
-function brDrawGokuNimbus(ctx,x,y,scale){
- // Rediseño 2D de aventura: Goku niño con volumen, contorno limpio y nube Nimbus luminosa.
- // La escala se mantiene normal; solo mejora el acabado artístico.
- ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);
- const path=(points,fill,stroke='#3a2430',lw=1.4)=>{ctx.beginPath();points(ctx);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw;ctx.stroke();}};
- const grad=(x1,y1,x2,y2,stops)=>{const g=ctx.createLinearGradient(x1,y1,x2,y2);for(const [p,c] of stops)g.addColorStop(p,c);return g;};
- // Aura suave bajo el personaje.
- ctx.save();ctx.globalAlpha=.28;ctx.fillStyle='#fff0a0';ctx.shadowColor='#fff4a6';ctx.shadowBlur=18;ctx.beginPath();ctx.ellipse(0,20,34,12,0,0,Math.PI*2);ctx.fill();ctx.restore();
- // Nimbus: nube con varias masas, luces cálidas y sombra inferior.
- ctx.save();ctx.translate(0,18);ctx.shadowColor='#6c3900';ctx.shadowBlur=7;ctx.shadowOffsetY=4;
- path(c=>{c.moveTo(-29,4);c.bezierCurveTo(-34,-2,-27,-9,-19,-7);c.bezierCurveTo(-17,-18,-3,-19,3,-10);c.bezierCurveTo(12,-17,23,-10,22,-4);c.bezierCurveTo(34,-3,35,8,25,10);c.lineTo(-21,10);c.bezierCurveTo(-29,10,-33,8,-29,4);c.closePath();},grad(0,-18,0,12,[[0,'#fff7a8'],[.28,'#ffe65a'],[.67,'#ffbd22'],[1,'#e87a12']]),'#a95d13',1.3);
- ctx.shadowBlur=0;ctx.shadowOffsetY=0;
- ctx.fillStyle='#fff9ca';ctx.beginPath();ctx.ellipse(-8,-7,9,4,-.2,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='#ffdf50';ctx.beginPath();ctx.ellipse(13,-3,8,5,.15,0,Math.PI*2);ctx.fill();
- ctx.strokeStyle='#fff4a0';ctx.lineWidth=1.3;ctx.beginPath();ctx.moveTo(-23,4);ctx.quadraticCurveTo(-10,9,5,7);ctx.stroke();ctx.restore();
- // Legs and boots, with depth shading.
- ctx.lineCap='round';ctx.lineJoin='round';
- ctx.strokeStyle='#a94b22';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(-5,5);ctx.lineTo(-10,15);ctx.moveTo(5,5);ctx.lineTo(10,14);ctx.stroke();
- ctx.strokeStyle=grad(0,6,0,18,[[0,'#ff9b35'],[1,'#d94b1c']]);ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(-5,5);ctx.lineTo(-10,14);ctx.moveTo(5,5);ctx.lineTo(10,13);ctx.stroke();
- // Torso: orange gi with folds and blue sash.
- path(c=>{c.moveTo(-10,-13);c.quadraticCurveTo(-15,-10,-13,-1);c.lineTo(-9,7);c.lineTo(9,7);c.lineTo(13,-2);c.quadraticCurveTo(14,-10,9,-13);c.closePath();},grad(-13,-8,12,4,[[0,'#c84418'],[.25,'#ff9a32'],[.62,'#f47722'],[1,'#b93619']]));
- ctx.strokeStyle='#ffc06a';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(-8,-9);ctx.lineTo(-4,1);ctx.moveTo(3,-8);ctx.lineTo(7,0);ctx.stroke();
- // Blue undershirt, belt and wrist wraps.
- ctx.fillStyle='#1749a4';ctx.beginPath();ctx.moveTo(-10,-13);ctx.lineTo(-5,-16);ctx.lineTo(5,-16);ctx.lineTo(10,-13);ctx.lineTo(8,-8);ctx.lineTo(-8,-8);ctx.closePath();ctx.fill();
- ctx.fillStyle=grad(0,2,0,8,[[0,'#43a4ff'],[1,'#1450ba']]);ctx.fillRect(-9,2,18,4);ctx.fillStyle='#ffd46a';ctx.fillRect(-2,2,4,4);
- // Arms posed for flight.
- ctx.strokeStyle='#bd7049';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(-10,-10);ctx.quadraticCurveTo(-17,-8,-17,-1);ctx.moveTo(10,-10);ctx.quadraticCurveTo(17,-8,17,-1);ctx.stroke();
- ctx.strokeStyle=grad(-17,-10,-12,0,[[0,'#ffe0ad'],[1,'#d98b5c']]);ctx.lineWidth=4.5;ctx.beginPath();ctx.moveTo(-10,-10);ctx.quadraticCurveTo(-17,-8,-17,-1);ctx.moveTo(10,-10);ctx.quadraticCurveTo(17,-8,17,-1);ctx.stroke();
- ctx.fillStyle='#1d54b6';ctx.fillRect(-19,-3,5,3);ctx.fillRect(14,-3,5,3);
- // Neck and face.
- ctx.fillStyle='#d98b5d';ctx.fillRect(-4,-19,8,7);
- path(c=>{c.moveTo(-10,-29);c.quadraticCurveTo(-9,-36,0,-36);c.quadraticCurveTo(10,-35,11,-27);c.lineTo(8,-17);c.quadraticCurveTo(3,-12,-2,-16);c.lineTo(-8,-21);c.closePath();},grad(-9,-34,10,-17,[[0,'#ffe1b0'],[.55,'#f4b77f'],[1,'#ce7952']]),'#713e34',1.2);
- // Ears and cheek light.
- ctx.fillStyle='#eaa071';ctx.beginPath();ctx.ellipse(-10,-25,2.6,4,0,0,Math.PI*2);ctx.ellipse(10,-25,2.6,4,0,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='#ffcf9c';ctx.beginPath();ctx.ellipse(-5,-21,3,2,0,0,Math.PI*2);ctx.fill();
- // Expressive eyes, brows and confident smile.
- ctx.fillStyle='#39211f';ctx.beginPath();ctx.moveTo(-8,-28);ctx.lineTo(-2,-29);ctx.lineTo(-2,-27);ctx.lineTo(-8,-26);ctx.closePath();ctx.fill();
- ctx.beginPath();ctx.moveTo(2,-29);ctx.lineTo(8,-28);ctx.lineTo(8,-26);ctx.lineTo(2,-27);ctx.closePath();ctx.fill();
- ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(-5,-24.5,2.5,3,0,0,Math.PI*2);ctx.ellipse(5,-24.5,2.5,3,0,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='#282b38';ctx.beginPath();ctx.ellipse(-4.4,-24,1.1,2.1,0,0,Math.PI*2);ctx.ellipse(5.6,-24,1.1,2.1,0,0,Math.PI*2);ctx.fill();
- ctx.strokeStyle='#9a3e35';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(-2,-19);ctx.quadraticCurveTo(1,-17,4,-19);ctx.stroke();
- // Iconic spiky black hair, layered silhouette and highlights.
- path(c=>{c.moveTo(-10,-27);c.lineTo(-15,-35);c.lineTo(-8,-33);c.lineTo(-10,-43);c.lineTo(-2,-37);c.lineTo(2,-45);c.lineTo(5,-37);c.lineTo(13,-41);c.lineTo(10,-32);c.lineTo(14,-29);c.lineTo(9,-26);c.lineTo(6,-31);c.lineTo(2,-28);c.lineTo(-2,-31);c.lineTo(-7,-27);c.closePath();},grad(-10,-44,10,-27,[[0,'#10131d'],[.45,'#282b3a'],[1,'#080a12']]),'#05070d',1.6);
- ctx.strokeStyle='#717a91';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(-7,-36);ctx.lineTo(-3,-39);ctx.moveTo(3,-38);ctx.lineTo(7,-37);ctx.stroke();
- // Small specular edge to separate silhouette from the sky.
- ctx.globalAlpha=.75;ctx.strokeStyle='#fff0c9';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(-12,-33);ctx.lineTo(-14,-36);ctx.moveTo(12,-30);ctx.lineTo(14,-32);ctx.stroke();
- ctx.restore();
-}
 function brDrawScene(force){
- if(!brCtx||!brGame)return;
- const c=brCtx,w=brCanvasW,h=brCanvasH,g=brGame,d=brLevelData(),now=nowSafeTime();
+ if(!brCtx||!brGame)return;const c=brCtx,w=brCanvasW,h=brCanvasH,g=brGame,d=brLevelData();
  c.clearRect(0,0,w,h);
- // Escenario premium: cielo cinematográfico, luz volumétrica y capas con paralaje.
- const sky=c.createLinearGradient(0,0,0,h);
- sky.addColorStop(0,'#1764b7');sky.addColorStop(.34,'#42b9f4');sky.addColorStop(.7,'#b9edff');sky.addColorStop(1,'#f3fbff');
- c.fillStyle=sky;c.fillRect(0,0,w,h);
- const glow=c.createRadialGradient(w*.78,h*.17,2,w*.78,h*.17,w*.56);
- glow.addColorStop(0,'rgba(255,249,202,.72)');glow.addColorStop(.24,'rgba(255,237,154,.24)');glow.addColorStop(1,'rgba(255,240,180,0)');
- c.fillStyle=glow;c.fillRect(0,0,w,h*.8);
- // Sol con halo atmosférico.
- c.save();c.shadowColor='#fff2a0';c.shadowBlur=25;c.fillStyle='#fff5c5';c.beginPath();c.arc(w-47,43,19,0,Math.PI*2);c.fill();c.shadowBlur=0;
- c.strokeStyle='rgba(255,250,216,.5)';c.lineWidth=2;c.beginPath();c.arc(w-47,43,26,0,Math.PI*2);c.stroke();c.restore();
- // Nubes suaves en varias profundidades.
- for(let i=0;i<7;i++){
-  const cx=((i*137-g.worldX*(i%2?.11:.19))%(w+150)+w+150)%(w+150)-65,cy=25+(i*41)%(h*.37);
-  c.save();c.globalAlpha=.66+(i%3)*.1;
-  const cloud=c.createLinearGradient(cx,cy-14,cx,cy+13);cloud.addColorStop(0,'#fff');cloud.addColorStop(1,'#d9f3ff');
-  c.fillStyle=cloud;c.shadowColor='#d5f4ff';c.shadowBlur=9;c.beginPath();
-  c.ellipse(cx+20,cy+3,29,10,0,0,Math.PI*2);c.ellipse(cx+39,cy,20,13,0,0,Math.PI*2);c.ellipse(cx+10,cy-5,14,12,0,0,Math.PI*2);c.fill();c.restore();
- }
- // Montañas lejanas azuladas: profundidad y bruma.
- for(let i=0;i<6;i++){
-  const mx=((i*112-g.worldX*.07)%(w+160)+w+160)%(w+160)-65,base=h*.68;
-  c.fillStyle=i%2?'#75c9e6':'#8bd8ee';c.beginPath();c.moveTo(mx-45,base);c.lineTo(mx+28,base-(h*.2+(i%3)*10));c.lineTo(mx+93,base);c.closePath();c.fill();
-  c.fillStyle='rgba(255,255,255,.78)';c.beginPath();c.moveTo(mx+9,base-h*.12);c.lineTo(mx+28,base-(h*.2+(i%3)*10));c.lineTo(mx+46,base-h*.13);c.lineTo(mx+34,base-h*.145);c.lineTo(mx+27,base-h*.132);c.lineTo(mx+20,base-h*.15);c.closePath();c.fill();
- }
- // Colinas verdes en capas de paralaje.
- for(let layer=0;layer<3;layer++){
-  const base=h*(.73+layer*.045),parallax=.12+layer*.08;
-  c.fillStyle=['#67c85b','#3aaf53','#21884b'][layer];
-  c.beginPath();c.moveTo(0,h);
-  for(let x=-90;x<=w+100;x+=70){const xx=((x-g.worldX*parallax)%(w+140)+w+140)%(w+140)-70;const peak=base-20-((Math.floor((x+90)/70)+layer)%3)*16;c.lineTo(xx,peak);c.lineTo(xx+35,base+7);}
-  c.lineTo(w,h);c.closePath();c.fill();
- }
- // Vegetación brillante al pie del escenario.
- const groundY=h*.81;
- c.fillStyle='#176d3b';c.fillRect(0,groundY,w,h-groundY);
- c.fillStyle='#2da94b';c.fillRect(0,groundY,w,8);
- c.fillStyle='#65d95b';c.fillRect(0,groundY,w,2);
- for(let x=-15;x<w+35;x+=37){
-  const xx=((x-g.worldX*.32)%(w+50)+w+50)%(w+50)-20;
-  c.fillStyle='#208b43';c.beginPath();c.ellipse(xx,groundY+4,18,12,0,Math.PI,Math.PI*2);c.fill();
-  c.fillStyle='#53c956';c.beginPath();c.ellipse(xx-4,groundY+2,10,8,0,Math.PI,Math.PI*2);c.fill();
- }
- // Plataformas de ladrillo con bisel, textura y sombras de contacto.
+ const sky=c.createLinearGradient(0,0,0,h);sky.addColorStop(0,'#78d9f7');sky.addColorStop(1,'#e2f8ff');c.fillStyle=sky;c.fillRect(0,0,w,h);
+ // Puffy distant clouds and layered hills move at different speeds for parallax.
+ for(let i=0;i<7;i++){const cx=((i*117-g.worldX*.18)%(w+150)+w+150)%(w+150)-35,cy=35+(i*37)%105;c.fillStyle='rgba(255,255,255,.66)';c.beginPath();c.arc(cx,cy,15,0,Math.PI*2);c.arc(cx+17,cy-8,20,0,Math.PI*2);c.arc(cx+38,cy,14,0,Math.PI*2);c.fill();}
+ c.fillStyle='#a5e3cb';c.beginPath();c.moveTo(0,h*.69);for(let x=0;x<=w+10;x+=30)c.lineTo(x,h*.64+Math.sin((x+g.worldX*.12)*.012)*20);c.lineTo(w,h);c.lineTo(0,h);c.closePath();c.fill();
+ // Draw the small mountain ledges instead of metal tubes.
  for(const p of g.platforms){
-  const x=p.x-g.worldX+g.x,top=p.y,pw=p.w,bh=19;
-  if(x>w+30||x+pw< -30)continue;
-  c.save();c.shadowColor='rgba(12,35,55,.35)';c.shadowBlur=9;c.shadowOffsetY=5;
-  const brick=c.createLinearGradient(x,top,x,top+bh);brick.addColorStop(0,'#f3a45c');brick.addColorStop(.18,'#d97a3f');brick.addColorStop(1,'#98452d');
-  c.fillStyle=brick;c.fillRect(x,top,pw,bh);c.restore();
-  c.fillStyle='rgba(255,218,155,.65)';c.fillRect(x+1,top+1,pw-2,2);
-  c.strokeStyle='#773b36';c.lineWidth=1.5;c.strokeRect(x+.5,top+.5,pw-1,bh-1);
-  c.strokeStyle='rgba(105,48,37,.72)';c.lineWidth=1;
-  for(let bx=14;bx<pw;bx+=20){c.beginPath();c.moveTo(x+bx,top+2);c.lineTo(x+bx,top+bh-1);c.stroke();}
-  c.beginPath();c.moveTo(x+2,top+10);c.lineTo(x+pw-2,top+10);c.stroke();
-  // Capa de césped brillante sobre cada bloque.
-  const turf=c.createLinearGradient(0,top-6,0,top+2);turf.addColorStop(0,'#9af56a');turf.addColorStop(.5,'#42c94f');turf.addColorStop(1,'#238448');
-  c.fillStyle=turf;c.fillRect(x-2,top-6,pw+4,8);c.fillStyle='#c4ff8a';c.fillRect(x,top-6,pw,1.5);
-  for(let bx=6;bx<pw;bx+=17){c.fillStyle='#b0f779';c.fillRect(x+bx,top-4,3,2);}
+  const x=p.x-g.worldX+g.x;if(x>w+20||x+p.w< -20)continue;
+  // Small rocky mountain peaks with layered stone and a grassy summit.
+  const top=p.y,base=p.y+p.h+19,pw=p.w;
+  c.fillStyle='#547b69';c.beginPath();c.moveTo(x-7,base);c.lineTo(x+pw*.12,top+8);c.lineTo(x+pw*.29,top-13);c.lineTo(x+pw*.43,top+2);c.lineTo(x+pw*.62,top-19);c.lineTo(x+pw*.78,top+4);c.lineTo(x+pw+8,base);c.closePath();c.fill();
+  c.fillStyle='#7fae83';c.beginPath();c.moveTo(x+pw*.12,top+8);c.lineTo(x+pw*.29,top-13);c.lineTo(x+pw*.43,top+2);c.lineTo(x+pw*.62,top-19);c.lineTo(x+pw*.78,top+4);c.lineTo(x+pw+2,top+10);c.lineTo(x+pw,top+16);c.lineTo(x,top+16);c.closePath();c.fill();
+  c.fillStyle='#a8d7a0';c.beginPath();c.moveTo(x+pw*.22,top+4);c.lineTo(x+pw*.29,top-13);c.lineTo(x+pw*.38,top-1);c.lineTo(x+pw*.33,top+1);c.lineTo(x+pw*.29,top-5);c.closePath();c.fill();
+  c.fillStyle='#365a50';c.beginPath();c.moveTo(x+pw*.43,top+2);c.lineTo(x+pw*.62,top-19);c.lineTo(x+pw*.78,top+4);c.lineTo(x+pw*.67,top+1);c.lineTo(x+pw*.62,top-8);c.lineTo(x+pw*.54,top+4);c.closePath();c.fill();
+  // Flat grassy landing shelf for reliable collision and clear gameplay.
+  c.fillStyle='#9ed58c';brRoundRect(c,x,top-2,pw,7,4);c.fill();
+  c.fillStyle='#d4f0b4';brRoundRect(c,x+5,top-2,Math.max(8,pw-10),2,1);c.fill();
  }
- // Enemigos: esfera oscura con pinchos metálicos, iluminación y sombra de contacto.
- for(const e of g.enemies){
-  const x=e.x-g.worldX+g.x,y=e.y;if(x< -45||x>w+45)continue;
-  c.save();c.translate(x,y);c.rotate(Math.sin(e.phase)*.12);const r=e.r||17;
-  c.shadowColor='#080b14';c.shadowBlur=10;c.shadowOffsetY=4;
-  for(let k=0;k<12;k++){const a=k*Math.PI*2/12;c.save();c.rotate(a);
-   const sg=c.createLinearGradient(0,-r*.55,0,-r*1.55);sg.addColorStop(0,'#f7fbff');sg.addColorStop(.48,'#aab8ce');sg.addColorStop(1,'#56647b');
-   c.fillStyle=sg;c.strokeStyle='#3b4860';c.lineWidth=1.2;c.beginPath();c.moveTo(-r*.27,-r*.57);c.lineTo(0,-r*1.52);c.lineTo(r*.27,-r*.57);c.closePath();c.fill();c.stroke();c.restore();}
-  c.shadowOffsetY=0;c.shadowBlur=0;
-  const shell=c.createRadialGradient(-r*.38,-r*.43,1,r*.05,r*.12,r*1.12);shell.addColorStop(0,'#69778b');shell.addColorStop(.24,'#30394a');shell.addColorStop(.72,'#141a28');shell.addColorStop(1,'#070a12');
-  c.fillStyle=shell;c.beginPath();c.arc(0,0,r,0,Math.PI*2);c.fill();c.strokeStyle='#8e9ab0';c.lineWidth=1.3;c.stroke();
-  c.fillStyle='rgba(255,255,255,.17)';c.beginPath();c.ellipse(-r*.32,-r*.5,r*.25,r*.1,-.5,0,Math.PI*2);c.fill();
-  for(const ex of [-r*.31,r*.31]){c.fillStyle='#fff';c.beginPath();c.ellipse(ex,-r*.12,r*.2,r*.27,ex<0?-.12:.12,0,Math.PI*2);c.fill();c.fillStyle='#111522';c.beginPath();c.arc(ex+r*.035,-r*.06,r*.105,0,Math.PI*2);c.fill();}
-  c.strokeStyle='#05070d';c.lineWidth=2.5;c.beginPath();c.moveTo(-r*.24,r*.34);c.lineTo(-r*.08,r*.25);c.lineTo(r*.08,r*.34);c.lineTo(r*.24,r*.25);c.stroke();c.restore();
- }
- // Flor turbo: pétalos esmaltados, tallo y aura animada.
- for(const f of (g.flowers||[])){
-  if(f.got)continue;const x=f.x-g.worldX+g.x,y=f.y+Math.sin(now*.003+f.phase)*3;if(x< -35||x>w+35)continue;
-  c.save();c.translate(x,y);c.rotate(Math.sin(now*.002+f.phase)*.035);
-  const pulse=1+Math.sin(now*.006+f.phase)*.08;c.scale(pulse,pulse);c.shadowColor='#ff8c32';c.shadowBlur=16;
-  c.fillStyle='#269447';c.beginPath();c.ellipse(-8,12,8,4,-.45,0,Math.PI*2);c.ellipse(8,10,8,4,.45,0,Math.PI*2);c.fill();
-  const stem=c.createLinearGradient(-3,0,3,0);stem.addColorStop(0,'#16813b');stem.addColorStop(.5,'#65e76c');stem.addColorStop(1,'#238b43');c.fillStyle=stem;c.fillRect(-3,3,6,15);
-  const petalColors=['#ff4b32','#f52e43','#ff7440'];
-  for(let k=0;k<8;k++){const a=k*Math.PI/4;c.save();c.rotate(a);const pg=c.createLinearGradient(0,-19,0,-5);pg.addColorStop(0,petalColors[k%3]);pg.addColorStop(1,'#bd1736');c.fillStyle=pg;c.beginPath();c.ellipse(0,-12,6.5,10,0,0,Math.PI*2);c.fill();c.strokeStyle='#ff9a69';c.lineWidth=.8;c.stroke();c.restore();}
-  const center=c.createRadialGradient(-2,-3,1,0,0,8);center.addColorStop(0,'#fff9b2');center.addColorStop(.5,'#ffdd46');center.addColorStop(1,'#e99b1a');c.fillStyle=center;c.beginPath();c.arc(0,-1,7,0,Math.PI*2);c.fill();
-  c.fillStyle='#fff';c.beginPath();c.arc(-2,-4,1.7,0,Math.PI*2);c.fill();c.restore();
- }
- // Monedas doradas con reflejos metálicos y halo.
- for(const p of g.powders){
-  if(p.got)continue;const x=p.x-g.worldX+g.x,y=p.y+Math.sin(now*.004+p.phase)*4;if(x< -35||x>w+35)continue;
-  c.save();c.translate(x,y);c.rotate(Math.sin(now*.003+p.phase)*.12);const r=p.r||11;
-  c.shadowColor='#ffd54a';c.shadowBlur=13;
-  const gold=c.createLinearGradient(-r,-r,r,r);gold.addColorStop(0,'#fff8ba');gold.addColorStop(.25,'#ffdc53');gold.addColorStop(.55,'#f6a91c');gold.addColorStop(.8,'#ffe878');gold.addColorStop(1,'#bd700c');
-  c.fillStyle=gold;c.beginPath();c.ellipse(0,0,r*.82,r,0,0,Math.PI*2);c.fill();c.shadowBlur=0;c.strokeStyle='#fff6b5';c.lineWidth=1.8;c.stroke();
-  c.strokeStyle='#b87813';c.lineWidth=1.5;c.beginPath();c.ellipse(0,0,r*.48,r*.68,0,0,Math.PI*2);c.stroke();
-  c.fillStyle='#fff7c8';c.font='bold '+Math.round(r*1.1)+'px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('$',0,1);
-  c.fillStyle='rgba(255,255,255,.8)';c.beginPath();c.arc(-r*.35,-r*.48,1.8,0,Math.PI*2);c.fill();c.restore();
- }
- // Chispas con desvanecimiento suave al recoger objetos.
- for(const p of g.particles){c.globalAlpha=Math.max(0,p.t/.45);c.fillStyle='#fffdf3';c.shadowColor='#fff6a0';c.shadowBlur=7;c.beginPath();c.arc(p.x,p.y,2.5,0,Math.PI*2);c.fill();c.shadowBlur=0;c.globalAlpha=1;}
- // Aura de energía al ejercer fuerza.
- if(force>=brThreshold){const aura=c.createRadialGradient(g.x,g.y+9,10,g.x,g.y+9,42);aura.addColorStop(0,'rgba(255,218,75,.24)');aura.addColorStop(1,'rgba(255,218,75,0)');c.fillStyle=aura;c.beginPath();c.arc(g.x,g.y+9,42,0,Math.PI*2);c.fill();c.strokeStyle='rgba(255,218,75,'+Math.min(.8,.25+(force/brThreshold)*.15)+')';c.lineWidth=2.5;c.beginPath();c.arc(g.x,g.y+9,25+Math.min(12,(force-brThreshold)*2),0,Math.PI*2);c.stroke();}
- c.save();c.textAlign='center';c.font='900 10px system-ui,sans-serif';c.fillStyle='rgba(5,24,43,.7)';c.fillText(force<brThreshold?'↓ CAÍDA':'↑ IMPULSO',g.x+1,g.y+51);c.fillStyle=force<brThreshold?'#eaf8ff':'#fff8b0';c.fillText(force<brThreshold?'↓ CAÍDA':'↑ IMPULSO',g.x,g.y+50);c.restore();
+ // Enemigo: bola negra redonda con pinchos blancos, estilo arcade clásico.
+ for(const e of g.enemies){const x=e.x-g.worldX+g.x,y=e.y;if(x< -40||x>w+40)continue;c.save();c.translate(x,y);c.rotate(Math.sin(e.phase)*.08);
+  const r=e.r||17;
+  // Pinchos triangulares blancos/gris claro alrededor de la silueta.
+  for(let k=0;k<12;k++){const a=k*Math.PI*2/12;c.save();c.rotate(a);c.fillStyle='#e9edf2';c.strokeStyle='#69727e';c.lineWidth=1.3;c.beginPath();c.moveTo(-r*.25,-r*.68);c.lineTo(0,-r*1.52);c.lineTo(r*.25,-r*.68);c.closePath();c.fill();c.stroke();c.restore();}
+  const shell=c.createRadialGradient(-r*.34,-r*.4,1,0,0,r*1.08);shell.addColorStop(0,'#555b65');shell.addColorStop(.34,'#20242b');shell.addColorStop(1,'#050608');c.fillStyle=shell;c.beginPath();c.arc(0,0,r,0,Math.PI*2);c.fill();c.strokeStyle='#858c97';c.lineWidth=1.4;c.stroke();
+  // Ojos blancos pequeños con mirada desafiante.
+  for(const ex of [-r*.31,r*.31]){c.fillStyle='#fff';c.beginPath();c.ellipse(ex,-r*.12,r*.2,r*.27,ex<0?-.12:.12,0,Math.PI*2);c.fill();c.fillStyle='#111318';c.beginPath();c.arc(ex+r*.035,-r*.06,r*.105,0,Math.PI*2);c.fill();c.fillStyle='#fff';c.beginPath();c.arc(ex+r*.06,-r*.14,r*.04,0,Math.PI*2);c.fill();}
+  c.strokeStyle='#08090b';c.lineWidth=2.5;c.beginPath();c.moveTo(-r*.24,r*.34);c.lineTo(-r*.08,r*.25);c.lineTo(r*.08,r*.34);c.lineTo(r*.24,r*.25);c.stroke();c.restore();}
+ // Flor de turbo: diseño pixelado de flor de fuego de plataformas clásicas.
+ for(const f of (g.flowers||[])){if(f.got)continue;const x=f.x-g.worldX+g.x,y=f.y+Math.sin(nowSafeTime()*.005+f.phase)*3;if(x< -35||x>w+35)continue;c.save();c.translate(x,y);c.rotate(Math.sin(nowSafeTime()*.003+f.phase)*.04);
+  c.shadowColor='#ff7a22';c.shadowBlur=13;
+  // Tallo y dos hojas verdes.
+  c.shadowBlur=0;c.fillStyle='#269447';c.fillRect(-3,5,6,12);c.fillStyle='#42c85b';c.fillRect(-2,6,4,9);
+  c.fillStyle='#16813b';c.beginPath();c.moveTo(-2,12);c.lineTo(-13,7);c.lineTo(-11,15);c.lineTo(-3,16);c.closePath();c.fill();c.beginPath();c.moveTo(2,10);c.lineTo(12,5);c.lineTo(10,13);c.lineTo(3,15);c.closePath();c.fill();
+  // Pétalos en bloques rojos/naranjas, silueta fácilmente reconocible.
+  c.fillStyle='#e52b22';c.fillRect(-7,-15,14,7);c.fillRect(-13,-9,8,13);c.fillRect(5,-9,8,13);c.fillRect(-10,2,20,6);c.fillRect(-5,-20,10,7);
+  c.fillStyle='#ff6a21';c.fillRect(-5,-16,10,6);c.fillRect(-10,-8,6,10);c.fillRect(4,-8,6,10);c.fillRect(-7,1,14,4);
+  // Centro amarillo y pequeños brillos en estilo pixel art.
+  c.fillStyle='#ffd83d';c.fillRect(-5,-9,10,11);c.fillRect(-3,-12,6,3);c.fillStyle='#fff4a0';c.fillRect(-3,-7,3,4);
+  c.fillStyle='#fff';c.fillRect(-10,-13,3,3);c.fillRect(7,-11,3,3);
+  c.restore();}
+ // Monedas doradas coleccionables.
+ for(const p of g.powders){if(p.got)continue;const x=p.x-g.worldX+g.x,y=p.y+Math.sin(nowSafeTime()*.004+p.phase)*4;if(x< -35||x>w+35)continue;c.save();c.translate(x,y);c.rotate(Math.sin(nowSafeTime()*.003+p.phase)*.12);
+  const r=p.r||11;const gold=c.createRadialGradient(-r*.35,-r*.4,1,0,0,r*1.2);gold.addColorStop(0,'#fff5a6');gold.addColorStop(.42,'#ffcf35');gold.addColorStop(1,'#c87908');
+  c.shadowColor='#ffcc35';c.shadowBlur=9;c.fillStyle=gold;c.beginPath();c.ellipse(0,0,r*.82,r,0,0,Math.PI*2);c.fill();c.shadowBlur=0;c.strokeStyle='#fff0a0';c.lineWidth=2;c.stroke();
+  c.strokeStyle='#a96808';c.lineWidth=2;c.beginPath();c.ellipse(0,0,r*.48,r*.68,0,0,Math.PI*2);c.stroke();c.fillStyle='#fff0a0';c.font='bold '+Math.round(r*1.1)+'px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('$',0,1);c.restore();}
+ // Spark particles when a figure-eight knot is collected.
+ for(const p of g.particles){c.globalAlpha=Math.max(0,p.t/.45);c.fillStyle='#fffdf3';c.beginPath();c.arc(p.x,p.y,2.5,0,Math.PI*2);c.fill();c.globalAlpha=1;}
+ // Force halo shows live input strength.
+ if(force>=brThreshold){c.strokeStyle='rgba(255,218,75,'+Math.min(.8,.25+(force/brThreshold)*.15)+')';c.lineWidth=3;c.beginPath();c.arc(g.x,g.y+9,25+Math.min(12,(force-brThreshold)*2),0,Math.PI*2);c.stroke();}
+  c.fillStyle=force<brThreshold?'#16496b':'#08765d';c.font='bold 12px sans-serif';c.fillText(force<brThreshold?'↓ CAÍDA':'↑ IMPULSO',g.x-31,g.y+48);
  brDrawGrigri(c,g.x,g.y+8,1.05);
- if(g.dead){const fade=c.createLinearGradient(0,0,0,h);fade.addColorStop(0,'rgba(10,17,36,.12)');fade.addColorStop(1,'rgba(10,17,36,.48)');c.fillStyle=fade;c.fillRect(0,0,w,h);}
+ if(g.dead){c.fillStyle='rgba(18,32,61,.35)';c.fillRect(0,0,w,h);}
 }
 function nowSafeTime(){return typeof performance!=='undefined'?performance.now():Date.now();}
 function brSpawnFloat(label){const scene=document.getElementById('brScene');const el=document.createElement('div');el.className='br-float';el.textContent=label;el.style.left=(35+Math.random()*30)+'%';el.style.top=(35+Math.random()*30)+'%';scene.appendChild(el);setTimeout(()=>el.remove(),900);}
