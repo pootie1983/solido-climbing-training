@@ -1849,12 +1849,15 @@ function brStart(){
 function brBeginCalibration(){
  const overlay=document.getElementById('brOverlay');
  brCalibrating=true;brCalibrationPeak=0;
+ const calibrationStarted=Date.now();
  let seconds=5;
  overlay.style.display='grid';
  overlay.innerHTML='<strong style="font-size:30px">⚖ Calibración de fuerza</strong><span id="brCalibrationMessage">Durante 5 segundos, aprieta el sensor WH-C06 con fuerza progresiva. La partida todavía no ha empezado.</span><div class="br-calibration-readings"><span>Tiempo: <strong id="brCalibrationSeconds">5 s</strong></span><span>Máximo: <strong id="brCalibrationPeak">0,0 kg</strong></span></div><div class="br-calibration-meter"><div id="brCalibrationBar"></div></div><span id="brCalibrationLive">Lectura actual: 0,0 kg</span><button class="btn secondary" onclick="brCancelCalibration()">Cancelar</button>';
  document.getElementById('brStartButton').textContent='⚖ Calibrando…';
  const tick=()=>{
   if(!brCalibrating)return;
+  const elapsed=(Date.now()-calibrationStarted)/1000;
+  seconds=Math.max(0,Math.ceil(5-elapsed));
   const force=Math.max(0,Number(currentForce)||0);
   brCalibrationPeak=Math.max(brCalibrationPeak,force);
   const sec=document.getElementById('brCalibrationSeconds'),peak=document.getElementById('brCalibrationPeak'),live=document.getElementById('brCalibrationLive'),bar=document.getElementById('brCalibrationBar');
@@ -1862,7 +1865,7 @@ function brBeginCalibration(){
   if(peak)peak.textContent=brCalibrationPeak.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg';
   if(live)live.textContent='Lectura actual: '+force.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg';
   if(bar)bar.style.width=Math.min(100,brCalibrationPeak/20*100)+'%';
-  if(seconds<=0){
+  if(elapsed>=5){
    clearInterval(brCalibrationTimer);brCalibrationTimer=null;brCalibrating=false;
    if(brCalibrationPeak<0.5){
     overlay.innerHTML='<strong>⚠ No hemos detectado fuerza</strong><span>No llegó una lectura válida del WH-C06. Comprueba que esté conectado y vuelve a intentarlo. No se ha iniciado la partida.</span><button class="btn" onclick="brStart()">↻ Repetir calibración</button>';
@@ -1878,10 +1881,9 @@ function brBeginCalibration(){
    overlay.innerHTML='<strong>✓ Calibración completada</strong><span>Fuerza máxima detectada: '+brCalibrationPeak.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg. Umbral inicial para saltar: '+brThreshold.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg (35% del máximo). Empezamos en 2 segundos.</span>';
    brBeginCountdown();return;
   }
-  seconds--;
  };
  tick();
- brCalibrationTimer=setInterval(tick,1000);
+ brCalibrationTimer=setInterval(tick,50);
 }
 function brCancelCalibration(){
  if(brCalibrationTimer){clearInterval(brCalibrationTimer);brCalibrationTimer=null;}
