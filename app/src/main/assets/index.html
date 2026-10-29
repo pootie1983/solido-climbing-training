@@ -1453,13 +1453,13 @@ body.br-fullscreen-active .br-close-game{display:flex}
     <div class="meditation-progress"><div id="meditationProgress"></div></div>
     <div class="row" style="justify-content:space-between"><span id="meditationElapsed" class="muted">00:00</span><span id="meditationRemaining" class="muted">Preparado</span></div>
     <div class="meditation-controls">
-      <button class="btn" id="meditationPlay" onclick="startMeditation()">▶ Escuchar</button>
+      <button class="btn" id="meditationPlay" onclick="startMeditation()">▶ Reproducir / Pausar</button>
       <button class="btn secondary" onclick="pauseMeditation()">Ⅱ Pausar</button>
       <button class="btn secondary" onclick="stopMeditation()">■ Detener</button>
     </div>
     <div id="meditationStatus" class="meditation-status" role="status" aria-live="polite">Pulsa «Escuchar» para comenzar. Busca una posición cómoda y segura.</div>
     <label class="row" style="margin-top:12px;font-size:12px;color:var(--muted)"><input id="meditationAmbient" type="checkbox" checked> Sonido ambiental suave</label>
-    <p class="meditation-note">La narración utiliza la voz española disponible en el dispositivo. Para escucharla sin conexión, el dispositivo debe tener una voz española instalada localmente; la disponibilidad depende de Android. No uses esta sesión mientras escalas, aseguras o realizas una actividad que requiera atención al entorno.</p>
+    <p class="meditation-note">La Meditación 1 utiliza el archivo de audio incluido en la aplicación y funciona sin conexión. Pulsa su tarjeta o «Reproducir / Pausar» para iniciar, pausar o continuar. No uses esta sesión mientras escalas, aseguras o realizas una actividad que requiera atención al entorno.</p>
   </div>
 </section>
 
@@ -1490,6 +1490,15 @@ body.br-fullscreen-active .br-close-game{display:flex}
 
     <span>▣</span>
     Planes
+
+  </button>
+
+  <button
+    data-page="meditation"
+    onclick="show('meditation',this)">
+
+    <span>☁</span>
+    Medita
 
   </button>
 
@@ -3386,10 +3395,27 @@ function updateMeditationOneAudioUI(){
   document.getElementById('meditationElapsed').textContent=formatMeditationAudioTime(a.currentTime);
   document.getElementById('meditationRemaining').textContent=duration?'-'+formatMeditationAudioTime(Math.max(0,duration-a.currentTime)):'Cargando audio…';
 }
+function toggleMeditationOneAudio(){
+  const audio=getMeditationOneAudio();
+  try{window.speechSynthesis&&window.speechSynthesis.cancel();}catch(e){}
+  meditationRunning=false;meditationPaused=false;
+  if(!audio.paused){
+    audio.pause();
+    document.getElementById('meditationStatus').textContent='Meditación 1 pausada. Pulsa de nuevo para continuar.';
+    updateMeditationOneAudioUI();
+    return;
+  }
+  if(audio.ended || (Number.isFinite(audio.duration)&&audio.currentTime>=audio.duration))audio.currentTime=0;
+  audio.play().then(()=>{
+    document.getElementById('meditationStatus').textContent='Meditación 1 en reproducción. Pulsa de nuevo para pausar.';
+    updateMeditationOneAudioUI();
+  }).catch(()=>{
+    document.getElementById('meditationStatus').textContent='No se pudo iniciar el audio. Comprueba que audio/meditacion-01.mp3 esté incluido en la aplicación y vuelve a pulsar.';
+  });
+}
 function selectMeditation(id){
   if(!guidedMeditations[id])return;
   if(id==='focus'){
-    const audio=getMeditationOneAudio();
     if(activeMeditation!=='focus'){
       stopMeditation(true);
       activeMeditation='focus';
@@ -3397,20 +3423,7 @@ function selectMeditation(id){
       document.getElementById('meditationDescription').textContent='Pulsa de nuevo para pausar o continuar la Meditación 1.';
       document.querySelectorAll('.meditation-card').forEach(el=>el.classList.toggle('active',el.id==='medCard-focus'));
     }
-    if(audio.paused){
-      try{window.speechSynthesis&&window.speechSynthesis.cancel();}catch(e){}
-      meditationRunning=false;meditationPaused=false;
-      audio.play().then(()=>{
-        document.getElementById('meditationStatus').textContent='Meditación 1 en reproducción. Pulsa de nuevo para pausar.';
-        updateMeditationOneAudioUI();
-      }).catch(()=>{
-        document.getElementById('meditationStatus').textContent='No se pudo iniciar el audio. Vuelve a pulsar Meditación 1 para intentarlo otra vez.';
-      });
-    }else{
-      audio.pause();
-      document.getElementById('meditationStatus').textContent='Meditación 1 pausada. Pulsa de nuevo para continuar.';
-      updateMeditationOneAudioUI();
-    }
+    toggleMeditationOneAudio();
     return;
   }
   if(meditationOneAudio&&!meditationOneAudio.paused)meditationOneAudio.pause();
@@ -3427,6 +3440,10 @@ function selectMeditation(id){
   startMeditation();
 }
 function startMeditation(){
+  if(activeMeditation==='focus'){
+    toggleMeditationOneAudio();
+    return;
+  }
   if(!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)){
     document.getElementById('meditationStatus').textContent='Este dispositivo no ofrece narración por voz. Prueba a instalar una voz española en los ajustes de texto a voz.';
     return;
