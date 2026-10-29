@@ -2064,7 +2064,7 @@ function startIntervalWorkout(){
  workoutForceRows=[];renderWorkoutForceTable();
  workoutRep=1;workoutCompleted=0;workoutPeak=0;workoutSessionPeak=0;workoutTargetSeconds=0;workoutElapsed=0;workoutSessionStarted=Date.now();
  workoutStartHand=trainingHand==='Ambas'?workoutChosenStartHand:trainingHand;workoutActiveHand=workoutStartHand;
- workoutPhase='hold';workoutPhaseRemaining=workoutHold;workoutRunning=true;playWorkoutCue('round');showWorkoutNotice('round','COMIENZA LA SERIE 1/'+workoutTotalReps,'Mantén la fuerza objetivo con la mano '+workoutActiveHand.toLowerCase()+'.');
+ workoutPhase='hold';workoutPhaseRemaining=workoutHold;workoutRunning=true;playWorkoutCue('round');showWorkoutNotice('round','RUTINA · RONDA 1/'+workoutTotalReps,'Comienza la rutina con la mano '+workoutActiveHand.toLowerCase()+'. Objetivo: '+workoutTarget.toFixed(1)+' kg.');
  document.getElementById('workoutStartBtn').disabled=true;document.getElementById('workoutStopBtn').disabled=false;
  document.getElementById('workoutResult').textContent='Serie en curso: intenta mantener al menos '+workoutTarget.toFixed(1)+' kg de forma controlada.';
  workoutUi();
@@ -2084,29 +2084,42 @@ function workoutTick(){
  if(workoutPhaseRemaining>0)return;
  if(workoutPhase==='hold'){
    const passed=workoutTargetSeconds/workoutHold>=.7;
-   workoutCompleted++;
    if(workoutPeak>0){
-     storeForceResult(workoutPeak,'Intervalos · serie '+workoutRep+'/'+workoutTotalReps+' · mano '+workoutActiveHand+' · objetivo '+workoutTarget.toFixed(1)+' kg'+(passed?' · objetivo mantenido':' · objetivo no mantenido'));
+     storeForceResult(workoutPeak,'Intervalos · ronda '+workoutRep+'/'+workoutTotalReps+' · mano '+workoutActiveHand+' · objetivo '+workoutTarget.toFixed(1)+' kg'+(passed?' · objetivo mantenido':' · objetivo no mantenido'));
    }
-   document.getElementById('workoutResult').textContent='Serie '+workoutRep+'/'+workoutTotalReps+' · mano '+workoutActiveHand.toLowerCase()+': pico '+workoutPeak.toFixed(2)+' kg · objetivo alcanzado '+workoutTargetSeconds+'/'+workoutHold+' s.';
+   document.getElementById('workoutResult').textContent='Ronda '+workoutRep+'/'+workoutTotalReps+' · rutina con mano '+workoutActiveHand.toLowerCase()+': pico '+workoutPeak.toFixed(2)+' kg · objetivo alcanzado '+workoutTargetSeconds+'/'+workoutHold+' s.';
    workoutTargetSeconds=0;workoutPeak=0;
-   if(workoutRep>=workoutTotalReps){finishIntervalWorkout();return;}
-   if(trainingHand==='Ambas'){
-     workoutPhase='switch';workoutPhaseRemaining=workoutSwitchSeconds;playWorkoutCue('switch');
-     document.getElementById('workoutResult').textContent='¡Cambia de mano! Pasa el sensor a la mano '+(workoutActiveHand==='Derecha'?'izquierda':'derecha')+'. Tienes '+workoutSwitchSeconds+' segundos y después empieza el descanso.';
-   }else{workoutPhase='rest';workoutPhaseRemaining=workoutRest;playWorkoutCue('rest');showWorkoutNotice('rest','DESCANSO','Relaja la mano. Descanso de '+workoutRest+' segundos.');}
+   if(trainingHand==='Ambas' && workoutActiveHand===workoutStartHand){
+     // Primera rutina de la ronda completada: avisar del cambio y después hacer la rutina con la otra mano.
+     workoutPhase='switch';workoutPhaseRemaining=workoutSwitchSeconds;
+     playWorkoutCue('switch');
+     document.getElementById('workoutResult').textContent='CAMBIO DE MANO: pasa el sensor a la mano '+(workoutActiveHand==='Derecha'?'izquierda':'derecha')+'. Después comienza la segunda rutina de esta ronda.';
+     workoutUi();return;
+   }
+   // La ronda termina solo después de completar la rutina de ambas manos (o la mano única seleccionada).
+   workoutCompleted++;
+   workoutPhase='rest';workoutPhaseRemaining=workoutRest;
+   playWorkoutCue('rest');
+   showWorkoutNotice('rest','DESCANSO','Rutinas completadas. Descansa '+workoutRest+' segundos antes de la siguiente ronda.');
+   document.getElementById('workoutResult').textContent='Ronda '+workoutRep+'/'+workoutTotalReps+' completada. Descansa '+workoutRest+' segundos.';
    workoutUi();return;
  }
  if(workoutPhase==='switch'){
    workoutActiveHand=workoutActiveHand==='Derecha'?'Izquierda':'Derecha';
-   workoutPhase='rest';workoutPhaseRemaining=workoutRest;playWorkoutCue('rest');showWorkoutNotice('rest','DESCANSO','Mano '+workoutActiveHand.toLowerCase()+' preparada. Descansa '+workoutRest+' segundos.');
-   document.getElementById('workoutResult').textContent='Mano '+workoutActiveHand.toLowerCase()+' preparada. Descansa '+workoutRest+' segundos; después empieza la siguiente serie.';
+   workoutPhase='hold';workoutPhaseRemaining=workoutHold;
+   playWorkoutCue('round');
+   showWorkoutNotice('round','RUTINA · MANO '+workoutActiveHand.toUpperCase(),'Comienza la rutina con la mano '+workoutActiveHand.toLowerCase()+'. Objetivo: '+workoutTarget.toFixed(1)+' kg.');
+   document.getElementById('workoutResult').textContent='Comienza la segunda rutina de la ronda '+workoutRep+'/'+workoutTotalReps+' con la mano '+workoutActiveHand.toLowerCase()+'.';
    workoutUi();return;
  }
  if(workoutPhase==='rest'){
-   workoutRep++;workoutPhase='hold';workoutPhaseRemaining=workoutHold;playWorkoutCue('round');
-   showWorkoutNotice('round','⏱ NUEVA SERIE '+workoutRep+'/'+workoutTotalReps,'Comienza con la mano '+workoutActiveHand.toLowerCase()+'. Objetivo: '+workoutTarget.toFixed(1)+' kg.');
-   document.getElementById('workoutResult').textContent='⏱ NUEVA SERIE · Descanso terminado. Comienza la serie '+workoutRep+'/'+workoutTotalReps+' con la mano '+workoutActiveHand.toLowerCase()+'.';
+   if(workoutRep>=workoutTotalReps){finishIntervalWorkout();return;}
+   workoutRep++;
+   workoutActiveHand=workoutStartHand;
+   workoutPhase='hold';workoutPhaseRemaining=workoutHold;
+   playWorkoutCue('round');
+   showWorkoutNotice('round','⏱ SIGUIENTE RONDA · '+workoutRep+'/'+workoutTotalReps,'Descanso terminado. Comienza la rutina con la mano '+workoutActiveHand.toLowerCase()+'. Objetivo: '+workoutTarget.toFixed(1)+' kg.');
+   document.getElementById('workoutResult').textContent='⏱ SIGUIENTE RONDA '+workoutRep+'/'+workoutTotalReps+'. Empieza la rutina con la mano '+workoutActiveHand.toLowerCase()+'.';
    workoutUi();
  }
 }
