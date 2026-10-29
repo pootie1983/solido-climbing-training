@@ -17,6 +17,9 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Mantener la pantalla encendida mientras SOLIDO CLIMBING esté abierta.
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
         web = WebView(this)
         web.settings.javaScriptEnabled = true
         web.settings.domStorageEnabled = true
@@ -89,6 +92,7 @@ class MainActivity : Activity() {
     }
 
     override fun onDestroy() {
+        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         if (::whc06Bridge.isInitialized) whc06Bridge.release()
         if (::web.isInitialized) web.destroy()
         super.onDestroy()
