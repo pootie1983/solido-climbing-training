@@ -2985,7 +2985,7 @@ function brDrawScene(force){
  // Aura de energía al ejercer fuerza.
  if(force>=brThreshold){const aura=c.createRadialGradient(g.x,g.y+9,10,g.x,g.y+9,42);aura.addColorStop(0,'rgba(255,218,75,.24)');aura.addColorStop(1,'rgba(255,218,75,0)');c.fillStyle=aura;c.beginPath();c.arc(g.x,g.y+9,42,0,Math.PI*2);c.fill();c.strokeStyle='rgba(255,218,75,'+Math.min(.8,.25+(force/brThreshold)*.15)+')';c.lineWidth=2.5;c.beginPath();c.arc(g.x,g.y+9,25+Math.min(12,(force-brThreshold)*2),0,Math.PI*2);c.stroke();}
  c.save();c.textAlign='center';c.font='900 10px system-ui,sans-serif';c.fillStyle='rgba(5,24,43,.7)';c.fillText(force<brThreshold?'↓ CAÍDA':'↑ IMPULSO',g.x+1,g.y+51);c.fillStyle=force<brThreshold?'#eaf8ff':'#fff8b0';c.fillText(force<brThreshold?'↓ CAÍDA':'↑ IMPULSO',g.x,g.y+50);c.restore();
- brDrawGokuNimbus(c,g.x,g.y+8,1.05);
+ brDrawGrigri(c,g.x,g.y+8,1.05);
  if(g.dead){const fade=c.createLinearGradient(0,0,0,h);fade.addColorStop(0,'rgba(10,17,36,.12)');fade.addColorStop(1,'rgba(10,17,36,.48)');c.fillStyle=fade;c.fillRect(0,0,w,h);}
 }
 function nowSafeTime(){return typeof performance!=='undefined'?performance.now():Date.now();}
