@@ -1741,7 +1741,7 @@ function brFinishRound(){
  brComplete();
 }
 function brNextRound(){
- brRound++;brTime=brLevelData().seconds;brScore=0;brStable=0;brWasInZone=false;brCombo=0;brRoundClean=true;
+ brRound++;brTime=brLevelData().seconds;brScore=0;brStable=0;brWasInZone=false;brRewardedThisZone=false;brCombo=0;brRoundClean=true;
  document.getElementById('brOverlay').style.display='none';document.getElementById('brClimber').classList.remove('resting');brStart();
 }
 function brComplete(){
