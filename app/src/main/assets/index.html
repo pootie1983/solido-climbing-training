@@ -644,6 +644,10 @@ select{
 .br-hopper-scene .br-ground{height:13px;opacity:.8}
 .br-hopper-scene .br-hold{opacity:.35;pointer-events:none}
 .br-hopper-scene .br-gauge-marker{transition:none}
+.br-calibration-meter{width:100%;height:10px;border-radius:999px;overflow:hidden;background:#263451;border:1px solid #405274;margin:8px 0 12px}
+.br-calibration-meter>div{height:100%;width:0%;background:linear-gradient(90deg,#75d9ff,#caff70);transition:width .08s linear}
+.br-calibration-readings{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:#c6d4f3;margin:8px 0}
+.br-calibration-readings strong{color:#caff70;font-size:16px}
 @media(prefers-reduced-motion:reduce){.br-float{animation:none}.br-hopper-platform{will-change:auto}}
 
 /* Conexión WH-C06 accesible desde inicio */
@@ -1800,6 +1804,7 @@ const brDifficulties={
 };
 let brMode='quick',brDifficulty='easy',brActive=false,brFrame=null,brLast=0,brTime=60,brScore=0,brCombo=0,brBestCombo=0,brHolds=0,brRound=1,brTotalXP=0,brSessionScores=[],brCountdownTimer=null,brGameForce=0,brAudioContext=null;
 let brThreshold=3,brLastForce=0,brLastRender=0,brGame=null,brCanvas=null,brCtx=null,brCanvasW=600,brCanvasH=330,brDpr=1;
+let brCalibrating=false,brCalibrationTimer=null,brCalibrationPeak=0,brNeedsCalibration=true;
 try{brTotalXP=Number(localStorage.getItem('solidoBoulderXP')||0)||0;brThreshold=Number(localStorage.getItem('solidoHopperThreshold')||3)||3;brDifficulty=localStorage.getItem('solidoHopperDifficulty')||'easy';if(!brDifficulties[brDifficulty])brDifficulty='easy';}catch(e){}
 function brFmt(n){return Math.max(0,Math.floor(n)).toLocaleString('es-ES');}
 function brLevelData(){return brDifficulties[brDifficulty]||brDifficulties.easy;}
@@ -1821,35 +1826,86 @@ function brNewGame(){
  brGame.worldX=0;brGame.distance=0;brLastForce=0;brGameForce=0;
 }
 function brReset(){
- brActive=false;if(brCountdownTimer){clearInterval(brCountdownTimer);brCountdownTimer=null;}if(brFrame)cancelAnimationFrame(brFrame);brFrame=null;brGameForce=0;
+ brActive=false;brCalibrating=false;brNeedsCalibration=true;brCalibrationPeak=0;
+ if(brCalibrationTimer){clearInterval(brCalibrationTimer);brCalibrationTimer=null;}
+ if(brCountdownTimer){clearInterval(brCountdownTimer);brCountdownTimer=null;}if(brFrame)cancelAnimationFrame(brFrame);brFrame=null;brGameForce=0;
  const d=brLevelData();brTime=d.seconds;brScore=0;brCombo=0;brBestCombo=0;brHolds=0;brRound=1;brSessionScores=[];brLastForce=0;
  const slider=document.getElementById('brThreshold');if(slider)slider.value=String(brThreshold);
  document.getElementById('brThresholdValue').textContent=brThreshold.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg';document.getElementById('brTarget').textContent=brThreshold.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg';
  ['easy','normal','hard'].forEach(k=>document.getElementById('brDiff'+k.charAt(0).toUpperCase()+k.slice(1)).classList.toggle('active',k===brDifficulty));
  brNewGame();
- const overlay=document.getElementById('brOverlay');overlay.style.display='grid';overlay.innerHTML='<strong>¡A por los nudos de ocho!</strong><span>El GRIGRI avanza por las plataformas. Al superar '+brThreshold.toLocaleString('es-ES')+' kg, se impulsa hacia arriba; al bajar de ese umbral, cae con rapidez. Recoge los nudos de ocho y evita los mosquetones.</span><button class="btn" onclick="brStart()">▶ Empezar partida</button>';
- document.getElementById('brStartButton').textContent='▶ Empezar partida';brRender(0);brDrawScene(0);brUpdateProgress();
+ const overlay=document.getElementById('brOverlay');overlay.style.display='grid';overlay.innerHTML='<strong>¡A por los nudos de ocho!</strong><span>Antes de jugar mediremos tu fuerza máxima durante 5 segundos para ajustar el salto a tu capacidad. Conecta el WH-C06 y aprieta fuerte de forma progresiva.</span><button class="btn" onclick="brStart()">⚖ Calibrar fuerza y empezar</button>';
+ document.getElementById('brStartButton').textContent='⚖ Calibrar y empezar';brRender(0);brDrawScene(0);brUpdateProgress();
 }
 function brStart(){
- if(brCountdownTimer)return;
- brEnsureAudio(); // Unlock audio during the user's tap before the countdown begins.
+ if(brCountdownTimer||brCalibrationTimer)return;
+ brEnsureAudio();
  if(brActive){brActive=false;if(brFrame)cancelAnimationFrame(brFrame);brFrame=null;document.getElementById('brStartButton').textContent='▶ Continuar';return;}
- if(brTime<=0)brReset();if(!brGame)brNewGame();
+ if(brTime<=0||!brGame||brGame.dead)brReset();
+ if(!brGame)brNewGame();
+ if(brNeedsCalibration){brBeginCalibration();return;}
+ brBeginCountdown();
+}
+function brBeginCalibration(){
+ const overlay=document.getElementById('brOverlay');
+ brCalibrating=true;brCalibrationPeak=0;
+ let seconds=5;
+ overlay.style.display='grid';
+ overlay.innerHTML='<strong style="font-size:30px">⚖ Calibración de fuerza</strong><span id="brCalibrationMessage">Durante 5 segundos, aprieta el sensor WH-C06 con fuerza progresiva. La partida todavía no ha empezado.</span><div class="br-calibration-readings"><span>Tiempo: <strong id="brCalibrationSeconds">5 s</strong></span><span>Máximo: <strong id="brCalibrationPeak">0,0 kg</strong></span></div><div class="br-calibration-meter"><div id="brCalibrationBar"></div></div><span id="brCalibrationLive">Lectura actual: 0,0 kg</span><button class="btn secondary" onclick="brCancelCalibration()">Cancelar</button>';
+ document.getElementById('brStartButton').textContent='⚖ Calibrando…';
+ const tick=()=>{
+  if(!brCalibrating)return;
+  const force=Math.max(0,Number(currentForce)||0);
+  brCalibrationPeak=Math.max(brCalibrationPeak,force);
+  const sec=document.getElementById('brCalibrationSeconds'),peak=document.getElementById('brCalibrationPeak'),live=document.getElementById('brCalibrationLive'),bar=document.getElementById('brCalibrationBar');
+  if(sec)sec.textContent=seconds+' s';
+  if(peak)peak.textContent=brCalibrationPeak.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg';
+  if(live)live.textContent='Lectura actual: '+force.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg';
+  if(bar)bar.style.width=Math.min(100,brCalibrationPeak/20*100)+'%';
+  if(seconds<=0){
+   clearInterval(brCalibrationTimer);brCalibrationTimer=null;brCalibrating=false;
+   if(brCalibrationPeak<0.5){
+    overlay.innerHTML='<strong>⚠ No hemos detectado fuerza</strong><span>No llegó una lectura válida del WH-C06. Comprueba que esté conectado y vuelve a intentarlo. No se ha iniciado la partida.</span><button class="btn" onclick="brStart()">↻ Repetir calibración</button>';
+    document.getElementById('brStartButton').textContent='⚖ Repetir calibración';brNeedsCalibration=true;return;
+   }
+   const suggested=Math.max(0.5,Math.min(20,Math.round((brCalibrationPeak*0.35)*2)/2));
+   brThreshold=suggested;
+   try{localStorage.setItem('solidoHopperThreshold',String(brThreshold));localStorage.setItem('solidoHopperCalibrationPeak',String(brCalibrationPeak));}catch(e){}
+   const slider=document.getElementById('brThreshold');if(slider)slider.value=String(brThreshold);
+   document.getElementById('brThresholdValue').textContent=brThreshold.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg';
+   document.getElementById('brTarget').textContent=brThreshold.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg';
+   brNeedsCalibration=false;
+   overlay.innerHTML='<strong>✓ Calibración completada</strong><span>Fuerza máxima detectada: '+brCalibrationPeak.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg. Umbral inicial para saltar: '+brThreshold.toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1})+' kg (35% del máximo). Empezamos en 2 segundos.</span>';
+   brBeginCountdown();return;
+  }
+  seconds--;
+ };
+ tick();
+ brCalibrationTimer=setInterval(tick,1000);
+}
+function brCancelCalibration(){
+ if(brCalibrationTimer){clearInterval(brCalibrationTimer);brCalibrationTimer=null;}
+ brCalibrating=false;brNeedsCalibration=true;
+ const overlay=document.getElementById('brOverlay');overlay.style.display='grid';
+ overlay.innerHTML='<strong>Calibración cancelada</strong><span>Cuando estés listo, calibra la fuerza durante 5 segundos antes de jugar.</span><button class="btn" onclick="brStart()">⚖ Calibrar fuerza y empezar</button>';
+ document.getElementById('brStartButton').textContent='⚖ Calibrar y empezar';
+}
+function brBeginCountdown(){
  const overlay=document.getElementById('brOverlay');overlay.style.display='grid';
  let count=2;
- overlay.innerHTML='<strong style="font-size:48px">2</strong><span>Prepara la mano y empieza a apretar.<br>El cronómetro empieza cuando arranca la partida.</span>';
+ overlay.innerHTML='<strong style="font-size:48px">2</strong><span>Calibración lista. Prepárate para saltar.<br>El cronómetro empieza al comenzar la partida.</span>';
  document.getElementById('brStartButton').textContent='⌛ Preparando…';
  brCountdownTimer=setInterval(()=>{
-   count--;
-   if(count>0){overlay.innerHTML='<strong style="font-size:48px">'+count+'</strong><span>¡Prepara la fuerza! El tiempo aún no cuenta.</span>';}
-   else{
-     clearInterval(brCountdownTimer);brCountdownTimer=null;
-     overlay.style.display='none';brGameForce=0;brLastForce=0;
-     brActive=true;brLast=performance.now();brLastRender=0;brStartMusic();
-     document.getElementById('brStartButton').textContent='Ⅱ Pausar';
-     brFrame=requestAnimationFrame(brLoop);
-   }
-  },1000);
+  count--;
+  if(count>0){overlay.innerHTML='<strong style="font-size:48px">'+count+'</strong><span>¡Listo! El tiempo aún no cuenta.</span>';}
+  else{
+   clearInterval(brCountdownTimer);brCountdownTimer=null;
+   overlay.style.display='none';brGameForce=0;brLastForce=0;
+   brActive=true;brLast=performance.now();brLastRender=0;brStartMusic();
+   document.getElementById('brStartButton').textContent='Ⅱ Pausar';
+   brFrame=requestAnimationFrame(brLoop);
+  }
+ },1000);
 }
 function brLoop(now){
  if(!brActive)return;const dt=Math.min(.03,Math.max(.001,(now-brLast)/1000));brLast=now;
