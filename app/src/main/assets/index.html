@@ -1762,12 +1762,12 @@ function brStart(){
  if(brActive){brActive=false;if(brFrame)cancelAnimationFrame(brFrame);brFrame=null;document.getElementById('brStartButton').textContent='▶ Continuar';return;}
  if(brTime<=0)brReset();if(!brGame)brNewGame();
  const overlay=document.getElementById('brOverlay');overlay.style.display='grid';
- let count=5;
- overlay.innerHTML='<strong style="font-size:48px">5</strong><span>Colócate y prepara las manos en el WH-C06.<br>El juego comienza en 5 segundos.</span>';
+ let count=2;
+ overlay.innerHTML='<strong style="font-size:48px">2</strong><span>Prepara la mano y empieza a apretar.<br>El cronómetro empieza cuando arranca la partida.</span>';
  document.getElementById('brStartButton').textContent='⌛ Preparando…';
  brCountdownTimer=setInterval(()=>{
    count--;
-   if(count>0){overlay.innerHTML='<strong style="font-size:48px">'+count+'</strong><span>Prepárate… comienza en '+count+' segundos.</span>';}
+   if(count>0){overlay.innerHTML='<strong style="font-size:48px">'+count+'</strong><span>¡Prepara la fuerza! El tiempo aún no cuenta.</span>';}
    else{
      clearInterval(brCountdownTimer);brCountdownTimer=null;
      overlay.style.display='none';brGameForce=0;brLastForce=0;
@@ -1775,6 +1775,7 @@ function brStart(){
      document.getElementById('brStartButton').textContent='Ⅱ Pausar';
      brFrame=requestAnimationFrame(brLoop);
    }
+  },1000);
  },1000);
 }
 function brLoop(now){
