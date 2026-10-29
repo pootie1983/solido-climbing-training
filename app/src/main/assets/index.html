@@ -1055,6 +1055,12 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
 .hand-choice .hand-both{width:60px;height:44px}
 #workoutSwitchOverlay{position:fixed;inset:0;z-index:99990;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(0,0,0,.94);backdrop-filter:blur(7px)}
 #workoutSwitchOverlay.show{display:flex}
+#workoutNotice{position:fixed;inset:0;z-index:99991;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(0,0,0,.92);backdrop-filter:blur(7px)}
+#workoutNotice.show{display:flex}
+.workout-notice-card{width:min(100%,360px);border:2px solid var(--green);border-radius:24px;background:#08121b;padding:26px 20px;text-align:center;box-shadow:0 0 32px #7cff4530;color:#fff;animation:workoutSwitchPop .22s ease-out}
+.workout-notice-icon{font-size:64px;line-height:1.2;color:var(--green);margin:4px 0 12px;text-shadow:0 0 18px #7cff4540}
+.workout-notice-card h2{margin:8px 0;color:var(--green);font-size:25px}
+.workout-notice-card p{margin:8px 0;color:#e0e8e1;line-height:1.5}
 .workout-switch-card{width:min(100%,360px);border:2px solid var(--green);border-radius:26px;background:#08121b;padding:28px 22px;text-align:center;box-shadow:0 0 32px #7cff4530;color:#fff;animation:workoutSwitchPop .25s ease-out}
 .workout-switch-card h2{margin:8px 0 6px;font-size:27px;line-height:1.1;color:var(--green)}
 .workout-switch-card p{margin:8px 0;color:#e0e8e1}
@@ -1076,6 +1082,7 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
     <div style="font-size:12px;color:#aab8ac">SEGUNDOS PARA CAMBIAR</div>
   </div>
 </div>
+<div id="workoutNotice" role="alertdialog" aria-live="assertive" aria-modal="true"><div class="workout-notice-card"><div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--green)">SOLIDO CLIMBING</div><div id="workoutNoticeIcon" class="workout-notice-icon" aria-hidden="true">Ⅱ</div><h2 id="workoutNoticeTitle">DESCANSO</h2><p id="workoutNoticeMessage">Empieza el descanso.</p></div></div>
 <div id="solidoSplash" aria-label="SOLIDO CLIMBING TRAINING">
   <img src="splash-solido.jpg..png" alt="Entrenar también es escalar" onerror="document.getElementById('solidoSplash')?.remove();document.body.style.overflow=''">
 </div>
@@ -1439,6 +1446,7 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
     <div class="timer-inline-clock" id="workoutClock">00:07</div>
     <div class="attempt-live"><span>Fuerza actual / objetivo</span><strong id="workoutLiveForce">0,00 / 3,00 kg</strong><span id="workoutPhaseLabel">Preparado · mano derecha · agarre 10 mm</span></div>
     <div class="br-progress"><div id="workoutForceBar" style="width:0%"></div></div>
+    <div class="live-force-panel workout-force-table-panel"><div class="live-chart-heading"><strong>Fuerza real durante el ejercicio</strong><span id="workoutSampleCount">0 lecturas</span></div><div style="overflow-x:auto;margin-top:10px"><table style="width:100%;border-collapse:collapse;font-size:12px;text-align:left"><thead><tr><th style="padding:8px 5px;color:var(--green);border-bottom:1px solid #29414b">Hora</th><th style="padding:8px 5px;color:var(--green);border-bottom:1px solid #29414b">Fase</th><th style="padding:8px 5px;color:var(--green);border-bottom:1px solid #29414b">Mano</th><th style="padding:8px 5px;color:var(--green);border-bottom:1px solid #29414b;text-align:right">Fuerza real</th></tr></thead><tbody id="workoutForceTableBody"><tr><td colspan="4" style="padding:12px 5px;color:var(--muted)">Inicia el ejercicio y conecta el WH-C06 para ver lecturas reales.</td></tr></tbody></table></div><p class="live-force-note">Solo se muestran lecturas recibidas del sensor WH-C06 durante este entrenamiento; los valores no se inventan ni se estiman.</p></div>
     <div class="attempt-actions"><button class="btn" id="workoutStartBtn" onclick="startIntervalWorkout()">▶ Iniciar entrenamiento</button><button class="btn secondary" id="workoutStopBtn" onclick="stopIntervalWorkout()" disabled>■ Finalizar</button></div>
     <div class="muted" id="workoutResult">Las series completadas aparecerán en Progreso, filtradas por mano y tamaño de agarre.</div>
   </div>
@@ -2013,23 +2021,13 @@ let workoutTimerId=null,workoutRunning=false,workoutPhase='idle',workoutRep=0,wo
 let workoutPhaseRemaining=0,workoutTarget=3,workoutHold=7,workoutRest=60,workoutPeak=0,workoutTargetSeconds=0,workoutElapsed=0,workoutSessionStarted=0,workoutSessionPeak=0,workoutCompleted=0;
 let workoutActiveHand='Derecha',workoutStartHand='Derecha',workoutSwitchSeconds=10,workoutChosenStartHand='Derecha';
 function workoutFormatClock(n){n=Math.max(0,Math.ceil(Number(n)||0));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');}
-let workoutCueAudio=null;
+let workoutCueAudio=null,workoutNoticeTimer=null,workoutForceRows=[];
 function playWorkoutCue(kind){
- try{
-   const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
-   if(!workoutCueAudio)workoutCueAudio=new AC();
-   if(workoutCueAudio.state==='suspended')workoutCueAudio.resume();
-   const now=workoutCueAudio.currentTime;
-   const tones=kind==='switch'?[880,660]:kind==='rest'?[520]:[740,990];
-   tones.forEach((hz,i)=>{
-     const osc=workoutCueAudio.createOscillator(),gain=workoutCueAudio.createGain();
-     const start=now+i*(kind==='switch'?.16:.12);
-     osc.type='sine';osc.frequency.setValueAtTime(hz,start);
-     gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(.22,start+.015);gain.gain.exponentialRampToValueAtTime(.0001,start+.13);
-     osc.connect(gain);gain.connect(workoutCueAudio.destination);osc.start(start);osc.stop(start+.15);
-   });
- }catch(e){}
+ try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!workoutCueAudio)workoutCueAudio=new AC();const play=()=>{const now=workoutCueAudio.currentTime,tones=kind==='switch'?[880,660]:kind==='rest'?[520]:[740,990];tones.forEach((hz,i)=>{const osc=workoutCueAudio.createOscillator(),gain=workoutCueAudio.createGain(),start=now+i*(kind==='switch'?.18:.15);osc.type='sine';osc.frequency.setValueAtTime(hz,start);gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(.2,start+.02);gain.gain.exponentialRampToValueAtTime(.0001,start+.19);osc.connect(gain);gain.connect(workoutCueAudio.destination);osc.start(start);osc.stop(start+.21);});};if(workoutCueAudio.state==='suspended')workoutCueAudio.resume().then(play).catch(()=>{});else play();}catch(e){}
 }
+function showWorkoutNotice(kind,title,message){const overlay=document.getElementById('workoutNotice');if(!overlay)return;document.getElementById('workoutNoticeIcon').textContent=kind==='rest'?'Ⅱ':'⏱';document.getElementById('workoutNoticeTitle').textContent=title;document.getElementById('workoutNoticeMessage').textContent=message;overlay.classList.add('show');if(workoutNoticeTimer!==null)clearTimeout(workoutNoticeTimer);workoutNoticeTimer=setTimeout(()=>{overlay.classList.remove('show');workoutNoticeTimer=null;},2600);}
+function renderWorkoutForceTable(){const body=document.getElementById('workoutForceTableBody'),count=document.getElementById('workoutSampleCount');if(!body)return;if(count)count.textContent=workoutForceRows.length+' lecturas';if(!workoutForceRows.length){body.innerHTML='<tr><td colspan="4" style="padding:12px 5px;color:var(--muted)">Esperando lecturas reales del WH-C06…</td></tr>';return;}body.innerHTML=workoutForceRows.slice(-12).reverse().map(r=>'<tr><td style="padding:7px 5px;border-bottom:1px solid #203640;color:#c5d5da">'+r.time+'</td><td style="padding:7px 5px;border-bottom:1px solid #203640">'+r.phase+'</td><td style="padding:7px 5px;border-bottom:1px solid #203640">'+r.hand+'</td><td style="padding:7px 5px;border-bottom:1px solid #203640;text-align:right;color:var(--green);font-weight:800">'+r.kg.toFixed(2)+' kg</td></tr>').join('');}
+function recordWorkoutForceReading(){if(!workoutRunning)return;const f=Math.max(0,Number(currentForce)||0);workoutForceRows.push({time:new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),phase:workoutPhase==='hold'?'Serie':workoutPhase==='switch'?'Cambio mano':workoutPhase==='rest'?'Descanso':'Preparado',hand:workoutActiveHand,kg:f});if(workoutForceRows.length>120)workoutForceRows.shift();renderWorkoutForceTable();workoutUi();}
 function updateWorkoutSwitchOverlay(){
  const overlay=document.getElementById('workoutSwitchOverlay');
  if(!overlay)return;
@@ -2063,9 +2061,10 @@ function startIntervalWorkout(){
  document.getElementById('workoutHoldSeconds').value=workoutHold;
  document.getElementById('workoutRestSeconds').value=workoutRest;
  document.getElementById('workoutReps').value=workoutTotalReps;
+ workoutForceRows=[];renderWorkoutForceTable();
  workoutRep=1;workoutCompleted=0;workoutPeak=0;workoutSessionPeak=0;workoutTargetSeconds=0;workoutElapsed=0;workoutSessionStarted=Date.now();
  workoutStartHand=trainingHand==='Ambas'?workoutChosenStartHand:trainingHand;workoutActiveHand=workoutStartHand;
- workoutPhase='hold';workoutPhaseRemaining=workoutHold;workoutRunning=true;
+ workoutPhase='hold';workoutPhaseRemaining=workoutHold;workoutRunning=true;playWorkoutCue('round');showWorkoutNotice('round','COMIENZA LA SERIE 1/'+workoutTotalReps,'Mantén la fuerza objetivo con la mano '+workoutActiveHand.toLowerCase()+'.');
  document.getElementById('workoutStartBtn').disabled=true;document.getElementById('workoutStopBtn').disabled=false;
  document.getElementById('workoutResult').textContent='Serie en curso: intenta mantener al menos '+workoutTarget.toFixed(1)+' kg de forma controlada.';
  workoutUi();
@@ -2095,17 +2094,18 @@ function workoutTick(){
    if(trainingHand==='Ambas'){
      workoutPhase='switch';workoutPhaseRemaining=workoutSwitchSeconds;playWorkoutCue('switch');
      document.getElementById('workoutResult').textContent='¡Cambia de mano! Pasa el sensor a la mano '+(workoutActiveHand==='Derecha'?'izquierda':'derecha')+'. Tienes '+workoutSwitchSeconds+' segundos y después empieza el descanso.';
-   }else{workoutPhase='rest';workoutPhaseRemaining=workoutRest;}
+   }else{workoutPhase='rest';workoutPhaseRemaining=workoutRest;playWorkoutCue('rest');showWorkoutNotice('rest','DESCANSO','Relaja la mano. Descanso de '+workoutRest+' segundos.');}
    workoutUi();return;
  }
  if(workoutPhase==='switch'){
    workoutActiveHand=workoutActiveHand==='Derecha'?'Izquierda':'Derecha';
-   workoutPhase='rest';workoutPhaseRemaining=workoutRest;playWorkoutCue('rest');
+   workoutPhase='rest';workoutPhaseRemaining=workoutRest;playWorkoutCue('rest');showWorkoutNotice('rest','DESCANSO','Mano '+workoutActiveHand.toLowerCase()+' preparada. Descansa '+workoutRest+' segundos.');
    document.getElementById('workoutResult').textContent='Mano '+workoutActiveHand.toLowerCase()+' preparada. Descansa '+workoutRest+' segundos; después empieza la siguiente serie.';
    workoutUi();return;
  }
  if(workoutPhase==='rest'){
    workoutRep++;workoutPhase='hold';workoutPhaseRemaining=workoutHold;playWorkoutCue('round');
+   showWorkoutNotice('round','⏱ NUEVA SERIE '+workoutRep+'/'+workoutTotalReps,'Comienza con la mano '+workoutActiveHand.toLowerCase()+'. Objetivo: '+workoutTarget.toFixed(1)+' kg.');
    document.getElementById('workoutResult').textContent='⏱ NUEVA SERIE · Descanso terminado. Comienza la serie '+workoutRep+'/'+workoutTotalReps+' con la mano '+workoutActiveHand.toLowerCase()+'.';
    workoutUi();
  }
@@ -2370,6 +2370,7 @@ function processWHC06Data(raw){
     forceSamples.push({t:Date.now(),kg:Math.max(0,currentForce)});
     if(forceSamples.length>60) forceSamples.shift();
     updateLiveForceVisuals();
+    recordWorkoutForceReading();
 
 
     if(data.device){
