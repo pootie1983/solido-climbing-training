@@ -1052,6 +1052,7 @@ header{background:rgba(9,12,10,.91);border-bottom:1px solid #ffffff12;backdrop-f
 html[data-theme="light"] .tile .emoji{background:linear-gradient(145deg,#f7fff7,#dcebdd);border-color:#b7d9b8}
 html[data-theme="light"] .hand-icon{fill:#5b9d5722}
 
+.hand-choice .hand-both{width:60px;height:44px}
 </style>
 </head>
 
@@ -1394,7 +1395,7 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
   <div class="force-heading"><div><div class="force-icon">▣</div><div><h2>FUERZA DE DEDOS</h2><span>SOLIDO CLIMBING · WH-C06</span></div></div><span class="bluetooth-icon">ᛒ</span></div>
   <div class="config-block">
     <p class="config-label">¿Qué mano vas a entrenar?</p>
-    <div class="choice-row"><button class="choice hand-choice" data-value="Izquierda" onclick="selectTrainingOption('hand','Izquierda',this)"><span><svg class="hand-icon hand-left" viewBox="0 0 48 48" aria-hidden="true"><path d="M14 24V12a3 3 0 0 1 6 0v9-13a3 3 0 0 1 6 0v13-11a3 3 0 0 1 6 0v12-8a3 3 0 0 1 6 0v13c0 9-5 15-14 15h-2c-5 0-8-3-10-7l-5-9a3 3 0 0 1 5-3l4 5"/></svg></span>Izquierda</button><button class="choice hand-choice active" data-value="Derecha" onclick="selectTrainingOption('hand','Derecha',this)"><span><svg class="hand-icon hand-right" viewBox="0 0 48 48" aria-hidden="true"><path d="M34 24V12a3 3 0 0 0-6 0v9-13a3 3 0 0 0-6 0v13-11a3 3 0 0 0-6 0v12-8a3 3 0 0 0-6 0v13c0 9 5 15 14 15h2c5 0 8-3 10-7l5-9a3 3 0 0 0-5-3l-4 5"/></svg></span>Derecha</button><button class="choice hand-choice" data-value="Ambas" onclick="selectTrainingOption('hand','Ambas',this)"><span><svg class="hand-icon hand-both" viewBox="0 0 64 48" aria-hidden="true"><g transform="translate(0 2) scale(.78 .88)">M14 24V12a3 3 0 0 1 6 0v9-13a3 3 0 0 1 6 0v13-11a3 3 0 0 1 6 0v12-8a3 3 0 0 1 6 0v13c0 9-5 15-14 15h-2c-5 0-8-3-10-7l-5-9a3 3 0 0 1 5-3l4 5</g><g transform="translate(64 2) scale(-.78 .88)"><path d="M14 24V12a3 3 0 0 1 6 0v9-13a3 3 0 0 1 6 0v13-11a3 3 0 0 1 6 0v12-8a3 3 0 0 1 6 0v13c0 9-5 15-14 15h-2c-5 0-8-3-10-7l-5-9a3 3 0 0 1 5-3l4 5"/></g></svg></span>Ambas</button></div>
+    <div class="choice-row"><button class="choice hand-choice" data-value="Izquierda" onclick="selectTrainingOption('hand','Izquierda',this)"><span><svg class="hand-icon hand-left" viewBox="0 0 48 48" aria-hidden="true"><path d="M14 24V12a3 3 0 0 1 6 0v9-13a3 3 0 0 1 6 0v13-11a3 3 0 0 1 6 0v12-8a3 3 0 0 1 6 0v13c0 9-5 15-14 15h-2c-5 0-8-3-10-7l-5-9a3 3 0 0 1 5-3l4 5"/></svg></span>Izquierda</button><button class="choice hand-choice active" data-value="Derecha" onclick="selectTrainingOption('hand','Derecha',this)"><span><svg class="hand-icon hand-right" viewBox="0 0 48 48" aria-hidden="true"><path d="M34 24V12a3 3 0 0 0-6 0v9-13a3 3 0 0 0-6 0v13-11a3 3 0 0 0-6 0v12-8a3 3 0 0 0-6 0v13c0 9 5 15 14 15h2c5 0 8-3 10-7l5-9a3 3 0 0 0-5-3l-4 5"/></svg></span>Derecha</button><button class="choice hand-choice" data-value="Ambas" onclick="selectTrainingOption('hand','Ambas',this)"><span><svg class="hand-icon hand-both" viewBox="0 0 80 48" aria-hidden="true"><g transform="translate(0 1) scale(.78 .88)"><path d="M14 24V12a3 3 0 0 1 6 0v9-13a3 3 0 0 1 6 0v13-11a3 3 0 0 1 6 0v12-8a3 3 0 0 1 6 0v13c0 9-5 15-14 15h-2c-5 0-8-3-10-7l-5-9a3 3 0 0 1 5-3l4 5"/></g><g transform="translate(80 1) scale(-.78 .88)"><path d="M14 24V12a3 3 0 0 1 6 0v9-13a3 3 0 0 1 6 0v13-11a3 3 0 0 1 6 0v12-8a3 3 0 0 1 6 0v13c0 9-5 15-14 15h-2c-5 0-8-3-10-7l-5-9a3 3 0 0 1 5-3l4 5"/></g></svg></span>Ambas</button></div>
     <p class="config-label">Tamaño del agarre</p>
     <div class="choice-row"><button class="choice grip-choice" data-value="5" onclick="selectTrainingOption('grip','5',this)">5 mm</button><button class="choice grip-choice active" data-value="10" onclick="selectTrainingOption('grip','10',this)">10 mm</button><button class="choice grip-choice" data-value="20" onclick="selectTrainingOption('grip','20',this)">20 mm</button></div>
   </div>
@@ -1977,11 +1978,12 @@ function useTrainingConfiguration(){
 // Structured hold/rest protocol using live WH-C06 force samples.
 let workoutTimerId=null,workoutRunning=false,workoutPhase='idle',workoutRep=0,workoutTotalReps=4;
 let workoutPhaseRemaining=0,workoutTarget=3,workoutHold=7,workoutRest=60,workoutPeak=0,workoutTargetSeconds=0,workoutElapsed=0,workoutSessionStarted=0,workoutSessionPeak=0,workoutCompleted=0;
+let workoutActiveHand='Derecha',workoutStartHand='Derecha',workoutSwitchSeconds=5;
 function workoutFormatClock(n){n=Math.max(0,Math.ceil(Number(n)||0));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');}
 function workoutUi(){
  const clock=document.getElementById('workoutClock'),phase=document.getElementById('workoutPhaseLabel'),live=document.getElementById('workoutLiveForce'),bar=document.getElementById('workoutForceBar');
  if(clock)clock.textContent=workoutFormatClock(workoutPhaseRemaining);
- if(phase)phase.textContent=workoutPhase==='hold'?'SERIE '+workoutRep+'/'+workoutTotalReps+' · MANTÉN LA FUERZA':workoutPhase==='rest'?'DESCANSO · PREPARA LA SIGUIENTE SERIE':workoutPhase==='done'?'ENTRENAMIENTO COMPLETADO':'Preparado · mano '+trainingHand.toLowerCase()+' · agarre '+trainingGrip+' mm';
+ if(phase)phase.textContent=workoutPhase==='hold'?'SERIE '+workoutRep+'/'+workoutTotalReps+' · MANO '+workoutActiveHand.toUpperCase()+' · MANTÉN LA FUERZA':workoutPhase==='switch'?'¡CAMBIA A LA MANO '+(workoutActiveHand==='Derecha'?'IZQUIERDA':'DERECHA')+'!':workoutPhase==='rest'?'DESCANSO · PREPARA LA SIGUIENTE SERIE':workoutPhase==='done'?'ENTRENAMIENTO COMPLETADO':'Preparado · mano '+trainingHand.toLowerCase()+' · agarre '+trainingGrip+' mm';
  const f=Math.max(0,Number(currentForce)||0);
  if(live)live.textContent=f.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' / '+workoutTarget.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' kg';
  if(bar){bar.style.width=Math.min(100,f/Math.max(.5,workoutTarget)*100)+'%';bar.style.background=f>=workoutTarget?'#7cff45':'#ffb84d';}
@@ -1998,6 +2000,7 @@ function startIntervalWorkout(){
  document.getElementById('workoutRestSeconds').value=workoutRest;
  document.getElementById('workoutReps').value=workoutTotalReps;
  workoutRep=1;workoutCompleted=0;workoutPeak=0;workoutSessionPeak=0;workoutTargetSeconds=0;workoutElapsed=0;workoutSessionStarted=Date.now();
+ workoutStartHand=trainingHand==='Ambas'?'Derecha':trainingHand;workoutActiveHand=workoutStartHand;
  workoutPhase='hold';workoutPhaseRemaining=workoutHold;workoutRunning=true;
  document.getElementById('workoutStartBtn').disabled=true;document.getElementById('workoutStopBtn').disabled=false;
  document.getElementById('workoutResult').textContent='Serie en curso: intenta mantener al menos '+workoutTarget.toFixed(1)+' kg de forma controlada.';
@@ -2020,16 +2023,26 @@ function workoutTick(){
    const passed=workoutTargetSeconds/workoutHold>=.7;
    workoutCompleted++;
    if(workoutPeak>0){
-     storeForceResult(workoutPeak,'Intervalos · serie '+workoutRep+'/'+workoutTotalReps+' · objetivo '+workoutTarget.toFixed(1)+' kg'+(passed?' · objetivo mantenido':' · objetivo no mantenido'));
+     storeForceResult(workoutPeak,'Intervalos · serie '+workoutRep+'/'+workoutTotalReps+' · mano '+workoutActiveHand+' · objetivo '+workoutTarget.toFixed(1)+' kg'+(passed?' · objetivo mantenido':' · objetivo no mantenido'));
    }
-   document.getElementById('workoutResult').textContent='Serie '+workoutRep+'/'+workoutTotalReps+': pico '+workoutPeak.toFixed(2)+' kg · objetivo alcanzado '+workoutTargetSeconds+'/'+workoutHold+' s.';
+   document.getElementById('workoutResult').textContent='Serie '+workoutRep+'/'+workoutTotalReps+' · mano '+workoutActiveHand.toLowerCase()+': pico '+workoutPeak.toFixed(2)+' kg · objetivo alcanzado '+workoutTargetSeconds+'/'+workoutHold+' s.';
    workoutTargetSeconds=0;workoutPeak=0;
    if(workoutRep>=workoutTotalReps){finishIntervalWorkout();return;}
-   workoutPhase='rest';workoutPhaseRemaining=workoutRest;workoutUi();return;
+   if(trainingHand==='Ambas'){
+     workoutPhase='switch';workoutPhaseRemaining=workoutSwitchSeconds;
+     document.getElementById('workoutResult').textContent='¡Cambia de mano! Pasa el sensor a la mano '+(workoutActiveHand==='Derecha'?'izquierda':'derecha')+'. Tienes '+workoutSwitchSeconds+' segundos y después empieza el descanso.';
+   }else{workoutPhase='rest';workoutPhaseRemaining=workoutRest;}
+   workoutUi();return;
+ }
+ if(workoutPhase==='switch'){
+   workoutActiveHand=workoutActiveHand==='Derecha'?'Izquierda':'Derecha';
+   workoutPhase='rest';workoutPhaseRemaining=workoutRest;
+   document.getElementById('workoutResult').textContent='Mano '+workoutActiveHand.toLowerCase()+' preparada. Descansa '+workoutRest+' segundos; después empieza la siguiente serie.';
+   workoutUi();return;
  }
  if(workoutPhase==='rest'){
    workoutRep++;workoutPhase='hold';workoutPhaseRemaining=workoutHold;
-   document.getElementById('workoutResult').textContent='Descanso terminado. Comienza la serie '+workoutRep+'/'+workoutTotalReps+'.';
+   document.getElementById('workoutResult').textContent='Descanso terminado. Comienza la serie '+workoutRep+'/'+workoutTotalReps+' con la mano '+workoutActiveHand.toLowerCase()+'.';
    workoutUi();
  }
 }
