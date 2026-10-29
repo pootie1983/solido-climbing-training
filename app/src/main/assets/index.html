@@ -2831,34 +2831,6 @@ function brDrawGrigri(ctx,x,y,scale=1){
   ctx.strokeStyle='#f7f9fa';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(-9,-17);ctx.lineTo(-3,-19);ctx.stroke();
   ctx.shadowBlur=0;ctx.shadowOffsetY=0;ctx.restore();
 }
-function brDrawGokuNimbus(ctx,x,y,scale=0.68){
- // Goku niño sentado sobre la nube amarilla; sprite compacto para no alterar la jugabilidad.
- ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.rotate(Number(brGame&&brGame.jumpTilt)||0);ctx.scale(scale,scale);
- // Nube voladora amarilla con contorno cálido.
- ctx.save();ctx.translate(0,10);
- ctx.fillStyle='#d58a12';ctx.fillRect(-27,4,54,7);ctx.fillRect(-31,0,12,8);ctx.fillRect(19,-2,13,10);
- ctx.fillStyle='#ffd52e';ctx.fillRect(-28,0,56,8);ctx.fillRect(-21,-5,42,10);ctx.fillRect(-13,-9,27,9);ctx.fillRect(-31,2,11,5);ctx.fillRect(21,1,11,6);
- ctx.fillStyle='#fff18a';ctx.fillRect(-18,-4,28,3);ctx.fillRect(-25,1,11,3);ctx.restore();
- // Pelo negro puntiagudo y rostro.
- ctx.fillStyle='#17151b';ctx.fillRect(-9,-29,20,14);ctx.fillRect(-15,-26,9,10);ctx.fillRect(6,-35,9,12);ctx.fillRect(-4,-39,12,12);ctx.fillRect(-15,-35,9,11);ctx.fillRect(11,-28,8,8);
- ctx.fillStyle='#f4bd8b';ctx.fillRect(-9,-27,18,16);ctx.fillRect(-12,-23,4,8);ctx.fillRect(8,-23,4,8);
- // Gi naranja sentado: torso erguido, piernas dobladas sobre la nube.
- ctx.fillStyle='#ee7025';ctx.fillRect(-10,-13,21,17);ctx.fillRect(-14,-9,6,12);ctx.fillRect(9,-9,6,11);
- ctx.fillStyle='#ff9a35';ctx.fillRect(-7,-12,6,13);ctx.fillRect(2,-11,5,12);
- ctx.fillStyle='#1768c4';ctx.fillRect(-10,1,21,4);ctx.fillRect(-3,3,6,4);
- // Brazos apoyados hacia los lados.
- ctx.fillStyle='#f4bd8b';ctx.fillRect(-15,-8,5,10);ctx.fillRect(10,-8,5,10);ctx.fillRect(-16,0,7,3);ctx.fillRect(10,0,7,3);
- // Rodillas dobladas, pantalón naranja y botas azules apoyadas en la nube.
- ctx.fillStyle='#e96b23';ctx.fillRect(-10,5,13,6);ctx.fillRect(1,5,12,6);ctx.fillRect(-13,7,11,5);ctx.fillRect(5,7,11,5);
- ctx.fillStyle='#174b9b';ctx.fillRect(-15,9,11,4);ctx.fillRect(7,9,11,4);ctx.fillStyle='#4b91ec';ctx.fillRect(-13,9,5,2);ctx.fillRect(9,9,5,2);
- // Ojos y sonrisa.
- ctx.fillStyle='#17151a';ctx.fillRect(-7,-21,5,2);ctx.fillRect(3,-21,5,2);
- ctx.fillStyle='#fff';ctx.fillRect(-6,-19,4,4);ctx.fillRect(3,-19,4,4);
- ctx.fillStyle='#20202a';ctx.fillRect(-4,-18,2,3);ctx.fillRect(4,-18,2,3);
- ctx.fillStyle='#a74e35';ctx.fillRect(-2,-12,5,2);
- ctx.fillStyle='#fff0d2';ctx.fillRect(-10,-25,2,5);
- ctx.restore();
-}
 function brDrawScene(force){
  if(!brCtx||!brGame)return;const c=brCtx,w=brCanvasW,h=brCanvasH,g=brGame,d=brLevelData();
  c.clearRect(0,0,w,h);
@@ -2911,7 +2883,7 @@ function brDrawScene(force){
  // Force halo shows live input strength.
  if(force>=brThreshold){c.strokeStyle='rgba(255,218,75,'+Math.min(.8,.25+(force/brThreshold)*.15)+')';c.lineWidth=3;c.beginPath();c.arc(g.x,g.y+9,25+Math.min(12,(force-brThreshold)*2),0,Math.PI*2);c.stroke();}
   c.fillStyle=force<brThreshold?'#16496b':'#08765d';c.font='bold 12px sans-serif';c.fillText(force<brThreshold?'↓ CAÍDA':'↑ IMPULSO',g.x-31,g.y+48);
- brDrawGokuNimbus(c,g.x,g.y+8,0.68);
+ brDrawGrigri(c,g.x,g.y+8,1.05);
  if(g.dead){c.fillStyle='rgba(18,32,61,.35)';c.fillRect(0,0,w,h);}
 }
 function nowSafeTime(){return typeof performance!=='undefined'?performance.now():Date.now();}
