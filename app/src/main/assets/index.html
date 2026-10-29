@@ -1053,10 +1053,29 @@ html[data-theme="light"] .tile .emoji{background:linear-gradient(145deg,#f7fff7,
 html[data-theme="light"] .hand-icon{fill:#5b9d5722}
 
 .hand-choice .hand-both{width:60px;height:44px}
+#workoutSwitchOverlay{position:fixed;inset:0;z-index:99990;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(3,8,5,.82);backdrop-filter:blur(7px)}
+#workoutSwitchOverlay.show{display:flex}
+.workout-switch-card{width:min(100%,360px);border:2px solid #c3f36b;border-radius:26px;background:linear-gradient(150deg,#1c2b21,#0c130f);padding:28px 22px;text-align:center;box-shadow:0 0 40px #c3f36b35;color:#fff;animation:workoutSwitchPop .25s ease-out}
+.workout-switch-card h2{margin:8px 0 6px;font-size:27px;line-height:1.1;color:#c3f36b}
+.workout-switch-card p{margin:8px 0;color:#e0e8e1}
+.workout-switch-hand{width:100px;height:100px;margin:6px auto 12px;color:#c3f36b;display:block;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:#c3f36b22}
+#workoutSwitchCountdown{font-size:46px;font-weight:900;font-variant-numeric:tabular-nums;color:#fff;margin-top:8px}
+@keyframes workoutSwitchPop{from{transform:scale(.88);opacity:.3}to{transform:scale(1);opacity:1}}
 </style>
 </head>
 
 <body>
+<div id="workoutSwitchOverlay" role="alertdialog" aria-live="assertive" aria-label="Aviso para cambiar de mano">
+  <div class="workout-switch-card">
+    <div style="font-size:12px;font-weight:800;letter-spacing:2px;color:#c3f36b">SOLIDO CLIMBING</div>
+    <h2>¡CAMBIA DE MANO!</h2>
+    <p id="workoutSwitchInstruction">Pasa el sensor a la mano izquierda</p>
+    <svg id="workoutSwitchHandIcon" class="workout-switch-hand" viewBox="0 0 48 48" aria-hidden="true"><path d="M34 24V12a3 3 0 0 0-6 0v9-13a3 3 0 0 0-6 0v13-11a3 3 0 0 0-6 0v12-8a3 3 0 0 0-6 0v13c0 9 5 15 14 15h2c5 0 8-3 10-7l5-9a3 3 0 0 0-5-3l-4 5"/></svg>
+    <p>Prepárate para la siguiente serie</p>
+    <div id="workoutSwitchCountdown">10</div>
+    <div style="font-size:12px;color:#aab8ac">SEGUNDOS PARA CAMBIAR</div>
+  </div>
+</div>
 <div id="solidoSplash" aria-label="SOLIDO CLIMBING TRAINING">
   <img src="splash-solido.jpg..png" alt="Entrenar también es escalar" onerror="document.getElementById('solidoSplash')?.remove();document.body.style.overflow=''">
 </div>
@@ -1994,9 +2013,40 @@ let workoutTimerId=null,workoutRunning=false,workoutPhase='idle',workoutRep=0,wo
 let workoutPhaseRemaining=0,workoutTarget=3,workoutHold=7,workoutRest=60,workoutPeak=0,workoutTargetSeconds=0,workoutElapsed=0,workoutSessionStarted=0,workoutSessionPeak=0,workoutCompleted=0;
 let workoutActiveHand='Derecha',workoutStartHand='Derecha',workoutSwitchSeconds=10,workoutChosenStartHand='Derecha';
 function workoutFormatClock(n){n=Math.max(0,Math.ceil(Number(n)||0));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');}
+let workoutCueAudio=null;
+function playWorkoutCue(kind){
+ try{
+   const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+   if(!workoutCueAudio)workoutCueAudio=new AC();
+   if(workoutCueAudio.state==='suspended')workoutCueAudio.resume();
+   const now=workoutCueAudio.currentTime;
+   const tones=kind==='switch'?[880,660]:kind==='rest'?[520]:[740,990];
+   tones.forEach((hz,i)=>{
+     const osc=workoutCueAudio.createOscillator(),gain=workoutCueAudio.createGain();
+     const start=now+i*(kind==='switch'?.16:.12);
+     osc.type='sine';osc.frequency.setValueAtTime(hz,start);
+     gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(.22,start+.015);gain.gain.exponentialRampToValueAtTime(.0001,start+.13);
+     osc.connect(gain);gain.connect(workoutCueAudio.destination);osc.start(start);osc.stop(start+.15);
+   });
+ }catch(e){}
+}
+function updateWorkoutSwitchOverlay(){
+ const overlay=document.getElementById('workoutSwitchOverlay');
+ if(!overlay)return;
+ const show=workoutRunning&&workoutPhase==='switch';
+ overlay.classList.toggle('show',show);
+ if(show){
+   const nextHand=workoutActiveHand==='Derecha'?'Izquierda':'Derecha';
+   const instruction=document.getElementById('workoutSwitchInstruction'),countdown=document.getElementById('workoutSwitchCountdown'),svg=document.getElementById('workoutSwitchHandIcon');
+   if(instruction)instruction.textContent='Pasa el sensor a la mano '+nextHand.toLowerCase();
+   if(countdown)countdown.textContent=String(Math.max(0,Math.ceil(workoutPhaseRemaining)));
+   if(svg)svg.style.transform=nextHand==='Izquierda'?'scaleX(-1)':'none';
+ }
+}
 function workoutUi(){
  const clock=document.getElementById('workoutClock'),phase=document.getElementById('workoutPhaseLabel'),live=document.getElementById('workoutLiveForce'),bar=document.getElementById('workoutForceBar');
  if(clock)clock.textContent=workoutFormatClock(workoutPhaseRemaining);
+ updateWorkoutSwitchOverlay();
  if(phase)phase.textContent=workoutPhase==='hold'?'SERIE '+workoutRep+'/'+workoutTotalReps+' · MANO '+workoutActiveHand.toUpperCase()+' · MANTÉN LA FUERZA':workoutPhase==='switch'?'¡CAMBIA A LA MANO '+(workoutActiveHand==='Derecha'?'IZQUIERDA':'DERECHA')+'!':workoutPhase==='rest'?'DESCANSO · PREPARA LA SIGUIENTE SERIE':workoutPhase==='done'?'ENTRENAMIENTO COMPLETADO':'Preparado · mano '+trainingHand.toLowerCase()+' · agarre '+trainingGrip+' mm';
  const f=Math.max(0,Number(currentForce)||0);
  if(live)live.textContent=f.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' / '+workoutTarget.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' kg';
@@ -2043,25 +2093,25 @@ function workoutTick(){
    workoutTargetSeconds=0;workoutPeak=0;
    if(workoutRep>=workoutTotalReps){finishIntervalWorkout();return;}
    if(trainingHand==='Ambas'){
-     workoutPhase='switch';workoutPhaseRemaining=workoutSwitchSeconds;
+     workoutPhase='switch';workoutPhaseRemaining=workoutSwitchSeconds;playWorkoutCue('switch');
      document.getElementById('workoutResult').textContent='¡Cambia de mano! Pasa el sensor a la mano '+(workoutActiveHand==='Derecha'?'izquierda':'derecha')+'. Tienes '+workoutSwitchSeconds+' segundos y después empieza el descanso.';
    }else{workoutPhase='rest';workoutPhaseRemaining=workoutRest;}
    workoutUi();return;
  }
  if(workoutPhase==='switch'){
    workoutActiveHand=workoutActiveHand==='Derecha'?'Izquierda':'Derecha';
-   workoutPhase='rest';workoutPhaseRemaining=workoutRest;
+   workoutPhase='rest';workoutPhaseRemaining=workoutRest;playWorkoutCue('rest');
    document.getElementById('workoutResult').textContent='Mano '+workoutActiveHand.toLowerCase()+' preparada. Descansa '+workoutRest+' segundos; después empieza la siguiente serie.';
    workoutUi();return;
  }
  if(workoutPhase==='rest'){
-   workoutRep++;workoutPhase='hold';workoutPhaseRemaining=workoutHold;
+   workoutRep++;workoutPhase='hold';workoutPhaseRemaining=workoutHold;playWorkoutCue('round');
    document.getElementById('workoutResult').textContent='Descanso terminado. Comienza la serie '+workoutRep+'/'+workoutTotalReps+' con la mano '+workoutActiveHand.toLowerCase()+'.';
    workoutUi();
  }
 }
 function finishIntervalWorkout(){
- workoutRunning=false;workoutPhase='done';if(workoutTimerId!==null)clearInterval(workoutTimerId);workoutTimerId=null;
+ workoutRunning=false;workoutPhase='done';updateWorkoutSwitchOverlay();if(workoutTimerId!==null)clearInterval(workoutTimerId);workoutTimerId=null;
  const minutes=Math.max(1,Math.round((Date.now()-workoutSessionStarted)/60000));
  sessions.unshift({name:'Entrenamiento por intervalos · '+workoutCompleted+'/'+workoutTotalReps+' series · '+trainingHand+' · '+trainingGrip+' mm',mins:minutes,hand:trainingHand,grip:String(trainingGrip),ts:new Date().toISOString(),date:new Date().toLocaleString('es-ES')});
  save();renderHistory();renderStats();renderForceTrend();renderHandComparison();
