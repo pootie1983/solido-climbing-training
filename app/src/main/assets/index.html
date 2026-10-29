@@ -3355,8 +3355,65 @@ const guidedMeditations = {
   }
 };
 let activeMeditation='focus', meditationUtterance=null, meditationIndex=0, meditationRunning=false, meditationPaused=false, meditationStartedAt=0, meditationElapsedBase=0, meditationAmbientCtx=null, meditationAmbientNodes=[], meditationPauseTimer=null;
+let meditationOneAudio=null;
+function getMeditationOneAudio(){
+  if(!meditationOneAudio){
+    meditationOneAudio=new Audio('audio/meditacion-01.mp3');
+    meditationOneAudio.preload='metadata';
+    meditationOneAudio.addEventListener('timeupdate',updateMeditationOneAudioUI);
+    meditationOneAudio.addEventListener('loadedmetadata',updateMeditationOneAudioUI);
+    meditationOneAudio.addEventListener('ended',()=>{
+      document.getElementById('meditationStatus').textContent='Meditación 1 finalizada.';
+      document.getElementById('meditationRemaining').textContent='Finalizada';
+      document.getElementById('meditationProgress').style.width='100%';
+      document.getElementById('meditationElapsed').textContent=formatMeditationAudioTime(meditationOneAudio.duration);
+    });
+    meditationOneAudio.addEventListener('error',()=>{
+      document.getElementById('meditationStatus').textContent='No se pudo cargar el audio. Comprueba que meditacion-01.mp3 está en la carpeta audio.';
+    });
+  }
+  return meditationOneAudio;
+}
+function formatMeditationAudioTime(seconds){
+  if(!Number.isFinite(seconds)||seconds<0)return '00:00';
+  const n=Math.floor(seconds);
+  return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
+}
+function updateMeditationOneAudioUI(){
+  if(!meditationOneAudio)return;
+  const a=meditationOneAudio,duration=Number.isFinite(a.duration)?a.duration:0;
+  document.getElementById('meditationProgress').style.width=(duration?Math.min(100,a.currentTime/duration*100):0)+'%';
+  document.getElementById('meditationElapsed').textContent=formatMeditationAudioTime(a.currentTime);
+  document.getElementById('meditationRemaining').textContent=duration?'-'+formatMeditationAudioTime(Math.max(0,duration-a.currentTime)):'Cargando audio…';
+}
 function selectMeditation(id){
   if(!guidedMeditations[id])return;
+  if(id==='focus'){
+    const audio=getMeditationOneAudio();
+    if(activeMeditation!=='focus'){
+      stopMeditation(true);
+      activeMeditation='focus';
+      document.getElementById('meditationTitle').textContent=guidedMeditations.focus.title;
+      document.getElementById('meditationDescription').textContent='Pulsa de nuevo para pausar o continuar la Meditación 1.';
+      document.querySelectorAll('.meditation-card').forEach(el=>el.classList.toggle('active',el.id==='medCard-focus'));
+    }
+    if(audio.paused){
+      try{window.speechSynthesis&&window.speechSynthesis.cancel();}catch(e){}
+      meditationRunning=false;meditationPaused=false;
+      audio.play().then(()=>{
+        document.getElementById('meditationStatus').textContent='Meditación 1 en reproducción. Pulsa de nuevo para pausar.';
+        updateMeditationOneAudioUI();
+      }).catch(()=>{
+        document.getElementById('meditationStatus').textContent='No se pudo iniciar el audio. Vuelve a pulsar Meditación 1 para intentarlo otra vez.';
+      });
+    }else{
+      audio.pause();
+      document.getElementById('meditationStatus').textContent='Meditación 1 pausada. Pulsa de nuevo para continuar.';
+      updateMeditationOneAudioUI();
+    }
+    return;
+  }
+  if(meditationOneAudio&&!meditationOneAudio.paused)meditationOneAudio.pause();
   stopMeditation(true);
   activeMeditation=id;
   const m=guidedMeditations[id];
@@ -3434,6 +3491,12 @@ function updateMeditationProgress(){
   document.getElementById('meditationRemaining').textContent='Parte '+Math.min(meditationIndex+1,total)+' de '+total;
 }
 function pauseMeditation(){
+  if(activeMeditation==='focus' && meditationOneAudio && !meditationOneAudio.paused){
+    meditationOneAudio.pause();
+    document.getElementById('meditationStatus').textContent='Meditación 1 pausada.';
+    updateMeditationOneAudioUI();
+    return;
+  }
   if(!meditationRunning)return;
   meditationRunning=false;meditationPaused=true;
   meditationElapsedBase+=Math.max(0,(Date.now()-meditationStartedAt)/1000);
@@ -3443,6 +3506,7 @@ function pauseMeditation(){
   document.getElementById('meditationStatus').textContent='Pausado. Pulsa «Escuchar» para continuar.';
 }
 function stopMeditation(silent){
+  if(meditationOneAudio && !meditationOneAudio.paused)meditationOneAudio.pause();
   meditationRunning=false;meditationPaused=false;meditationIndex=0;meditationElapsedBase=0;
   if(meditationPauseTimer){clearTimeout(meditationPauseTimer);meditationPauseTimer=null;}
   try{if('speechSynthesis' in window)window.speechSynthesis.cancel();}catch(e){}
