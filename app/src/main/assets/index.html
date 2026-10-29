@@ -1428,42 +1428,29 @@ function connectWHC06(){
 
 
 function disconnectWHC06(){
-  updateHomeWHStatus(false, 'Desconectado · Conecta para medir tu fuerza real');
+  // Reset the game input immediately so stale sensor values cannot keep the character airborne.
+  currentForce=0;
+  brGameForce=0;
+  updateHomeWHStatus(false,'Desconectando medidor…');
+  setWHStatus('Desconectando…','normal');
+  const connect=document.getElementById('connectWH');
+  if(connect)connect.disabled=false;
+  const name=document.getElementById('whDeviceName');
+  if(name)name.textContent='';
+  const message=document.getElementById('whMessage');
+  if(message)message.textContent='WH-C06 desconectado.';
 
   try{
-
-    if(
-      window.WHC06 &&
-      typeof window.WHC06.stopScan === 'function'
-    ){
-
+    if(window.WHC06 && typeof window.WHC06.stopScan==='function'){
       window.WHC06.stopScan();
-
     }
-
   }catch(error){
-
-    console.error(error);
-
+    console.error('Error al detener el WH-C06:',error);
+    if(message)message.textContent='No se pudo detener Bluetooth: '+(error.message||error);
   }
-
-  setWHStatus(
-    'Desconectado',
-    'normal'
-  );
-
-  document.getElementById(
-    'whDeviceName'
-  ).textContent = '';
-
-  document.getElementById(
-    'whMessage'
-  ).textContent =
-    'WH-C06 desconectado.';
-
-  document.getElementById(
-    'connectWH'
-  ).disabled = false;
+  // Keep both home and sensor-screen controls in sync even if the bridge sends no status event.
+  updateHomeWHStatus(false,'Desconectado · Conecta para medir tu fuerza real');
+  setWHStatus('Desconectado','normal');
 }
 
 
@@ -1491,8 +1478,6 @@ function setWHStatus(message,type){
 
 
 function processWHC06Data(raw){
-  updateHomeWHStatus(true, 'Conectado · Recibiendo fuerza real');
-
   console.log(
     'WH-C06 RAW:',
     raw
@@ -1519,12 +1504,17 @@ function processWHC06Data(raw){
 
 
   if(data.type === 'status'){
-
-    document.getElementById(
-      'whMessage'
-    ).textContent =
-      data.message || '';
-
+    const message=String(data.message||'');
+    document.getElementById('whMessage').textContent=message;
+    if(/desconectado|búsqueda finalizada|busqueda finalizada|detenido/i.test(message)){
+      currentForce=0;brGameForce=0;
+      updateHomeWHStatus(false,'Desconectado · Conecta para medir tu fuerza real');
+      setWHStatus('Desconectado','normal');
+      document.getElementById('connectWH').disabled=false;
+      document.getElementById('whDeviceName').textContent='';
+    }else if(/buscando/i.test(message)){
+      updateHomeWHStatus(false,'Buscando medidor…');
+    }
     return;
   }
 
@@ -1550,6 +1540,8 @@ function processWHC06Data(raw){
 
 
   if(data.type === 'weight'){
+    updateHomeWHStatus(true, 'Conectado · Recibiendo fuerza real');
+    setWHStatus('WH-C06 conectado','connected');
 
     const weight =
       Number(data.weight);
