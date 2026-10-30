@@ -2006,6 +2006,26 @@ body.plan-editor-open{overflow:hidden}
 .health-sleep{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 2px 2px;color:#dce8e1;font-size:12px}.health-sleep strong{color:var(--green);font-size:15px}
 .health-connect-button{width:100%;margin-top:12px}
 
+
+/* LOGROS SOLIDO */
+.ach-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0 18px}
+.ach-summary>div{background:#10232e;border:1px solid #29434d;border-radius:13px;padding:12px 8px;text-align:center}
+.ach-summary strong{display:block;color:var(--green);font-size:22px}.ach-summary span{font-size:10px;color:var(--muted)}
+.ach-group{margin:20px 0}.ach-group h3{font-size:14px;margin:0 0 10px;color:#d8e8df}
+.ach-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.ach-card{display:flex;gap:10px;align-items:center;min-width:0;padding:11px;background:linear-gradient(145deg,#1a303b,#10212b);border:1px solid #304651;border-radius:14px}
+.ach-card.unlocked{border-color:#8a713d;background:linear-gradient(145deg,#342b1b,#17252a)}
+.ach-medal{width:58px;height:58px;flex:0 0 58px;border-radius:50%;display:grid;place-items:center;font-size:29px;background:radial-gradient(circle at 35% 25%,#fff8,#ffffff08 38%),linear-gradient(145deg,#a96b35,#593719);border:3px solid #d39a5b;box-shadow:inset 0 0 0 2px #4a2e1a,0 4px 12px #0006}
+.ach-card[data-tier="plata"] .ach-medal{background:linear-gradient(145deg,#f2f5f5,#6c858b);border-color:#dce8e8}
+.ach-card[data-tier="oro"] .ach-medal{background:linear-gradient(145deg,#fff0a2,#a66b16);border-color:#ffe08a}
+.ach-card[data-tier="platino"] .ach-medal{background:linear-gradient(145deg,#e4f8ff,#7896ad);border-color:#d5f2ff}
+.ach-card[data-tier="diamante"] .ach-medal{background:linear-gradient(145deg,#d5ffff,#5489b5);border-color:#9cecff}
+.ach-card.locked .ach-medal{filter:grayscale(1);opacity:.42}
+.ach-copy{min-width:0;flex:1}.ach-copy strong{display:block;font-size:12px}.ach-copy small{display:block;color:var(--muted);font-size:10px;line-height:1.35;margin-top:4px}
+.ach-progress{height:5px;border-radius:8px;background:#263c46;margin-top:7px;overflow:hidden}.ach-progress i{display:block;height:100%;background:var(--green);border-radius:8px}
+.ach-xp{font-size:10px;color:var(--green);margin-top:4px}
+@media(max-width:390px){.ach-grid{grid-template-columns:1fr}.ach-medal{width:52px;height:52px;flex-basis:52px}}
+
 </style>
 
 <style>
@@ -2950,6 +2970,24 @@ body.plan-editor-open{overflow:hidden}
   </div>
 </section>
 
+
+<!-- LOGROS Y RECOMPENSAS -->
+<section id="achievements" class="hide">
+  <div class="sectionhead"><h2>Mis logros</h2><span class="tag">RECOMPENSAS SOLIDO</span></div>
+  <div class="hero" style="min-height:130px">
+    <div class="eyebrow">CADA ENTRENAMIENTO CUENTA</div>
+    <h1 style="font-size:25px">Colecciona tus medallas.</h1>
+    <p>Supera retos, acumula experiencia y alcanza tu siguiente nivel.</p>
+  </div>
+  <div class="ach-summary">
+    <div><strong id="achUnlocked">0</strong><span>Logros</span></div>
+    <div><strong id="achXp">0</strong><span>XP conseguidos</span></div>
+    <div><strong id="achLevel">1</strong><span>Nivel SOLIDO</span></div>
+  </div>
+  <div class="notice">Los logros se calculan con el historial guardado en este dispositivo y los datos disponibles de Health Connect. Los retos de rutas y desnivel se activarán cuando la app registre esas actividades.</div>
+  <div id="achievementList"></div>
+</section>
+
 <div class="footer">
   SOLIDO CLIMBING · ENTRENAMIENTO RESPONSABLE
 </div>
@@ -3005,6 +3043,12 @@ body.plan-editor-open{overflow:hidden}
     <span>↗</span>
     Progreso
 
+  </button>
+
+
+  <button data-page="achievements" onclick="show('achievements',this)">
+    <span>🏅</span>
+    Logros
   </button>
 
   <button
@@ -4067,6 +4111,8 @@ function show(page,btn){
 
   }
 
+
+  if(page === 'achievements'){ renderAchievements(); }
 
   if(page === 'progress'){
 
@@ -5557,6 +5603,57 @@ function densityRenderBlocks(){
 function densityEscape(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 densityRenderWall();densityUpdateSelection();densityRenderBlocks();densityGoStep(1);
 
+
+/* =========================
+   LOGROS Y RECOMPENSAS
+========================= */
+const achievementDefs=[
+ {id:'sessions-1',group:'Constancia',name:'Primer paso',desc:'Completa tu primer entrenamiento',target:1,metric:'sessions',tier:'bronce',icon:'🥾',xp:50},
+ {id:'sessions-5',group:'Constancia',name:'Ritmo constante',desc:'Completa 5 entrenamientos',target:5,metric:'sessions',tier:'plata',icon:'⛰️',xp:100},
+ {id:'sessions-10',group:'Constancia',name:'Imparable',desc:'Completa 10 entrenamientos',target:10,metric:'sessions',tier:'oro',icon:'🏔️',xp:250},
+ {id:'sessions-25',group:'Constancia',name:'Disciplina de acero',desc:'Completa 25 entrenamientos',target:25,metric:'sessions',tier:'platino',icon:'🛡️',xp:500},
+ {id:'sessions-50',group:'Constancia',name:'Leyenda SOLIDO',desc:'Completa 50 entrenamientos',target:50,metric:'sessions',tier:'diamante',icon:'👑',xp:1000},
+ {id:'minutes-60',group:'Resistencia',name:'Una hora de esfuerzo',desc:'Acumula 60 minutos entrenando',target:60,metric:'minutes',tier:'bronce',icon:'⏱️',xp:50},
+ {id:'minutes-300',group:'Resistencia',name:'Motor SOLIDO',desc:'Acumula 5 horas de entrenamiento',target:300,metric:'minutes',tier:'plata',icon:'🔥',xp:100},
+ {id:'minutes-1000',group:'Resistencia',name:'Resistencia infinita',desc:'Acumula 1.000 minutos',target:1000,metric:'minutes',tier:'oro',icon:'⚡',xp:250},
+ {id:'force-1',group:'Fuerza',name:'Agarre de acero',desc:'Registra tu primera medición con WH-C06',target:1,metric:'force',tier:'bronce',icon:'✊',xp:50},
+ {id:'force-10',group:'Fuerza',name:'Dedos de hierro',desc:'Registra 10 mediciones de fuerza',target:10,metric:'force',tier:'plata',icon:'🧗',xp:100},
+ {id:'force-25',group:'Fuerza',name:'Rey de la pared',desc:'Registra 25 mediciones de fuerza',target:25,metric:'force',tier:'oro',icon:'🏆',xp:250},
+ {id:'meditation-1',group:'Mente y recuperación',name:'Un momento para mí',desc:'Completa una sesión de meditación registrada',target:1,metric:'meditation',tier:'bronce',icon:'🧘',xp:50},
+ {id:'meditation-5',group:'Mente y recuperación',name:'Mente tranquila',desc:'Completa 5 sesiones de meditación registradas',target:5,metric:'meditation',tier:'plata',icon:'🌿',xp:100},
+ {id:'steps-5000',group:'Actividad diaria',name:'Primeros pasos',desc:'Alcanza 5.000 pasos en el día',target:5000,metric:'steps',tier:'bronce',icon:'👣',xp:50},
+ {id:'steps-10000',group:'Actividad diaria',name:'Explorador diario',desc:'Alcanza 10.000 pasos en el día',target:10000,metric:'steps',tier:'oro',icon:'🥾',xp:250},
+ {id:'distance-5',group:'Actividad diaria',name:'Kilómetros en marcha',desc:'Recorre 5 km en el día según Health Connect',target:5,metric:'distance',tier:'plata',icon:'🏃',xp:100}
+];
+let achievementHealth={steps:0,distance:0};
+function achievementValues(){
+ const all=Array.isArray(sessions)?sessions:[];
+ return {
+  sessions:all.filter(x=>Number(x.mins||0)>0).length,
+  minutes:all.reduce((n,x)=>n+Math.max(0,Number(x.mins)||0),0),
+  force:all.filter(x=>Number(x.force)>0).length,
+  meditation:all.filter(x=>/meditaci[oó]n/i.test(String(x.name||''))).length,
+  steps:achievementHealth.steps,
+  distance:achievementHealth.distance
+ };
+}
+function renderAchievements(){
+ const host=document.getElementById('achievementList');if(!host)return;
+ const values=achievementValues();
+ let xp=0,unlocked=0;
+ const groups={};
+ achievementDefs.forEach(a=>{
+  const value=Number(values[a.metric]||0),done=value>=a.target;
+  if(done){xp+=a.xp;unlocked++;}
+  (groups[a.group]||(groups[a.group]=[])).push({a,value,done});
+ });
+ const level=Math.floor(xp/500)+1;
+ document.getElementById('achUnlocked').textContent=unlocked;
+ document.getElementById('achXp').textContent=xp.toLocaleString('es-ES');
+ document.getElementById('achLevel').textContent=level;
+ host.innerHTML=Object.entries(groups).map(([group,items])=>'<div class="ach-group"><h3>'+group+'</h3><div class="ach-grid">'+items.map(({a,value,done})=>'<article class="ach-card '+(done?'unlocked':'locked')+'" data-tier="'+a.tier+'"><div class="ach-medal">'+(done?a.icon:'🔒')+'</div><div class="ach-copy"><strong>'+a.name+'</strong><small>'+a.desc+'</small><div class="ach-progress"><i style="width:'+Math.min(100,value/a.target*100)+'%"></i></div><small>'+Math.min(value,a.target).toLocaleString('es-ES')+' / '+a.target.toLocaleString('es-ES')+'</small><div class="ach-xp">'+(done?'Conseguido · ':'')+'+'+a.xp+' XP · '+a.tier.toUpperCase()+'</div></div></article>').join('')+'</div></div>').join('');
+}
+
 function healthConnectRefresh(){
  const status=document.getElementById('healthConnectStatus');
  if(status)status.textContent='Actualizando datos…';
@@ -5591,6 +5688,7 @@ window.onHealthConnectData=function(data){
  if(data.status==='ok'){
   if(status)status.textContent='Datos sincronizados desde Health Connect';
   if(button)button.style.display='none';
+  achievementHealth.steps=Number(data.steps||0);achievementHealth.distance=Number(data.distanceMeters||0)/1000;
   set('hcSteps',Number(data.steps||0).toLocaleString('es-ES'));
   set('hcDistance',data.distanceMeters>=1000?(data.distanceMeters/1000).toLocaleString('es-ES',{maximumFractionDigits:2})+' km':Math.round(data.distanceMeters||0)+' m');
   set('hcCalories',Math.round(data.totalCalories||0).toLocaleString('es-ES')+' kcal');
