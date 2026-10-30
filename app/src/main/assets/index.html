@@ -5655,9 +5655,9 @@ function renderAchievements(){
  let xp=0,unlocked=0;
  const groups={};
  achievementDefs.forEach(a=>{
-  const value=Number(values[a.metric]||0),done=value>=a.target;
+  const value=Number(values[a.metric]||0),done=value>=a.target||!!achievementUnlocked[a.id];
   if(done){
-   xp+=a.xp;unlocked++;
+   xp+=Number(achievementUnlocked[a.id]?.xp||a.xp);unlocked++;
    if(!achievementUnlocked[a.id]){
     achievementUnlocked[a.id]={unlockedAt:new Date().toISOString(),xp:a.xp};
     try{localStorage.setItem('solidoAchievementUnlocked',JSON.stringify(achievementUnlocked));}catch(e){}
