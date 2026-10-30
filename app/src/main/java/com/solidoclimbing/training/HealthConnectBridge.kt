@@ -28,7 +28,7 @@ class HealthConnectBridge(
     private val requiredPermissions = setOf(
         HealthPermission.getReadPermission(StepsRecord::class),
         HealthPermission.getReadPermission(DistanceRecord::class),
-        HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
+        HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
         HealthPermission.getReadPermission(HeartRateRecord::class),
         HealthPermission.getReadPermission(SleepSessionRecord::class)
     )
@@ -77,7 +77,7 @@ class HealthConnectBridge(
                     metrics = setOf(
                         StepsRecord.COUNT_TOTAL,
                         DistanceRecord.DISTANCE_TOTAL,
-                        ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL
+                        TotalCaloriesBurnedRecord.ENERGY_TOTAL
                     ),
                     timeRangeFilter = TimeRangeFilter.between(todayStart, now)
                 )
@@ -86,7 +86,7 @@ class HealthConnectBridge(
             result.put("status", "ok")
             result.put("steps", totals[StepsRecord.COUNT_TOTAL] ?: 0L)
             result.put("distanceMeters", totals[DistanceRecord.DISTANCE_TOTAL]?.inMeters ?: 0.0)
-            result.put("activeCalories", totals[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL]?.inKilocalories ?: 0.0)
+            result.put("totalCalories", totals[TotalCaloriesBurnedRecord.ENERGY_TOTAL]?.inKilocalories ?: 0.0)
 
             val lastDay = now.minus(Duration.ofHours(24))
             val heartRecords = client.readRecords(
