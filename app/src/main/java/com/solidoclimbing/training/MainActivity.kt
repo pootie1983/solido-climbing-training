@@ -101,7 +101,18 @@ class MainActivity : ComponentActivity() {
 
     @JavascriptInterface
     fun requestHealthPermissions() {
-        runOnUiThread { if (::healthPermissionLauncher.isInitialized) healthPermissionLauncher.launch(healthPermissions) }
+        runOnUiThread {
+            try {
+                if (!::healthPermissionLauncher.isInitialized) {
+                    web.evaluateJavascript("window.onHealthConnectRequestError && window.onHealthConnectRequestError('El gestor de permisos todavía no está preparado')", null)
+                    return@runOnUiThread
+                }
+                healthPermissionLauncher.launch(healthPermissions)
+            } catch (error: Exception) {
+                val message = (error.message ?: "No se pudieron abrir los permisos").replace("\\", "\\\\").replace("'", "\\'")
+                web.evaluateJavascript("window.onHealthConnectRequestError && window.onHealthConnectRequestError('$message')", null)
+            }
+        }
     }
 
     @JavascriptInterface
