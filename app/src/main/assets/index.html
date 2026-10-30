@@ -805,6 +805,24 @@ html[data-theme="light"] .live-force-note,html[data-theme="light"] .live-force-t
 html[data-theme="light"] .timer-inline-clock{color:#1d2d24}
 html[data-theme="light"] .tabs .tab{background:#edf3ef;color:#43594c;border-color:#cad8cf}
 html[data-theme="light"] .tabs .tab.active{background:var(--green);color:#14220e;border-color:var(--green)}
+/* Mejor contraste del texto en modo día */
+html[data-theme="light"] .wrap,
+html[data-theme="light"] .wrap h1,
+html[data-theme="light"] .wrap h2,
+html[data-theme="light"] .wrap h3,
+html[data-theme="light"] .wrap p,
+html[data-theme="light"] .wrap label,
+html[data-theme="light"] .wrap .tile,
+html[data-theme="light"] .wrap .exercise,
+html[data-theme="light"] .wrap .stat,
+html[data-theme="light"] .wrap .planstep{color:#17291f}
+html[data-theme="light"] .wrap .muted,
+html[data-theme="light"] .wrap small{color:#40594a}
+html[data-theme="light"] .profile-summary p,
+html[data-theme="light"] .theme-settings p{color:#40594a}
+html[data-theme="light"] .profile-field{color:#17291f}
+html[data-theme="light"] .theme-choice{color:#17291f}
+html[data-theme="light"] .theme-choice small{color:#40594a}
 html[data-theme="light"] .theme-settings{margin-bottom:16px}
 .theme-settings>strong{display:block;font-size:15px}
 .theme-settings>p{line-height:1.5}
@@ -1994,6 +2012,9 @@ body.plan-editor-open{overflow:hidden}
       <label class="profile-field">Tu apodo
         <input id="firstNickname" name="nickname" type="text" maxlength="24" placeholder="¿Cómo te llamamos?" autocomplete="nickname" required>
       </label>
+      <label class="profile-field">Tu grado de escalada
+        <input id="firstGrade" name="grade" type="text" maxlength="12" placeholder="Por ejemplo: 6a, 7b o V4" autocomplete="off" required>
+      </label>
       <div class="profile-grid">
         <label class="profile-field">Altura (cm)
           <input id="firstHeight" name="height" type="number" min="100" max="230" step="1" placeholder="175" inputmode="numeric" required>
@@ -2505,6 +2526,9 @@ body.plan-editor-open{overflow:hidden}
     <form id="personalProfileForm" class="profile-form" onsubmit="savePersonalProfile(event)">
       <label class="profile-field">Tu apodo
         <input id="profileNickname" name="nickname" type="text" maxlength="24" autocomplete="nickname" required>
+      </label>
+      <label class="profile-field">Tu grado de escalada
+        <input id="profileGrade" name="grade" type="text" maxlength="12" placeholder="Por ejemplo: 6a, 7b o V4" autocomplete="off" required>
       </label>
       <div class="profile-grid">
         <label class="profile-field">Altura (cm)
@@ -4667,21 +4691,23 @@ function readPersonalProfile(){
   try{
     return {
       nickname:(localStorage.getItem('solidoNickname')||'').trim(),
+      grade:(localStorage.getItem('solidoGrade')||'').trim(),
       height:localStorage.getItem('solidoHeight')||'',
       age:localStorage.getItem('solidoAge')||'',
       weight:localStorage.getItem('solidoWeight')||''
     };
-  }catch(e){return {nickname:'',height:'',age:'',weight:''};}
+  }catch(e){return {nickname:'',grade:'',height:'',age:'',weight:''};}
 }
 
 function validPersonalProfile(p){
-  return !!(p.nickname && Number(p.height)>=100 && Number(p.height)<=230 &&
+  return !!(p.nickname && p.grade && Number(p.height)>=100 && Number(p.height)<=230 &&
     Number(p.age)>=10 && Number(p.age)<=100 &&
     Number(p.weight)>=30 && Number(p.weight)<=250);
 }
 
 function fillPersonalProfileFields(p){
   document.getElementById('profileNickname').value=p.nickname||'';
+  document.getElementById('profileGrade').value=p.grade||'';
   document.getElementById('profileHeight').value=p.height||'';
   document.getElementById('profileAge').value=p.age||'';
   document.getElementById('profileWeight').value=p.weight||'';
@@ -4711,6 +4737,7 @@ function savePersonalProfile(event){
   if(event) event.preventDefault();
   const p={
     nickname:document.getElementById('profileNickname').value.trim(),
+    grade:document.getElementById('profileGrade').value.trim(),
     height:document.getElementById('profileHeight').value,
     age:document.getElementById('profileAge').value,
     weight:document.getElementById('profileWeight').value
@@ -4721,6 +4748,7 @@ function savePersonalProfile(event){
   }
   try{
     localStorage.setItem('solidoNickname',p.nickname);
+    localStorage.setItem('solidoGrade',p.grade);
     localStorage.setItem('solidoHeight',String(p.height));
     localStorage.setItem('solidoAge',String(p.age));
     localStorage.setItem('solidoWeight',String(p.weight));
@@ -4736,6 +4764,7 @@ function completeFirstProfile(event){
   if(event) event.preventDefault();
   const p={
     nickname:document.getElementById('firstNickname').value.trim(),
+    grade:document.getElementById('firstGrade').value.trim(),
     height:document.getElementById('firstHeight').value,
     age:document.getElementById('firstAge').value,
     weight:document.getElementById('firstWeight').value
@@ -4747,6 +4776,7 @@ function completeFirstProfile(event){
   }
   try{
     localStorage.setItem('solidoNickname',p.nickname);
+    localStorage.setItem('solidoGrade',p.grade);
     localStorage.setItem('solidoHeight',String(p.height));
     localStorage.setItem('solidoAge',String(p.age));
     localStorage.setItem('solidoWeight',String(p.weight));
@@ -4823,6 +4853,7 @@ if(validPersonalProfile(savedPersonalProfile)){
   document.getElementById('profileGate').classList.add('visible');
   document.getElementById('profileGate').setAttribute('aria-hidden','false');
   document.getElementById('firstNickname').value=savedPersonalProfile.nickname||'';
+  document.getElementById('firstGrade').value=savedPersonalProfile.grade||'';
   document.getElementById('firstHeight').value=savedPersonalProfile.height||'';
   document.getElementById('firstAge').value=savedPersonalProfile.age||'';
   document.getElementById('firstWeight').value=savedPersonalProfile.weight||'';
