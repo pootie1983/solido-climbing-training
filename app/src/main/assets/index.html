@@ -4732,8 +4732,8 @@ function startPlan(planId){
   const items=(selected.items||[]).map(x=>({...x})).filter(x=>exercises.some(e=>Number(e.id)===Number(x.id)));
   if(!items.length){alert('Añade ejercicios a este plan antes de iniciarlo.');return;}
   const total=estimatePlan(items);
-  sessions.unshift({name:selected.name,mins:Math.max(1,Math.ceil(total/60)),date:new Date().toLocaleString('es-ES')});save();
-  planRunState={plan:selected,index:0,set:1,rep:1,phase:'work',exerciseRemaining:Math.max(5,Number(items[0].work)||30),totalRemaining:total,running:false};
+  // El plan solo cuenta como entrenamiento cuando se completa, no al pulsar Iniciar.
+  planRunState={plan:selected,index:0,set:1,rep:1,phase:'work',exerciseRemaining:Math.max(5,Number(items[0].work)||30),totalRemaining:total,running:false,completed:false};
   show('planRunPage');renderPlanRun();document.getElementById('planRunToggle').textContent='▶ Iniciar';
 }
 function renderPlanRun(){
@@ -4774,7 +4774,15 @@ function tickPlanRun(){
 function advancePlanRunExercise(){
   const st=planRunState;if(!st)return;
   st.index++;st.set=1;st.rep=1;st.phase='work';
-  if(st.index>=st.plan.items.length){finishPlanRun();return;}
+  if(st.index>=st.plan.items.length){
+    if(!st.completed){
+      st.completed=true;
+      const totalMinutes=Math.max(1,Math.ceil(estimatePlan(st.plan.items||[])/60));
+      sessions.unshift({name:st.plan.name,mins:totalMinutes,date:new Date().toLocaleString('es-ES')});
+      save();
+    }
+    finishPlanRun();return;
+  }
   st.exerciseRemaining=Math.max(5,Number(st.plan.items[st.index].work)||30);
   renderPlanRun();
 }
@@ -5615,6 +5623,12 @@ densityRenderWall();densityUpdateSelection();densityRenderBlocks();densityGoStep
 /* =========================
    LOGROS Y RECOMPENSAS
 ========================= */
+function achievementLocalDateKey(date=new Date()){
+  const year=date.getFullYear();
+  const month=String(date.getMonth()+1).padStart(2,'0');
+  const day=String(date.getDate()).padStart(2,'0');
+  return year+'-'+month+'-'+day;
+}
 const achievementDefs=[
  {id:'sessions-1',group:'Constancia',name:'Primer paso',desc:'Completa tu primer entrenamiento',target:1,metric:'sessions',tier:'bronce',icon:'🥾',xp:50},
  {id:'sessions-5',group:'Constancia',name:'Ritmo constante',desc:'Completa 5 entrenamientos',target:5,metric:'sessions',tier:'plata',icon:'⛰️',xp:100},
@@ -5638,7 +5652,7 @@ let achievementUnlocked=(()=>{try{return JSON.parse(localStorage.getItem('solido
 function achievementValues(){
  const all=Array.isArray(sessions)?sessions:[];
  const meditationHistory=(()=>{try{return JSON.parse(localStorage.getItem('solidoMeditationHistory')||'[]');}catch(e){return [];}})();
- const today=new Date().toLocaleDateString('en-CA');
+ const today=achievementLocalDateKey();
  const daily=(()=>{try{return JSON.parse(localStorage.getItem('solidoAchievementDaily')||'{}');}catch(e){return {};}})();
  return {
   sessions:all.filter(x=>Number(x.mins||0)>0).length,
@@ -5708,7 +5722,7 @@ window.onHealthConnectData=function(data){
   if(status)status.textContent='Datos sincronizados desde Health Connect';
   if(button)button.style.display='none';
   achievementHealth.steps=Number(data.steps||0);achievementHealth.distance=Number(data.distanceMeters||0)/1000;
-  try{localStorage.setItem('solidoAchievementDaily',JSON.stringify({date:new Date().toLocaleDateString('en-CA'),steps:achievementHealth.steps,distance:achievementHealth.distance}));}catch(e){}
+  try{localStorage.setItem('solidoAchievementDaily',JSON.stringify({date:achievementLocalDateKey(),steps:achievementHealth.steps,distance:achievementHealth.distance}));}catch(e){}
   if(typeof renderAchievements==='function')renderAchievements();
   set('hcSteps',Number(data.steps||0).toLocaleString('es-ES'));
   set('hcDistance',data.distanceMeters>=1000?(data.distanceMeters/1000).toLocaleString('es-ES',{maximumFractionDigits:2})+' km':Math.round(data.distanceMeters||0)+' m');
