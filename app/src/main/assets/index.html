@@ -5239,9 +5239,37 @@ let densitySelection=[];
 let densityRoles=JSON.parse(localStorage.getItem('solidoDensityRoles')||'{}');
 let densityCurrentRole='start';
 let densityStep=1;
+let densityProjects=JSON.parse(localStorage.getItem('solidoDensityProjects')||'[]');
+let densityActiveProjectId=localStorage.getItem('solidoDensityActiveProject')||'';
+function densitySaveProjects(){try{localStorage.setItem('solidoDensityProjects',JSON.stringify(densityProjects));localStorage.setItem('solidoDensityActiveProject',densityActiveProjectId);}catch(e){alert('No se pudieron guardar los proyectos. La memoria del dispositivo puede estar llena.');}}
+function densitySyncProject(){
+ if(!densityActiveProjectId)return;
+ const p=densityProjects.find(x=>x.id===densityActiveProjectId);if(!p)return;
+ p.photo=densityPhoto;p.holds=JSON.parse(JSON.stringify(densityHolds));p.blocks=JSON.parse(JSON.stringify(densityBlocks));p.updatedAt=new Date().toISOString();densitySaveProjects();
+}
+function densityRenderProjects(){
+ const host=document.getElementById('densityProjectsList');if(!host)return;
+ if(!densityProjects.length){host.innerHTML='<p class="muted">Todavía no tienes muros guardados. Pulsa «Crear nuevo muro» para empezar.</p>';return;}
+ host.innerHTML=densityProjects.map(p=>'<div class="density-project-card"><img class="density-project-thumb" src="'+(p.photo||'')+'" alt=""><div class="density-project-info"><strong>'+densityEscape(p.name)+'</strong><small>'+(p.blocks||[]).length+' bloques guardados</small></div><button class="btn" onclick="densityOpenProject(\''+p.id+'\')">Abrir</button></div>').join('');
+}
+function densityShowProjects(){document.getElementById('densityProjectHome').classList.remove('hide');document.getElementById('densityWallSetup').classList.add('hide');densityRenderProjects();densityGoStep(1);}
+function densityCreateProject(){
+ const name=prompt('Nombre del muro o rocódromo:');if(name===null)return;
+ const p={id:'wall'+Date.now(),name:name.trim()||'Mi muro '+(densityProjects.length+1),photo:'',holds:[],blocks:[],updatedAt:new Date().toISOString()};
+ densityProjects.unshift(p);densityActiveProjectId=p.id;densityPhoto='';densityHolds=[];densitySelection=[];densityRoles={};densityBlocks=[];
+ densitySaveProjects();densityPersistWall();densityPersistRoles();densityOpenProject(p.id);
+}
+function densityOpenProject(id){
+ const p=densityProjects.find(x=>x.id===id);if(!p)return;
+ densityActiveProjectId=id;densityPhoto=p.photo||'';densityHolds=p.holds||[];densitySelection=[];densityRoles={};densityBlocks=p.blocks||[];
+ densitySaveProjects();densityPersistWall();
+ document.getElementById('densityProjectHome').classList.add('hide');document.getElementById('densityWallSetup').classList.remove('hide');
+ document.getElementById('densityActiveWallName').textContent=p.name;densityRenderWall();densityRenderBlocks();densityGoStep(1);
+}
+
 let densityBlocks=JSON.parse(localStorage.getItem('solidoDensityBlocks')||'[]');
 function densityPersistWall(){
-  try{localStorage.setItem('solidoDensityPhoto',densityPhoto);localStorage.setItem('solidoDensityHolds',JSON.stringify(densityHolds));}catch(e){alert('No se pudo guardar la fotografía. Puede ser demasiado grande; prueba con una imagen más pequeña.');}
+  try{localStorage.setItem('solidoDensityPhoto',densityPhoto);localStorage.setItem('solidoDensityHolds',JSON.stringify(densityHolds));densitySyncProject();}catch(e){alert('No se pudo guardar la fotografía. Puede ser demasiado grande; prueba con una imagen más pequeña.');}
 }
 function densityTakePhoto(){
   if(window.AndroidUi&&typeof AndroidUi.openDensityCamera==='function'){AndroidUi.openDensityCamera();return;}
@@ -5368,7 +5396,10 @@ function densityRenderBlocks(){
  host.innerHTML=densityBlocks.map(b=>'<article class="density-block"><div class="density-block-top"><strong>'+densityEscape(b.name)+'</strong><span class="density-status">'+densityEscape(b.status)+'</span></div><p class="muted">'+densityEscape(b.grade)+' · '+densityEscape(b.style)+' · '+b.holdIds.length+' presas</p>'+(b.photo?'<div class="density-block-preview"><img src="'+b.photo+'" alt="Foto del bloque">'+(b.holds||[]).map(h=>'<i class="density-hold role-'+(h.role||'mid')+'" style="left:'+h.x+'%;top:'+h.y+'%"></i>').join('')+'</div>':'<p class="muted">Sin imagen guardada</p>')+'<button class="btn secondary" onclick="densityViewBlock('+b.id+')">Ver / editar recorrido</button><label class="muted">Estado<select onchange="densitySetStatus('+b.id+',this.value)"><option '+(b.status==='Pendiente'?'selected':'')+'>Pendiente</option><option '+(b.status==='Probado'?'selected':'')+'>Probado</option><option '+(b.status==='Encadenado'?'selected':'')+'>Encadenado</option><option '+(b.status==='Repetir'?'selected':'')+'>Repetir</option></select></label><button class="btn secondary" onclick="densityDeleteBlock('+b.id+')">Eliminar</button></article>').join('');
 }
 function densityEscape(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-densityRenderWall();densityUpdateSelection();densityRenderBlocks();densityGoStep(1);
+densityRenderWall();densityUpdateSelection();densityRenderBlocks();
+if(!densityProjects.length && (densityPhoto || densityBlocks.length)){densityProjects=[{id:'wall-legacy',name:'Mi muro',photo:densityPhoto,holds:densityHolds,blocks:densityBlocks,updatedAt:new Date().toISOString()}];densityActiveProjectId='wall-legacy';densitySaveProjects();}
+densityRenderProjects();
+if(densityActiveProjectId && densityProjects.some(p=>p.id===densityActiveProjectId)){densityOpenProject(densityActiveProjectId);}else{densityShowProjects();}
 
 </script>
 
