@@ -5352,13 +5352,14 @@ function densityClearHolds(){
 }
 function densityDeletePhoto(){
  if(!densityPhoto)return;if(!confirm('¿Borrar la foto y sus marcas? Los bloques guardados se conservarán.'))return;
- densityPhoto='';densityHolds=[];densitySelection=[];densityRoles={};localStorage.removeItem('solidoDensityPhoto');localStorage.removeItem('solidoDensityHolds');localStorage.removeItem('solidoDensityRoles');densityRenderWall();densityUpdateSelection();
+ densityPhoto='';densityHolds=[];densitySelection=[];densityRoles={};localStorage.removeItem('solidoDensityPhoto');localStorage.removeItem('solidoDensityHolds');localStorage.removeItem('solidoDensityRoles');densityPersistWall();densityRenderWall();densityUpdateSelection();
 }
 function densityDeleteWallProject(){
  if(!confirm('¿Eliminar el muro, todas sus marcas y todos los bloques guardados?'))return;
  densityPhoto='';densityHolds=[];densitySelection=[];densityRoles={};densityBlocks=[];
+ densityProjects=densityProjects.filter(p=>p.id!==densityActiveProjectId);densityActiveProjectId='';densitySaveProjects();
  ['solidoDensityPhoto','solidoDensityHolds','solidoDensityRoles','solidoDensityBlocks'].forEach(k=>localStorage.removeItem(k));
- densityRenderWall();densityUpdateSelection();densityRenderBlocks();densityGoStep(1);
+ densityRenderWall();densityUpdateSelection();densityRenderBlocks();densityShowProjects();
 }
 function densityClearSelection(){densitySelection=[];densityRoles={};densityPersistRoles();densityRenderWall();densityUpdateSelection();}
 function densityUpdateSelection(){
@@ -5377,7 +5378,7 @@ function densitySaveBlock(){
  const holds=densityHolds.filter(h=>densitySelection.includes(h.id)).map(h=>({...h,role:densityRoles[h.id]||'mid'}));
  const block={id:Date.now(),name,grade:document.getElementById('densityBlockGrade').value.trim()||'Sin grado',style:document.getElementById('densityBlockStyle').value,status:document.getElementById('densityBlockStatus').value,holdIds:holds.map(h=>h.id),holds,photo:densityPhoto,createdAt:new Date().toISOString()};
  densityBlocks.unshift(block);try{localStorage.setItem('solidoDensityBlocks',JSON.stringify(densityBlocks));}catch(e){densityBlocks.shift();alert('No se pudo guardar el bloque. La imagen ocupa demasiado espacio.');return;}
- densitySelection=[];densityRoles={};densityPersistRoles();document.getElementById('densityBlockName').value='';densityRenderWall();densityUpdateSelection();densityGoStep(4);
+ densitySelection=[];densityRoles={};densityPersistRoles();densitySyncProject();document.getElementById('densityBlockName').value='';densityRenderWall();densityUpdateSelection();densityGoStep(4);
 }
 function densityViewBlock(id){
  const b=densityBlocks.find(x=>x.id===id);if(!b)return;
@@ -5385,7 +5386,7 @@ function densityViewBlock(id){
  (b.holds||[]).forEach(h=>densityRoles[h.id]=h.role||'mid');
  densityRenderWall();densityUpdateSelection();densityGoStep(2);
 }
-function densitySetStatus(id,status){densityBlocks=densityBlocks.map(b=>b.id===id?{...b,status}:b);localStorage.setItem('solidoDensityBlocks',JSON.stringify(densityBlocks));densityRenderBlocks();}
+function densitySetStatus(id,status){densityBlocks=densityBlocks.map(b=>b.id===id?{...b,status}:b);localStorage.setItem('solidoDensityBlocks',JSON.stringify(densityBlocks));densitySyncProject();densityRenderBlocks();}
 function densityDeleteBlock(id){if(!confirm('¿Eliminar este bloque?'))return;densityBlocks=densityBlocks.filter(b=>b.id!==id);localStorage.setItem('solidoDensityBlocks',JSON.stringify(densityBlocks));densityRenderBlocks();}
 function densityRenderBlocks(){
  const host=document.getElementById('densityBlocks');if(!host)return;
