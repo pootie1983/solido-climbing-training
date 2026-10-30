@@ -1897,6 +1897,23 @@ body.plan-editor-open{overflow:hidden}
 .plan-saved-category{margin:12px 0;padding:12px;border:1px solid #294238;border-radius:14px;background:#0b1510}.plan-saved-category h3{margin:0 0 8px;font-size:14px;color:#9bff70}.plan-saved-category .planstep{margin-top:8px}
 @media(max-width:350px){.plan-category-grid{grid-template-columns:1fr}}
 
+
+/* DENSIDAD */
+.density-launch{width:100%;display:flex;align-items:center;gap:13px;text-align:left;margin:14px 0;padding:15px;border:1px solid #477d3b;border-radius:16px;background:linear-gradient(120deg,#203d32,#142a30);color:var(--text);cursor:pointer}
+.density-launch-icon{width:50px;height:50px;display:grid;place-items:center;border-radius:14px;background:#7cff4520;color:var(--green);font-size:27px;flex:0 0 50px}
+.density-launch-copy{display:grid;gap:4px;flex:1}.density-launch-copy strong{color:var(--green);font-size:14px;letter-spacing:1px}.density-launch-copy small{color:#c0d1d5;font-size:11px}
+.density-panel{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:14px;margin:12px 0}
+.density-wall{position:relative;min-height:260px;border:1px solid #46616b;border-radius:13px;overflow:hidden;background:#172a36;touch-action:manipulation}
+.density-wall img{display:block;width:100%;height:auto;min-height:260px;object-fit:contain}
+.density-wall-empty{min-height:260px;display:grid;place-content:center;text-align:center;padding:20px;color:var(--muted);font-size:13px}
+.density-hold{position:absolute;width:27px;height:27px;border:3px solid #fff;border-radius:50%;background:#ffffff22;transform:translate(-50%,-50%);padding:0;box-shadow:0 0 0 2px #07121a99;cursor:pointer}
+.density-hold.selected-start{border-color:#16d65a;background:#16d65a35}.density-hold.selected-mid{border-color:#318cff;background:#318cff35}.density-hold.selected-top{border-color:#ff4242;background:#ff424235}
+.density-form{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.density-form label{display:grid;gap:5px;font-size:11px;color:var(--muted)}.density-form input,.density-form select{width:100%;min-width:0}
+.density-block{padding:12px;border:1px solid var(--line);border-radius:12px;background:#0d1d27;margin:9px 0}.density-block-top{display:flex;justify-content:space-between;gap:8px;align-items:center}.density-status{font-size:10px;color:var(--green);border:1px solid #477d3b;border-radius:20px;padding:4px 7px}
+.density-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.density-actions .btn{flex:1;min-width:115px}
+.density-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin:10px 0}.density-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+@media(max-width:390px){.density-form{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -2072,6 +2089,13 @@ body.plan-editor-open{overflow:hidden}
   <button class="home-meditation-launch" onclick="show('meditation');selectMeditation('focus')">
     <span class="home-meditation-symbol"><svg class="home-icon" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="medGlow" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e6ffd1"/><stop offset="1" stop-color="#68c982"/></linearGradient></defs><path d="M13 39q-8-1-8-9 0-8 9-9 3-13 17-13 13 0 17 13 11 0 11 10 0 8-9 9H13Z" fill="url(#medGlow)" opacity=".9" stroke="#d6ffdf" stroke-width="2"/><path d="M18 32q5-5 10 0t10 0 10 0" fill="none" stroke="#276b43" stroke-width="3" stroke-linecap="round"/><path d="M24 48q8 5 16 0M29 55q3 2 6 0" fill="none" stroke="#8fe9a1" stroke-width="2" stroke-linecap="round"/></svg></span>
     <span class="home-meditation-copy"><strong>MEDITACIÓN GUIADA</strong><small>Respira, enfoca tu mente y prepárate para escalar</small></span>
+    <span class="home-meditation-arrow">→</span>
+  </button>
+
+
+  <button class="density-launch" onclick="show('density')">
+    <span class="density-launch-icon" aria-hidden="true">◉</span>
+    <span class="density-launch-copy"><strong>DENSIDAD</strong><small>Digitaliza tu muro, diseña bloques y registra tus encadenamientos</small></span>
     <span class="home-meditation-arrow">→</span>
   </button>
 
@@ -2344,6 +2368,56 @@ body.plan-editor-open{overflow:hidden}
     <button class="btn secondary" onclick="skipPlanRunExercise()">Siguiente ejercicio ›</button>
     <button class="btn secondary" onclick="finishPlanRun()">Finalizar sesión</button>
   </div>
+</section>
+
+
+<section id="density" class="hide">
+  <div class="sectionhead"><h2>DENSIDAD</h2><span class="tag">TU MURO · TUS BLOQUES</span></div>
+  <p class="muted">Guarda una fotografía de tu muro y crea distintos bloques sobre ella.</p>
+  <div class="density-panel">
+    <strong>1. Digitaliza tu muro</strong>
+    <p class="muted">Haz una foto frontal o elige una imagen. Después podrás marcar manualmente cada presa tocando su posición en la fotografía.</p>
+    <input id="densityPhotoInput" type="file" accept="image/*" capture="environment" onchange="densityLoadPhoto(event)" style="width:100%">
+    <div class="density-wall" id="densityWall" style="margin-top:12px" onclick="densityAddHold(event)">
+      <div class="density-wall-empty" id="densityWallEmpty">Todavía no has añadido una foto.<br>Selecciona una imagen para empezar.</div>
+      <img id="densityWallImage" class="hide" alt="Fotografía de tu muro">
+      <div id="densityHolds"></div>
+    </div>
+    <div class="density-actions">
+      <button class="btn secondary" onclick="densityUndoHold()">Deshacer presa</button>
+      <button class="btn secondary" onclick="densityClearHolds()">Borrar presas</button>
+    </div>
+    <p class="muted" id="densityWallHelp">La detección automática de presas se incorporará en una fase posterior. Por ahora puedes marcarlas manualmente sobre la foto.</p>
+  </div>
+  <div class="density-panel">
+    <strong>2. Diseña tu bloque</strong>
+    <p class="muted">Toca las presas en orden: la primera será el inicio verde, las intermedias azules y la última el TOP rojo.</p>
+    <div class="density-legend">
+      <span><i class="density-dot" style="background:#16d65a"></i>Inicio</span>
+      <span><i class="density-dot" style="background:#318cff"></i>Intermedias</span>
+      <span><i class="density-dot" style="background:#ff4242"></i>TOP</span>
+    </div>
+    <div class="density-form">
+      <label>Nombre del bloque<input id="densityBlockName" maxlength="40" placeholder="Ej. La travesía verde"></label>
+      <label>Grado<input id="densityBlockGrade" maxlength="12" placeholder="Ej. 6b / V4"></label>
+      <label>Estilo<select id="densityBlockStyle"><option>Placa</option><option>Vertical</option><option>Desplome</option><option>Techo</option><option>Resistencia</option><option>Técnico</option><option>Físico</option><option>Coordinación</option></select></label>
+      <label>Estado<select id="densityBlockStatus"><option>Pendiente</option><option>Probado</option><option>Encadenado</option><option>Repetir</option></select></label>
+    </div>
+    <div class="density-actions"><button class="btn" onclick="densitySaveBlock()">Guardar bloque</button><button class="btn secondary" onclick="densityClearSelection()">Limpiar selección</button></div>
+    <p class="muted" id="densitySelectionInfo">Presas seleccionadas: 0</p>
+  </div>
+  <div class="density-panel">
+    <div class="sectionhead" style="margin:0 0 8px"><strong>3. Mis bloques</strong><span class="tag" id="densityBlockCount">0 BLOQUES</span></div>
+    <div id="densityBlocks"><p class="muted">Todavía no has guardado bloques.</p></div>
+  </div>
+  <div class="density-panel">
+    <strong>4. Mi progreso</strong>
+    <div class="grid" style="margin-top:10px">
+      <div class="stat"><strong id="densityCompleted">0</strong><span>Encadenados</span></div>
+      <div class="stat"><strong id="densityPending">0</strong><span>Pendientes / por probar</span></div>
+    </div>
+  </div>
+  <button class="btn secondary" style="width:100%;margin:8px 0 18px" onclick="show('home')">← Volver al inicio</button>
 </section>
 
 <section id="timerPage" class="hide">
@@ -5130,6 +5204,70 @@ function stopMeditationAmbient(){
   stopMeditationAmbientNodes();
   if(meditationAmbientCtx){try{meditationAmbientCtx.suspend();}catch(e){}}
 }
+
+
+/* =========================
+   DENSIDAD · muro y bloques
+========================= */
+let densityPhoto=localStorage.getItem('solidoDensityPhoto')||'';
+let densityHolds=JSON.parse(localStorage.getItem('solidoDensityHolds')||'[]');
+let densitySelection=[];
+let densityBlocks=JSON.parse(localStorage.getItem('solidoDensityBlocks')||'[]');
+function densityPersistWall(){
+  try{localStorage.setItem('solidoDensityPhoto',densityPhoto);localStorage.setItem('solidoDensityHolds',JSON.stringify(densityHolds));}catch(e){alert('No se pudo guardar la fotografía. Puede ser demasiado grande; prueba con una imagen más pequeña.');}
+}
+function densityLoadPhoto(event){
+  const file=event.target.files&&event.target.files[0];if(!file)return;
+  if(!file.type.startsWith('image/')){alert('Selecciona una imagen válida.');return;}
+  const reader=new FileReader();
+  reader.onload=()=>{
+    const img=new Image();img.onload=()=>{
+      const canvas=document.createElement('canvas');const max=1500;const scale=Math.min(1,max/Math.max(img.width,img.height));
+      canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);
+      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+      densityPhoto=canvas.toDataURL('image/jpeg',0.78);densityHolds=[];densitySelection=[];densityPersistWall();densityRenderWall();densityUpdateSelection();
+    };img.src=reader.result;
+  };reader.readAsDataURL(file);
+}
+function densityRenderWall(){
+  const img=document.getElementById('densityWallImage'),empty=document.getElementById('densityWallEmpty'),host=document.getElementById('densityHolds');if(!img||!host)return;
+  img.src=densityPhoto||'';img.classList.toggle('hide',!densityPhoto);empty.classList.toggle('hide',!!densityPhoto);
+  host.innerHTML=densityHolds.map((h,i)=>{const n=densitySelection.indexOf(h.id);const cls=n===0?'selected-start':n===densitySelection.length-1&&n>0?'selected-top':n>0?'selected-mid':'';return '<button type="button" class="density-hold '+cls+'" style="left:'+h.x+'%;top:'+h.y+'%" aria-label="Presa '+(i+1)+'" onclick="event.stopPropagation();densityToggleHold(\''+h.id+'\')"></button>';}).join('');
+  densityRenderBlocks();
+}
+function densityAddHold(event){
+  if(!densityPhoto||event.target.closest('.density-hold'))return;
+  const rect=event.currentTarget.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width*100,y=(event.clientY-rect.top)/rect.height*100;
+  const id='h'+Date.now()+Math.random().toString(16).slice(2,6);densityHolds.push({id,x,y});densityPersistWall();densityRenderWall();
+}
+function densityToggleHold(id){
+  const i=densitySelection.indexOf(id);if(i>=0)densitySelection.splice(i,1);else densitySelection.push(id);
+  densityRenderWall();densityUpdateSelection();
+}
+function densityUndoHold(){const h=densityHolds.pop();if(h)densitySelection=densitySelection.filter(id=>id!==h.id);densityPersistWall();densityRenderWall();densityUpdateSelection();}
+function densityClearHolds(){if(!confirm('¿Borrar todas las presas marcadas en el muro?'))return;densityHolds=[];densitySelection=[];densityPersistWall();densityRenderWall();densityUpdateSelection();}
+function densityClearSelection(){densitySelection=[];densityRenderWall();densityUpdateSelection();}
+function densityUpdateSelection(){const el=document.getElementById('densitySelectionInfo');if(el)el.textContent='Presas seleccionadas: '+densitySelection.length+(densitySelection.length?' · Inicio verde → intermedias azules → TOP rojo':'');}
+function densitySaveBlock(){
+  if(!densityPhoto){alert('Primero añade una fotografía del muro.');return;}
+  if(densitySelection.length<2){alert('Selecciona al menos dos presas: inicio y TOP.');return;}
+  const name=document.getElementById('densityBlockName').value.trim();if(!name){alert('Pon un nombre al bloque.');return;}
+  const block={id:Date.now(),name,grade:document.getElementById('densityBlockGrade').value.trim()||'Sin grado',style:document.getElementById('densityBlockStyle').value,status:document.getElementById('densityBlockStatus').value,holdIds:[...densitySelection],createdAt:new Date().toISOString()};
+  densityBlocks.unshift(block);try{localStorage.setItem('solidoDensityBlocks',JSON.stringify(densityBlocks));}catch(e){alert('No se pudo guardar el bloque.');return;}
+  densitySelection=[];document.getElementById('densityBlockName').value='';densityRenderWall();densityUpdateSelection();densityRenderBlocks();
+}
+function densitySetStatus(id,status){densityBlocks=densityBlocks.map(b=>b.id===id?{...b,status}:b);localStorage.setItem('solidoDensityBlocks',JSON.stringify(densityBlocks));densityRenderBlocks();}
+function densityDeleteBlock(id){if(!confirm('¿Eliminar este bloque?'))return;densityBlocks=densityBlocks.filter(b=>b.id!==id);localStorage.setItem('solidoDensityBlocks',JSON.stringify(densityBlocks));densityRenderBlocks();}
+function densityRenderBlocks(){
+  const host=document.getElementById('densityBlocks');if(!host)return;
+  document.getElementById('densityBlockCount').textContent=densityBlocks.length+' BLOQUES';
+  document.getElementById('densityCompleted').textContent=densityBlocks.filter(b=>b.status==='Encadenado').length;
+  document.getElementById('densityPending').textContent=densityBlocks.filter(b=>b.status!=='Encadenado').length;
+  if(!densityBlocks.length){host.innerHTML='<p class="muted">Todavía no has guardado bloques.</p>';return;}
+  host.innerHTML=densityBlocks.map(b=>'<div class="density-block"><div class="density-block-top"><strong>'+densityEscape(b.name)+'</strong><span class="density-status">'+densityEscape(b.status)+'</span></div><p class="muted">'+densityEscape(b.grade)+' · '+densityEscape(b.style)+' · '+b.holdIds.length+' presas</p><label class="muted">Actualizar estado <select onchange="densitySetStatus('+b.id+',this.value)"><option '+(b.status==='Pendiente'?'selected':'')+'>Pendiente</option><option '+(b.status==='Probado'?'selected':'')+'>Probado</option><option '+(b.status==='Encadenado'?'selected':'')+'>Encadenado</option><option '+(b.status==='Repetir'?'selected':'')+'>Repetir</option></select></label><button class="btn secondary" style="margin:8px 0 0;padding:7px 10px" onclick="densityDeleteBlock('+b.id+')">Eliminar</button></div>').join('');
+}
+function densityEscape(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+densityRenderWall();densityUpdateSelection();densityRenderBlocks();
 
 </script>
 
