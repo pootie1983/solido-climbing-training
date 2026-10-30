@@ -1933,14 +1933,22 @@ body.plan-editor-open{overflow:hidden}
 .density-selection-info{padding:8px;border-radius:8px;background:#101b15}
 
 /* DENSIDAD · flujo simplificado */
+#density .density-work-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
+#density .density-work-head>div{text-align:center;min-width:0}
+#density .density-work-head>.btn:first-child{grid-column:1;justify-self:start}
+#density .density-close{grid-column:3;justify-self:end;display:flex!important;align-items:center;justify-content:center;width:42px;height:42px;min-width:42px;padding:0;border-radius:50%;font-size:22px;line-height:1;position:relative;z-index:5}
 #density .density-steps{grid-template-columns:repeat(3,1fr)}
 #density .density-close{min-width:40px;padding:8px 10px;font-size:18px}
 #density .density-panel{margin:10px 0 16px}
 #density .density-saved-card{margin:12px 0;padding:12px;border:1px solid #294638;border-radius:14px;background:#0b1510}
 #density .density-saved-card .density-block-preview{margin:0 0 10px;max-height:260px}
 #density .density-saved-card .density-block-preview img{max-height:260px;object-fit:contain}
-#density .density-detail-overlay{position:fixed;inset:0;z-index:10002;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:18px}
-#density .density-detail-card{width:100%;max-width:520px;max-height:88vh;overflow:auto;padding:14px;border:1px solid #31523f;border-radius:16px;background:#08110c}
+#density .density-detail-overlay{position:fixed;inset:0;z-index:10002;background:#050908;display:flex;align-items:stretch;justify-content:stretch;padding:0}
+#density .density-detail-card{display:flex;flex-direction:column;gap:12px;width:100%;max-width:none;height:100%;max-height:100dvh;overflow-y:auto;padding:18px 16px calc(24px + env(safe-area-inset-bottom));border:0;border-radius:0;background:#050908}
+#density .density-detail-card .density-panel-title{position:sticky;top:0;z-index:2;padding:8px 0;background:#050908}
+#density .density-detail-card #densityDetailContent{width:100%;max-width:900px;margin:0 auto}
+#density .density-detail-card .density-block-preview{width:100%;max-height:none}
+#density .density-detail-card .density-block-preview img{width:100%;max-height:calc(100dvh - 250px);object-fit:contain}
 #density .density-detail-card .density-block-preview{max-height:none}
 #density .density-detail-card .density-block-preview img{max-height:55vh;object-fit:contain}
 #density .density-detail-card select{display:block;width:100%;margin-top:6px;padding:10px;border-radius:9px;background:#101b15;color:var(--text);border:1px solid #31523f}
@@ -2494,10 +2502,6 @@ body.plan-editor-open{overflow:hidden}
     </div>
     <button class="btn" style="width:100%;margin-top:14px" onclick="densitySaveBlock()">Guardar bloque</button>
   </div>
-  <footer class="density-step-footer">
-    <button class="btn secondary" id="densityPrev" onclick="densityGoStep(densityStep-1)">← Anterior</button>
-    <button class="btn" id="densityNext" onclick="densityGoStep(densityStep+1)" disabled>Continuar →</button>
-  </footer>
 </section>
 
 <section id="timerPage" class="hide">
@@ -5376,7 +5380,7 @@ function densityAddHold(event){
  const x=(event.clientX-rect.left)/rect.width*100,y=(event.clientY-rect.top)/rect.height*100;
  if(x<0||x>100||y<0||y>100)return;
  const count=densitySelection.filter(id=>densityRoles[id]===densityCurrentRole).length;
- if((densityCurrentRole==='start'||densityCurrentRole==='top')&&count>=2){alert('Puedes marcar como máximo 2 presas de '+(densityCurrentRole==='start'?'salida':'TOP')+'.');return;}
+ if((densityCurrentRole==='start'||densityCurrentRole==='top')&&count>=2)return;
  const id='h'+Date.now()+Math.random().toString(16).slice(2,6);
  densityHolds.push({id,x,y});densitySelection.push(id);densityRoles[id]=densityCurrentRole;
  densityPersistWall();densityPersistRoles();densityRenderWall();densityUpdateSelection();
@@ -5386,7 +5390,7 @@ function densityToggleHold(id){
  if(i>=0){densitySelection.splice(i,1);delete densityRoles[id];}
  else{
   const count=densitySelection.filter(x=>densityRoles[x]===densityCurrentRole).length;
-  if((densityCurrentRole==='start'||densityCurrentRole==='top')&&count>=2){alert('Puedes marcar como máximo 2 presas de este tipo.');return;}
+  if((densityCurrentRole==='start'||densityCurrentRole==='top')&&count>=2)return;
   densitySelection.push(id);densityRoles[id]=densityCurrentRole;
  }
  densityPersistRoles();densityPersistWall();densityRenderWall();densityUpdateSelection();
