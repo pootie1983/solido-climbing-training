@@ -3765,7 +3765,7 @@ function estimatePlanItem(item){
   if(!ex)return 0;
   const sets=Math.max(1,Number(item.sets)||1), reps=Math.max(1,Number(item.reps)||1);
   const work=Math.max(5,Number(item.work)||30), rest=Math.max(0,Number(item.rest)||0);
-  return sets*work+(sets-1)*rest;
+  return sets*reps*work+(sets-1)*rest;
 }
 function estimatePlan(items){
   return (items||[]).reduce((sum,item)=>sum+estimatePlanItem(item),0)+Math.max(0,(items||[]).length-1)*30;
