@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 168 150" role="img" aria-label="Precisión de pies">
+ <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#294b54"/><stop offset="1" stop-color="#12232e"/></linearGradient></defs>
+ <rect width="168" height="150" rx="14" fill="url(#bg)"/>
+ <g fill="none" stroke="#eef3f1" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"><circle cx='75' cy='28' r='9'/><path d='M75 38 L79 75 L57 99 L38 112 M79 75 L105 89 L128 83 M79 48 L52 62 L38 56 M79 48 L105 50 L124 40'/></g>
+ <g fill="none" stroke="#ff5b52" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d='M25 122 L42 115 L49 122 L42 130 Z M120 98 L137 91 L144 99 L137 106 Z'/></g>
+ <g fill="#7cff45"><circle cx="22" cy="22" r="3"/><circle cx="146" cy="22" r="3"/><circle cx="22" cy="130" r="3"/></g>
+ </svg>

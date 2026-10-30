@@ -1,0 +1,3 @@
+Sube aquí el archivo MP3 y renómbralo exactamente a meditacion-01.mp3.
+Ruta final esperada: app/src/main/assets/audio/meditacion-01.mp3
+Este archivo de texto es solo un marcador; no es el audio.

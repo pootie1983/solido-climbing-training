@@ -1,85 +1,159 @@
 package com.solidoclimbing.training
 
-import android.Manifest
 import android.app.Activity
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothManager
-import android.content.Context
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
-import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import android.webkit.WebChromeClient
+import android.webkit.ValueCallback
+import android.content.Intent
+import android.provider.MediaStore
+import android.graphics.Bitmap
+import android.util.Base64
+import java.io.ByteArrayOutputStream
+import android.view.View
+import android.view.WindowManager
+import android.webkit.JavascriptInterface
 
 class MainActivity : Activity() {
 
     private lateinit var web: WebView
-
-    companion object {
-        private const val BLUETOOTH_PERMISSION_REQUEST = 1001
-    }
+    private lateinit var whc06Bridge: WHC06Bridge
+    private var gameFullscreenRequested = false
+    private var fileChooserCallback: ValueCallback<Array<android.net.Uri>>? = null
+    private val fileChooserRequestCode = 2001
+    private val densityCameraRequestCode = 2002
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        requestBluetoothPermissions()
+        // Mantener la pantalla encendida mientras la actividad de la app esté visible.
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         web = WebView(this)
-
         web.settings.javaScriptEnabled = true
         web.settings.domStorageEnabled = true
         web.settings.allowFileAccess = true
         web.settings.allowContentAccess = true
-
         web.webViewClient = WebViewClient()
+        web.webChromeClient = object : WebChromeClient() {
+            override fun onShowFileChooser(
+                webView: WebView?,
+                filePathCallback: ValueCallback<Array<android.net.Uri>>?,
+                fileChooserParams: FileChooserParams?
+            ): Boolean {
+                fileChooserCallback?.onReceiveValue(null)
+                fileChooserCallback = filePathCallback
+                return try {
+                    val intent = fileChooserParams?.createIntent() ?: Intent(Intent.ACTION_GET_CONTENT).apply {
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "image/*"
+                    }
+                    startActivityForResult(intent, fileChooserRequestCode)
+                    true
+                } catch (e: Exception) {
+                    fileChooserCallback?.onReceiveValue(null)
+                    fileChooserCallback = null
+                    false
+                }
+            }
+        }
+        web.setBackgroundColor(android.graphics.Color.rgb(8, 18, 27))
 
-        web.setBackgroundColor(
-            android.graphics.Color.rgb(8, 18, 27)
-        )
-
-        web.addJavascriptInterface(
-            BluetoothBridge(this),
-            "SolidoBluetooth"
-        )
+        whc06Bridge = WHC06Bridge(this, web)
+        web.addJavascriptInterface(whc06Bridge, "WHC06")
+        web.addJavascriptInterface(this, "AndroidUi")
 
         setContentView(web)
-
         web.loadUrl("file:///android_asset/index.html")
     }
 
-    private fun requestBluetoothPermissions() {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-
-            val permissions = arrayOf(
-                Manifest.permission.BLUETOOTH_SCAN,
-                Manifest.permission.BLUETOOTH_CONNECT
-            )
-
-            val missing = permissions.filter {
-                ContextCompat.checkSelfPermission(
-                    this,
-                    it
-                ) != PackageManager.PERMISSION_GRANTED
+    @Deprecated("Deprecated in Android")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == fileChooserRequestCode) {
+            val callback = fileChooserCallback
+            fileChooserCallback = null
+            val results = if (resultCode == RESULT_OK) {
+                WebChromeClient.FileChooserParams.parseResult(resultCode, data)
+            } else null
+            callback?.onReceiveValue(results)
+        }
+        if (requestCode == densityCameraRequestCode && resultCode == RESULT_OK) {
+            val bitmap = data?.extras?.get("data") as? Bitmap
+            if (bitmap != null) {
+                val output = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 88, output)
+                val encoded = Base64.encodeToString(output.toByteArray(), Base64.NO_WRAP)
+                web.evaluateJavascript("densityReceiveCameraPhoto('data:image/jpeg;base64,$encoded')", null)
             }
+        }
+    }
 
-            if (missing.isNotEmpty()) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    missing.toTypedArray(),
-                    BLUETOOTH_PERMISSION_REQUEST
-                )
+    @JavascriptInterface
+    fun openDensityCamera() {
+        runOnUiThread {
+            try {
+                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                if (intent.resolveActivity(packageManager) != null) {
+                    startActivityForResult(intent, densityCameraRequestCode)
+                } else {
+                    web.evaluateJavascript("document.getElementById('densityCameraInput').click()", null)
+                }
+            } catch (e: Exception) {
+                web.evaluateJavascript("document.getElementById('densityCameraInput').click()", null)
             }
+        }
+    }
+
+    @JavascriptInterface
+    fun enterGameFullscreen() {
+        runOnUiThread {
+            gameFullscreenRequested = true
+            applyGameFullscreen()
+        }
+    }
+
+    @JavascriptInterface
+    fun exitGameFullscreen() {
+        runOnUiThread {
+            gameFullscreenRequested = false
+            window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
+        }
+    }
+
+    // Android can reveal system bars again after focus changes; re-apply immersive mode while playing.
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus && gameFullscreenRequested) applyGameFullscreen()
+    }
+
+    private fun applyGameFullscreen() {
+        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        window.decorView.systemUiVisibility = (
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+            View.SYSTEM_UI_FLAG_FULLSCREEN or
+            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (::whc06Bridge.isInitialized) {
+            whc06Bridge.onRequestPermissionsResult(requestCode, grantResults)
         }
     }
 
     @Deprecated("Deprecated in Android")
     override fun onBackPressed() {
-
         if (::web.isInitialized && web.canGoBack()) {
             web.goBack()
         } else {
@@ -87,42 +161,9 @@ class MainActivity : Activity() {
         }
     }
 
-    class BluetoothBridge(
-        private val activity: Activity
-    ) {
-
-        @JavascriptInterface
-        fun isBluetoothAvailable(): Boolean {
-
-            val manager =
-                activity.getSystemService(
-                    Context.BLUETOOTH_SERVICE
-                ) as BluetoothManager
-
-            return manager.adapter != null
-        }
-
-        @JavascriptInterface
-        fun isBluetoothEnabled(): Boolean {
-
-            val manager =
-                activity.getSystemService(
-                    Context.BLUETOOTH_SERVICE
-                ) as BluetoothManager
-
-            return manager.adapter?.isEnabled == true
-        }
-
-        @JavascriptInterface
-        fun showMessage(message: String) {
-
-            activity.runOnUiThread {
-                Toast.makeText(
-                    activity,
-                    message,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
+    override fun onDestroy() {
+        if (::whc06Bridge.isInitialized) whc06Bridge.release()
+        if (::web.isInitialized) web.destroy()
+        super.onDestroy()
     }
 }

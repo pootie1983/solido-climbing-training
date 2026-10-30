@@ -1,9 +1,10 @@
-
 name: Build SOLIDO CLIMBING APK
 
 on:
   workflow_dispatch:
   push:
+    branches: [ main, master, 'fix/**' ]
+  pull_request:
     branches: [ main, master ]
 
 jobs:
