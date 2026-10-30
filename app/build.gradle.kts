@@ -1,12 +1,6 @@
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-
-    dependencies {
-        implementation("androidx.health.connect:connect-client:1.1.0")
-        implementation("androidx.activity:activity-ktx:1.10.1")
-    }
 }
 
 android {
@@ -29,4 +23,9 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+}
+
+dependencies {
+    implementation("androidx.health.connect:connect-client:1.1.0")
+    implementation("androidx.activity:activity-ktx:1.10.1")
 }
