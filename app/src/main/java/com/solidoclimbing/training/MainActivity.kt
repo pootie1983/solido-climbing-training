@@ -2,7 +2,7 @@ package com.solidoclimbing.training
 
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
-import androidx.health.connect.client.permission.PermissionController
+import androidx.health.connect.client.PermissionController
 import android.os.Bundle
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -167,7 +167,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
-        permissions: Array<out String>,
+        permissions: Array<String>,
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
