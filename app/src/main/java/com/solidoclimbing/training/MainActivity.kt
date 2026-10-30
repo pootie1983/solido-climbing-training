@@ -1,6 +1,8 @@
 package com.solidoclimbing.training
 
-import android.app.Activity
+import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultLauncher
+import androidx.health.connect.client.permission.PermissionController
 import android.os.Bundle
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -15,7 +17,16 @@ import android.view.View
 import android.view.WindowManager
 import android.webkit.JavascriptInterface
 
-class MainActivity : Activity() {
+class MainActivity : ComponentActivity() {
+    private lateinit var healthConnectBridge: HealthConnectBridge
+    private lateinit var healthPermissionLauncher: ActivityResultLauncher<Set<String>>
+    private val healthPermissions: Set<String> = setOf(
+        androidx.health.connect.client.permission.HealthPermission.getReadPermission(androidx.health.connect.client.records.StepsRecord::class),
+        androidx.health.connect.client.permission.HealthPermission.getReadPermission(androidx.health.connect.client.records.DistanceRecord::class),
+        androidx.health.connect.client.permission.HealthPermission.getReadPermission(androidx.health.connect.client.records.ActiveCaloriesBurnedRecord::class),
+        androidx.health.connect.client.permission.HealthPermission.getReadPermission(androidx.health.connect.client.records.HeartRateRecord::class),
+        androidx.health.connect.client.permission.HealthPermission.getReadPermission(androidx.health.connect.client.records.SleepSessionRecord::class)
+    )
 
     private lateinit var web: WebView
     private lateinit var whc06Bridge: WHC06Bridge
@@ -25,6 +36,7 @@ class MainActivity : Activity() {
     private val densityCameraRequestCode = 2002
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        healthPermissionLauncher = registerForActivityResult(PermissionController.createRequestPermissionResultContract()) { if (::healthConnectBridge.isInitialized) healthConnectBridge.refresh() }
         super.onCreate(savedInstanceState)
 
         // Mantener la pantalla encendida mientras la actividad de la app esté visible.
@@ -35,7 +47,12 @@ class MainActivity : Activity() {
         web.settings.domStorageEnabled = true
         web.settings.allowFileAccess = true
         web.settings.allowContentAccess = true
-        web.webViewClient = WebViewClient()
+        web.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                if (::healthConnectBridge.isInitialized) healthConnectBridge.refresh()
+            }
+        }
         web.webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(
                 webView: WebView?,
@@ -60,6 +77,8 @@ class MainActivity : Activity() {
         }
         web.setBackgroundColor(android.graphics.Color.rgb(8, 18, 27))
 
+        healthConnectBridge = HealthConnectBridge(this, web)
+        web.addJavascriptInterface(healthConnectBridge, "HealthConnect")
         whc06Bridge = WHC06Bridge(this, web)
         web.addJavascriptInterface(whc06Bridge, "WHC06")
         web.addJavascriptInterface(this, "AndroidUi")
@@ -88,6 +107,11 @@ class MainActivity : Activity() {
                 web.evaluateJavascript("densityReceiveCameraPhoto('data:image/jpeg;base64,$encoded')", null)
             }
         }
+    }
+
+    @JavascriptInterface
+    fun requestHealthPermissions() {
+        runOnUiThread { if (::healthPermissionLauncher.isInitialized) healthPermissionLauncher.launch(healthPermissions) }
     }
 
     @JavascriptInterface
@@ -162,6 +186,7 @@ class MainActivity : Activity() {
     }
 
     override fun onDestroy() {
+        if (::healthConnectBridge.isInitialized) healthConnectBridge.release()
         if (::whc06Bridge.isInitialized) whc06Bridge.release()
         if (::web.isInitialized) web.destroy()
         super.onDestroy()
