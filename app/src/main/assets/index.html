@@ -1906,7 +1906,7 @@ body.plan-editor-open{overflow:hidden}
 .density-role-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}
 .density-role-picker button{padding:10px 4px;border-radius:10px;border:1px solid #294238;background:#0b1510;color:var(--text);font-size:11px}
 .density-role-picker button.active{border-color:var(--green);background:#173526;color:var(--green)}
-/* DENSIDAD workspace */#density .density-work-head{position:relative!important;top:auto!important;z-index:auto!important;min-height:0;padding:2px 0 7px}#density .density-work-head>span,#density .density-work-head>div{display:none}#density.density-workspace:not(.hide){padding-top:calc(env(safe-area-inset-top) + 4px)}#density .density-steps{padding:7px 0 10px}#density .density-step-footer{position:sticky;bottom:0}#density .density-wall img{min-height:0;max-height:none;object-fit:contain}#density .density-project-card{display:flex;align-items:center;gap:10px;padding:10px;margin:8px 0;border:1px solid #294238;border-radius:12px;background:#0b1510}#density .density-project-thumb{width:76px;height:64px;flex:none;object-fit:cover;border-radius:8px;background:#142019}#density .density-project-info{flex:1;min-width:0}#density .density-project-info strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#density .density-project-info small{color:var(--muted);font-size:10px}
+/* DENSIDAD workspace */#density .density-work-head{display:none!important}#density.density-workspace:not(.hide){padding-top:calc(env(safe-area-inset-top) + 4px)}#density .density-steps{padding:7px 0 10px}#density .density-step-footer{position:sticky;bottom:0}#density .density-wall img{min-height:0;max-height:none;object-fit:contain}#density .density-project-card{display:flex;align-items:center;gap:10px;padding:10px;margin:8px 0;border:1px solid #294238;border-radius:12px;background:#0b1510}#density .density-project-thumb{width:76px;height:64px;flex:none;object-fit:cover;border-radius:8px;background:#142019}#density .density-project-info{flex:1;min-width:0}#density .density-project-info strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#density .density-project-info small{color:var(--muted);font-size:10px}
 #density.density-workspace:not(.hide){position:fixed!important;inset:0;z-index:9990;background:var(--bg,#050908);overflow-y:auto;box-sizing:border-box;padding:calc(env(safe-area-inset-top) + 8px) 14px calc(env(safe-area-inset-bottom) + 76px)}
 .density-work-head{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid #294238;padding-bottom:10px}.density-work-head>div{text-align:center;display:grid;gap:2px}.density-work-head>div strong{letter-spacing:2px;color:var(--green)}.density-work-head small{font-size:10px;color:var(--muted)}
 .density-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:12px 0}.density-steps button{border:1px solid #294238;border-radius:10px;background:#0b1510;color:var(--muted);padding:9px 2px;font-size:12px}.density-steps button small{display:block;font-size:8px;letter-spacing:.5px}.density-steps button.active{border-color:var(--green);color:var(--green);background:#173526}
@@ -5281,7 +5281,7 @@ function densityReceiveCameraPhoto(dataUrl){
     const canvas=document.createElement('canvas'),max=1500,scale=Math.min(1,max/Math.max(img.width,img.height));
     canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);
     canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
-    densityPhoto=canvas.toDataURL('image/jpeg',0.94);densityHolds=[];densitySelection=[];densityPersistWall();densityRenderWall();densityUpdateSelection();
+    densityPhoto=canvas.toDataURL('image/jpeg',0.90);densityHolds=[];densitySelection=[];densityPersistWall();densityRenderWall();densityUpdateSelection();
   };img.src=dataUrl;
 }
 function densityLoadPhoto(event){
@@ -5290,7 +5290,7 @@ function densityLoadPhoto(event){
   const reader=new FileReader();
   reader.onload=()=>{
     const img=new Image();img.onload=()=>{
-      const canvas=document.createElement('canvas');const max=3000;const scale=Math.min(1,max/Math.max(img.width,img.height));
+      const canvas=document.createElement('canvas');const max=2560;const scale=Math.min(1,max/Math.max(img.width,img.height));
       canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);
       canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
       densityPhoto=canvas.toDataURL('image/jpeg',0.78);densityHolds=[];densitySelection=[];densityPersistWall();densityRenderWall();densityUpdateSelection();
