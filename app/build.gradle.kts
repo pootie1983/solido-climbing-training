@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.solidoclimbing.training"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.solidoclimbing.training"
@@ -24,11 +24,4 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-}
-
-dependencies {
-    implementation("androidx.health.connect:connect-client:1.1.0")
-    implementation("androidx.activity:activity-ktx:1.10.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 }
