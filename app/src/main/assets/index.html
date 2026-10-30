@@ -1898,6 +1898,14 @@ body.plan-editor-open{overflow:hidden}
 @media(max-width:350px){.plan-category-grid{grid-template-columns:1fr}}
 
 
+#density:not(.hide){position:fixed!important;inset:0;z-index:9990;background:var(--bg,#050908);overflow-y:auto;padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom);box-sizing:border-box}
+.density-block-preview{position:relative;width:100%;overflow:hidden;border-radius:10px;margin:10px 0;background:#0b1510}
+.density-block-preview img{display:block;width:100%;height:auto}
+.density-block-preview .density-hold{pointer-events:none}
+.density-hold.role-start{border-color:#16d65a;background:#16d65a55}.density-hold.role-mid{border-color:#318cff;background:#318cff55}.density-hold.role-top{border-color:#ff4242;background:#ff424255}
+.density-role-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}
+.density-role-picker button{padding:10px 4px;border-radius:10px;border:1px solid #294238;background:#0b1510;color:var(--text);font-size:11px}
+.density-role-picker button.active{border-color:var(--green);background:#173526;color:var(--green)}
 /* DENSIDAD · integrada en SOLIDO */
 .density-panel{background:#050908;border:1px solid #294238;border-radius:16px;padding:14px;margin:12px 0}
 .density-intro{margin:4px 0 16px;color:var(--muted);font-size:12px;line-height:1.5}
