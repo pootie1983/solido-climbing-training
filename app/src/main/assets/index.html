@@ -1992,6 +1992,43 @@ body.plan-editor-open{overflow:hidden}
 .density-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin:10px 0}.density-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
 @media(max-width:390px){.density-form{grid-template-columns:1fr}}
 </style>
+
+<style>
+/* Ajustes de tamaño y legibilidad de navegación */
+.nav{
+  gap:0!important;
+  padding-left:max(5px,env(safe-area-inset-left))!important;
+  padding-right:max(5px,env(safe-area-inset-right))!important;
+}
+.nav button{
+  flex:1 1 0!important;
+  min-width:0!important;
+  padding:3px 0!important;
+  gap:3px!important;
+  font-size:clamp(8px,2.35vw,9px)!important;
+  line-height:1.05!important;
+  letter-spacing:0!important;
+  white-space:normal!important;
+  text-align:center!important;
+  overflow-wrap:anywhere;
+}
+.nav button span{
+  width:100%!important;
+  height:21px!important;
+  font-size:17px!important;
+}
+.nav button svg{max-width:19px!important;max-height:19px!important}
+#density .density-work-head .density-close{
+  width:32px!important;
+  height:32px!important;
+  min-width:32px!important;
+  padding:0!important;
+  font-size:18px!important;
+  line-height:1!important;
+  border-radius:50%!important;
+}
+</style>
+
 </head>
 
 <body>
