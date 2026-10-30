@@ -2490,6 +2490,7 @@ body.plan-editor-open{overflow:hidden}
     </div>
     <p id="densitySelectionInfo" class="density-selection-info">Salidas: 0 · Intermedias: 0 · TOP: 0</p>
     <div class="density-actions"><button class="btn secondary" onclick="densityUndoHold()">Deshacer última</button><button class="btn secondary" onclick="densityClearSelection()">Limpiar recorrido</button></div>
+    <button class="btn" style="width:100%;margin-top:12px" onclick="densityGoStep(3)">Continuar →</button>
   </div>
   <div class="density-step-page" id="densityStep3">
     <h3>Configura tu bloque</h3>
@@ -2502,6 +2503,7 @@ body.plan-editor-open{overflow:hidden}
     </div>
     <button class="btn" style="width:100%;margin-top:14px" onclick="densitySaveBlock()">Guardar bloque</button>
   </div>
+  <footer class="density-step-footer"><button class="btn secondary" id="densityPrev" onclick="densityGoStep(densityStep-1)">← Anterior</button></footer>
 </section>
 
 <section id="timerPage" class="hide">
@@ -5347,8 +5349,6 @@ function densityGoStep(n){
  const labels={1:'Foto y bloques',2:'Selecciona las presas',3:'Configura el bloque'};
  document.getElementById('densityStepLabel').textContent=densityStep+' · '+labels[densityStep];
  document.getElementById('densityPrev').style.visibility=densityStep===1?'hidden':'visible';
- document.getElementById('densityNext').style.display=densityStep===3?'none':'block';
- document.getElementById('densityNext').disabled=densityStep===1&&!densityPhoto;
  if(densityStep===1)densityRenderBlocks();
  if(densityStep===2)densityRenderEditor();
  if(densityStep===3)densityRenderConfigPreview();
