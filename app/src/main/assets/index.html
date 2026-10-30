@@ -5233,6 +5233,16 @@ function getMeditationOneAudio(){
     meditationOneAudio.addEventListener('timeupdate',updateMeditationOneAudioUI);
     meditationOneAudio.addEventListener('loadedmetadata',updateMeditationOneAudioUI);
     meditationOneAudio.addEventListener('ended',()=>{
+      try{
+        const history=JSON.parse(localStorage.getItem('solidoMeditationHistory')||'[]');
+        history.unshift({id:Date.now(),name:'Meditación guiada · '+guidedMeditations.focus.title,completedAt:new Date().toISOString()});
+        localStorage.setItem('solidoMeditationHistory',JSON.stringify(history.slice(0,500)));
+      }catch(e){}
+      if(typeof renderAchievements==='function')renderAchievements();
+      const status=document.getElementById('meditationStatus');
+      if(status)status.textContent='Sesión completada. Tómate unos segundos antes de volver a la actividad.';
+    });
+    meditationOneAudio.addEventListener('ended',()=>{
       document.getElementById('meditationStatus').textContent='Meditación 1 finalizada.';
       document.getElementById('meditationRemaining').textContent='Finalizada';
       document.getElementById('meditationProgress').style.width='100%';
