@@ -3786,11 +3786,12 @@ let planSelectionMode=false;
 let planSelectedIds=[];
 let planDraftItems=[];
 let activePlanCategory='';
+let editingPlanId=null;
 let planOrder=JSON.parse(localStorage.getItem('solidoPlanOrder')||'["Calentamiento","Fuerza","Resistencia","Técnica","Escalada","Recuperación"]');
 const planCategories=[{name:'Calentamiento',icon:'<svg viewBox="0 0 40 40"><path d="M20 4c-2 7-9 9-9 18a9 9 0 0 0 18 0c0-4-2-7-5-10 0 5-3 6-4 7-1-5 2-9 0-15Z"/><path d="M20 23c-3 3-3 8 1 9 4-1 4-6 1-9"/></svg>'},{name:'Fuerza',icon:'<svg viewBox="0 0 40 40"><path d="M5 15v10m5-14v18m20-18v18m5-14v10M10 20h20"/><path d="M14 16v8m12-8v8"/></svg>'},{name:'Resistencia',icon:'<svg viewBox="0 0 40 40"><path d="M4 24h7l4-12 7 18 5-12 3 6h6"/></svg>'},{name:'Técnica',icon:'<svg viewBox="0 0 40 40"><path d="M7 32 15 8l7 14 5-9 6 19"/><circle cx="15" cy="8" r="2"/><circle cx="22" cy="22" r="2"/><circle cx="27" cy="13" r="2"/></svg>'},{name:'Escalada',icon:'<svg viewBox="0 0 40 40"><path d="M5 34 14 7l7 13 5-8 9 22"/><path d="M11 24c5-3 8-1 11 3m-3-13 5-2"/></svg>'},{name:'Recuperación',icon:'<svg viewBox="0 0 40 40"><path d="M31 13A13 13 0 1 0 33 24"/><path d="M25 8h7v7"/><path d="M20 13v8l6 3"/></svg>'}];
 function savePlanOrder(){try{localStorage.setItem('solidoPlanOrder',JSON.stringify(planOrder));}catch(e){}}
 function movePlanCategory(name,delta){const i=planOrder.indexOf(name),j=i+delta;if(i<0||j<0||j>=planOrder.length)return;[planOrder[i],planOrder[j]]=[planOrder[j],planOrder[i]];savePlanOrder();renderPlan();}
-function openPlanCategory(name){activePlanCategory=name;planDraftItems=[];planSelectedIds=[];document.getElementById('customPlanName').value=name;document.getElementById('planConfigTitle').textContent='Configura: '+name;document.getElementById('planConfigPanel').style.display='block';renderPlanSettings();document.getElementById('planConfigPanel').scrollIntoView({behavior:'smooth',block:'start'});}
+function openPlanCategory(name){activePlanCategory=name;editingPlanId=null;planDraftItems=[];planSelectedIds=[];document.getElementById('customPlanName').value=name;document.getElementById('planConfigTitle').textContent='Configura: '+name;document.getElementById('planConfigPanel').style.display='block';renderPlanSettings();document.getElementById('planConfigPanel').scrollIntoView({behavior:'smooth',block:'start'});}
 function closePlanEditor(){const panel=document.getElementById('planConfigPanel');if(panel)panel.style.display='none';activePlanCategory='';renderPlan();}
 
 function formatPlanTime(seconds){
@@ -3877,8 +3878,10 @@ function saveCustomPlan(){
   const items=readPlanBuilder(),status=document.getElementById('planBuilderStatus');
   if(!items.length){if(status)status.textContent='Añade al menos un ejercicio desde la biblioteca.';return;}
   const name=(document.getElementById('customPlanName').value||'Mi entrenamiento').trim().slice(0,40);
-  const entry={id:Date.now(),category:activePlanCategory,name:name||activePlanCategory,items:items,seconds:estimatePlan(items),createdAt:new Date().toISOString()};
-  customPlans.unshift(entry);
+  const entry={id:editingPlanId||Date.now(),category:activePlanCategory,name:name||activePlanCategory,items:items,seconds:estimatePlan(items),createdAt:new Date().toISOString()};
+  if(editingPlanId!==null){const index=customPlans.findIndex(p=>p.id===editingPlanId);if(index>=0)customPlans[index]=entry;else customPlans.unshift(entry);}
+  else customPlans.unshift(entry);
+  editingPlanId=null;
   try{localStorage.setItem('solidoCustomPlans',JSON.stringify(customPlans));}catch(e){}
   planDraftItems=[];
   const panel=document.getElementById('planConfigPanel');if(panel)panel.style.display='none';
@@ -3918,12 +3921,10 @@ function renderPlan(){
 }
 function editCustomPlan(id){
   const p=customPlans.find(x=>x.id===Number(id));if(!p)return;
-  activePlanCategory=p.category||'Fuerza';planDraftItems=p.items.map(x=>({...x}));
+  editingPlanId=p.id;activePlanCategory=p.category||'Fuerza';planDraftItems=p.items.map(x=>({...x}));
   document.getElementById('customPlanName').value=p.name;
   document.getElementById('planConfigTitle').textContent='Editar: '+activePlanCategory;
   document.getElementById('planConfigPanel').style.display='block';
-  customPlans=customPlans.filter(x=>x.id!==Number(id));
-  try{localStorage.setItem('solidoCustomPlans',JSON.stringify(customPlans));}catch(e){}
   renderPlanSettings();document.getElementById('planConfigPanel').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function deleteCustomPlan(id){
