@@ -4,6 +4,9 @@ import android.app.Activity
 import android.os.Bundle
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.webkit.WebChromeClient
+import android.webkit.ValueCallback
+import android.content.Intent
 import android.view.View
 import android.view.WindowManager
 import android.webkit.JavascriptInterface
@@ -13,6 +16,8 @@ class MainActivity : Activity() {
     private lateinit var web: WebView
     private lateinit var whc06Bridge: WHC06Bridge
     private var gameFullscreenRequested = false
+    private var fileChooserCallback: ValueCallback<Array<android.net.Uri>>? = null
+    private val fileChooserRequestCode = 2001
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +31,28 @@ class MainActivity : Activity() {
         web.settings.allowFileAccess = true
         web.settings.allowContentAccess = true
         web.webViewClient = WebViewClient()
+        web.webChromeClient = object : WebChromeClient() {
+            override fun onShowFileChooser(
+                webView: WebView?,
+                filePathCallback: ValueCallback<Array<android.net.Uri>>?,
+                fileChooserParams: FileChooserParams?
+            ): Boolean {
+                fileChooserCallback?.onReceiveValue(null)
+                fileChooserCallback = filePathCallback
+                return try {
+                    val intent = fileChooserParams?.createIntent() ?: Intent(Intent.ACTION_GET_CONTENT).apply {
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "image/*"
+                    }
+                    startActivityForResult(intent, fileChooserRequestCode)
+                    true
+                } catch (e: Exception) {
+                    fileChooserCallback?.onReceiveValue(null)
+                    fileChooserCallback = null
+                    false
+                }
+            }
+        }
         web.setBackgroundColor(android.graphics.Color.rgb(8, 18, 27))
 
         whc06Bridge = WHC06Bridge(this, web)
@@ -34,6 +61,19 @@ class MainActivity : Activity() {
 
         setContentView(web)
         web.loadUrl("file:///android_asset/index.html")
+    }
+
+    @Deprecated("Deprecated in Android")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == fileChooserRequestCode) {
+            val callback = fileChooserCallback
+            fileChooserCallback = null
+            val results = if (resultCode == RESULT_OK) {
+                WebChromeClient.FileChooserParams.parseResult(resultCode, data)
+            } else null
+            callback?.onReceiveValue(results)
+        }
     }
 
     @JavascriptInterface
