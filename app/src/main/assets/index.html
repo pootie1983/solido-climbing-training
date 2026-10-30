@@ -5579,6 +5579,12 @@ function healthConnectRequest(){
   if(button){button.disabled=false;button.textContent='Conectar con Health Connect';}
  }
 }
+window.onHealthConnectRequestError=function(message){
+ const status=document.getElementById('healthConnectStatus');
+ const button=document.getElementById('hcPermissionButton');
+ if(status)status.textContent='No se pudo abrir Salud Connect: '+(message||'error desconocido');
+ if(button){button.disabled=false;button.textContent='Conectar con Health Connect';}
+};
 window.onHealthConnectData=function(data){
  const status=document.getElementById('healthConnectStatus');
  const button=document.getElementById('hcPermissionButton');
