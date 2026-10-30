@@ -823,6 +823,8 @@ html[data-theme="light"] .theme-settings p{color:#40594a}
 html[data-theme="light"] .profile-field{color:#17291f}
 html[data-theme="light"] .theme-choice{color:#17291f}
 html[data-theme="light"] .theme-choice small{color:#40594a}
+/* En modo día, texto limpio y sin sombras que dificulten la lectura */
+html[data-theme="light"] *:not(.br-climber):not(.br-float){text-shadow:none!important}
 html[data-theme="light"] .theme-settings{margin-bottom:16px}
 .theme-settings>strong{display:block;font-size:15px}
 .theme-settings>p{line-height:1.5}
@@ -2012,9 +2014,6 @@ body.plan-editor-open{overflow:hidden}
       <label class="profile-field">Tu apodo
         <input id="firstNickname" name="nickname" type="text" maxlength="24" placeholder="¿Cómo te llamamos?" autocomplete="nickname" required>
       </label>
-      <label class="profile-field">Tu grado de escalada
-        <input id="firstGrade" name="grade" type="text" maxlength="12" placeholder="Por ejemplo: 6a, 7b o V4" autocomplete="off" required>
-      </label>
       <div class="profile-grid">
         <label class="profile-field">Altura (cm)
           <input id="firstHeight" name="height" type="number" min="100" max="230" step="1" placeholder="175" inputmode="numeric" required>
@@ -2025,6 +2024,9 @@ body.plan-editor-open{overflow:hidden}
       </div>
       <label class="profile-field">Peso (kg)
         <input id="firstWeight" name="weight" type="number" min="30" max="250" step="0.1" placeholder="70" inputmode="decimal" required>
+      </label>
+      <label class="profile-field">Tu grado de escalada
+        <input id="firstGrade" name="grade" type="text" maxlength="12" placeholder="Por ejemplo: 6a, 7b o V4" autocomplete="off" required>
       </label>
       <div id="firstProfileError" class="profile-error" role="alert">Revisa los datos: apodo y valores válidos para altura, edad y peso.</div>
       <button class="btn" type="submit">Guardar y empezar →</button>
@@ -2527,9 +2529,6 @@ body.plan-editor-open{overflow:hidden}
       <label class="profile-field">Tu apodo
         <input id="profileNickname" name="nickname" type="text" maxlength="24" autocomplete="nickname" required>
       </label>
-      <label class="profile-field">Tu grado de escalada
-        <input id="profileGrade" name="grade" type="text" maxlength="12" placeholder="Por ejemplo: 6a, 7b o V4" autocomplete="off" required>
-      </label>
       <div class="profile-grid">
         <label class="profile-field">Altura (cm)
           <input id="profileHeight" name="height" type="number" min="100" max="230" step="1" required>
@@ -2540,6 +2539,9 @@ body.plan-editor-open{overflow:hidden}
       </div>
       <label class="profile-field">Peso (kg)
         <input id="profileWeight" name="weight" type="number" min="30" max="250" step="0.1" required>
+      </label>
+      <label class="profile-field">Tu grado de escalada
+        <input id="profileGrade" name="grade" type="text" maxlength="12" placeholder="Por ejemplo: 6a, 7b o V4" autocomplete="off" required>
       </label>
       <button class="btn" type="submit">Guardar datos personales</button>
     </form>
