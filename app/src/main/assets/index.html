@@ -2275,7 +2275,7 @@ body.plan-editor-open{overflow:hidden}
     <div class="health-grid">
       <div class="health-metric"><span>👣 Pasos</span><strong id="hcSteps">—</strong><small>Hoy</small></div>
       <div class="health-metric"><span>📍 Distancia</span><strong id="hcDistance">—</strong><small>Hoy</small></div>
-      <div class="health-metric"><span>🔥 Calorías activas</span><strong id="hcCalories">—</strong><small>Hoy</small></div>
+      <div class="health-metric"><span>🔥 Calorías totales</span><strong id="hcCalories">—</strong><small>Hoy</small></div>
       <div class="health-metric"><span>❤️ Pulso</span><strong id="hcHeart">—</strong><small>Última medición</small></div>
     </div>
     <div class="health-sleep"><span>🌙 Sueño reciente</span><strong id="hcSleep">—</strong></div>
@@ -2942,7 +2942,6 @@ body.plan-editor-open{overflow:hidden}
     <div class="meditation-controls">
       <button class="btn" id="meditationPlay" onclick="startMeditation()">▶ Reproducir / Pausar</button>
       <button class="btn secondary" onclick="pauseMeditation()">Ⅱ Pausar</button>
-      <button class="btn secondary" onclick="stopMeditation()">■ Detener</button>
       <button class="btn secondary" onclick="resetMeditation()">↺ Volver al inicio</button>
     </div>
     <div id="meditationStatus" class="meditation-status" role="status" aria-live="polite">Pulsa «Escuchar» para comenzar. Busca una posición cómoda y segura.</div>
@@ -5594,7 +5593,7 @@ window.onHealthConnectData=function(data){
   if(button)button.style.display='none';
   set('hcSteps',Number(data.steps||0).toLocaleString('es-ES'));
   set('hcDistance',data.distanceMeters>=1000?(data.distanceMeters/1000).toLocaleString('es-ES',{maximumFractionDigits:2})+' km':Math.round(data.distanceMeters||0)+' m');
-  set('hcCalories',Math.round(data.activeCalories||0).toLocaleString('es-ES')+' kcal');
+  set('hcCalories',Math.round(data.totalCalories||0).toLocaleString('es-ES')+' kcal');
   set('hcHeart',data.heartRate==null?'—':data.heartRate+' bpm');
   set('hcSleep',data.sleepMinutes==null?'Sin datos':Math.floor(data.sleepMinutes/60)+' h '+(data.sleepMinutes%60)+' min');
  }else{
