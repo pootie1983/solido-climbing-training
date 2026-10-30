@@ -52,7 +52,7 @@ class HealthConnectBridge(
         try {
             val providerStatus = HealthConnectClient.getSdkStatus(
                 context,
-                HealthConnectClient.DEFAULT_PROVIDER_PACKAGE_NAME
+                "com.google.android.apps.healthdata"
             )
             if (providerStatus != HealthConnectClient.SDK_AVAILABLE) {
                 result.put(
