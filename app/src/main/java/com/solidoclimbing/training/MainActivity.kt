@@ -36,8 +36,8 @@ class MainActivity : ComponentActivity() {
     private val densityCameraRequestCode = 2002
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        healthPermissionLauncher = registerForActivityResult(PermissionController.createRequestPermissionResultContract()) { if (::healthConnectBridge.isInitialized) healthConnectBridge.refresh() }
         super.onCreate(savedInstanceState)
+        healthPermissionLauncher = registerForActivityResult(PermissionController.createRequestPermissionResultContract()) { if (::healthConnectBridge.isInitialized) healthConnectBridge.refresh() }
 
         // Mantener la pantalla encendida mientras la actividad de la app esté visible.
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
