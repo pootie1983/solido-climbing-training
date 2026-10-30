@@ -1906,6 +1906,19 @@ body.plan-editor-open{overflow:hidden}
 .density-role-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}
 .density-role-picker button{padding:10px 4px;border-radius:10px;border:1px solid #294238;background:#0b1510;color:var(--text);font-size:11px}
 .density-role-picker button.active{border-color:var(--green);background:#173526;color:var(--green)}
+/* DENSIDAD refined project dashboard */
+#density .density-project-card{display:grid;grid-template-columns:76px minmax(0,1fr);gap:10px;padding:12px;border-radius:14px;background:linear-gradient(145deg,#14231a,#0a120e);border:1px solid #294638;margin:10px 0}
+#density .density-project-thumb{width:76px;height:76px;border-radius:10px;object-fit:cover}
+#density .density-project-info{display:flex;flex-direction:column;gap:6px;min-width:0}
+#density .density-project-info strong{font-size:14px}
+#density .density-project-info small{font-size:10px;color:var(--muted);line-height:1.4}
+#density .density-project-info select{width:100%;padding:7px 9px;border:1px solid #31523f;border-radius:8px;background:#0a120e;color:var(--text);font-size:11px}
+#density .density-project-actions{grid-column:1/-1;display:flex;gap:8px}
+#density .density-project-actions button{flex:1}
+#density .density-wall-name-label{display:block;margin:10px 0;font-size:11px;color:var(--muted)}
+#density .density-wall-name-label input{display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:11px;border:1px solid #31523f;border-radius:9px;background:#0a120e;color:var(--text)}
+#density .density-step-page#densityStep4 .density-block{margin:12px 0;padding:12px;border:1px solid #294638;border-radius:13px;background:#0d1711}
+#density .density-block-preview{max-height:none}
 /* DENSIDAD workspace */#density .density-work-head{display:none!important}#density.density-workspace:not(.hide){padding-top:calc(env(safe-area-inset-top) + 4px)}#density .density-steps{padding:7px 0 10px}#density .density-step-footer{position:sticky;bottom:0}#density .density-wall img{min-height:0;max-height:none;object-fit:contain}#density .density-project-card{display:flex;align-items:center;gap:10px;padding:10px;margin:8px 0;border:1px solid #294238;border-radius:12px;background:#0b1510}#density .density-project-thumb{width:76px;height:64px;flex:none;object-fit:cover;border-radius:8px;background:#142019}#density .density-project-info{flex:1;min-width:0}#density .density-project-info strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#density .density-project-info small{color:var(--muted);font-size:10px}
 #density.density-workspace:not(.hide){position:fixed!important;inset:0;z-index:9990;background:var(--bg,#050908);overflow-y:auto;box-sizing:border-box;padding:calc(env(safe-area-inset-top) + 8px) 14px calc(env(safe-area-inset-bottom) + 76px)}
 .density-work-head{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid #294238;padding-bottom:10px}.density-work-head>div{text-align:center;display:grid;gap:2px}.density-work-head>div strong{letter-spacing:2px;color:var(--green)}.density-work-head small{font-size:10px;color:var(--muted)}
@@ -2409,7 +2422,7 @@ body.plan-editor-open{overflow:hidden}
   </nav>
   <div class="density-step-page active" id="densityStep1">
 <div id="densityProjectHome"><h3>Mis muros</h3><p class="muted">Crea un proyecto para cada rocódromo o muro y guarda tus bloques.</p><button class="btn" style="width:100%;margin:10px 0" onclick="densityCreateProject()">＋ Crear nuevo muro</button><div id="densityProjectsList"></div></div>
-<div id="densityWallSetup" class="hide"><div class="sectionhead"><h3 id="densityActiveWallName">Nuevo muro</h3><button class="btn secondary" onclick="densityShowProjects()">Mis muros</button></div><p class="muted">Haz una foto del muro o selecciónala de tu galería.</p>
+<div id="densityWallSetup" class="hide"><div class="sectionhead"><h3 id="densityActiveWallName">Nuevo muro</h3><button class="btn secondary" onclick="densityShowProjects()">Mis muros</button></div><label class="density-wall-name-label">Nombre del muro<input id="densityWallNameInput" maxlength="45" placeholder="Pon nombre a tu muro" onchange="densityRenameProject(this.value)"></label><p class="muted">Haz una foto del muro o selecciónala de tu galería.</p>
 <input class="density-file-input" id="densityCameraInput" type="file" accept="image/*" capture="environment" onchange="densityLoadPhoto(event)"><input class="density-file-input" id="densityGalleryInput" type="file" accept="image/*" onchange="densityLoadPhoto(event)">
 <div class="density-photo-actions"><button class="btn" onclick="densityTakePhoto()">▣ Hacer foto</button><button class="btn secondary" onclick="document.getElementById('densityGalleryInput').click()">▧ Galería</button></div>
 <div class="density-wall" id="densityWall" onclick="densityAddHold(event)"><div class="density-wall-empty" id="densityWallEmpty">Todavía no has añadido una foto.</div><img id="densityWallImage" class="hide" alt="Fotografía del muro"><div id="densityHolds"></div></div>
@@ -2438,7 +2451,7 @@ body.plan-editor-open{overflow:hidden}
   </div>
   <div class="density-step-page" id="densityStep4">
     <div class="sectionhead"><h3>Mis bloques</h3><span class="tag" id="densityBlockCount">0 BLOQUES</span></div>
-    <div class="grid density-progress"><div class="stat"><strong id="densityCompleted">0</strong><span>Encadenados</span></div><div class="stat"><strong id="densityPending">0</strong><span>Pendientes / por probar</span></div></div>
+    
     <div id="densityBlocks"><p class="muted">Todavía no has guardado bloques.</p></div>
   </div>
   <footer class="density-step-footer"><button class="btn secondary" id="densityPrev" onclick="densityGoStep(densityStep-1)">← Anterior</button><button class="btn" id="densityNext" onclick="densityGoStep(densityStep+1)">Siguiente →</button></footer>
@@ -5242,6 +5255,7 @@ let densityStep=1;
 let densityProjects=JSON.parse(localStorage.getItem('solidoDensityProjects')||'[]');
 let densityActiveProjectId=localStorage.getItem('solidoDensityActiveProject')||'';
 function densitySaveProjects(){try{localStorage.setItem('solidoDensityProjects',JSON.stringify(densityProjects));localStorage.setItem('solidoDensityActiveProject',densityActiveProjectId);}catch(e){alert('No se pudieron guardar los proyectos. La memoria del dispositivo puede estar llena.');}}
+function densityRenameProject(name){const p=densityProjects.find(x=>x.id===densityActiveProjectId);if(!p)return;p.name=name.trim()||'Mi muro';document.getElementById('densityActiveWallName').textContent=p.name;densitySaveProjects();densityRenderProjects();}
 function densitySyncProject(){
  if(!densityActiveProjectId)return;
  const p=densityProjects.find(x=>x.id===densityActiveProjectId);if(!p)return;
@@ -5250,21 +5264,27 @@ function densitySyncProject(){
 function densityRenderProjects(){
  const host=document.getElementById('densityProjectsList');if(!host)return;
  if(!densityProjects.length){host.innerHTML='<p class="muted">Todavía no tienes muros guardados. Pulsa «Crear nuevo muro» para empezar.</p>';return;}
- host.innerHTML=densityProjects.map(p=>'<div class="density-project-card"><img class="density-project-thumb" src="'+(p.photo||'')+'" alt=""><div class="density-project-info"><strong>'+densityEscape(p.name)+'</strong><small>'+(p.blocks||[]).length+' bloques guardados</small></div><button class="btn" onclick="densityOpenProject(\''+p.id+'\')">Abrir</button></div>').join('');
+ host.innerHTML=densityProjects.map(p=>{const blocks=p.blocks||[],done=blocks.filter(b=>b.status==='Encadenado').length,pending=blocks.filter(b=>b.status!=='Encadenado').length;return '<div class="density-project-card"><img class="density-project-thumb" src="'+(p.photo||'')+'" alt=""><div class="density-project-info"><strong>'+densityEscape(p.name)+'</strong><small>'+blocks.length+' bloques · '+done+' encadenados · '+pending+' pendientes</small><select aria-label="Estado del muro" onchange="densitySetProjectStatus(\''+p.id+'\',this.value)"><option '+((p.status||'Pendiente')==='Pendiente'?'selected':'')+'>Pendiente</option><option '+(p.status==='En proceso'?'selected':'')+'>En proceso</option><option '+(p.status==='Realizado'?'selected':'')+'>Realizado</option><option '+(p.status==='En pausa'?'selected':'')+'>En pausa</option></select></div><div class="density-project-actions"><button class="btn" onclick="densityOpenProject(\''+p.id+'\')">Abrir</button><button class="btn secondary" onclick="densityDeleteProject(\''+p.id+'\')">Eliminar</button></div></div>';}).join('');
 }
 function densityShowProjects(){document.getElementById('densityProjectHome').classList.remove('hide');document.getElementById('densityWallSetup').classList.add('hide');densityRenderProjects();densityGoStep(1);}
 function densityCreateProject(){
- const name=prompt('Nombre del muro o rocódromo:');if(name===null)return;
- const p={id:'wall'+Date.now(),name:name.trim()||'Mi muro '+(densityProjects.length+1),photo:'',holds:[],blocks:[],updatedAt:new Date().toISOString()};
+ const p={id:'wall'+Date.now(),name:'Nuevo muro',status:'Pendiente',photo:'',holds:[],blocks:[],updatedAt:new Date().toISOString()};
  densityProjects.unshift(p);densityActiveProjectId=p.id;densityPhoto='';densityHolds=[];densitySelection=[];densityRoles={};densityBlocks=[];
  densitySaveProjects();densityPersistWall();densityPersistRoles();densityOpenProject(p.id);
+}
+function densitySetProjectStatus(id,status){const p=densityProjects.find(x=>x.id===id);if(!p)return;p.status=status;p.updatedAt=new Date().toISOString();densitySaveProjects();densityRenderProjects();}
+function densityDeleteProject(id){
+ const p=densityProjects.find(x=>x.id===id);if(!p||!confirm('¿Eliminar el proyecto «'+p.name+'» y todos sus bloques?'))return;
+ densityProjects=densityProjects.filter(x=>x.id!==id);
+ if(densityActiveProjectId===id){densityActiveProjectId='';densityPhoto='';densityHolds=[];densitySelection=[];densityRoles={};densityBlocks=[];['solidoDensityPhoto','solidoDensityHolds','solidoDensityRoles','solidoDensityBlocks'].forEach(k=>localStorage.removeItem(k));}
+ densitySaveProjects();densityRenderProjects();
 }
 function densityOpenProject(id){
  const p=densityProjects.find(x=>x.id===id);if(!p)return;
  densityActiveProjectId=id;densityPhoto=p.photo||'';densityHolds=p.holds||[];densitySelection=[];densityRoles={};densityBlocks=p.blocks||[];
  densitySaveProjects();densityPersistWall();
  document.getElementById('densityProjectHome').classList.add('hide');document.getElementById('densityWallSetup').classList.remove('hide');
- document.getElementById('densityActiveWallName').textContent=p.name;densityRenderWall();densityRenderBlocks();densityGoStep(1);
+ document.getElementById('densityActiveWallName').textContent=p.name;document.getElementById('densityWallNameInput').value=p.name;densityRenderWall();densityRenderBlocks();densityGoStep(1);
 }
 
 let densityBlocks=JSON.parse(localStorage.getItem('solidoDensityBlocks')||'[]');
@@ -5278,10 +5298,10 @@ function densityTakePhoto(){
 function densityReceiveCameraPhoto(dataUrl){
   if(!dataUrl)return;
   const img=new Image();img.onload=()=>{
-    const canvas=document.createElement('canvas'),max=1500,scale=Math.min(1,max/Math.max(img.width,img.height));
+    const canvas=document.createElement('canvas'),max=3840,scale=Math.min(1,max/Math.max(img.width,img.height));
     canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);
     canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
-    densityPhoto=canvas.toDataURL('image/jpeg',0.90);densityHolds=[];densitySelection=[];densityPersistWall();densityRenderWall();densityUpdateSelection();
+    densityPhoto=canvas.toDataURL('image/jpeg',0.94);densityHolds=[];densitySelection=[];densityPersistWall();densityRenderWall();densityUpdateSelection();
   };img.src=dataUrl;
 }
 function densityLoadPhoto(event){
@@ -5290,10 +5310,10 @@ function densityLoadPhoto(event){
   const reader=new FileReader();
   reader.onload=()=>{
     const img=new Image();img.onload=()=>{
-      const canvas=document.createElement('canvas');const max=2560;const scale=Math.min(1,max/Math.max(img.width,img.height));
+      const canvas=document.createElement('canvas');const max=3840;const scale=Math.min(1,max/Math.max(img.width,img.height));
       canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);
       canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
-      densityPhoto=canvas.toDataURL('image/jpeg',0.78);densityHolds=[];densitySelection=[];densityPersistWall();densityRenderWall();densityUpdateSelection();
+      densityPhoto=canvas.toDataURL('image/jpeg',0.94);densityHolds=[];densitySelection=[];densityPersistWall();densityRenderWall();densityUpdateSelection();
     };img.src=reader.result;
   };reader.readAsDataURL(file);
 }
