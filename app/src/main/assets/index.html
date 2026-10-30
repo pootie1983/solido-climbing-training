@@ -1852,6 +1852,21 @@ body.plan-editor-open{overflow:hidden}
 .plan-library-choice.selected{outline:2px solid #48d477;outline-offset:2px;border-radius:14px}
 .plan-library-action{position:sticky;bottom:10px;z-index:8;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;margin:14px 0;background:#080b09;border:1px solid #244b32;border-radius:13px;color:#fff;box-shadow:0 6px 24px #0008}
 .plan-library-action span{color:#48d477;font-weight:700;font-size:13px}
+#planRunPage{position:fixed;inset:0;z-index:100030;overflow-y:auto;background:#050908;color:#f2f7f4;padding:calc(14px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom))}
+.plan-run-top{display:flex;align-items:center;gap:12px;border-bottom:1px solid #294238;padding:4px 0 14px}
+.plan-run-top h2{flex:1;margin:0;font-size:19px}
+.plan-run-close{width:42px;height:42px;border:1px solid #345044;border-radius:12px;background:#14231b;color:#9bff70;font-size:27px}
+.plan-run-image{width:100%;height:min(34vh,270px);margin:18px 0 12px;border-radius:18px;overflow:hidden;background:#101a14;display:grid;place-items:center;color:#9bff70;font-size:58px}
+.plan-run-image img{width:100%;height:100%;object-fit:cover}
+.plan-run-name{text-align:center;font-size:22px;margin:10px 0 18px}
+.plan-run-timers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.plan-run-timer{padding:16px 8px;border:1px solid #294238;border-radius:15px;background:#0b1510;text-align:center}
+.plan-run-timer span{display:block;color:#9bb4a4;font-size:11px;margin-bottom:7px}
+.plan-run-timer strong{font-size:29px;font-variant-numeric:tabular-nums;color:#9bff70}
+.plan-run-progress{text-align:center;color:#aab8ad;font-size:12px;margin:16px 0}
+.plan-run-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.plan-run-actions .btn{width:100%}
+body.plan-editor-open{overflow:hidden}
 
 /* Tarjetas de categorías de planes: iconografía lineal verde sobre negro */
 .plan-category-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
@@ -2141,7 +2156,6 @@ body.plan-editor-open{overflow:hidden}
     <div id="planExerciseSettings"></div>
     <div class="plan-estimate"><span>Tiempo estimado de la sesión</span><strong id="planEstimate">00:00</strong><small>Incluye trabajo, series y descansos configurados.</small></div>
     <div class="plan-editor-actions">
-      <button class="btn" onclick="saveCustomPlan()">＋ Guardar plan</button>
       <button class="btn secondary" onclick="openPlanExerciseLibrary()">＋ Añadir ejercicios</button>
       <button class="btn secondary" id="planStartButton" onclick="startActivePlan()">▶ Iniciar plan</button>
       <button class="btn secondary" id="planDeleteButton" onclick="deleteActivePlan()">Eliminar plan</button>
@@ -2292,6 +2306,22 @@ body.plan-editor-open{overflow:hidden}
 
 
 <!-- TEMPORIZADOR -->
+
+<section id="planRunPage" class="hide">
+  <div class="plan-run-top"><h2 id="planRunTitle">Sesión</h2><button class="plan-run-close" type="button" onclick="closePlanRun()" aria-label="Volver">×</button></div>
+  <div class="plan-run-image" id="planRunImage"></div>
+  <h3 class="plan-run-name" id="planRunExercise">Ejercicio</h3>
+  <div class="plan-run-timers">
+    <div class="plan-run-timer"><span>TIEMPO DEL EJERCICIO</span><strong id="planExerciseClock">00:30</strong></div>
+    <div class="plan-run-timer"><span>TIEMPO TOTAL</span><strong id="planTotalClock">00:00</strong></div>
+  </div>
+  <div class="plan-run-progress" id="planRunProgress">Ejercicio 1 de 1 · Serie 1 · Repetición 1</div>
+  <div class="plan-run-actions">
+    <button class="btn" id="planRunToggle" onclick="togglePlanRun()">▶ Iniciar</button>
+    <button class="btn secondary" onclick="skipPlanRunExercise()">Siguiente ejercicio ›</button>
+    <button class="btn secondary" onclick="finishPlanRun()">Finalizar sesión</button>
+  </div>
+</section>
 
 <section id="timerPage" class="hide">
 
@@ -3629,9 +3659,9 @@ function brStartMusic(){
   if(!brActive){brStopMusic();return;}
   const t=ac.currentTime,base=notes[brMusicStep%notes.length];
   const osc=ac.createOscillator(),gain=ac.createGain();osc.type='triangle';osc.frequency.setValueAtTime(base,t);
-  gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.22,t+.025);gain.gain.exponentialRampToValueAtTime(.0001,t+.24);
+  gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.38,t+.025);gain.gain.exponentialRampToValueAtTime(.0001,t+.24);
   osc.connect(gain);gain.connect(ac.destination);osc.start(t);osc.stop(t+.26);
-  if(brMusicStep%2===0){const bass=ac.createOscillator(),bg=ac.createGain();bass.type='sine';bass.frequency.setValueAtTime(base/2,t);bg.gain.setValueAtTime(.0001,t);bg.gain.exponentialRampToValueAtTime(.12,t+.02);bg.gain.exponentialRampToValueAtTime(.0001,t+.22);bass.connect(bg);bg.connect(ac.destination);bass.start(t);bass.stop(t+.23);}
+  if(brMusicStep%2===0){const bass=ac.createOscillator(),bg=ac.createGain();bass.type='sine';bass.frequency.setValueAtTime(base/2,t);bg.gain.setValueAtTime(.0001,t);bg.gain.exponentialRampToValueAtTime(.2,t+.02);bg.gain.exponentialRampToValueAtTime(.0001,t+.22);bass.connect(bg);bg.connect(ac.destination);bass.start(t);bass.stop(t+.23);}
   brMusicStep++;
  };
  tick();brMusicTimer=setInterval(tick,260);
@@ -3639,9 +3669,9 @@ function brStartMusic(){
 function brStopMusic(){if(brMusicTimer){clearInterval(brMusicTimer);brMusicTimer=null;}}
 function brPlayDeathSound(){
  const ac=brEnsureAudio();if(!ac)return;const t=ac.currentTime;
- [220,164.81,110].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain(),start=t+i*.13;o.type='sawtooth';o.frequency.setValueAtTime(f,start);g.gain.setValueAtTime(.0001,start);g.gain.exponentialRampToValueAtTime(.32,start+.025);g.gain.exponentialRampToValueAtTime(.0001,start+.32);o.connect(g);g.connect(ac.destination);o.start(start);o.stop(start+.34);});
+ [220,164.81,110].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain(),start=t+i*.13;o.type='sawtooth';o.frequency.setValueAtTime(f,start);g.gain.setValueAtTime(.0001,start);g.gain.exponentialRampToValueAtTime(.5,start+.025);g.gain.exponentialRampToValueAtTime(.0001,start+.32);o.connect(g);g.connect(ac.destination);o.start(start);o.stop(start+.34);});
 }
- function brPlayCollectSound(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!brAudioContext)brAudioContext=new AC();if(brAudioContext.state==='suspended')brAudioContext.resume();const t=brAudioContext.currentTime,osc=brAudioContext.createOscillator(),gain=brAudioContext.createGain();osc.type='sine';osc.frequency.setValueAtTime(880,t);osc.frequency.exponentialRampToValueAtTime(1320,t+.09);gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.55,t+.012);gain.gain.exponentialRampToValueAtTime(.0001,t+.18);osc.connect(gain);gain.connect(brAudioContext.destination);osc.start(t);osc.stop(t+.19);}catch(e){console.warn('Sonido de magnesio no disponible',e);}}
+ function brPlayCollectSound(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!brAudioContext)brAudioContext=new AC();if(brAudioContext.state==='suspended')brAudioContext.resume();const t=brAudioContext.currentTime,osc=brAudioContext.createOscillator(),gain=brAudioContext.createGain();osc.type='sine';osc.frequency.setValueAtTime(880,t);osc.frequency.exponentialRampToValueAtTime(1320,t+.09);gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.8,t+.012);gain.gain.exponentialRampToValueAtTime(.0001,t+.18);osc.connect(gain);gain.connect(brAudioContext.destination);osc.start(t);osc.stop(t+.19);}catch(e){console.warn('Sonido de magnesio no disponible',e);}}
 function brRender(force){
  const d=brLevelData(),score=Math.floor(brScore);
  document.getElementById('brScore').textContent=brFmt(score).padStart(4,'0');document.getElementById('brCombo').textContent='x'+brCombo;
@@ -3838,6 +3868,8 @@ function estimatePlan(items){
 }
 function openPlanExerciseLibrary(){
   if(!activePlanCategory){alert('Primero elige una tarjeta de plan.');return;}
+  const panel=document.getElementById('planConfigPanel');if(panel){panel.style.display='none';panel.classList.remove('plan-editor-fullscreen');}
+  document.body.classList.remove('plan-editor-open');
   planSelectionMode=true;
   planSelectedIds=planDraftItems.map(item=>Number(item.id));
   show('library');
@@ -3862,10 +3894,25 @@ function finishPlanExerciseSelection(){
   const name=(document.getElementById('customPlanName')?.value||activePlanCategory).trim()||activePlanCategory;
   const entry={id:existing?existing.id:Date.now(),category:activePlanCategory,name,items:planDraftItems.map(x=>({...x})),seconds:estimatePlan(planDraftItems),createdAt:existing?.createdAt||new Date().toISOString()};
   if(existing)customPlans=customPlans.map(p=>p.category===activePlanCategory?entry:p);else customPlans.unshift(entry);
-  try{localStorage.setItem('solidoCustomPlans',JSON.stringify(customPlans));}catch(e){alert('No se pudo guardar el plan en este dispositivo. Comprueba el almacenamiento de la aplicación.');}
+  persistActivePlan();
   editingPlanId=entry.id;show('plans');
   const title=document.querySelector('#library .sectionhead h2');if(title)title.textContent='Biblioteca de ejercicios';
   renderPlan();openPlanEditor();
+}
+function persistActivePlan(){
+  if(!activePlanCategory||!planDraftItems.length)return;
+  const items=readPlanBuilderSafe();
+  const existing=customPlans.find(p=>p.category===activePlanCategory);
+  const entry={id:editingPlanId||existing?.id||Date.now(),category:activePlanCategory,name:(document.getElementById('customPlanName')?.value||activePlanCategory).trim()||activePlanCategory,items,seconds:estimatePlan(items),createdAt:existing?.createdAt||new Date().toISOString()};
+  if(existing)customPlans=customPlans.map(p=>p.category===activePlanCategory?entry:p);else customPlans.unshift(entry);
+  editingPlanId=entry.id;
+  try{localStorage.setItem('solidoCustomPlans',JSON.stringify(customPlans));}catch(e){}
+  renderPlan();
+}
+function readPlanBuilderSafe(){
+  const rows=[...document.querySelectorAll('.plan-setting-row')];
+  if(rows.length)return readPlanBuilder();
+  return planDraftItems.map(x=>({...x}));
 }
 function renderPlanSettings(){
   const host=document.getElementById('planExerciseSettings');
@@ -3899,12 +3946,13 @@ function updatePlanEstimate(){
   const estimate=document.getElementById('planEstimate'),count=document.getElementById('planSelectedCount');
   if(estimate)estimate.textContent=formatPlanTime(estimatePlan(planDraftItems));
   if(count)count.textContent=planDraftItems.length+' ejercicios';
+  if(planDraftItems.length)persistActivePlan();
 }
 function removePlanDraftExercise(id){
   planDraftItems=planDraftItems.filter(item=>Number(item.id)!==Number(id));
   renderPlanSettings();
-  const panel=document.getElementById('planConfigPanel');
-  if(panel)panel.style.display=planDraftItems.length?'block':'none';
+  if(planDraftItems.length)persistActivePlan();
+  else{customPlans=customPlans.filter(p=>p.category!==activePlanCategory);try{localStorage.setItem('solidoCustomPlans',JSON.stringify(customPlans));}catch(e){}}
 }
 function saveCustomPlan(){
   const items=readPlanBuilder(),status=document.getElementById('planBuilderStatus');
@@ -4353,14 +4401,65 @@ function logSession(
 }
 
 
+let planRunState=null,planRunInterval=null;
 function startPlan(planId){
   const selected=customPlans.find(p=>p.id===Number(planId));
   if(!selected){alert('Elige uno de tus planes guardados.');return;}
-  const seconds=Math.max(60,Number(selected.seconds)||60);
-  sessions.unshift({name:selected.name,mins:Math.max(1,Math.ceil(seconds/60)),date:new Date().toLocaleString('es-ES')});
-  save();
-  openTimer(selected.name+' · sesión completa',seconds);
+  const items=(selected.items||[]).map(x=>({...x})).filter(x=>exercises.some(e=>Number(e.id)===Number(x.id)));
+  if(!items.length){alert('Añade ejercicios a este plan antes de iniciarlo.');return;}
+  const total=estimatePlan(items);
+  sessions.unshift({name:selected.name,mins:Math.max(1,Math.ceil(total/60)),date:new Date().toLocaleString('es-ES')});save();
+  planRunState={plan:selected,index:0,set:1,rep:1,phase:'work',exerciseRemaining:Math.max(5,Number(items[0].work)||30),totalRemaining:total,running:false};
+  show('planRunPage');renderPlanRun();document.getElementById('planRunToggle').textContent='▶ Iniciar';
 }
+function renderPlanRun(){
+  if(!planRunState)return;
+  const st=planRunState,item=st.plan.items[st.index],ex=exercises.find(e=>Number(e.id)===Number(item.id));
+  document.getElementById('planRunTitle').textContent=st.plan.name;
+  document.getElementById('planRunExercise').textContent=ex?.name||'Ejercicio';
+  document.getElementById('planRunImage').innerHTML=ex?.image?'<img src="'+ex.image+'" alt="'+(ex.name||'Ejercicio')+'">':(ex?.emoji||'▰');
+  document.getElementById('planExerciseClock').textContent=formatPlanTime(st.exerciseRemaining);
+  document.getElementById('planTotalClock').textContent=formatPlanTime(st.totalRemaining);
+  document.getElementById('planRunProgress').textContent='Ejercicio '+(st.index+1)+' de '+st.plan.items.length+' · Serie '+st.set+' · Repetición '+st.rep+(st.phase==='rest'?' · Descanso':' · Trabajo');
+}
+function togglePlanRun(){
+  if(!planRunState)return;
+  planRunState.running=!planRunState.running;
+  document.getElementById('planRunToggle').textContent=planRunState.running?'Ⅱ Pausar':'▶ Continuar';
+  if(planRunState.running&&!planRunInterval)planRunInterval=setInterval(tickPlanRun,1000);
+  if(!planRunState.running&&planRunInterval){clearInterval(planRunInterval);planRunInterval=null;}
+}
+function tickPlanRun(){
+  const st=planRunState;if(!st||!st.running)return;
+  st.totalRemaining=Math.max(0,st.totalRemaining-1);
+  st.exerciseRemaining=Math.max(0,st.exerciseRemaining-1);
+  if(st.exerciseRemaining===0){
+    const item=st.plan.items[st.index];
+    if(st.phase==='work'){
+      if(st.rep<Math.max(1,Number(item.reps)||1)){st.phase='rest';st.exerciseRemaining=Math.max(0,Number(item.rest)||0);}
+      else if(st.set<Math.max(1,Number(item.sets)||1)){st.phase='rest';st.exerciseRemaining=Math.max(0,Number(item.rest)||0);st.rep=1;st.set++;}
+      else advancePlanRunExercise();
+    }else{
+      st.phase='work';if(st.rep<Math.max(1,Number(item.reps)||1))st.rep++;
+      st.exerciseRemaining=Math.max(5,Number(item.work)||30);
+    }
+  }
+  if(!planRunState||st.totalRemaining<=0){finishPlanRun();return;}
+  renderPlanRun();
+}
+function advancePlanRunExercise(){
+  const st=planRunState;if(!st)return;
+  st.index++;st.set=1;st.rep=1;st.phase='work';
+  if(st.index>=st.plan.items.length){finishPlanRun();return;}
+  st.exerciseRemaining=Math.max(5,Number(st.plan.items[st.index].work)||30);
+  renderPlanRun();
+}
+function skipPlanRunExercise(){advancePlanRunExercise();}
+function finishPlanRun(){
+  if(planRunInterval){clearInterval(planRunInterval);planRunInterval=null;}
+  planRunState=null;show('plans');if(activePlanCategory)openPlanEditor();
+}
+function closePlanRun(){finishPlanRun();}
 
 
 /* =========================
@@ -4982,9 +5081,9 @@ function startMeditationAmbient(){
     if(!meditationAmbientCtx)meditationAmbientCtx=new Ctx();
     if(meditationAmbientCtx.state==='suspended')meditationAmbientCtx.resume();
     stopMeditationAmbientNodes();
-    const ctx=meditationAmbientCtx,master=ctx.createGain();master.gain.value=0.22;master.connect(ctx.destination);
+    const ctx=meditationAmbientCtx,master=ctx.createGain();master.gain.value=0.45;master.connect(ctx.destination);
     const osc=ctx.createOscillator(),gain=ctx.createGain(),filter=ctx.createBiquadFilter();
-    osc.type='sine';osc.frequency.value=110;gain.gain.value=0.35;filter.type='lowpass';filter.frequency.value=240;
+    osc.type='sine';osc.frequency.value=110;gain.gain.value=0.6;filter.type='lowpass';filter.frequency.value=240;
     osc.connect(filter);filter.connect(gain);gain.connect(master);osc.start();
     const lfo=ctx.createOscillator(),lfoGain=ctx.createGain();lfo.frequency.value=0.08;lfoGain.gain.value=14;lfo.connect(lfoGain);lfoGain.connect(osc.frequency);lfo.start();
     meditationAmbientNodes=[master,osc,gain,filter,lfo,lfoGain];
