@@ -4799,6 +4799,7 @@ function save(){
 
   renderStats();
   renderForceTrend();
+  if(typeof renderAchievements==='function')renderAchievements();
 
 }
 
@@ -5404,6 +5405,13 @@ function finishMeditation(){
   document.getElementById('meditationProgress').style.width='100%';
   document.getElementById('meditationRemaining').textContent='Completada';
   document.getElementById('meditationStatus').textContent='Sesión completada. Tómate unos segundos antes de volver a la actividad.';
+  // Sólo se registra cuando la guía termina de verdad, nunca al pausar o salir.
+  try{
+    const history=JSON.parse(localStorage.getItem('solidoMeditationHistory')||'[]');
+    history.unshift({id:Date.now(),name:'Meditación guiada · '+(guidedMeditations[activeMeditation]?.title||activeMeditation),completedAt:new Date().toISOString()});
+    localStorage.setItem('solidoMeditationHistory',JSON.stringify(history.slice(0,500)));
+  }catch(e){}
+  if(typeof renderAchievements==='function')renderAchievements();
 }
 function startMeditationAmbient(){
   if(!document.getElementById('meditationAmbient')?.checked)return;
@@ -5626,15 +5634,19 @@ const achievementDefs=[
  {id:'distance-5',group:'Actividad diaria',name:'Kilómetros en marcha',desc:'Recorre 5 km en el día según Health Connect',target:5,metric:'distance',tier:'plata',icon:'🏃',xp:100}
 ];
 let achievementHealth={steps:0,distance:0};
+let achievementUnlocked=(()=>{try{return JSON.parse(localStorage.getItem('solidoAchievementUnlocked')||'{}');}catch(e){return {};}})();
 function achievementValues(){
  const all=Array.isArray(sessions)?sessions:[];
+ const meditationHistory=(()=>{try{return JSON.parse(localStorage.getItem('solidoMeditationHistory')||'[]');}catch(e){return [];}})();
+ const today=new Date().toLocaleDateString('en-CA');
+ const daily=(()=>{try{return JSON.parse(localStorage.getItem('solidoAchievementDaily')||'{}');}catch(e){return {};}})();
  return {
   sessions:all.filter(x=>Number(x.mins||0)>0).length,
   minutes:all.reduce((n,x)=>n+Math.max(0,Number(x.mins)||0),0),
   force:all.filter(x=>Number(x.force)>0).length,
-  meditation:all.filter(x=>/meditaci[oó]n/i.test(String(x.name||''))).length,
-  steps:achievementHealth.steps,
-  distance:achievementHealth.distance
+  meditation:meditationHistory.length,
+  steps:daily.date===today?Number(daily.steps||0):achievementHealth.steps,
+  distance:daily.date===today?Number(daily.distance||0):achievementHealth.distance
  };
 }
 function renderAchievements(){
@@ -5644,13 +5656,20 @@ function renderAchievements(){
  const groups={};
  achievementDefs.forEach(a=>{
   const value=Number(values[a.metric]||0),done=value>=a.target;
-  if(done){xp+=a.xp;unlocked++;}
+  if(done){
+   xp+=a.xp;unlocked++;
+   if(!achievementUnlocked[a.id]){
+    achievementUnlocked[a.id]={unlockedAt:new Date().toISOString(),xp:a.xp};
+    try{localStorage.setItem('solidoAchievementUnlocked',JSON.stringify(achievementUnlocked));}catch(e){}
+   }
+  }
   (groups[a.group]||(groups[a.group]=[])).push({a,value,done});
  });
  const level=Math.floor(xp/500)+1;
- document.getElementById('achUnlocked').textContent=unlocked;
- document.getElementById('achXp').textContent=xp.toLocaleString('es-ES');
- document.getElementById('achLevel').textContent=level;
+ const unlockedEl=document.getElementById('achUnlocked'),xpEl=document.getElementById('achXp'),levelEl=document.getElementById('achLevel');
+ if(unlockedEl)unlockedEl.textContent=unlocked;
+ if(xpEl)xpEl.textContent=xp.toLocaleString('es-ES');
+ if(levelEl)levelEl.textContent=level;
  host.innerHTML=Object.entries(groups).map(([group,items])=>'<div class="ach-group"><h3>'+group+'</h3><div class="ach-grid">'+items.map(({a,value,done})=>'<article class="ach-card '+(done?'unlocked':'locked')+'" data-tier="'+a.tier+'"><div class="ach-medal">'+(done?a.icon:'🔒')+'</div><div class="ach-copy"><strong>'+a.name+'</strong><small>'+a.desc+'</small><div class="ach-progress"><i style="width:'+Math.min(100,value/a.target*100)+'%"></i></div><small>'+Math.min(value,a.target).toLocaleString('es-ES')+' / '+a.target.toLocaleString('es-ES')+'</small><div class="ach-xp">'+(done?'Conseguido · ':'')+'+'+a.xp+' XP · '+a.tier.toUpperCase()+'</div></div></article>').join('')+'</div></div>').join('');
 }
 
@@ -5689,6 +5708,8 @@ window.onHealthConnectData=function(data){
   if(status)status.textContent='Datos sincronizados desde Health Connect';
   if(button)button.style.display='none';
   achievementHealth.steps=Number(data.steps||0);achievementHealth.distance=Number(data.distanceMeters||0)/1000;
+  try{localStorage.setItem('solidoAchievementDaily',JSON.stringify({date:new Date().toLocaleDateString('en-CA'),steps:achievementHealth.steps,distance:achievementHealth.distance}));}catch(e){}
+  if(typeof renderAchievements==='function')renderAchievements();
   set('hcSteps',Number(data.steps||0).toLocaleString('es-ES'));
   set('hcDistance',data.distanceMeters>=1000?(data.distanceMeters/1000).toLocaleString('es-ES',{maximumFractionDigits:2})+' km':Math.round(data.distanceMeters||0)+' m');
   set('hcCalories',Math.round(data.totalCalories||0).toLocaleString('es-ES')+' kcal');
