@@ -1916,6 +1916,7 @@ body.plan-editor-open{overflow:hidden}
 .density-hold.role-start{border-color:#16d65a;background:#16d65a66}.density-hold.role-mid{border-color:#318cff;background:#318cff66}.density-hold.role-top{border-color:#ff4242;background:#ff424266}
 .density-block-preview{position:relative;width:100%;overflow:hidden;border-radius:10px;margin:10px 0;background:#0b1510}.density-block-preview img{display:block;width:100%;height:auto}.density-block-preview .density-hold{pointer-events:none}
 .density-block-preview .role-start{border-color:#16d65a;background:#16d65a66}.density-block-preview .role-mid{border-color:#318cff;background:#318cff66}.density-block-preview .role-top{border-color:#ff4242;background:#ff424266}
+#densityEditorHolds{position:absolute;inset:0;pointer-events:none}.density-wall-editor{position:relative}.density-wall-editor .density-hold{pointer-events:auto}
 .density-selection-info{padding:8px;border-radius:8px;background:#101b15}
 /* DENSIDAD · integrada en SOLIDO */
 .density-panel{background:#050908;border:1px solid #294238;border-radius:16px;padding:14px;margin:12px 0}
@@ -5331,7 +5332,7 @@ function densityDeleteWallProject(){
  if(!confirm('¿Eliminar el muro, todas sus marcas y todos los bloques guardados?'))return;
  densityPhoto='';densityHolds=[];densitySelection=[];densityRoles={};densityBlocks=[];
  ['solidoDensityPhoto','solidoDensityHolds','solidoDensityRoles','solidoDensityBlocks'].forEach(k=>localStorage.removeItem(k));
- densityRenderWall();densityUpdateSelection();densityRenderBlocks();densityGoStep(1);densityGoStep(1);
+ densityRenderWall();densityUpdateSelection();densityRenderBlocks();densityGoStep(1);
 }
 function densityClearSelection(){densitySelection=[];densityRoles={};densityPersistRoles();densityRenderWall();densityUpdateSelection();}
 function densityUpdateSelection(){
@@ -5369,7 +5370,7 @@ function densityRenderBlocks(){
  host.innerHTML=densityBlocks.map(b=>'<article class="density-block"><div class="density-block-top"><strong>'+densityEscape(b.name)+'</strong><span class="density-status">'+densityEscape(b.status)+'</span></div><p class="muted">'+densityEscape(b.grade)+' · '+densityEscape(b.style)+' · '+b.holdIds.length+' presas</p>'+(b.photo?'<div class="density-block-preview"><img src="'+b.photo+'" alt="Foto del bloque">'+(b.holds||[]).map(h=>'<i class="density-hold role-'+(h.role||'mid')+'" style="left:'+h.x+'%;top:'+h.y+'%"></i>').join('')+'</div>':'<p class="muted">Sin imagen guardada</p>')+'<button class="btn secondary" onclick="densityViewBlock('+b.id+')">Ver / editar recorrido</button><label class="muted">Estado<select onchange="densitySetStatus('+b.id+',this.value)"><option '+(b.status==='Pendiente'?'selected':'')+'>Pendiente</option><option '+(b.status==='Probado'?'selected':'')+'>Probado</option><option '+(b.status==='Encadenado'?'selected':'')+'>Encadenado</option><option '+(b.status==='Repetir'?'selected':'')+'>Repetir</option></select></label><button class="btn secondary" onclick="densityDeleteBlock('+b.id+')">Eliminar</button></article>').join('');
 }
 function densityEscape(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-densityRenderWall();densityUpdateSelection();densityRenderBlocks();
+densityRenderWall();densityUpdateSelection();densityRenderBlocks();densityGoStep(1);
 
 </script>
 
