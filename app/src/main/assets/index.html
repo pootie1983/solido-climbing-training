@@ -2395,6 +2395,7 @@ body.plan-editor-open{overflow:hidden}
     <div class="density-actions">
       <button class="btn secondary" onclick="densityUndoHold()">Deshacer presa</button>
       <button class="btn secondary" onclick="densityClearHolds()">Borrar presas</button>
+      <button class="btn secondary" onclick="densityDeleteWallProject()">Eliminar muro y proyecto</button>
     </div>
     <p class="muted" id="densityWallHelp">La detección automática de presas se incorporará en una fase posterior. Por ahora puedes marcarlas manualmente sobre la foto.</p>
   </div>
@@ -5254,13 +5255,18 @@ function densityLoadPhoto(event){
 function densityRenderWall(){
   const img=document.getElementById('densityWallImage'),empty=document.getElementById('densityWallEmpty'),host=document.getElementById('densityHolds');if(!img||!host)return;
   img.src=densityPhoto||'';img.classList.toggle('hide',!densityPhoto);empty.classList.toggle('hide',!!densityPhoto);
-  host.innerHTML=densityHolds.map((h,i)=>{const n=densitySelection.indexOf(h.id);const cls=n===0?'selected-start':n===densitySelection.length-1&&n>0?'selected-top':n>0?'selected-mid':'';return '<button type="button" class="density-hold '+cls+'" style="left:'+h.x+'%;top:'+h.y+'%" aria-label="Presa '+(i+1)+'" onclick="event.stopPropagation();densityToggleHold(\''+h.id+'\')"></button>';}).join('');
+  host.innerHTML=densityHolds.map((h,i)=>{const n=densitySelection.indexOf(h.id);const cls=n===0?'selected-start':n===densitySelection.length-1&&n>0?'selected-top':n>0?'selected-mid':'';const role=n===0?'Inicio':n===densitySelection.length-1&&n>0?'TOP':n>0?'Intermedia':'Presa';return '<button type="button" class="density-hold '+cls+'" style="left:'+h.x+'%;top:'+h.y+'%" aria-label="'+role+' '+(i+1)+'" title="'+role+'" onclick="event.stopPropagation();densityToggleHold(\''+h.id+'\')"></button>';}).join('');
   densityRenderBlocks();
 }
 function densityAddHold(event){
   if(!densityPhoto||event.target.closest('.density-hold'))return;
-  const rect=event.currentTarget.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width*100,y=(event.clientY-rect.top)/rect.height*100;
-  const id='h'+Date.now()+Math.random().toString(16).slice(2,6);densityHolds.push({id,x,y});densityPersistWall();densityRenderWall();
+  const rect=document.getElementById('densityWallImage').getBoundingClientRect();
+  const x=(event.clientX-rect.left)/rect.width*100,y=(event.clientY-rect.top)/rect.height*100;
+  if(x<0||x>100||y<0||y>100)return;
+  const id='h'+Date.now()+Math.random().toString(16).slice(2,6);
+  densityHolds.push({id,x,y});
+  densitySelection.push(id);
+  densityPersistWall();densityRenderWall();densityUpdateSelection();
 }
 function densityToggleHold(id){
   const i=densitySelection.indexOf(id);if(i>=0)densitySelection.splice(i,1);else densitySelection.push(id);
@@ -5268,6 +5274,12 @@ function densityToggleHold(id){
 }
 function densityUndoHold(){const h=densityHolds.pop();if(h)densitySelection=densitySelection.filter(id=>id!==h.id);densityPersistWall();densityRenderWall();densityUpdateSelection();}
 function densityClearHolds(){if(!confirm('¿Borrar todas las presas marcadas en el muro?'))return;densityHolds=[];densitySelection=[];densityPersistWall();densityRenderWall();densityUpdateSelection();}
+function densityDeleteWallProject(){
+  if(!confirm('¿Eliminar la fotografía del muro, todas sus presas y todos los bloques guardados en este proyecto? Esta acción no se puede deshacer.'))return;
+  densityPhoto='';densityHolds=[];densitySelection=[];densityBlocks=[];
+  localStorage.removeItem('solidoDensityPhoto');localStorage.removeItem('solidoDensityHolds');localStorage.removeItem('solidoDensityBlocks');
+  densityRenderWall();densityUpdateSelection();densityRenderBlocks();
+}
 function densityClearSelection(){densitySelection=[];densityRenderWall();densityUpdateSelection();}
 function densityUpdateSelection(){const el=document.getElementById('densitySelectionInfo');if(el)el.textContent='Presas seleccionadas: '+densitySelection.length+(densitySelection.length?' · Inicio verde → intermedias azules → TOP rojo':'');}
 function densitySaveBlock(){
