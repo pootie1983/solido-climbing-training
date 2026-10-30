@@ -1831,7 +1831,14 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
 .plan-add-button strong{font-size:14px}
 .plan-add-button small{font-size:11px;color:#9aa69d;margin-top:3px}
 .plan-add-chevron{margin-left:auto;color:#48d477;font-size:26px}
-.plan-config-panel{margin:12px 0 22px}
+.plan-config-panel{margin:0}
+#planConfigPanel.plan-editor-fullscreen{display:block!important;position:fixed;inset:0;z-index:100020;overflow-y:auto;margin:0;padding:calc(18px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom));border:0;border-radius:0;background:#050908;color:#f2f7f4}
+.plan-editor-top{display:flex;align-items:center;gap:12px;margin:0 0 20px;padding:4px 0 16px;border-bottom:1px solid #294238}
+.plan-editor-top h2{flex:1;margin:0;font-size:20px}
+.plan-editor-close{width:42px;height:42px;border:1px solid #345044;border-radius:12px;background:#14231b;color:#9bff70;font-size:27px;line-height:1}
+.plan-editor-actions{display:grid;gap:9px;margin:18px 0}
+.plan-editor-actions .btn{width:100%}
+body.plan-editor-open{overflow:hidden}
 .plan-setting-row{padding:12px 0;border-bottom:1px solid var(--line)}
 .plan-setting-heading{display:flex;align-items:center;gap:10px}
 .plan-setting-heading strong{flex:1}
@@ -2127,14 +2134,18 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
   <p class="muted">Elige una tarjeta para crear tu plan. Puedes cambiar el orden para montar una sesión completa.</p>
   <div id="planCategoryList" class="plan-category-grid"></div>
   <div id="planConfigPanel" class="tile plan-config-panel" style="display:none">
-    <div class="sectionhead"><h3 id="planConfigTitle">Configura tu sesión</h3><span class="tag" id="planSelectedCount">0 ejercicios</span></div>
+    <div class="plan-editor-top"><h2 id="planConfigTitle">Calentamiento</h2><button type="button" class="plan-editor-close" onclick="closePlanEditor()" aria-label="Cerrar">×</button></div>
+    <div class="sectionhead"><span class="tag" id="planSelectedCount">0 ejercicios</span></div>
     <label class="config-label" for="customPlanName">Nombre del plan</label>
     <input id="customPlanName" type="text" maxlength="40" value="Mi entrenamiento" placeholder="Ej. Fuerza y técnica" style="width:100%;margin:6px 0 14px">
     <div id="planExerciseSettings"></div>
     <div class="plan-estimate"><span>Tiempo estimado de la sesión</span><strong id="planEstimate">00:00</strong><small>Incluye trabajo, series y descansos configurados.</small></div>
-    <button class="btn" style="width:100%;margin-top:12px" onclick="saveCustomPlan()">＋ Guardar mi plan</button>
-    <button class="btn secondary" style="width:100%;margin-top:8px" onclick="openPlanExerciseLibrary()">＋ Añadir más ejercicios</button>
-    <button class="btn secondary" style="width:100%;margin-top:8px" onclick="closePlanEditor()">Volver a Planes</button>
+    <div class="plan-editor-actions">
+      <button class="btn" onclick="saveCustomPlan()">＋ Guardar plan</button>
+      <button class="btn secondary" onclick="openPlanExerciseLibrary()">＋ Añadir ejercicios</button>
+      <button class="btn secondary" id="planStartButton" onclick="startActivePlan()">▶ Iniciar plan</button>
+      <button class="btn secondary" id="planDeleteButton" onclick="deleteActivePlan()">Eliminar plan</button>
+    </div>
     <div id="planBuilderStatus" class="meditation-status" role="status" aria-live="polite"></div>
   </div>
   <div class="sectionhead"><h2>Mis sesiones guardadas</h2></div>
@@ -3618,9 +3629,9 @@ function brStartMusic(){
   if(!brActive){brStopMusic();return;}
   const t=ac.currentTime,base=notes[brMusicStep%notes.length];
   const osc=ac.createOscillator(),gain=ac.createGain();osc.type='triangle';osc.frequency.setValueAtTime(base,t);
-  gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.075,t+.025);gain.gain.exponentialRampToValueAtTime(.0001,t+.24);
+  gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.22,t+.025);gain.gain.exponentialRampToValueAtTime(.0001,t+.24);
   osc.connect(gain);gain.connect(ac.destination);osc.start(t);osc.stop(t+.26);
-  if(brMusicStep%2===0){const bass=ac.createOscillator(),bg=ac.createGain();bass.type='sine';bass.frequency.setValueAtTime(base/2,t);bg.gain.setValueAtTime(.0001,t);bg.gain.exponentialRampToValueAtTime(.04,t+.02);bg.gain.exponentialRampToValueAtTime(.0001,t+.22);bass.connect(bg);bg.connect(ac.destination);bass.start(t);bass.stop(t+.23);}
+  if(brMusicStep%2===0){const bass=ac.createOscillator(),bg=ac.createGain();bass.type='sine';bass.frequency.setValueAtTime(base/2,t);bg.gain.setValueAtTime(.0001,t);bg.gain.exponentialRampToValueAtTime(.12,t+.02);bg.gain.exponentialRampToValueAtTime(.0001,t+.22);bass.connect(bg);bg.connect(ac.destination);bass.start(t);bass.stop(t+.23);}
   brMusicStep++;
  };
  tick();brMusicTimer=setInterval(tick,260);
@@ -3628,9 +3639,9 @@ function brStartMusic(){
 function brStopMusic(){if(brMusicTimer){clearInterval(brMusicTimer);brMusicTimer=null;}}
 function brPlayDeathSound(){
  const ac=brEnsureAudio();if(!ac)return;const t=ac.currentTime;
- [220,164.81,110].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain(),start=t+i*.13;o.type='sawtooth';o.frequency.setValueAtTime(f,start);g.gain.setValueAtTime(.0001,start);g.gain.exponentialRampToValueAtTime(.14,start+.025);g.gain.exponentialRampToValueAtTime(.0001,start+.32);o.connect(g);g.connect(ac.destination);o.start(start);o.stop(start+.34);});
+ [220,164.81,110].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain(),start=t+i*.13;o.type='sawtooth';o.frequency.setValueAtTime(f,start);g.gain.setValueAtTime(.0001,start);g.gain.exponentialRampToValueAtTime(.32,start+.025);g.gain.exponentialRampToValueAtTime(.0001,start+.32);o.connect(g);g.connect(ac.destination);o.start(start);o.stop(start+.34);});
 }
- function brPlayCollectSound(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!brAudioContext)brAudioContext=new AC();if(brAudioContext.state==='suspended')brAudioContext.resume();const t=brAudioContext.currentTime,osc=brAudioContext.createOscillator(),gain=brAudioContext.createGain();osc.type='sine';osc.frequency.setValueAtTime(880,t);osc.frequency.exponentialRampToValueAtTime(1320,t+.09);gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.25,t+.012);gain.gain.exponentialRampToValueAtTime(.0001,t+.18);osc.connect(gain);gain.connect(brAudioContext.destination);osc.start(t);osc.stop(t+.19);}catch(e){console.warn('Sonido de magnesio no disponible',e);}}
+ function brPlayCollectSound(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!brAudioContext)brAudioContext=new AC();if(brAudioContext.state==='suspended')brAudioContext.resume();const t=brAudioContext.currentTime,osc=brAudioContext.createOscillator(),gain=brAudioContext.createGain();osc.type='sine';osc.frequency.setValueAtTime(880,t);osc.frequency.exponentialRampToValueAtTime(1320,t+.09);gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.55,t+.012);gain.gain.exponentialRampToValueAtTime(.0001,t+.18);osc.connect(gain);gain.connect(brAudioContext.destination);osc.start(t);osc.stop(t+.19);}catch(e){console.warn('Sonido de magnesio no disponible',e);}}
 function brRender(force){
  const d=brLevelData(),score=Math.floor(brScore);
  document.getElementById('brScore').textContent=brFmt(score).padStart(4,'0');document.getElementById('brCombo').textContent='x'+brCombo;
@@ -3792,13 +3803,27 @@ const planCategories=[{name:'Calentamiento',icon:'<svg viewBox="0 0 40 40"><path
 function savePlanOrder(){try{localStorage.setItem('solidoPlanOrder',JSON.stringify(planOrder));}catch(e){}}
 function movePlanCategory(name,delta){const i=planOrder.indexOf(name),j=i+delta;if(i<0||j<0||j>=planOrder.length)return;[planOrder[i],planOrder[j]]=[planOrder[j],planOrder[i]];savePlanOrder();renderPlan();}
 function openPlanCategory(name){
-  activePlanCategory=name;editingPlanId=null;
+  activePlanCategory=name;editingPlanId=null;show('plans');
   const saved=customPlans.find(p=>p.category===name);
-  if(saved){planDraftItems=saved.items.map(x=>({...x}));editingPlanId=saved.id;document.getElementById('customPlanName').value=saved.name||name;document.getElementById('planConfigTitle').textContent=name+' · ejercicios guardados';document.getElementById('planConfigPanel').style.display='block';renderPlanSettings();document.getElementById('planConfigPanel').scrollIntoView({behavior:'smooth',block:'start'});return;}
-  planDraftItems=[];planSelectedIds=[];document.getElementById('customPlanName').value=name;openPlanExerciseLibrary();
+  document.getElementById('customPlanName').value=saved?.name||name;
+  document.getElementById('planConfigTitle').textContent=name;
+  if(saved){planDraftItems=saved.items.map(x=>({...x}));editingPlanId=saved.id;openPlanEditor();return;}
+  planDraftItems=[];planSelectedIds=[];openPlanExerciseLibrary();
 }
-function closePlanEditor(){const panel=document.getElementById('planConfigPanel');if(panel)panel.style.display='none';activePlanCategory='';renderPlan();}
-
+function openPlanEditor(){
+  const panel=document.getElementById('planConfigPanel');if(!panel)return;
+  panel.style.display='block';panel.classList.add('plan-editor-fullscreen');document.body.classList.add('plan-editor-open');
+  document.getElementById('planConfigTitle').textContent=activePlanCategory||'Mi plan';
+  const start=document.getElementById('planStartButton'),del=document.getElementById('planDeleteButton');
+  if(start)start.style.display=editingPlanId!==null?'block':'none';
+  if(del)del.style.display=editingPlanId!==null?'block':'none';
+  renderPlanSettings();
+}
+function closePlanEditor(){
+  const panel=document.getElementById('planConfigPanel');
+  if(panel){panel.style.display='none';panel.classList.remove('plan-editor-fullscreen');}
+  document.body.classList.remove('plan-editor-open');activePlanCategory='';editingPlanId=null;planDraftItems=[];renderPlan();
+}
 function formatPlanTime(seconds){
   const n=Math.max(0,Math.round(Number(seconds)||0));
   return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
@@ -3840,8 +3865,7 @@ function finishPlanExerciseSelection(){
   try{localStorage.setItem('solidoCustomPlans',JSON.stringify(customPlans));}catch(e){alert('No se pudo guardar el plan en este dispositivo. Comprueba el almacenamiento de la aplicación.');}
   editingPlanId=entry.id;show('plans');
   const title=document.querySelector('#library .sectionhead h2');if(title)title.textContent='Biblioteca de ejercicios';
-  renderPlan();const panel=document.getElementById('planConfigPanel');if(panel)panel.style.display=planDraftItems.length?'block':'none';
-  const configTitle=document.getElementById('planConfigTitle');if(configTitle)configTitle.textContent=activePlanCategory+' · ejercicios guardados';
+  renderPlan();openPlanEditor();
 }
 function renderPlanSettings(){
   const host=document.getElementById('planExerciseSettings');
@@ -3885,17 +3909,23 @@ function removePlanDraftExercise(id){
 function saveCustomPlan(){
   const items=readPlanBuilder(),status=document.getElementById('planBuilderStatus');
   if(!items.length){if(status)status.textContent='Añade al menos un ejercicio desde la biblioteca.';return;}
-  const name=(document.getElementById('customPlanName').value||'Mi entrenamiento').trim().slice(0,40);
-  const entry={id:editingPlanId||Date.now(),category:activePlanCategory,name:name||activePlanCategory,items:items,seconds:estimatePlan(items),createdAt:new Date().toISOString()};
+  const name=(document.getElementById('customPlanName').value||activePlanCategory||'Mi entrenamiento').trim().slice(0,40);
+  const entry={id:editingPlanId||Date.now(),category:activePlanCategory,name:name||activePlanCategory,items,seconds:estimatePlan(items),createdAt:new Date().toISOString()};
   if(editingPlanId!==null){const index=customPlans.findIndex(p=>p.id===editingPlanId);if(index>=0)customPlans[index]=entry;else customPlans.unshift(entry);}
   else customPlans.unshift(entry);
-  editingPlanId=entry.id;
+  editingPlanId=entry.id;planDraftItems=items.map(x=>({...x}));
+  try{localStorage.setItem('solidoCustomPlans',JSON.stringify(customPlans));}catch(e){if(status)status.textContent='No se pudo guardar el plan en este dispositivo.';return;}
+  renderPlanSettings();renderPlan();
+  if(status)status.textContent='Plan guardado. Se conservará en esta categoría.';
+  const start=document.getElementById('planStartButton'),del=document.getElementById('planDeleteButton');
+  if(start)start.style.display='block';if(del)del.style.display='block';
+}
+function startActivePlan(){if(editingPlanId!==null)startPlan(editingPlanId);}
+function deleteActivePlan(){
+  if(editingPlanId===null)return;
+  const id=editingPlanId;customPlans=customPlans.filter(p=>p.id!==id);
   try{localStorage.setItem('solidoCustomPlans',JSON.stringify(customPlans));}catch(e){}
-  planDraftItems=[];
-  const panel=document.getElementById('planConfigPanel');if(panel)panel.style.display='none';
-  activePlanCategory='';
-  renderPlan();
-  if(status)status.textContent='Plan guardado. Ya puedes iniciarlo cuando quieras.';
+  closePlanEditor();
 }
 function renderPlan(){
   const grid=document.getElementById('planCategoryList');
@@ -4952,7 +4982,7 @@ function startMeditationAmbient(){
     if(!meditationAmbientCtx)meditationAmbientCtx=new Ctx();
     if(meditationAmbientCtx.state==='suspended')meditationAmbientCtx.resume();
     stopMeditationAmbientNodes();
-    const ctx=meditationAmbientCtx,master=ctx.createGain();master.gain.value=0.07;master.connect(ctx.destination);
+    const ctx=meditationAmbientCtx,master=ctx.createGain();master.gain.value=0.22;master.connect(ctx.destination);
     const osc=ctx.createOscillator(),gain=ctx.createGain(),filter=ctx.createBiquadFilter();
     osc.type='sine';osc.frequency.value=110;gain.gain.value=0.35;filter.type='lowpass';filter.frequency.value=240;
     osc.connect(filter);filter.connect(gain);gain.connect(master);osc.start();
