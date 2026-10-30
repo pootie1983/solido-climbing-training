@@ -39,9 +39,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         healthPermissionLauncher = registerForActivityResult(PermissionController.createRequestPermissionResultContract()) { if (::healthConnectBridge.isInitialized) healthConnectBridge.refresh() }
 
-        // Mantener la pantalla encendida mientras la actividad de la app esté visible.
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-
         web = WebView(this)
         web.settings.javaScriptEnabled = true
         web.settings.domStorageEnabled = true
@@ -54,11 +52,7 @@ class MainActivity : ComponentActivity() {
             }
         }
         web.webChromeClient = object : WebChromeClient() {
-            override fun onShowFileChooser(
-                webView: WebView?,
-                filePathCallback: ValueCallback<Array<android.net.Uri>>?,
-                fileChooserParams: FileChooserParams?
-            ): Boolean {
+            override fun onShowFileChooser(webView: WebView?, filePathCallback: ValueCallback<Array<android.net.Uri>>?, fileChooserParams: FileChooserParams?): Boolean {
                 fileChooserCallback?.onReceiveValue(null)
                 fileChooserCallback = filePathCallback
                 return try {
@@ -76,13 +70,11 @@ class MainActivity : ComponentActivity() {
             }
         }
         web.setBackgroundColor(android.graphics.Color.rgb(8, 18, 27))
-
         healthConnectBridge = HealthConnectBridge(this, web)
         web.addJavascriptInterface(healthConnectBridge, "HealthConnect")
         whc06Bridge = WHC06Bridge(this, web)
         web.addJavascriptInterface(whc06Bridge, "WHC06")
         web.addJavascriptInterface(this, "AndroidUi")
-
         setContentView(web)
         web.loadUrl("file:///android_asset/index.html")
     }
@@ -93,9 +85,7 @@ class MainActivity : ComponentActivity() {
         if (requestCode == fileChooserRequestCode) {
             val callback = fileChooserCallback
             fileChooserCallback = null
-            val results = if (resultCode == RESULT_OK) {
-                WebChromeClient.FileChooserParams.parseResult(resultCode, data)
-            } else null
+            val results = if (resultCode == RESULT_OK) WebChromeClient.FileChooserParams.parseResult(resultCode, data) else null
             callback?.onReceiveValue(results)
         }
         if (requestCode == densityCameraRequestCode && resultCode == RESULT_OK) {
@@ -119,11 +109,8 @@ class MainActivity : ComponentActivity() {
         runOnUiThread {
             try {
                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                if (intent.resolveActivity(packageManager) != null) {
-                    startActivityForResult(intent, densityCameraRequestCode)
-                } else {
-                    web.evaluateJavascript("document.getElementById('densityCameraInput').click()", null)
-                }
+                if (intent.resolveActivity(packageManager) != null) startActivityForResult(intent, densityCameraRequestCode)
+                else web.evaluateJavascript("document.getElementById('densityCameraInput').click()", null)
             } catch (e: Exception) {
                 web.evaluateJavascript("document.getElementById('densityCameraInput').click()", null)
             }
@@ -147,7 +134,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // Android can reveal system bars again after focus changes; re-apply immersive mode while playing.
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus && gameFullscreenRequested) applyGameFullscreen()
@@ -156,33 +142,20 @@ class MainActivity : ComponentActivity() {
     private fun applyGameFullscreen() {
         window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         window.decorView.systemUiVisibility = (
-            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-            View.SYSTEM_UI_FLAG_FULLSCREEN or
-            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_FULLSCREEN or
+            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         )
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (::whc06Bridge.isInitialized) {
-            whc06Bridge.onRequestPermissionsResult(requestCode, grantResults)
-        }
+        if (::whc06Bridge.isInitialized) whc06Bridge.onRequestPermissionsResult(requestCode, grantResults)
     }
 
     @Deprecated("Deprecated in Android")
     override fun onBackPressed() {
-        if (::web.isInitialized && web.canGoBack()) {
-            web.goBack()
-        } else {
-            super.onBackPressed()
-        }
+        if (::web.isInitialized && web.canGoBack()) web.goBack() else super.onBackPressed()
     }
 
     override fun onDestroy() {
