@@ -1823,6 +1823,28 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
 #workoutSwitchCountdown{font-size:46px;font-weight:900;font-variant-numeric:tabular-nums;color:#fff;margin-top:8px}
 @keyframes workoutSwitchPop{from{transform:scale(.88);opacity:.3}to{transform:scale(1);opacity:1}}
 /* 
+/* Planes: botones minimalistas y selección visual en biblioteca */
+.plan-add-tile{margin:14px 0 24px}
+.plan-add-button{width:100%;display:flex;align-items:center;gap:13px;text-align:left;padding:15px;border:1px solid #242b27;border-radius:14px;background:#080b09;color:#f4f7f4;cursor:pointer}
+.plan-add-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:12px;background:#111a14;color:#48d477;border:1px solid #244b32}
+.plan-add-button strong,.plan-add-button small{display:block}
+.plan-add-button strong{font-size:14px}
+.plan-add-button small{font-size:11px;color:#9aa69d;margin-top:3px}
+.plan-add-chevron{margin-left:auto;color:#48d477;font-size:26px}
+.plan-config-panel{margin:12px 0 22px}
+.plan-setting-row{padding:12px 0;border-bottom:1px solid var(--line)}
+.plan-setting-heading{display:flex;align-items:center;gap:10px}
+.plan-setting-heading strong{flex:1}
+.plan-setting-thumb{width:54px;height:54px;overflow:hidden;border-radius:9px;background:#080b09;display:grid;place-items:center;color:#48d477}
+.plan-setting-thumb img{width:100%;height:100%;object-fit:cover}
+.plan-remove-exercise{border:1px solid #333;background:#080b09;color:#48d477;border-radius:8px;width:30px;height:30px;font-size:20px}
+.plan-library-choice{position:relative;cursor:pointer}
+.plan-library-choice .exercise-art{position:relative}
+.plan-choice-check{position:absolute;right:9px;top:9px;width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:#080b09;border:1px solid #48d477;color:#48d477;font-size:19px;font-weight:800}
+.plan-library-choice.selected .plan-choice-check{background:#48d477;color:#050805}
+.plan-library-choice.selected{outline:2px solid #48d477;outline-offset:2px;border-radius:14px}
+.plan-library-action{position:sticky;bottom:10px;z-index:8;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;margin:14px 0;background:#080b09;border:1px solid #244b32;border-radius:13px;color:#fff;box-shadow:0 6px 24px #0008}
+.plan-library-action span{color:#48d477;font-weight:700;font-size:13px}
 </style>
 </head>
 
@@ -2091,27 +2113,26 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
 <!-- PLANES -->
 
 <section id="plans" class="hide">
-  <div class="sectionhead">
-    <h2>Mis planes de escalada</h2>
-    <span class="tag">A TU MEDIDA</span>
+  <div class="sectionhead"><h2>Planes de entrenamiento</h2><span class="tag">PERSONALIZA</span></div>
+  <p class="muted">Organiza tus sesiones con tus ejercicios favoritos de escalada.</p>
+  <div class="plan-add-tile">
+    <button type="button" class="plan-add-button" onclick="openPlanExerciseLibrary()" aria-label="Añadir ejercicios desde la biblioteca">
+      <span class="plan-add-icon"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span>
+      <span><strong>Añadir ejercicios</strong><small>Elegir desde la biblioteca</small></span>
+      <span class="plan-add-chevron">›</span>
+    </button>
   </div>
-  <p class="muted">Crea sesiones con los ejercicios de la biblioteca. Ajusta series, repeticiones, tiempo de trabajo y descanso. La duración se calcula automáticamente.</p>
-  <div class="tile plan-builder">
+  <div id="planConfigPanel" class="tile plan-config-panel" style="display:none">
+    <div class="sectionhead"><h3>Configura tu sesión</h3><span class="tag" id="planSelectedCount">0 ejercicios</span></div>
     <label class="config-label" for="customPlanName">Nombre del plan</label>
     <input id="customPlanName" type="text" maxlength="40" value="Mi entrenamiento" placeholder="Ej. Fuerza y técnica" style="width:100%;margin:6px 0 14px">
-    <div class="row" style="justify-content:space-between;align-items:center">
-      <strong>Elige tus ejercicios</strong><span class="tag" id="planSelectedCount">0 seleccionados</span>
-    </div>
-    <div id="planExercisePicker" class="plan-exercise-picker"></div>
-    <div class="plan-estimate">
-      <span>Tiempo estimado de la sesión</span>
-      <strong id="planEstimate">00:00</strong>
-      <small>Incluye trabajo, series y descansos configurados.</small>
-    </div>
+    <div id="planExerciseSettings"></div>
+    <div class="plan-estimate"><span>Tiempo estimado de la sesión</span><strong id="planEstimate">00:00</strong><small>Incluye trabajo, series y descansos configurados.</small></div>
     <button class="btn" style="width:100%;margin-top:12px" onclick="saveCustomPlan()">＋ Guardar mi plan</button>
+    <button class="btn secondary" style="width:100%;margin-top:8px" onclick="openPlanExerciseLibrary()">＋ Añadir más ejercicios</button>
     <div id="planBuilderStatus" class="meditation-status" role="status" aria-live="polite"></div>
   </div>
-  <div class="sectionhead"><h2>Planes guardados</h2></div>
+  <div class="sectionhead"><h2>Mis planes</h2></div>
   <div class="cards" id="planList"></div>
 </section>
 
@@ -3756,37 +3777,69 @@ function show(page,btn){
 ========================= */
 
 let customPlans=JSON.parse(localStorage.getItem('solidoCustomPlans')||'[]');
+let planSelectionMode=false;
+let planSelectedIds=[];
+let planDraftItems=[];
 function formatPlanTime(seconds){
   const n=Math.max(0,Math.round(Number(seconds)||0));
   return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
 }
 function estimatePlanItem(item){
-  const ex=exercises.find(e=>e.id===Number(item.id));
-  if(!ex)return 0;
-  const sets=Math.max(1,Number(item.sets)||1), reps=Math.max(1,Number(item.reps)||1);
-  const work=Math.max(5,Number(item.work)||30), rest=Math.max(0,Number(item.rest)||0);
+  const sets=Math.max(1,Number(item.sets)||1),reps=Math.max(1,Number(item.reps)||1);
+  const work=Math.max(5,Number(item.work)||30),rest=Math.max(0,Number(item.rest)||0);
   return sets*reps*work+(sets-1)*rest;
 }
 function estimatePlan(items){
   return (items||[]).reduce((sum,item)=>sum+estimatePlanItem(item),0)+Math.max(0,(items||[]).length-1)*30;
 }
-function renderPlanBuilder(){
-  const picker=document.getElementById('planExercisePicker');
-  if(!picker)return;
-  picker.innerHTML=exercises.map(e=>`
-    <div class="plan-picker-row" data-exercise-id="${e.id}">
-      <label class="plan-picker-main"><input class="plan-pick" type="checkbox" value="${e.id}" onchange="updatePlanEstimate()"><span class="plan-picker-icon">${e.emoji}</span><span><strong>${e.name}</strong><small>${e.cat}</small></span></label>
+function openPlanExerciseLibrary(){
+  planSelectionMode=true;
+  planSelectedIds=planDraftItems.map(item=>Number(item.id));
+  show('library');
+  renderExercises('Todos');
+  const title=document.querySelector('#library .sectionhead h2');
+  if(title)title.textContent='Elige ejercicios para tu plan';
+}
+function togglePlanExercise(id){
+  id=Number(id);
+  if(planSelectedIds.includes(id))planSelectedIds=planSelectedIds.filter(x=>x!==id);
+  else planSelectedIds.push(id);
+  renderExercises(document.querySelector('#filters .tab.active')?.textContent.trim()||'Todos');
+}
+function finishPlanExerciseSelection(){
+  planDraftItems=planSelectedIds.map(id=>{
+    const existing=planDraftItems.find(item=>Number(item.id)===id);
+    const ex=exercises.find(e=>Number(e.id)===id);
+    return existing||{id:id,sets:3,reps:8,work:30,rest:Math.max(0,Number(ex?.rest)||60)};
+  });
+  planSelectionMode=false;
+  show('plans');
+  const title=document.querySelector('#library .sectionhead h2');
+  if(title)title.textContent='Biblioteca de ejercicios';
+  renderPlan();
+  const panel=document.getElementById('planConfigPanel');
+  if(panel)panel.style.display=planDraftItems.length?'block':'none';
+}
+function renderPlanSettings(){
+  const host=document.getElementById('planExerciseSettings');
+  if(!host)return;
+  host.innerHTML=planDraftItems.map(item=>{
+    const ex=exercises.find(e=>Number(e.id)===Number(item.id));
+    if(!ex)return '';
+    return `<div class="plan-setting-row" data-exercise-id="${item.id}">
+      <div class="plan-setting-heading"><div class="plan-setting-thumb"><img src="${ex.image||''}" alt="" onerror="this.style.display='none';this.parentElement.textContent='▰'"></div><strong>${ex.name}</strong><button type="button" class="plan-remove-exercise" onclick="removePlanDraftExercise(${item.id})" aria-label="Quitar ${ex.name}">×</button></div>
       <div class="plan-picker-settings">
-        <label>Series<input class="plan-sets" type="number" min="1" max="20" value="3" oninput="updatePlanEstimate()"></label>
-        <label>Reps<input class="plan-reps" type="number" min="1" max="100" value="8" oninput="updatePlanEstimate()"></label>
-        <label>Trabajo (s)<input class="plan-work" type="number" min="5" max="600" value="30" oninput="updatePlanEstimate()"></label>
-        <label>Descanso (s)<input class="plan-rest" type="number" min="0" max="600" value="${e.rest||60}" oninput="updatePlanEstimate()"></label>
+        <label>Series<input class="plan-sets" type="number" min="1" max="20" value="${item.sets}" oninput="updatePlanEstimate()"></label>
+        <label>Reps<input class="plan-reps" type="number" min="1" max="100" value="${item.reps}" oninput="updatePlanEstimate()"></label>
+        <label>Trabajo (s)<input class="plan-work" type="number" min="5" max="600" value="${item.work}" oninput="updatePlanEstimate()"></label>
+        <label>Descanso (s)<input class="plan-rest" type="number" min="0" max="600" value="${item.rest}" oninput="updatePlanEstimate()"></label>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   updatePlanEstimate();
 }
 function readPlanBuilder(){
-  return [...document.querySelectorAll('.plan-picker-row')].filter(row=>row.querySelector('.plan-pick').checked).map(row=>({
+  return [...document.querySelectorAll('.plan-setting-row')].map(row=>({
     id:Number(row.dataset.exerciseId),
     sets:Math.max(1,Math.min(20,Number(row.querySelector('.plan-sets').value)||1)),
     reps:Math.max(1,Math.min(100,Number(row.querySelector('.plan-reps').value)||1)),
@@ -3795,28 +3848,38 @@ function readPlanBuilder(){
   }));
 }
 function updatePlanEstimate(){
-  const selected=readPlanBuilder(),estimate=document.getElementById('planEstimate'),count=document.getElementById('planSelectedCount');
-  if(estimate)estimate.textContent=formatPlanTime(estimatePlan(selected));
-  if(count)count.textContent=selected.length+' seleccionados';
+  planDraftItems=readPlanBuilder();
+  const estimate=document.getElementById('planEstimate'),count=document.getElementById('planSelectedCount');
+  if(estimate)estimate.textContent=formatPlanTime(estimatePlan(planDraftItems));
+  if(count)count.textContent=planDraftItems.length+' ejercicios';
+}
+function removePlanDraftExercise(id){
+  planDraftItems=planDraftItems.filter(item=>Number(item.id)!==Number(id));
+  renderPlanSettings();
+  const panel=document.getElementById('planConfigPanel');
+  if(panel)panel.style.display=planDraftItems.length?'block':'none';
 }
 function saveCustomPlan(){
   const items=readPlanBuilder(),status=document.getElementById('planBuilderStatus');
-  if(!items.length){status.textContent='Selecciona al menos un ejercicio para crear tu plan.';return;}
+  if(!items.length){if(status)status.textContent='Añade al menos un ejercicio desde la biblioteca.';return;}
   const name=(document.getElementById('customPlanName').value||'Mi entrenamiento').trim().slice(0,40);
   const entry={id:Date.now(),name:name||'Mi entrenamiento',items:items,seconds:estimatePlan(items),createdAt:new Date().toISOString()};
   customPlans.unshift(entry);
   try{localStorage.setItem('solidoCustomPlans',JSON.stringify(customPlans));}catch(e){}
+  planDraftItems=[];
+  const panel=document.getElementById('planConfigPanel');if(panel)panel.style.display='none';
   renderPlan();
-  status.textContent='Plan guardado. Ya puedes iniciarlo cuando quieras.';
+  if(status)status.textContent='Plan guardado. Ya puedes iniciarlo cuando quieras.';
 }
 function renderPlan(){
-  renderPlanBuilder();
+  renderPlanSettings();
   const list=document.getElementById('planList');
-  if(!customPlans.length){list.innerHTML='<div class="tile muted">Todavía no tienes planes guardados. Elige ejercicios arriba y guarda tu primera sesión.</div>';return;}
+  if(!list)return;
+  if(!customPlans.length){list.innerHTML='<div class="tile muted">Todavía no tienes planes guardados.</div>';return;}
   list.innerHTML=customPlans.map(p=>`
     <article class="planstep">
-      <div class="row" style="align-items:center"><span class="plan-card-icon">🧗</span><div style="flex:1;min-width:0"><strong>${p.name}</strong><div class="muted">${p.items.length} ejercicios · ${formatPlanTime(p.seconds)} estimados</div></div><span class="tag">${Math.ceil(p.seconds/60)} MIN</span></div>
-      <div class="plan-saved-items">${p.items.map(item=>{const ex=exercises.find(e=>e.id===item.id);return ex?'<span>'+ex.emoji+' '+ex.name+' · '+item.sets+'×'+item.reps+'</span>':'';}).join('')}</div>
+      <div class="row" style="align-items:center"><span class="plan-card-icon">▰</span><div style="flex:1;min-width:0"><strong>${p.name}</strong><div class="muted">${p.items.length} ejercicios · ${formatPlanTime(p.seconds)} estimados</div></div><span class="tag">${Math.ceil(p.seconds/60)} MIN</span></div>
+      <div class="plan-saved-items">${p.items.map(item=>{const ex=exercises.find(e=>Number(e.id)===Number(item.id));return ex?'<span>'+ex.name+' · '+item.sets+'×'+item.reps+'</span>':'';}).join('')}</div>
       <div class="row" style="margin-top:10px"><button class="btn" onclick="startPlan(${p.id})">▶ Iniciar plan</button><button class="btn secondary" onclick="deleteCustomPlan(${p.id})">Eliminar</button></div>
     </article>`).join('');
 }
@@ -3825,67 +3888,34 @@ function deleteCustomPlan(id){
   try{localStorage.setItem('solidoCustomPlans',JSON.stringify(customPlans));}catch(e){}
   renderPlan();
 }
-
-
 /* =========================
    EJERCICIOS
 ========================= */
 
-function renderExercises(
-  category='Todos'
-){
-
-  document.getElementById(
-    'exerciseList'
-  ).innerHTML =
-
-    exercises
-
-      .filter(
-        e =>
-          category === 'Todos' ||
-          e.cat === category
-      )
-
-      .map(
-        e => `
-
-          <article
-            class="exercise"
-            onclick="openExercise(${e.id})">
-
-            <div class="art exercise-art">
-              <img src="${e.image || ''}" alt="Ilustración: ${e.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.textContent='${e.emoji}'">
-            </div>
-
-            <div>
-
-              <h3>
-                ${e.name}
-              </h3>
-
-              <p>
-                ${e.muscles}
-              </p>
-
-              <span class="tag">
-                ${e.cat}
-              </span>
-
-              <span class="muted">
-                › Detalles
-              </span>
-
-            </div>
-
-          </article>
-
-        `
-      ).join('');
-
+function renderExercises(category='Todos'){
+  const list=document.getElementById('exerciseList');
+  if(!list)return;
+  list.innerHTML=exercises.filter(e=>category==='Todos'||e.cat===category).map(e=>{
+    if(planSelectionMode){
+      const chosen=planSelectedIds.includes(Number(e.id));
+      return `<article class="exercise plan-library-choice ${chosen?'selected':''}" onclick="togglePlanExercise(${e.id})">
+        <div class="art exercise-art"><img src="${e.image||''}" alt="Ilustración: ${e.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.textContent='${e.emoji}'"><span class="plan-choice-check">${chosen?'✓':'＋'}</span></div>
+        <div><h3>${e.name}</h3><p>${e.muscles}</p><span class="tag">${e.cat}</span></div>
+      </article>`;
+    }
+    return `<article class="exercise" onclick="openExercise(${e.id})">
+      <div class="art exercise-art"><img src="${e.image||''}" alt="Ilustración: ${e.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.textContent='${e.emoji}'"></div>
+      <div><h3>${e.name}</h3><p>${e.muscles}</p><span class="tag">${e.cat}</span><span class="muted">› Detalles</span></div>
+    </article>`;
+  }).join('');
+  const oldBar=document.getElementById('planLibraryAction');
+  if(oldBar)oldBar.remove();
+  if(planSelectionMode){
+    const bar=document.createElement('div');bar.id='planLibraryAction';bar.className='plan-library-action';
+    bar.innerHTML='<span>'+planSelectedIds.length+' ejercicios seleccionados</span><button type="button" class="btn" onclick="finishPlanExerciseSelection()">Continuar ›</button>';
+    list.parentNode.appendChild(bar);
+  }
 }
-
-
 function filterExercises(
   cat,
   btn
