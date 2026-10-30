@@ -7,6 +7,10 @@ import android.webkit.WebViewClient
 import android.webkit.WebChromeClient
 import android.webkit.ValueCallback
 import android.content.Intent
+import android.provider.MediaStore
+import android.graphics.Bitmap
+import android.util.Base64
+import java.io.ByteArrayOutputStream
 import android.view.View
 import android.view.WindowManager
 import android.webkit.JavascriptInterface
@@ -18,6 +22,7 @@ class MainActivity : Activity() {
     private var gameFullscreenRequested = false
     private var fileChooserCallback: ValueCallback<Array<android.net.Uri>>? = null
     private val fileChooserRequestCode = 2001
+    private val densityCameraRequestCode = 2002
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,6 +78,31 @@ class MainActivity : Activity() {
                 WebChromeClient.FileChooserParams.parseResult(resultCode, data)
             } else null
             callback?.onReceiveValue(results)
+        }
+        if (requestCode == densityCameraRequestCode && resultCode == RESULT_OK) {
+            val bitmap = data?.extras?.get("data") as? Bitmap
+            if (bitmap != null) {
+                val output = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 88, output)
+                val encoded = Base64.encodeToString(output.toByteArray(), Base64.NO_WRAP)
+                web.evaluateJavascript("densityReceiveCameraPhoto('data:image/jpeg;base64,$encoded')", null)
+            }
+        }
+    }
+
+    @JavascriptInterface
+    fun openDensityCamera() {
+        runOnUiThread {
+            try {
+                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                if (intent.resolveActivity(packageManager) != null) {
+                    startActivityForResult(intent, densityCameraRequestCode)
+                } else {
+                    web.evaluateJavascript("document.getElementById('densityCameraInput').click()", null)
+                }
+            } catch (e: Exception) {
+                web.evaluateJavascript("document.getElementById('densityCameraInput').click()", null)
+            }
         }
     }
 
