@@ -1912,8 +1912,8 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
         var start=audioCtx.currentTime+0.08;
         var master=audioCtx.createGain();
         master.gain.setValueAtTime(0.0001,start);
-        master.gain.linearRampToValueAtTime(0.22,start+0.45);
-        master.gain.setValueAtTime(0.22,start+3.8);
+        master.gain.linearRampToValueAtTime(0.32,start+0.45);
+        master.gain.setValueAtTime(0.32,start+3.8);
         master.gain.exponentialRampToValueAtTime(0.0001,start+5.25);
         master.connect(audioCtx.destination);
         var chords=[[110,164.81,220],[98,146.83,196],[130.81,196,261.63],[110,164.81,220]];
@@ -1924,21 +1924,21 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
             osc.type=voice===0?'triangle':'sawtooth';
             osc.frequency.setValueAtTime(freq,at);
             filter.type='lowpass';filter.frequency.setValueAtTime(620,at);filter.frequency.linearRampToValueAtTime(1100,at+0.7);
-            gain.gain.setValueAtTime(0.0001,at);gain.gain.linearRampToValueAtTime(voice===0?0.15:0.045,at+0.32);gain.gain.setValueAtTime(voice===0?0.15:0.045,at+1.05);gain.gain.linearRampToValueAtTime(0.0001,at+1.28);
+            gain.gain.setValueAtTime(0.0001,at);gain.gain.linearRampToValueAtTime(voice===0?0.22:0.07,at+0.32);gain.gain.setValueAtTime(voice===0?0.15:0.045,at+1.05);gain.gain.linearRampToValueAtTime(0.0001,at+1.28);
             osc.connect(filter);filter.connect(gain);gain.connect(master);osc.start(at);osc.stop(at+1.3);
           });
         });
         [659.25,783.99,880,1046.5,987.77,880,783.99,659.25].forEach(function(freq,index){
           var at=start+0.38+index*0.48,osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
           osc.type='sine';osc.frequency.setValueAtTime(freq,at);
-          gain.gain.setValueAtTime(0.0001,at);gain.gain.linearRampToValueAtTime(0.075,at+0.035);gain.gain.exponentialRampToValueAtTime(0.0001,at+0.42);
+          gain.gain.setValueAtTime(0.0001,at);gain.gain.linearRampToValueAtTime(0.12,at+0.035);gain.gain.exponentialRampToValueAtTime(0.0001,at+0.42);
           osc.connect(gain);gain.connect(master);osc.start(at);osc.stop(at+0.44);
         });
         [0,1,2,3].forEach(function(index){
           var at=start+index*1.25,osc=audioCtx.createOscillator(),gain=audioCtx.createGain(),filter=audioCtx.createBiquadFilter();
           osc.type='sine';osc.frequency.setValueAtTime(58,at);osc.frequency.exponentialRampToValueAtTime(34,at+0.42);
           filter.type='lowpass';filter.frequency.value=130;
-          gain.gain.setValueAtTime(0.0001,at);gain.gain.linearRampToValueAtTime(0.24,at+0.025);gain.gain.exponentialRampToValueAtTime(0.0001,at+0.62);
+          gain.gain.setValueAtTime(0.0001,at);gain.gain.linearRampToValueAtTime(0.32,at+0.025);gain.gain.exponentialRampToValueAtTime(0.0001,at+0.62);
           osc.connect(filter);filter.connect(gain);gain.connect(master);osc.start(at);osc.stop(at+0.65);
         });
       };
@@ -2837,7 +2837,7 @@ let workoutActiveHand='Derecha',workoutStartHand='Derecha',workoutSwitchSeconds=
 function workoutFormatClock(n){n=Math.max(0,Math.ceil(Number(n)||0));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');}
 let workoutCueAudio=null,workoutNoticeTimer=null,workoutForceRows=[];
 function playWorkoutCue(kind){
- try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!workoutCueAudio)workoutCueAudio=new AC();const play=()=>{const now=workoutCueAudio.currentTime,tones=kind==='switch'?[880,660]:kind==='rest'?[520]:[740,990];tones.forEach((hz,i)=>{const osc=workoutCueAudio.createOscillator(),gain=workoutCueAudio.createGain(),start=now+i*(kind==='switch'?.18:.15);osc.type='sine';osc.frequency.setValueAtTime(hz,start);gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(.2,start+.02);gain.gain.exponentialRampToValueAtTime(.0001,start+.19);osc.connect(gain);gain.connect(workoutCueAudio.destination);osc.start(start);osc.stop(start+.21);});};if(workoutCueAudio.state==='suspended')workoutCueAudio.resume().then(play).catch(()=>{});else play();}catch(e){}
+ try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!workoutCueAudio)workoutCueAudio=new AC();const play=()=>{const now=workoutCueAudio.currentTime,tones=kind==='switch'?[880,660]:kind==='rest'?[520]:[740,990];tones.forEach((hz,i)=>{const osc=workoutCueAudio.createOscillator(),gain=workoutCueAudio.createGain(),start=now+i*(kind==='switch'?.18:.15);osc.type='sine';osc.frequency.setValueAtTime(hz,start);gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(.34,start+.02);gain.gain.exponentialRampToValueAtTime(.0001,start+.19);osc.connect(gain);gain.connect(workoutCueAudio.destination);osc.start(start);osc.stop(start+.21);});};if(workoutCueAudio.state==='suspended')workoutCueAudio.resume().then(play).catch(()=>{});else play();}catch(e){}
 }
 function showWorkoutNotice(kind,title,message){const overlay=document.getElementById('workoutNotice');if(!overlay)return;document.getElementById('workoutNoticeIcon').textContent=kind==='rest'?'Ⅱ':'⏱';document.getElementById('workoutNoticeTitle').textContent=title;document.getElementById('workoutNoticeMessage').textContent=message;overlay.classList.add('show');if(workoutNoticeTimer!==null)clearTimeout(workoutNoticeTimer);workoutNoticeTimer=setTimeout(()=>{overlay.classList.remove('show');workoutNoticeTimer=null;},2600);}
 function renderWorkoutForceTable(){const body=document.getElementById('workoutForceTableBody'),count=document.getElementById('workoutSampleCount');if(!body)return;if(count)count.textContent=workoutForceRows.length+' lecturas';if(!workoutForceRows.length){body.innerHTML='<tr><td colspan="4" style="padding:12px 5px;color:var(--muted)">Esperando lecturas reales del WH-C06…</td></tr>';return;}body.innerHTML=workoutForceRows.slice(-12).reverse().map(r=>'<tr><td style="padding:7px 5px;border-bottom:1px solid #203640;color:#c5d5da">'+r.time+'</td><td style="padding:7px 5px;border-bottom:1px solid #203640">'+r.phase+'</td><td style="padding:7px 5px;border-bottom:1px solid #203640">'+r.hand+'</td><td style="padding:7px 5px;border-bottom:1px solid #203640;text-align:right;color:var(--green);font-weight:800">'+r.kg.toFixed(2)+' kg</td></tr>').join('');}
@@ -3618,9 +3618,9 @@ function brStartMusic(){
   if(!brActive){brStopMusic();return;}
   const t=ac.currentTime,base=notes[brMusicStep%notes.length];
   const osc=ac.createOscillator(),gain=ac.createGain();osc.type='triangle';osc.frequency.setValueAtTime(base,t);
-  gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.045,t+.025);gain.gain.exponentialRampToValueAtTime(.0001,t+.24);
+  gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.075,t+.025);gain.gain.exponentialRampToValueAtTime(.0001,t+.24);
   osc.connect(gain);gain.connect(ac.destination);osc.start(t);osc.stop(t+.26);
-  if(brMusicStep%2===0){const bass=ac.createOscillator(),bg=ac.createGain();bass.type='sine';bass.frequency.setValueAtTime(base/2,t);bg.gain.setValueAtTime(.0001,t);bg.gain.exponentialRampToValueAtTime(.025,t+.02);bg.gain.exponentialRampToValueAtTime(.0001,t+.22);bass.connect(bg);bg.connect(ac.destination);bass.start(t);bass.stop(t+.23);}
+  if(brMusicStep%2===0){const bass=ac.createOscillator(),bg=ac.createGain();bass.type='sine';bass.frequency.setValueAtTime(base/2,t);bg.gain.setValueAtTime(.0001,t);bg.gain.exponentialRampToValueAtTime(.04,t+.02);bg.gain.exponentialRampToValueAtTime(.0001,t+.22);bass.connect(bg);bg.connect(ac.destination);bass.start(t);bass.stop(t+.23);}
   brMusicStep++;
  };
  tick();brMusicTimer=setInterval(tick,260);
@@ -3628,9 +3628,9 @@ function brStartMusic(){
 function brStopMusic(){if(brMusicTimer){clearInterval(brMusicTimer);brMusicTimer=null;}}
 function brPlayDeathSound(){
  const ac=brEnsureAudio();if(!ac)return;const t=ac.currentTime;
- [220,164.81,110].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain(),start=t+i*.13;o.type='sawtooth';o.frequency.setValueAtTime(f,start);g.gain.setValueAtTime(.0001,start);g.gain.exponentialRampToValueAtTime(.09,start+.025);g.gain.exponentialRampToValueAtTime(.0001,start+.32);o.connect(g);g.connect(ac.destination);o.start(start);o.stop(start+.34);});
+ [220,164.81,110].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain(),start=t+i*.13;o.type='sawtooth';o.frequency.setValueAtTime(f,start);g.gain.setValueAtTime(.0001,start);g.gain.exponentialRampToValueAtTime(.14,start+.025);g.gain.exponentialRampToValueAtTime(.0001,start+.32);o.connect(g);g.connect(ac.destination);o.start(start);o.stop(start+.34);});
 }
- function brPlayCollectSound(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!brAudioContext)brAudioContext=new AC();if(brAudioContext.state==='suspended')brAudioContext.resume();const t=brAudioContext.currentTime,osc=brAudioContext.createOscillator(),gain=brAudioContext.createGain();osc.type='sine';osc.frequency.setValueAtTime(880,t);osc.frequency.exponentialRampToValueAtTime(1320,t+.09);gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.16,t+.012);gain.gain.exponentialRampToValueAtTime(.0001,t+.18);osc.connect(gain);gain.connect(brAudioContext.destination);osc.start(t);osc.stop(t+.19);}catch(e){console.warn('Sonido de magnesio no disponible',e);}}
+ function brPlayCollectSound(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!brAudioContext)brAudioContext=new AC();if(brAudioContext.state==='suspended')brAudioContext.resume();const t=brAudioContext.currentTime,osc=brAudioContext.createOscillator(),gain=brAudioContext.createGain();osc.type='sine';osc.frequency.setValueAtTime(880,t);osc.frequency.exponentialRampToValueAtTime(1320,t+.09);gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.25,t+.012);gain.gain.exponentialRampToValueAtTime(.0001,t+.18);osc.connect(gain);gain.connect(brAudioContext.destination);osc.start(t);osc.stop(t+.19);}catch(e){console.warn('Sonido de magnesio no disponible',e);}}
 function brRender(force){
  const d=brLevelData(),score=Math.floor(brScore);
  document.getElementById('brScore').textContent=brFmt(score).padStart(4,'0');document.getElementById('brCombo').textContent='x'+brCombo;
@@ -3791,7 +3791,12 @@ let planOrder=JSON.parse(localStorage.getItem('solidoPlanOrder')||'["Calentamien
 const planCategories=[{name:'Calentamiento',icon:'<svg viewBox="0 0 40 40"><path d="M20 4c-2 7-9 9-9 18a9 9 0 0 0 18 0c0-4-2-7-5-10 0 5-3 6-4 7-1-5 2-9 0-15Z"/><path d="M20 23c-3 3-3 8 1 9 4-1 4-6 1-9"/></svg>'},{name:'Fuerza',icon:'<svg viewBox="0 0 40 40"><path d="M5 15v10m5-14v18m20-18v18m5-14v10M10 20h20"/><path d="M14 16v8m12-8v8"/></svg>'},{name:'Resistencia',icon:'<svg viewBox="0 0 40 40"><path d="M4 24h7l4-12 7 18 5-12 3 6h6"/></svg>'},{name:'Técnica',icon:'<svg viewBox="0 0 40 40"><path d="M7 32 15 8l7 14 5-9 6 19"/><circle cx="15" cy="8" r="2"/><circle cx="22" cy="22" r="2"/><circle cx="27" cy="13" r="2"/></svg>'},{name:'Escalada',icon:'<svg viewBox="0 0 40 40"><path d="M5 34 14 7l7 13 5-8 9 22"/><path d="M11 24c5-3 8-1 11 3m-3-13 5-2"/></svg>'},{name:'Recuperación',icon:'<svg viewBox="0 0 40 40"><path d="M31 13A13 13 0 1 0 33 24"/><path d="M25 8h7v7"/><path d="M20 13v8l6 3"/></svg>'}];
 function savePlanOrder(){try{localStorage.setItem('solidoPlanOrder',JSON.stringify(planOrder));}catch(e){}}
 function movePlanCategory(name,delta){const i=planOrder.indexOf(name),j=i+delta;if(i<0||j<0||j>=planOrder.length)return;[planOrder[i],planOrder[j]]=[planOrder[j],planOrder[i]];savePlanOrder();renderPlan();}
-function openPlanCategory(name){activePlanCategory=name;editingPlanId=null;planDraftItems=[];planSelectedIds=[];document.getElementById('customPlanName').value=name;document.getElementById('planConfigTitle').textContent='Configura: '+name;document.getElementById('planConfigPanel').style.display='block';renderPlanSettings();document.getElementById('planConfigPanel').scrollIntoView({behavior:'smooth',block:'start'});}
+function openPlanCategory(name){
+  activePlanCategory=name;editingPlanId=null;
+  const saved=customPlans.find(p=>p.category===name);
+  if(saved){planDraftItems=saved.items.map(x=>({...x}));editingPlanId=saved.id;document.getElementById('customPlanName').value=saved.name||name;document.getElementById('planConfigTitle').textContent=name+' · ejercicios guardados';document.getElementById('planConfigPanel').style.display='block';renderPlanSettings();document.getElementById('planConfigPanel').scrollIntoView({behavior:'smooth',block:'start'});return;}
+  planDraftItems=[];planSelectedIds=[];document.getElementById('customPlanName').value=name;openPlanExerciseLibrary();
+}
 function closePlanEditor(){const panel=document.getElementById('planConfigPanel');if(panel)panel.style.display='none';activePlanCategory='';renderPlan();}
 
 function formatPlanTime(seconds){
@@ -3828,12 +3833,15 @@ function finishPlanExerciseSelection(){
     return existing||{id:id,sets:3,reps:8,work:30,rest:Math.max(0,Number(ex?.rest)||60)};
   });
   planSelectionMode=false;
-  show('plans');
-  const title=document.querySelector('#library .sectionhead h2');
-  if(title)title.textContent='Biblioteca de ejercicios';
-  renderPlan();
-  const panel=document.getElementById('planConfigPanel');
-  if(panel)panel.style.display=planDraftItems.length?'block':'none';
+  const existing=customPlans.find(p=>p.category===activePlanCategory);
+  const name=(document.getElementById('customPlanName')?.value||activePlanCategory).trim()||activePlanCategory;
+  const entry={id:existing?existing.id:Date.now(),category:activePlanCategory,name,items:planDraftItems.map(x=>({...x})),seconds:estimatePlan(planDraftItems),createdAt:existing?.createdAt||new Date().toISOString()};
+  if(existing)customPlans=customPlans.map(p=>p.category===activePlanCategory?entry:p);else customPlans.unshift(entry);
+  try{localStorage.setItem('solidoCustomPlans',JSON.stringify(customPlans));}catch(e){alert('No se pudo guardar el plan en este dispositivo. Comprueba el almacenamiento de la aplicación.');}
+  editingPlanId=entry.id;show('plans');
+  const title=document.querySelector('#library .sectionhead h2');if(title)title.textContent='Biblioteca de ejercicios';
+  renderPlan();const panel=document.getElementById('planConfigPanel');if(panel)panel.style.display=planDraftItems.length?'block':'none';
+  const configTitle=document.getElementById('planConfigTitle');if(configTitle)configTitle.textContent=activePlanCategory+' · ejercicios guardados';
 }
 function renderPlanSettings(){
   const host=document.getElementById('planExerciseSettings');
@@ -3881,7 +3889,7 @@ function saveCustomPlan(){
   const entry={id:editingPlanId||Date.now(),category:activePlanCategory,name:name||activePlanCategory,items:items,seconds:estimatePlan(items),createdAt:new Date().toISOString()};
   if(editingPlanId!==null){const index=customPlans.findIndex(p=>p.id===editingPlanId);if(index>=0)customPlans[index]=entry;else customPlans.unshift(entry);}
   else customPlans.unshift(entry);
-  editingPlanId=null;
+  editingPlanId=entry.id;
   try{localStorage.setItem('solidoCustomPlans',JSON.stringify(customPlans));}catch(e){}
   planDraftItems=[];
   const panel=document.getElementById('planConfigPanel');if(panel)panel.style.display='none';
@@ -3898,13 +3906,15 @@ function renderPlan(){
     grid.innerHTML=planOrder.map((name,i)=>{
       const cat=planCategories.find(x=>x.name===name);
       const count=customPlans.filter(p=>(p.category||'Fuerza')===name).length;
+      const saved=customPlans.find(p=>p.category===name);
+      const preview=saved?saved.items.map(item=>{const ex=exercises.find(e=>Number(e.id)===Number(item.id));return ex?ex.name:'';}).filter(Boolean).join(' · '):'';
       return `<article class="plan-category-card" onclick="openPlanCategory('${name}')">
         <div class="plan-order-controls" onclick="event.stopPropagation()">
           <button type="button" onclick="movePlanCategory('${name}',-1)" aria-label="Mover ${name} hacia arriba" ${i===0?'disabled':''}>↑</button>
           <button type="button" onclick="movePlanCategory('${name}',1)" aria-label="Mover ${name} hacia abajo" ${i===planOrder.length-1?'disabled':''}>↓</button>
         </div>
         <span class="plan-category-icon">${cat.icon}</span><strong>${name}</strong>
-        <small>${count?count+' plan(es) guardado(s)':'Crear o editar plan'} · Toca para configurar</small>
+        <small>${preview?preview:(count?count+' plan(es) guardado(s)':'Toca para elegir ejercicios')}</small>
       </article>`;
     }).join('');
     savePlanOrder();
@@ -4867,7 +4877,7 @@ function speakMeditationParagraph(){
   const utterance=new SpeechSynthesisUtterance(m.paragraphs[meditationIndex]);
   meditationUtterance=utterance;
   // Voz suave y pausada tipo ASMR. La voz femenina exacta depende de las voces instaladas en Android.
-  utterance.lang='es-ES';utterance.rate=0.76;utterance.pitch=1.08;utterance.volume=0.82;
+  utterance.lang='es-ES';utterance.rate=0.76;utterance.pitch=1.08;utterance.volume=1;
   const voices=window.speechSynthesis.getVoices();
   const spanish=voices.filter(v=>/^es([-_]|$)/i.test(v.lang));
   const preferred=spanish.find(v=>/female|femenina|woman|mujer|monica|helena|luc[ií]a|paulina|elena|laura|sara|alia|google.*españa/i.test(v.name))
@@ -4942,7 +4952,7 @@ function startMeditationAmbient(){
     if(!meditationAmbientCtx)meditationAmbientCtx=new Ctx();
     if(meditationAmbientCtx.state==='suspended')meditationAmbientCtx.resume();
     stopMeditationAmbientNodes();
-    const ctx=meditationAmbientCtx,master=ctx.createGain();master.gain.value=0.035;master.connect(ctx.destination);
+    const ctx=meditationAmbientCtx,master=ctx.createGain();master.gain.value=0.07;master.connect(ctx.destination);
     const osc=ctx.createOscillator(),gain=ctx.createGain(),filter=ctx.createBiquadFilter();
     osc.type='sine';osc.frequency.value=110;gain.gain.value=0.35;filter.type='lowpass';filter.frequency.value=240;
     osc.connect(filter);filter.connect(gain);gain.connect(master);osc.start();
