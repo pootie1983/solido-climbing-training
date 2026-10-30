@@ -1076,103 +1076,79 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
     <div style="font-size:12px;color:#aab8ac">SEGUNDOS PARA CAMBIAR</div>
   </div>
 </div>
-<div id="solidoSplash" aria-label="SOLIDO CLIMBING TRAINING">
-  <img src="./splash-solido.jpg..png?v=2" alt="SOLIDO CLIMBING — Entrenar también es escalar" loading="eager" decoding="sync" fetchpriority="high" onerror="this.style.display='none';this.parentElement.classList.add('splash-fallback')">
+<div id="solidoSplash" aria-label="Bienvenida SOLIDO CLIMBING">
+  <img id="welcomeComic" src="./P%C3%B3ster%20c%C3%B3mic%20de%20escalada%20SOLIDO.png" alt="Bienvenida cómic SOLIDO CLIMBING" loading="eager" decoding="sync" fetchpriority="high">
+  <img id="welcomeBrand" src="./splash-solido.jpg..png?v=2" alt="SOLIDO CLIMBING — Entrenar también es escalar" loading="eager" decoding="sync">
   <div class="splash-fallback-brand" aria-hidden="true"><strong>SOLIDO</strong><span>CLIMBING</span><small>ENTRENAR TAMBIÉN ES ESCALAR</small></div>
 </div>
 <style>
-#solidoSplash{position:fixed;inset:0;z-index:99999;background:#05090c;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .45s ease}
-#solidoSplash img{width:100%;height:100%;object-fit:contain;display:block}#solidoSplash.splash-fallback{flex-direction:column;gap:12px;background:radial-gradient(ellipse at center,#23382d 0%,#05090c 72%)}.splash-fallback-brand{display:none;text-align:center;color:#f5f7f1;letter-spacing:5px;font-weight:900;font-size:clamp(38px,10vw,64px)}.splash-fallback-brand span{display:block;color:#c3f36b;font-size:.48em;letter-spacing:9px}.splash-fallback-brand small{display:block;margin-top:22px;font-size:10px;letter-spacing:3px;color:#c8d0c8}#solidoSplash.splash-fallback .splash-fallback-brand{display:block}
+#solidoSplash{position:fixed;inset:0;z-index:99999;background:#05090c;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .55s ease}
+#solidoSplash img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;opacity:0;transition:opacity .55s ease}
+#solidoSplash #welcomeComic{opacity:1;object-fit:cover}
+#solidoSplash #welcomeBrand{opacity:0}
+#solidoSplash.show-brand #welcomeComic{opacity:0}
+#solidoSplash.show-brand #welcomeBrand{opacity:1}
+#solidoSplash.splash-fallback{flex-direction:column;gap:12px;background:radial-gradient(ellipse at center,#23382d 0%,#05090c 72%)}
+.splash-fallback-brand{display:none;text-align:center;color:#f5f7f1;letter-spacing:5px;font-weight:900;font-size:clamp(38px,10vw,64px)}
+.splash-fallback-brand span{display:block;color:#c3f36b;font-size:.48em;letter-spacing:9px}
+.splash-fallback-brand small{display:block;margin-top:22px;font-size:10px;letter-spacing:3px;color:#c8d0c8}
+#solidoSplash.splash-fallback .splash-fallback-brand{display:block}
 #solidoSplash.hide{opacity:0;pointer-events:none}
 </style>
 <script>
 (function(){
   var splash=document.getElementById('solidoSplash');
+  var comic=document.getElementById('welcomeComic');
+  var brand=document.getElementById('welcomeBrand');
   document.documentElement.style.background='#05090c';
   document.body.style.overflow='hidden';
 
-  // Intro épica original: rugido grave, subida de tensión, golpe cinematográfico y brillo final.
-  // Se sintetiza localmente; no usa una melodía de terceros ni archivos externos.
-  // La reproducción automática puede estar limitada por Android/WebView.
+  if(comic)comic.onerror=function(){
+    comic.style.display='none';
+    if(splash)splash.classList.add('splash-fallback');
+  };
+
+  // Campana de bienvenida sintetizada localmente, sin archivos externos.
   try{
     var AudioCtx=window.AudioContext||window.webkitAudioContext;
     if(AudioCtx){
       var audioCtx=new AudioCtx();
-      var playWelcome=function(){
+      var playBell=function(){
         var t=audioCtx.currentTime;
         var master=audioCtx.createGain();
-        master.gain.setValueAtTime(0.72,t);
+        master.gain.setValueAtTime(0.34,t);
+        master.gain.exponentialRampToValueAtTime(0.0001,t+2.2);
         master.connect(audioCtx.destination);
-
-        function voice(type,freq,start,duration,volume,endFreq,detune){
+        [880,1320,1760,2200].forEach(function(freq,index){
           var osc=audioCtx.createOscillator();
           var gain=audioCtx.createGain();
-          var filter=audioCtx.createBiquadFilter();
-          osc.type=type;
-          osc.frequency.setValueAtTime(freq,t+start);
-          if(endFreq) osc.frequency.exponentialRampToValueAtTime(Math.max(20,endFreq),t+start+duration);
-          if(detune) osc.detune.value=detune;
-          filter.type='lowpass';
-          filter.frequency.setValueAtTime(type==='sawtooth'?900:1800,t+start);
-          filter.frequency.exponentialRampToValueAtTime(type==='sawtooth'?2600:900,t+start+Math.min(duration,1.5));
-          gain.gain.setValueAtTime(0.0001,t+start);
-          gain.gain.exponentialRampToValueAtTime(volume,t+start+0.08);
-          gain.gain.exponentialRampToValueAtTime(0.0001,t+start+duration);
-          osc.connect(filter);filter.connect(gain);gain.connect(master);
-          osc.start(t+start);osc.stop(t+start+duration+0.03);
-        }
-
-        // Subgrave ascendente y capa tipo metales para dar sensación de aventura.
-        voice('sawtooth',55,0,2.25,0.20,82,-7);
-        voice('triangle',41,0,2.4,0.27,58,0);
-        voice('sawtooth',110,0.18,1.8,0.085,165,5);
-        // Acorde amplio y sostenido, no una secuencia de pitidos.
-        [146.83,220,293.66,369.99].forEach(function(freq,index){
-          voice('sawtooth',freq,0.72,1.55,0.045,index===0?196:freq*1.12,index*3-4);
+          osc.type='sine';
+          osc.frequency.setValueAtTime(freq,t);
+          gain.gain.setValueAtTime(0.0001,t);
+          gain.gain.linearRampToValueAtTime([0.19,0.09,0.045,0.022][index],t+0.012);
+          gain.gain.exponentialRampToValueAtTime(0.0001,t+1.65-index*0.12);
+          osc.connect(gain);gain.connect(master);
+          osc.start(t);osc.stop(t+1.7);
         });
-        // Golpe cinematográfico con caída de tono.
-        voice('sine',95,0.58,0.85,0.38,32,0);
-        voice('triangle',740,1.48,0.85,0.045,1480,0);
-
-        // Barrido de ruido filtrado para simular un whoosh ascendente.
-        var length=Math.floor(audioCtx.sampleRate*1.7);
-        var buffer=audioCtx.createBuffer(1,length,audioCtx.sampleRate);
-        var data=buffer.getChannelData(0);
-        for(var i=0;i<length;i++) data[i]=(Math.random()*2-1)*(i/length);
-        var noise=audioCtx.createBufferSource();
-        noise.buffer=buffer;
-        var noiseFilter=audioCtx.createBiquadFilter();
-        noiseFilter.type='bandpass';
-        noiseFilter.Q.value=0.7;
-        noiseFilter.frequency.setValueAtTime(180,t+0.12);
-        noiseFilter.frequency.exponentialRampToValueAtTime(3200,t+1.65);
-        var noiseGain=audioCtx.createGain();
-        noiseGain.gain.setValueAtTime(0.0001,t+0.12);
-        noiseGain.gain.exponentialRampToValueAtTime(0.10,t+1.25);
-        noiseGain.gain.exponentialRampToValueAtTime(0.0001,t+1.78);
-        noise.connect(noiseFilter);noiseFilter.connect(noiseGain);noiseGain.connect(master);
-        noise.start(t+0.12);noise.stop(t+1.82);
-
-        // Cierre brillante y cola suave.
-        voice('sine',587.33,1.45,1.05,0.055,880,0);
-        voice('sine',880,1.52,0.95,0.035,1174.66,0);
-        master.gain.setValueAtTime(0.72,t+2.15);
-        master.gain.exponentialRampToValueAtTime(0.0001,t+2.75);
-        window.setTimeout(function(){audioCtx.close().catch(function(){});},3100);
       };
-      if(audioCtx.state==='running') playWelcome();
-      else audioCtx.resume().then(playWelcome).catch(function(){});
+      if(audioCtx.state==='running')playBell();
+      else audioCtx.resume().then(playBell).catch(function(){});
+      window.setTimeout(function(){if(audioCtx.state!=='closed')audioCtx.close().catch(function(){});},2500);
     }
   }catch(e){}
 
+  // Primera bienvenida (cómic), después marca SOLIDO y finalmente el menú.
   window.setTimeout(function(){
     if(!splash)return;
-    splash.classList.add('hide');
+    splash.classList.add('show-brand');
     window.setTimeout(function(){
-      if(splash&&splash.parentNode)splash.parentNode.removeChild(splash);
-      document.body.style.overflow='';
-    },500);
-  },2800);
+      splash.classList.add('hide');
+      window.setTimeout(function(){
+        if(splash&&splash.parentNode)splash.parentNode.removeChild(splash);
+        document.body.style.overflow='';
+      },600);
+    },2300);
+  },2600);
 })();
 </script>
 
