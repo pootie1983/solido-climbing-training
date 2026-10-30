@@ -1,8 +1,6 @@
 package com.solidoclimbing.training
 
-import androidx.activity.ComponentActivity
-import androidx.activity.result.ActivityResultLauncher
-import androidx.health.connect.client.PermissionController
+import android.app.Activity
 import android.os.Bundle
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -17,12 +15,10 @@ import android.view.View
 import android.view.WindowManager
 import android.webkit.JavascriptInterface
 
-class MainActivity : ComponentActivity() {
+class MainActivity : Activity() {
 
     private lateinit var web: WebView
     private lateinit var whc06Bridge: WHC06Bridge
-    private lateinit var healthConnectBridge: HealthConnectBridge
-    private lateinit var healthConnectPermissionLauncher: ActivityResultLauncher<Set<String>>
     private var gameFullscreenRequested = false
     private var fileChooserCallback: ValueCallback<Array<android.net.Uri>>? = null
     private val fileChooserRequestCode = 2001
@@ -64,15 +60,6 @@ class MainActivity : ComponentActivity() {
         }
         web.setBackgroundColor(android.graphics.Color.rgb(8, 18, 27))
 
-        healthConnectPermissionLauncher = registerForActivityResult(
-            PermissionController.createRequestPermissionResultContract()
-        ) { granted ->
-            if (::healthConnectBridge.isInitialized) healthConnectBridge.onPermissionResult(granted)
-        }
-        healthConnectBridge = HealthConnectBridge(this, web) { permissions ->
-            healthConnectPermissionLauncher.launch(permissions)
-        }
-        web.addJavascriptInterface(healthConnectBridge, "HealthConnect")
         whc06Bridge = WHC06Bridge(this, web)
         web.addJavascriptInterface(whc06Bridge, "WHC06")
         web.addJavascriptInterface(this, "AndroidUi")
@@ -137,11 +124,6 @@ class MainActivity : ComponentActivity() {
     }
 
     // Android can reveal system bars again after focus changes; re-apply immersive mode while playing.
-    override fun onResume() {
-        super.onResume()
-        if (::healthConnectBridge.isInitialized) healthConnectBridge.refresh()
-    }
-
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus && gameFullscreenRequested) applyGameFullscreen()
@@ -180,7 +162,6 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
-        if (::healthConnectBridge.isInitialized) healthConnectBridge.release()
         if (::whc06Bridge.isInitialized) whc06Bridge.release()
         if (::web.isInitialized) web.destroy()
         super.onDestroy()
