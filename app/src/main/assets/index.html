@@ -1995,7 +1995,8 @@ body.plan-editor-open{overflow:hidden}
 
 
 
-.health-panel{margin:14px 0 22px;padding:14px;border:1px solid #365847;border-radius:17px;background:linear-gradient(145deg,#152d2b,#10222b)}
+.health-panel{margin:14px 0 22px;padding:17px;border:1px solid #365847;border-radius:19px;background:linear-gradient(145deg,#19372f,#10222b);box-shadow:0 8px 24px #0003}
+.health-title{margin-bottom:15px}.health-greeting{display:block;color:var(--green);font-size:19px;font-weight:900;letter-spacing:-.3px}.health-title h2{margin:4px 0 6px;font-size:13px;letter-spacing:1.5px;color:#f4f8f3}.health-title small{font-size:11px;color:var(--muted)}
 .health-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
 .health-heading>div{display:grid;gap:4px}.health-heading strong{font-size:11px;letter-spacing:1px;color:var(--green)}.health-heading small{font-size:11px;color:var(--muted)}
 .health-refresh{padding:7px 11px;font-size:17px}
@@ -2262,9 +2263,14 @@ body.plan-editor-open{overflow:hidden}
   </div>
 
   <div class="health-panel" id="healthConnectPanel">
+    <div class="health-title">
+      <span class="health-greeting">¡Hola, escalador!</span>
+      <h2>TU ACTIVIDAD DE HOY</h2>
+      <small id="healthConnectStatus">Conectando con Health Connect…</small>
+    </div>
     <div class="health-heading">
-      <div><strong>ACTIVIDAD DEL RELOJ</strong><small id="healthConnectStatus">Conectando con Health Connect…</small></div>
-      <button class="btn secondary health-refresh" onclick="healthConnectRefresh()">↻</button>
+      <div><strong>DATOS DE TU AMAZFIT</strong></div>
+      <button class="btn secondary health-refresh" aria-label="Actualizar actividad" onclick="healthConnectRefresh()">↻</button>
     </div>
     <div class="health-grid">
       <div class="health-metric"><span>👣 Pasos</span><strong id="hcSteps">—</strong><small>Hoy</small></div>
@@ -5559,7 +5565,19 @@ function healthConnectRefresh(){
  else if(status)status.textContent='Disponible en la versión Android de la aplicación';
 }
 function healthConnectRequest(){
- if(window.AndroidUi&&typeof AndroidUi.requestHealthPermissions==='function')AndroidUi.requestHealthPermissions();
+ const status=document.getElementById('healthConnectStatus');
+ const button=document.getElementById('hcPermissionButton');
+ if(status)status.textContent='Abriendo permisos de Health Connect…';
+ if(!window.AndroidUi||typeof AndroidUi.requestHealthPermissions!=='function'){
+  if(status)status.textContent='No se ha podido iniciar Health Connect. Cierra y vuelve a abrir la aplicación.';
+  return;
+ }
+ if(button){button.disabled=true;button.textContent='Abriendo…';}
+ try{AndroidUi.requestHealthPermissions();}
+ catch(error){
+  if(status)status.textContent='Error al abrir permisos: '+(error.message||error);
+  if(button){button.disabled=false;button.textContent='Conectar con Health Connect';}
+ }
 }
 window.onHealthConnectData=function(data){
  const status=document.getElementById('healthConnectStatus');
@@ -5576,8 +5594,8 @@ window.onHealthConnectData=function(data){
  }else{
   set('hcSteps','—');set('hcDistance','—');set('hcCalories','—');set('hcHeart','—');set('hcSleep','—');
   if(data.status==='permission'){
-   if(status)status.textContent='Autoriza la lectura de tus datos de salud';
-   if(button)button.style.display='block';
+   if(status)status.textContent='Conecta Health Connect para mostrar los datos de tu reloj';
+   if(button){button.style.display='block';button.disabled=false;button.textContent='Conectar con Health Connect';}
   }else if(data.status==='update'){
    if(status)status.textContent='Actualiza Health Connect desde Google Play';
    if(button)button.style.display='none';
