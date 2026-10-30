@@ -1991,6 +1991,24 @@ body.plan-editor-open{overflow:hidden}
 .density-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.density-actions .btn{flex:1;min-width:115px}
 .density-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin:10px 0}.density-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
 @media(max-width:390px){.density-form{grid-template-columns:1fr}}
+
+/* Actividad diaria sincronizada desde Health Connect */
+.home-health-card{margin:16px 0 20px;padding:15px;background:linear-gradient(145deg,#17352b,#102a25);border:1px solid #3e7440;border-radius:18px}
+.home-health-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.home-health-head strong{font-size:14px;color:#f3f8f2}
+.home-health-head small{display:block;margin-top:3px;color:#a8bbc4;font-size:10px}
+.home-health-connect{padding:8px 11px;font-size:11px;white-space:nowrap}
+.home-health-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.home-health-metric{min-width:0;padding:11px 12px;background:#0b1b22;border:1px solid #29443d;border-radius:13px}
+.home-health-metric .metric-label{display:block;color:#a8bbc4;font-size:11px}
+.home-health-metric strong{display:block;margin-top:5px;color:#f4f8f3;font-size:22px;font-variant-numeric:tabular-nums;line-height:1.15}
+.home-health-metric small{display:block;margin-top:3px;color:#8ca59a;font-size:10px}
+.home-health-sleep{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;padding:12px;background:#0b1b22;border:1px solid #29443d;border-radius:13px}
+.home-health-sleep span{color:#a8bbc4;font-size:12px}
+.home-health-sleep strong{font-size:18px;color:#f4f8f3;font-variant-numeric:tabular-nums}
+.home-health-status{margin:9px 2px 0;color:#a8bbc4;font-size:10px;line-height:1.4}
+@media(max-width:360px){.home-health-head{align-items:flex-start;flex-direction:column}.home-health-connect{width:100%}.home-health-metric strong{font-size:19px}}
+
 </style>
 
 <style>
@@ -2222,6 +2240,22 @@ body.plan-editor-open{overflow:hidden}
     <button class="btn secondary home-connect-btn" id="homeDisconnectWH" onclick="disconnectWHC06()" style="display:none">Desconectar sensor</button>
     <p>Conéctalo aquí y podrás usar la lectura en directo en tus entrenamientos y en Solido Sky Hopper.</p>
   </div>
+
+
+  <section class="home-health-card" aria-label="Actividad diaria de Zepp">
+    <div class="home-health-head">
+      <div><strong>ACTIVIDAD DIARIA</strong><small>Datos sincronizados desde Zepp · Health Connect</small></div>
+      <button class="btn home-health-connect" id="homeHealthConnect" onclick="connectHealthConnect()">Conectar Health Connect</button>
+    </div>
+    <div class="home-health-grid">
+      <div class="home-health-metric"><span class="metric-label">👣 Pasos</span><strong id="hcSteps">—</strong><small>Hoy</small></div>
+      <div class="home-health-metric"><span class="metric-label">📍 Distancia</span><strong id="hcDistance">—</strong><small>Hoy · km</small></div>
+      <div class="home-health-metric"><span class="metric-label">🔥 Calorías activas</span><strong id="hcCalories">—</strong><small>Hoy · kcal</small></div>
+      <div class="home-health-metric"><span class="metric-label">♥ Pulso</span><strong id="hcHeart">—</strong><small>Última lectura · lpm</small></div>
+    </div>
+    <div class="home-health-sleep"><span>🌙 Sueño más reciente</span><strong id="hcSleep">—</strong></div>
+    <p class="home-health-status" id="homeHealthStatus" role="status" aria-live="polite">Conecta Health Connect para mostrar aquí los datos que Zepp haya sincronizado.</p>
+  </section>
 
   <div class="sectionhead">
     <h2>Tu actividad</h2>
@@ -2983,6 +3017,36 @@ body.plan-editor-open{overflow:hidden}
 
 
 <script>
+
+
+function connectHealthConnect(){
+  const status=document.getElementById('homeHealthStatus');
+  if(!window.HealthConnect){status.textContent='La conexión con Health Connect no está disponible en esta versión.';return;}
+  status.textContent='Solicitando acceso de solo lectura a tus datos…';
+  HealthConnect.requestPermissions();
+}
+function formatHealthNumber(value,digits=0){
+  if(value===null||value===undefined||!Number.isFinite(Number(value)))return '—';
+  return Number(value).toLocaleString('es-ES',{maximumFractionDigits:digits});
+}
+function formatSleepMinutes(value){
+  if(value===null||value===undefined||!Number.isFinite(Number(value)))return '—';
+  const mins=Math.max(0,Math.round(Number(value)));
+  return Math.floor(mins/60)+' h '+String(mins%60).padStart(2,'0')+' min';
+}
+window.onHealthConnectData=function(raw){
+  let data;try{data=typeof raw==='string'?JSON.parse(raw):raw;}catch(e){return;}
+  const status=document.getElementById('homeHealthStatus');if(!status)return;
+  if(data.type==='status'){status.textContent=data.message||'Health Connect';return;}
+  if(data.type!=='activity')return;
+  document.getElementById('hcSteps').textContent=formatHealthNumber(data.steps);
+  document.getElementById('hcDistance').textContent=formatHealthNumber(data.distanceKm,2);
+  document.getElementById('hcCalories').textContent=formatHealthNumber(data.activeCalories);
+  document.getElementById('hcHeart').textContent=data.heartRate==null?'—':formatHealthNumber(data.heartRate);
+  document.getElementById('hcSleep').textContent=formatSleepMinutes(data.sleepMinutes);
+  status.textContent='Actualizado hoy desde Health Connect. Los datos dependen de lo que Zepp haya sincronizado.';
+  const button=document.getElementById('homeHealthConnect');if(button)button.textContent='Actualizar datos';
+};
 
 const exercises = [
   {id:1,name:"Suspensiones en regleta",cat:"Dedos",emoji:"🪨",image:"images/01_suspensiones_regleta.jpg",muscles:"Dedos · Antebrazos · Hombros",sets:"Principiantes: 3 × 7–10 s con pies apoyados",rest:120,desc:"Cuélgate de una regleta cómoda con hombros activos y parte del peso apoyado en los pies. Mantén el cuerpo quieto.",tip:"No hagas suspensiones máximas ni entrenes con dolor en los dedos."},
