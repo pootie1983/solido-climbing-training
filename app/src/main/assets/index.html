@@ -1845,6 +1845,16 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
 .plan-library-choice.selected{outline:2px solid #48d477;outline-offset:2px;border-radius:14px}
 .plan-library-action{position:sticky;bottom:10px;z-index:8;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;margin:14px 0;background:#080b09;border:1px solid #244b32;border-radius:13px;color:#fff;box-shadow:0 6px 24px #0008}
 .plan-library-action span{color:#48d477;font-weight:700;font-size:13px}
+
+/* Tarjetas de categorías de planes: iconografía lineal verde sobre negro */
+.plan-category-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+.plan-category-card{position:relative;min-height:126px;padding:14px;border:1px solid #294238;border-radius:16px;background:#050908;color:#f2f7f4;text-align:left;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;gap:9px}
+.plan-category-card:active{transform:scale(.985)}.plan-category-card strong{font-size:14px}.plan-category-icon{width:38px;height:38px;color:#7cff45}.plan-category-icon svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.plan-order-controls{display:flex;gap:5px;position:absolute;right:8px;top:8px}.plan-order-controls button{width:27px;height:27px;padding:0;border-radius:8px;border:1px solid #345044;background:#14231b;color:#9bff70;font-size:16px}.plan-order-controls button:disabled{opacity:.25}
+.plan-category-card small{font-size:10px;color:#9bb4a4}.plan-category-card .plan-category-icon{margin-top:10px}
+.plan-saved-category{margin:12px 0;padding:12px;border:1px solid #294238;border-radius:14px;background:#0b1510}.plan-saved-category h3{margin:0 0 8px;font-size:14px;color:#9bff70}.plan-saved-category .planstep{margin-top:8px}
+@media(max-width:350px){.plan-category-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -2114,25 +2124,20 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
 
 <section id="plans" class="hide">
   <div class="sectionhead"><h2>Planes de entrenamiento</h2><span class="tag">PERSONALIZA</span></div>
-  <p class="muted">Organiza tus sesiones con tus ejercicios favoritos de escalada.</p>
-  <div class="plan-add-tile">
-    <button type="button" class="plan-add-button" onclick="openPlanExerciseLibrary()" aria-label="Añadir ejercicios desde la biblioteca">
-      <span class="plan-add-icon"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span>
-      <span><strong>Añadir ejercicios</strong><small>Elegir desde la biblioteca</small></span>
-      <span class="plan-add-chevron">›</span>
-    </button>
-  </div>
+  <p class="muted">Elige una tarjeta para crear tu plan. Puedes cambiar el orden para montar una sesión completa.</p>
+  <div id="planCategoryList" class="plan-category-grid"></div>
   <div id="planConfigPanel" class="tile plan-config-panel" style="display:none">
-    <div class="sectionhead"><h3>Configura tu sesión</h3><span class="tag" id="planSelectedCount">0 ejercicios</span></div>
+    <div class="sectionhead"><h3 id="planConfigTitle">Configura tu sesión</h3><span class="tag" id="planSelectedCount">0 ejercicios</span></div>
     <label class="config-label" for="customPlanName">Nombre del plan</label>
     <input id="customPlanName" type="text" maxlength="40" value="Mi entrenamiento" placeholder="Ej. Fuerza y técnica" style="width:100%;margin:6px 0 14px">
     <div id="planExerciseSettings"></div>
     <div class="plan-estimate"><span>Tiempo estimado de la sesión</span><strong id="planEstimate">00:00</strong><small>Incluye trabajo, series y descansos configurados.</small></div>
     <button class="btn" style="width:100%;margin-top:12px" onclick="saveCustomPlan()">＋ Guardar mi plan</button>
     <button class="btn secondary" style="width:100%;margin-top:8px" onclick="openPlanExerciseLibrary()">＋ Añadir más ejercicios</button>
+    <button class="btn secondary" style="width:100%;margin-top:8px" onclick="closePlanEditor()">Volver a Planes</button>
     <div id="planBuilderStatus" class="meditation-status" role="status" aria-live="polite"></div>
   </div>
-  <div class="sectionhead"><h2>Mis planes</h2></div>
+  <div class="sectionhead"><h2>Mis sesiones guardadas</h2></div>
   <div class="cards" id="planList"></div>
 </section>
 
@@ -3780,6 +3785,14 @@ let customPlans=JSON.parse(localStorage.getItem('solidoCustomPlans')||'[]');
 let planSelectionMode=false;
 let planSelectedIds=[];
 let planDraftItems=[];
+let activePlanCategory='';
+let planOrder=JSON.parse(localStorage.getItem('solidoPlanOrder')||'["Calentamiento","Fuerza","Resistencia","Técnica","Escalada","Recuperación"]');
+const planCategories=[{name:'Calentamiento',icon:'<svg viewBox="0 0 40 40"><path d="M20 4c-2 7-9 9-9 18a9 9 0 0 0 18 0c0-4-2-7-5-10 0 5-3 6-4 7-1-5 2-9 0-15Z"/><path d="M20 23c-3 3-3 8 1 9 4-1 4-6 1-9"/></svg>'},{name:'Fuerza',icon:'<svg viewBox="0 0 40 40"><path d="M5 15v10m5-14v18m20-18v18m5-14v10M10 20h20"/><path d="M14 16v8m12-8v8"/></svg>'},{name:'Resistencia',icon:'<svg viewBox="0 0 40 40"><path d="M4 24h7l4-12 7 18 5-12 3 6h6"/></svg>'},{name:'Técnica',icon:'<svg viewBox="0 0 40 40"><path d="M7 32 15 8l7 14 5-9 6 19"/><circle cx="15" cy="8" r="2"/><circle cx="22" cy="22" r="2"/><circle cx="27" cy="13" r="2"/></svg>'},{name:'Escalada',icon:'<svg viewBox="0 0 40 40"><path d="M5 34 14 7l7 13 5-8 9 22"/><path d="M11 24c5-3 8-1 11 3m-3-13 5-2"/></svg>'},{name:'Recuperación',icon:'<svg viewBox="0 0 40 40"><path d="M31 13A13 13 0 1 0 33 24"/><path d="M25 8h7v7"/><path d="M20 13v8l6 3"/></svg>'}];
+function savePlanOrder(){try{localStorage.setItem('solidoPlanOrder',JSON.stringify(planOrder));}catch(e){}}
+function movePlanCategory(name,delta){const i=planOrder.indexOf(name),j=i+delta;if(i<0||j<0||j>=planOrder.length)return;[planOrder[i],planOrder[j]]=[planOrder[j],planOrder[i]];savePlanOrder();renderPlan();}
+function openPlanCategory(name){activePlanCategory=name;planDraftItems=[];planSelectedIds=[];document.getElementById('customPlanName').value=name;document.getElementById('planConfigTitle').textContent='Configura: '+name;document.getElementById('planConfigPanel').style.display='block';renderPlanSettings();document.getElementById('planConfigPanel').scrollIntoView({behavior:'smooth',block:'start'});}
+function closePlanEditor(){const panel=document.getElementById('planConfigPanel');if(panel)panel.style.display='none';activePlanCategory='';renderPlan();}
+
 function formatPlanTime(seconds){
   const n=Math.max(0,Math.round(Number(seconds)||0));
   return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
@@ -3793,6 +3806,7 @@ function estimatePlan(items){
   return (items||[]).reduce((sum,item)=>sum+estimatePlanItem(item),0)+Math.max(0,(items||[]).length-1)*30;
 }
 function openPlanExerciseLibrary(){
+  if(!activePlanCategory){alert('Primero elige una tarjeta de plan.');return;}
   planSelectionMode=true;
   planSelectedIds=planDraftItems.map(item=>Number(item.id));
   show('library');
@@ -3863,25 +3877,54 @@ function saveCustomPlan(){
   const items=readPlanBuilder(),status=document.getElementById('planBuilderStatus');
   if(!items.length){if(status)status.textContent='Añade al menos un ejercicio desde la biblioteca.';return;}
   const name=(document.getElementById('customPlanName').value||'Mi entrenamiento').trim().slice(0,40);
-  const entry={id:Date.now(),name:name||'Mi entrenamiento',items:items,seconds:estimatePlan(items),createdAt:new Date().toISOString()};
+  const entry={id:Date.now(),category:activePlanCategory,name:name||activePlanCategory,items:items,seconds:estimatePlan(items),createdAt:new Date().toISOString()};
   customPlans.unshift(entry);
   try{localStorage.setItem('solidoCustomPlans',JSON.stringify(customPlans));}catch(e){}
   planDraftItems=[];
   const panel=document.getElementById('planConfigPanel');if(panel)panel.style.display='none';
+  activePlanCategory='';
   renderPlan();
   if(status)status.textContent='Plan guardado. Ya puedes iniciarlo cuando quieras.';
 }
 function renderPlan(){
-  renderPlanSettings();
-  const list=document.getElementById('planList');
-  if(!list)return;
+  const grid=document.getElementById('planCategoryList');
+  if(grid){
+    const ordered=planOrder.filter(name=>planCategories.some(x=>x.name===name));
+    planCategories.forEach(x=>{if(!ordered.includes(x.name))ordered.push(x.name);});
+    planOrder=ordered;
+    grid.innerHTML=planOrder.map((name,i)=>{
+      const cat=planCategories.find(x=>x.name===name);
+      const count=customPlans.filter(p=>(p.category||'Fuerza')===name).length;
+      return `<article class="plan-category-card" onclick="openPlanCategory('${name}')">
+        <div class="plan-order-controls" onclick="event.stopPropagation()">
+          <button type="button" onclick="movePlanCategory('${name}',-1)" aria-label="Mover ${name} hacia arriba" ${i===0?'disabled':''}>↑</button>
+          <button type="button" onclick="movePlanCategory('${name}',1)" aria-label="Mover ${name} hacia abajo" ${i===planOrder.length-1?'disabled':''}>↓</button>
+        </div>
+        <span class="plan-category-icon">${cat.icon}</span><strong>${name}</strong>
+        <small>${count?count+' plan(es) guardado(s)':'Crear o editar plan'} · Toca para configurar</small>
+      </article>`;
+    }).join('');
+    savePlanOrder();
+  }
+  const list=document.getElementById('planList');if(!list)return;
+  const categories=planOrder.filter(name=>customPlans.some(p=>(p.category||'Fuerza')===name));
   if(!customPlans.length){list.innerHTML='<div class="tile muted">Todavía no tienes planes guardados.</div>';return;}
-  list.innerHTML=customPlans.map(p=>`
+  list.innerHTML=categories.map(category=>`<section class="plan-saved-category"><h3>${category}</h3>${customPlans.filter(p=>(p.category||'Fuerza')===category).map(p=>`
     <article class="planstep">
-      <div class="row" style="align-items:center"><span class="plan-card-icon">▰</span><div style="flex:1;min-width:0"><strong>${p.name}</strong><div class="muted">${p.items.length} ejercicios · ${formatPlanTime(p.seconds)} estimados</div></div><span class="tag">${Math.ceil(p.seconds/60)} MIN</span></div>
+      <div class="row" style="align-items:center"><div style="flex:1;min-width:0"><strong>${p.name}</strong><div class="muted">${p.items.length} ejercicios · ${formatPlanTime(p.seconds)} estimados</div></div><span class="tag">${Math.ceil(p.seconds/60)} MIN</span></div>
       <div class="plan-saved-items">${p.items.map(item=>{const ex=exercises.find(e=>Number(e.id)===Number(item.id));return ex?'<span>'+ex.name+' · '+item.sets+'×'+item.reps+'</span>':'';}).join('')}</div>
-      <div class="row" style="margin-top:10px"><button class="btn" onclick="startPlan(${p.id})">▶ Iniciar plan</button><button class="btn secondary" onclick="deleteCustomPlan(${p.id})">Eliminar</button></div>
-    </article>`).join('');
+      <div class="row" style="margin-top:10px"><button class="btn" onclick="startPlan(${p.id})">▶ Iniciar plan</button><button class="btn secondary" onclick="editCustomPlan(${p.id})">Editar</button><button class="btn secondary" onclick="deleteCustomPlan(${p.id})">Eliminar</button></div>
+    </article>`).join('')}</section>`).join('');
+}
+function editCustomPlan(id){
+  const p=customPlans.find(x=>x.id===Number(id));if(!p)return;
+  activePlanCategory=p.category||'Fuerza';planDraftItems=p.items.map(x=>({...x}));
+  document.getElementById('customPlanName').value=p.name;
+  document.getElementById('planConfigTitle').textContent='Editar: '+activePlanCategory;
+  document.getElementById('planConfigPanel').style.display='block';
+  customPlans=customPlans.filter(x=>x.id!==Number(id));
+  try{localStorage.setItem('solidoCustomPlans',JSON.stringify(customPlans));}catch(e){}
+  renderPlanSettings();document.getElementById('planConfigPanel').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function deleteCustomPlan(id){
   customPlans=customPlans.filter(p=>p.id!==id);
