@@ -4,6 +4,7 @@
 const SG_RECORD_KEY = 'solidoFeriaClimberRecordV1';
 let sgRecord = null, sgActive = false, sgPeak = 0, sgStartedAt = 0, sgFrame = null;
 let sgDurationMs = 12000, sgMaxKg = 20, sgPendingRecord = 0;
+let sgCountdownActive=false,sgCountdownTimer=null,sgCountdownValue=8;
 let sgReachedSummit=false, sgVictoryShown=false, sgMusicTimer=null, sgAudio=null, sgMusicStep=0, sgLastLevel=0, sgVictoryTimer=null, sgForceFiltered=0, sgForceInitialized=false, sgLastSensorPacketAt=0;
 const sgLevelPhrases=[
  '¡Hasta las cabras suben más rápido!',
@@ -19,7 +20,7 @@ const sgLevelPhrases=[
 ];
 function sgOnSensorReading(value){
  const raw=Number(value);if(!Number.isFinite(raw))return;
- const now=performance.now();if(!sgActive)return;
+ const now=performance.now();if(!sgActive&&!sgCountdownActive)return;
  const kg=Math.max(0,raw);
  if(!sgForceInitialized){sgForceFiltered=kg;sgForceInitialized=true;}
  else{
@@ -33,7 +34,7 @@ function sgOnSensorReading(value){
 function sgReadGameForce(){
  if(!sgActive)return Math.max(0,sgForceFiltered);
  if(!sgForceInitialized)return Math.max(0,Number(typeof currentForce!=='undefined'?currentForce:0)||0);
- if(performance.now()-sgLastSensorPacketAt>420)return 0;
+ if(performance.now()-sgLastSensorPacketAt>1500)return 0;
  return Math.max(0,sgForceFiltered);
 }
 function sgSensorConnected(){
@@ -43,15 +44,19 @@ function sgSensorConnected(){
 }
 function sgUpdateConnectionUI(){
  const connected=sgSensorConnected();
- ['sgHubConnectDot','sgGameConnectDot'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('connected',connected);});
- ['sgHubConnectText','sgGameConnectText'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=connected?'WH-C06 conectado · listo para jugar':'WH-C06 desconectado';});
- const connect=document.getElementById('sgHubConnectButton'),disconnect=document.getElementById('sgHubDisconnectButton');
+ const dot=document.getElementById('sgGameConnectDot');if(dot)dot.classList.toggle('connected',connected);
+ const label=document.getElementById('sgGameConnectText');if(label)label.textContent=connected?'WH-C06 conectado · listo para jugar':'WH-C06 desconectado';
+ const connect=document.getElementById('sgGameConnectButton'),disconnect=document.getElementById('sgGameDisconnectButton');
  if(connect)connect.style.display=connected?'none':'inline-flex';
  if(disconnect)disconnect.style.display=connected?'inline-flex':'none';
+ const homeConnect=document.getElementById('homeConnectWH'),homeDisconnect=document.getElementById('homeDisconnectWH');
+ if(homeConnect&&connect)connect.disabled=homeConnect.disabled;
+ if(homeDisconnect&&disconnect)disconnect.disabled=homeDisconnect.disabled;
 }
 function sgConnectSensor(){
  try{
-  if(typeof connectWHC06==='function')connectWHC06();
+  if(typeof homeConnectWHC06==='function')homeConnectWHC06();
+  else if(typeof connectWHC06==='function')connectWHC06();
   else {const status=document.getElementById('sgGameStatus');if(status)status.textContent='No se encuentra el control de conexión WH-C06.';}
   setTimeout(sgUpdateConnectionUI,250);
  }catch(e){const status=document.getElementById('sgGameStatus');if(status)status.textContent='No se pudo iniciar la conexión: '+(e.message||e);}
@@ -59,6 +64,12 @@ function sgConnectSensor(){
 function sgDisconnectSensor(){
  try{if(typeof disconnectWHC06==='function')disconnectWHC06();}catch(e){}
  sgUpdateConnectionUI();
+}
+function sgEnterFullscreen(){
+ const section=document.getElementById('strengthGame');
+ document.body.classList.add('br-fullscreen-active');
+ if(section)section.classList.add('strength-fullscreen-game');
+ try{if(window.AndroidUi&&AndroidUi.enterGameFullscreen)AndroidUi.enterGameFullscreen();}catch(e){}
 }
 function sgStartSuspenseMusic(){
  try{
@@ -144,6 +155,7 @@ function sgMessageFor(v) {
  return sgLevelPhrases[level-1];
 }
 function strengthGameOnShow() {
+ sgEnterFullscreen();
  sgLoadRecord();
  const slider=document.getElementById('sgMaxKg');
  if(slider){const n=Number(localStorage.getItem('solidoFeriaMaxKg')||20);sgMaxKg=Number.isFinite(n)?Math.max(5,Math.min(100,n)):20;slider.value=String(sgMaxKg);}
@@ -183,16 +195,44 @@ function sgRender() {
  sgUpdateConnectionUI();
 }
 function strengthGameStart() {
- if(sgActive)return;
+ if(sgActive||sgCountdownActive)return;
+ sgEnterFullscreen();
  if(!sgSensorConnected()){const status=document.getElementById('sgGameStatus');if(status)status.textContent='Primero conecta el WH-C06 para medir fuerza real.';sgUpdateConnectionUI();return;}
- sgPeak=0;sgReachedSummit=false;sgVictoryShown=false;sgLastLevel=0;sgForceFiltered=Math.max(0,Number(typeof currentForce!=='undefined'?currentForce:0)||0);sgForceInitialized=true;sgLastSensorPacketAt=performance.now();if(sgVictoryTimer){clearTimeout(sgVictoryTimer);sgVictoryTimer=null;}sgStartedAt=performance.now();sgActive=true;
- const scene=document.getElementById('sgScene');if(scene){scene.classList.remove('sg-summit-reached','sg-summit-near');scene.style.setProperty('--sg-progress','0');}
- const climber=document.getElementById('sgCurrentClimber');if(climber)sgSetPose(climber,'climbing');
+ if(sgCountdownTimer){clearInterval(sgCountdownTimer);sgCountdownTimer=null;}
+ if(sgVictoryTimer){clearTimeout(sgVictoryTimer);sgVictoryTimer=null;}
+ sgPeak=0;sgReachedSummit=false;sgVictoryShown=false;sgLastLevel=0;
+ sgForceFiltered=Math.max(0,Number(typeof currentForce!=='undefined'?currentForce:0)||0);sgForceInitialized=true;sgLastSensorPacketAt=performance.now();
+ sgCountdownActive=true;sgCountdownValue=8;sgActive=false;
+ const scene=document.getElementById('sgScene');if(scene){scene.classList.remove('sg-summit-reached','sg-summit-near','sg-victory-camera');scene.style.setProperty('--sg-progress','0');}
+ const climber=document.getElementById('sgCurrentClimber');if(climber)sgSetPose(climber,'idle');
  const banner=document.getElementById('sgVictoryBanner');if(banner)banner.classList.remove('active');
+ const overlay=document.getElementById('sgOverlay');if(overlay)sgSetOverlay('8','PREPÁRATE… LA PARTIDA COMIENZA EN 8');
+ const start=document.getElementById('sgStartButton');if(start){start.textContent='Cuenta atrás…';start.disabled=true;}
+ const finish=document.getElementById('sgFinishButton');if(finish)finish.disabled=true;
+ const status=document.getElementById('sgGameStatus');if(status)status.textContent='Cuenta atrás: prepárate. Cuando llegue a cero tendrás 12 segundos.';
+ const timer=document.getElementById('sgTimer');if(timer)timer.textContent='8';
+ sgRender();
+ sgCountdownTimer=setInterval(()=>{
+  sgCountdownValue--;
+  if(sgCountdownValue>0){
+   if(overlay)sgSetOverlay(String(sgCountdownValue),'PREPÁRATE… LA PARTIDA COMIENZA EN '+sgCountdownValue);
+   if(timer)timer.textContent=String(sgCountdownValue);
+   if(status)status.textContent='Cuenta atrás: '+sgCountdownValue+'…';
+   const idle=document.getElementById('sgCurrentClimber');if(idle)sgSetPose(idle,'idle');
+   return;
+  }
+  clearInterval(sgCountdownTimer);sgCountdownTimer=null;sgCountdownActive=false;
+  sgBeginTimedGame();
+ },1000);
+}
+function sgBeginTimedGame(){
+ sgPeak=0;sgReachedSummit=false;sgVictoryShown=false;sgStartedAt=performance.now();sgActive=true;
  const overlay=document.getElementById('sgOverlay');if(overlay)overlay.style.display='none';
- const start=document.getElementById('sgStartButton');if(start)start.textContent='Midiendo fuerza…';
+ const climber=document.getElementById('sgCurrentClimber');if(climber)sgSetPose(climber,'climbing');
+ const start=document.getElementById('sgStartButton');if(start){start.textContent='Midiendo fuerza…';start.disabled=false;}
  const finish=document.getElementById('sgFinishButton');if(finish)finish.disabled=false;
- const status=document.getElementById('sgGameStatus');if(status)status.textContent='¡Aprieta! La fuerza del sensor te hará subir. Tienes 12 segundos.';
+ const status=document.getElementById('sgGameStatus');if(status)status.textContent='¡YA! Aprieta: tienes 12 segundos para llegar a la cima.';
+ const timer=document.getElementById('sgTimer');if(timer)timer.textContent='12 s';
  sgStartSuspenseMusic();
  if(sgFrame)cancelAnimationFrame(sgFrame);sgFrame=requestAnimationFrame(sgTick);
 }
@@ -255,7 +295,7 @@ function strengthGameSaveRecord(event) {
  sgRender();
 }
 function strengthGameReset() {
- sgActive=false;if(sgFrame)cancelAnimationFrame(sgFrame);sgFrame=null;sgStopMusic();if(sgVictoryTimer){clearTimeout(sgVictoryTimer);sgVictoryTimer=null;}sgPeak=0;sgReachedSummit=false;sgVictoryShown=false;sgLastLevel=0;sgForceFiltered=0;sgForceInitialized=false;sgLastSensorPacketAt=0;sgPendingRecord=0;
+ sgActive=false;sgCountdownActive=false;if(sgCountdownTimer){clearInterval(sgCountdownTimer);sgCountdownTimer=null;}if(sgFrame)cancelAnimationFrame(sgFrame);sgFrame=null;sgStopMusic();if(sgVictoryTimer){clearTimeout(sgVictoryTimer);sgVictoryTimer=null;}sgPeak=0;sgReachedSummit=false;sgVictoryShown=false;sgLastLevel=0;sgForceFiltered=0;sgForceInitialized=false;sgLastSensorPacketAt=0;sgPendingRecord=0;
  const modal=document.getElementById('sgRecordModal');if(modal)modal.style.display='none';
  const banner=document.getElementById('sgVictoryBanner');if(banner)banner.classList.remove('active');
  const fireworks=document.getElementById('sgFireworks');if(fireworks){fireworks.classList.remove('active');fireworks.innerHTML='';}
