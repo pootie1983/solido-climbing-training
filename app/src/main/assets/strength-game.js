@@ -90,6 +90,12 @@ function sgLaunchFireworks(){
  host.classList.add('active');
  setTimeout(()=>{host.classList.remove('active');host.innerHTML='';},4200);
 }
+function sgSetOverlay(title,body){
+ const overlay=document.getElementById('sgOverlay');if(!overlay)return;
+ overlay.textContent='';
+ const strong=document.createElement('strong'),span=document.createElement('span');
+ strong.textContent=title;span.textContent=body;overlay.appendChild(strong);overlay.appendChild(span);overlay.style.display='grid';
+}
 function sgShowVictory(){
  if(sgVictoryShown)return;sgVictoryShown=true;sgStopMusic();
  const scene=document.getElementById('sgScene'),banner=document.getElementById('sgVictoryBanner'),overlay=document.getElementById('sgOverlay');
@@ -107,7 +113,7 @@ function sgLoadRecord() {
 }
 function sgFormatKg(v) { return Math.max(0,Number(v)||0).toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' kg'; }
 function sgProgress(v) { return Math.max(0,Math.min(1,(Number(v)||0)/Math.max(1,sgMaxKg))); }
-function sgSetClimber(el,v) { if(el) el.style.bottom='calc(16px + '+(sgProgress(v)*75).toFixed(2)+'%)'; }
+function sgSetClimber(el,v) { if(el) el.style.bottom='calc(16px + '+(sgProgress(v)*58).toFixed(2)+'%)'; }
 function sgMessageFor(v) {
  const p=sgProgress(v),level=Math.min(10,Math.max(1,Math.ceil(p*10)||1));
  return sgLevelPhrases[level-1];
@@ -147,8 +153,8 @@ function sgRender() {
  if(phrase&&!sgVictoryShown)phrase.textContent='NIVEL '+level+' · '+sgLevelPhrases[level-1];
  const summit=document.getElementById('sgScene');
  if(summit)summit.classList.toggle('sg-summit-reached',sgReachedSummit);
- const recordTag=document.getElementById('sgRecordTag');if(recordTag)recordTag.style.bottom='calc(16px + '+(sgProgress(sgRecord?sgRecord.kg:0)*75).toFixed(2)+'%)';
- const currentTag=document.getElementById('sgCurrentTag');if(currentTag)currentTag.style.bottom='calc(16px + '+(sgProgress(sgPeak)*75).toFixed(2)+'%)';
+ const recordTag=document.getElementById('sgRecordTag');if(recordTag)recordTag.style.bottom='calc(16px + '+(sgProgress(sgRecord?sgRecord.kg:0)*58).toFixed(2)+'%)';
+ const currentTag=document.getElementById('sgCurrentTag');if(currentTag)currentTag.style.bottom='calc(16px + '+(sgProgress(sgPeak)*58).toFixed(2)+'%)';
  sgUpdateConnectionUI();
 }
 function strengthGameStart() {
@@ -184,11 +190,11 @@ function sgFinish() {
  const status=document.getElementById('sgGameStatus'),overlay=document.getElementById('sgOverlay');
  if(sgPeak<.05){
   if(status)status.textContent='No hemos recibido fuerza del WH-C06. Comprueba que esté conectado y vuelve a intentarlo.';
-  if(overlay){overlay.style.display='grid';overlay.innerHTML='<strong>NO HEMOS DETECTADO FUERZA</strong><span>Conecta el WH-C06 y vuelve a intentarlo. No se ha guardado ninguna marca.</span>';}
+  if(overlay)sgSetOverlay('NO HEMOS DETECTADO FUERZA','Conecta el WH-C06 y vuelve a intentarlo. No se ha guardado ninguna marca.');
   return;
  }
  if(sgReachedSummit)sgShowVictory();
- else if(overlay){overlay.style.display='grid';overlay.innerHTML='<strong>¡BUEN INTENTO!</strong><span>Has llegado a '+sgFormatKg(sgPeak)+'. ¡Ajusta tu fuerza y vuelve a por la cima!</span>';}
+ else if(overlay)sgSetOverlay('¡BUEN INTENTO!','Has llegado a '+sgFormatKg(sgPeak)+'. ¡Ajusta tu fuerza y vuelve a por la cima!');
  if(!sgRecord||sgPeak>sgRecord.kg){
   sgPendingRecord=sgPeak;
   const modal=document.getElementById('sgRecordModal'),input=document.getElementById('sgNickname'),score=document.getElementById('sgNewRecordScore');
@@ -207,7 +213,7 @@ function strengthGameSaveRecord(event) {
  const modal=document.getElementById('sgRecordModal');if(modal)modal.style.display='none';
  const status=document.getElementById('sgGameStatus');if(status)status.textContent=(sgReachedSummit?'¡VICTORIA! ':'¡NUEVO RÉCORD! ')+nickname+' consigue '+sgFormatKg(sgRecord.kg)+'. ¡La marca queda guardada en este móvil!';
  const overlay=document.getElementById('sgOverlay');
- if(overlay){overlay.style.display='grid';overlay.innerHTML='<strong>'+(sgReachedSummit?'¡VICTORIA!':'¡NUEVO RÉCORD!')+'</strong><span>¡'+nickname+' ha conseguido '+sgFormatKg(sgRecord.kg)+'! ¡A ver quién consigue superarlo!</span>';}
+ if(overlay)sgSetOverlay(sgReachedSummit?'¡VICTORIA!':'¡NUEVO RÉCORD!','¡'+nickname+' ha conseguido '+sgFormatKg(sgRecord.kg)+'! ¡A ver quién consigue superarlo!');
  sgRender();
 }
 function strengthGameReset() {
@@ -217,7 +223,7 @@ function strengthGameReset() {
  const fireworks=document.getElementById('sgFireworks');if(fireworks){fireworks.classList.remove('active');fireworks.innerHTML='';}
  const scene=document.getElementById('sgScene');if(scene)scene.classList.remove('sg-summit-reached');
  const overlay=document.getElementById('sgOverlay');
- if(overlay){overlay.style.display='grid';overlay.innerHTML='<strong>¡A POR LA CIMA!</strong><span>Aprieta el WH-C06 para hacer subir al escalador. El récord anterior permanece guardado.</span>';}
+ if(overlay)sgSetOverlay('¡A POR LA CIMA!','Aprieta el WH-C06 para hacer subir al escalador. El récord anterior permanece guardado.');
  const start=document.getElementById('sgStartButton');if(start)start.textContent='▶ Empezar partida';
  const finish=document.getElementById('sgFinishButton');if(finish)finish.disabled=true;
  const timer=document.getElementById('sgTimer');if(timer)timer.textContent='12 s';
