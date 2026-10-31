@@ -5736,10 +5736,12 @@ const achievementDefs=[
 {id:"medal-55-primer-sendero-alternativo-bronce",group:"Senderismo y montaña",name:"Primer Sendero Alternativo",desc:"Alcanza 1000 pasos",target:1000,metric:"steps",tier:"bronce",icon:"🏅",image:"senderismo/primer-sendero-alternativo-bronce.png",xp:50},
 {id:"medal-56-primer-sendero-bronce",group:"Senderismo y montaña",name:"Primer Sendero",desc:"Alcanza 1000 pasos",target:1000,metric:"steps",tier:"bronce",icon:"🏅",image:"senderismo/primer-sendero-bronce.png",xp:50}
 ];
-// Mostrar únicamente logros que la app puede medir con datos reales.
-// No se muestran senderismo/desnivel, pasos, zonas cardio, dominadas ni core:
-// esta versión no registra esas actividades de forma específica y verificable.
+// Mostrar únicamente logros medibles por la aplicación.
+// Pasos: lectura diaria real del reloj a través de Health Connect.
 const supportedAchievementIds=new Set([
+ 'medal-0-a-por-las-alturas-plata',
+ 'medal-6-alma-montanera-platino',
+ 'medal-12-conquistacumbres-oro',
  'medal-13-imparable-plata',
  'medal-14-primer-paso-bronce',
  'medal-15-sin-excusas-diamante',
@@ -5750,10 +5752,15 @@ const supportedAchievementIds=new Set([
  'medal-5-agarre-platino',
  'medal-21-descanso-inteligente-platino',
  'medal-37-equilibrio-interior-oro',
+ 'medal-43-explorador-alternativo-plata',
+ 'medal-44-explorador-plata',
+ 'medal-45-leyenda-de-las-cumbres-diamante',
  'medal-46-leyenda-solido-diamante',
  'medal-47-mente-solido-diamante',
  'medal-48-mente-tranquila-plata',
- 'medal-54-un-momento-para-mi-bronce'
+ 'medal-54-un-momento-para-mi-bronce',
+ 'medal-55-primer-sendero-alternativo-bronce',
+ 'medal-56-primer-sendero-bronce'
 ]);
 achievementDefs.splice(0,achievementDefs.length,...achievementDefs.filter(a=>supportedAchievementIds.has(a.id)));
 achievementDefs.forEach(a=>{
