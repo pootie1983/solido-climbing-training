@@ -5695,9 +5695,11 @@ const achievementDefs=[
 {id:"medal-10-resistencia-infinita-oro",group:"Resistencia",name:"Resistencia Infinita",desc:"Acumula 600 minutos de actividad",target:600,metric:"minutes",tier:"oro",icon:"🏅",image:"resistencia-infinita-oro.png",xp:250},
 {id:"medal-11-zonas-cardio-bronce",group:"Resistencia",name:"Zonas Cardio",desc:"Acumula 60 minutos de actividad",target:60,metric:"minutes",tier:"bronce",icon:"🏅",image:"zonas-cardio-bronce.png",xp:50},
 {id:"medal-12-conquistacumbres-oro",group:"Senderismo y montaña",name:"Conquistacumbres",desc:"Alcanza 10.000 pasos",target:10000,metric:"steps",tier:"oro",icon:"🏅",image:"resistencia-infinita-oro.png",xp:250},
-{id:"medal-13-imparable-plata",group:"Constancia",name:"Nunca Te Rindas",desc:"Completa 5 entrenamientos o mediciones",target:5,metric:"sessions",tier:"plata",icon:"🏅",image:"imparable-plata.png",xp:100},
-{id:"medal-14-primer-paso-bronce",group:"Constancia",name:"Primer Paso",desc:"Completa 1 entrenamientos o mediciones",target:1,metric:"sessions",tier:"bronce",icon:"🏅",image:"primer-paso-bronce.png",xp:50},
-{id:"medal-15-sin-excusas-diamante",group:"Constancia",name:"Sin Excusas",desc:"Completa 50 entrenamientos o mediciones",target:50,metric:"sessions",tier:"diamante",icon:"🏅",image:"sin-excusas-diamante.png",xp:1000},
+{id:"medal-13-imparable-plata",group:"Constancia",name:"Constancia",desc:"Completa 5 entrenamientos o mediciones",target:5,metric:"sessions",tier:"plata",icon:"🏅",image:"constancia_plata.png",xp:100},
+{id:"medal-14-primer-paso-bronce",group:"Constancia",name:"Constancia",desc:"Completa 1 entrenamiento o medición",target:1,metric:"sessions",tier:"bronce",icon:"🏅",image:"constancia_bronce.png",xp:50},
+{id:"medal-15-sin-excusas-diamante",group:"Constancia",name:"Constancia",desc:"Completa 50 entrenamientos o mediciones",target:50,metric:"sessions",tier:"diamante",icon:"🏅",image:"constancia_diamante.png",xp:1000},
+{id:"medal-constancia-platino",group:"Constancia",name:"Constancia",desc:"Completa 25 entrenamientos o mediciones",target:25,metric:"sessions",tier:"platino",icon:"🏅",image:"constancia_platino.png",xp:500},
+{id:"medal-constancia-oro",group:"Constancia",name:"Constancia",desc:"Completa 10 entrenamientos o mediciones",target:10,metric:"sessions",tier:"oro",icon:"🏅",image:"constancia_oro.png",xp:250},
 {id:"medal-16-core-bronce",group:"Escalada y fuerza",name:"Core",desc:"Completa 1 entrenamientos o mediciones",target:1,metric:"force",tier:"bronce",icon:"🏅",image:"core-bronce.png",xp:50},
 {id:"medal-17-core-diamante",group:"Escalada y fuerza",name:"Core",desc:"Completa 50 entrenamientos o mediciones",target:50,metric:"force",tier:"diamante",icon:"🏅",image:"core-diamante.png",xp:1000},
 {id:"medal-18-core-oro",group:"Escalada y fuerza",name:"Core",desc:"Completa 10 entrenamientos o mediciones",target:10,metric:"force",tier:"oro",icon:"🏅",image:"core-oro.png",xp:250},
@@ -5755,6 +5757,8 @@ const supportedAchievementIds=new Set([
  'medal-13-imparable-plata',
  'medal-14-primer-paso-bronce',
  'medal-15-sin-excusas-diamante',
+ 'medal-constancia-oro',
+ 'medal-constancia-platino',
  'medal-21-descanso-inteligente-platino',
  'medal-37-equilibrio-interior-oro',
  'medal-43-explorador-alternativo-plata',
@@ -5771,10 +5775,7 @@ const verifiedAchievementImages={
  'medal-2-agarre-diamante':'agarre_diamante.png',
  'medal-3-agarre-oro':'agarre_oro.png',
  'medal-4-agarre-plata':'agarre_plata.png',
- 'medal-5-agarre-platino':'agarre_platino.png',
- 'medal-12-conquistacumbres-oro':'resistencia-infinita-oro.png',
- 'medal-43-explorador-alternativo-plata':'explorador-alternativo-plata.png',
- 'medal-46-leyenda-solido-diamante':'leyenda-solido-diamante.png'
+ 'medal-5-agarre-platino':'agarre_platino.png'
 };
 achievementDefs.forEach(a=>{if(verifiedAchievementImages[a.id])a.image=verifiedAchievementImages[a.id];});
 achievementDefs.forEach(a=>{
