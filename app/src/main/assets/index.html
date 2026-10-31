@@ -4223,6 +4223,16 @@ const brDifficulties={
 let brMode='quick',brDifficulty='easy',brActive=false,brFrame=null,brLast=0,brTime=60,brScore=0,brCombo=0,brBestCombo=0,brHolds=0,brRound=1,brTotalXP=0,brSessionScores=[],brCountdownTimer=null,brGameForce=0,brAudioContext=null;
 let brThreshold=3,brLastForce=0,brLastRender=0,brGame=null,brCanvas=null,brCtx=null,brCanvasW=600,brCanvasH=330,brDpr=1;
 let brCalibrating=false,brCalibrationTimer=null,brCalibrationPeak=0,brNeedsCalibration=true;
+ 
+// Recursos gráficos de SOLIDO SKY HOPPER
+const brGokuImage=new Image();
+const brBuuImage=new Image();
+const brDragonBallImage=new Image();
+brGokuImage.src='sky-hopper/Goku infantil sobre la nube Nimbus.png';
+brBuuImage.src='sky-hopper/enemigo_majin_buu_gordo.png';
+brDragonBallImage.src='sky-hopper/bola_dragon_1_estrella.png';
+[brGokuImage,brBuuImage,brDragonBallImage].forEach(img=>img.onload=()=>{if(brGame)brDrawScene(brLastForce);});
+
 try{brTotalXP=Number(localStorage.getItem('solidoBoulderXP')||0)||0;brThreshold=Number(localStorage.getItem('solidoHopperThreshold')||3)||3;brDifficulty=localStorage.getItem('solidoHopperDifficulty')||'easy';if(!brDifficulties[brDifficulty])brDifficulty='easy';}catch(e){}
 function brFmt(n){return Math.max(0,Math.floor(n)).toLocaleString('es-ES');}
 function brLevelData(){return brDifficulties[brDifficulty]||brDifficulties.easy;}
@@ -4419,25 +4429,46 @@ function brDrawScene(force){
   c.fillStyle='#9ed58c';brRoundRect(c,x,top-2,pw,7,4);c.fill();
   c.fillStyle='#d4f0b4';brRoundRect(c,x+5,top-2,Math.max(8,pw-10),2,1);c.fill();
  }
- // Enemigos: bolas rojas con pinchos y ojos expresivos.
- for(const e of g.enemies){const x=e.x-g.worldX+g.x,y=e.y;if(x< -40||x>w+40)continue;c.save();c.translate(x,y);c.rotate(Math.sin(e.phase)*.12);
-  const r=e.r||17;
-  c.fillStyle='#401b35';c.beginPath();c.arc(0,0,r+2,0,Math.PI*2);c.fill();
-  for(let k=0;k<10;k++){const a=k*Math.PI*2/10;c.save();c.rotate(a);c.fillStyle='#7d1838';c.beginPath();c.moveTo(r*.62,-r*.34);c.lineTo(r*1.48,0);c.lineTo(r*.62,r*.34);c.closePath();c.fill();c.strokeStyle='#ff8aab';c.lineWidth=1.5;c.stroke();c.restore();}
-  const grad=c.createRadialGradient(-r*.35,-r*.42,2,0,0,r);grad.addColorStop(0,'#ff8297');grad.addColorStop(.58,'#e83457');grad.addColorStop(1,'#8d1239');c.fillStyle=grad;c.beginPath();c.arc(0,0,r,0,Math.PI*2);c.fill();c.strokeStyle='#ffb0c0';c.lineWidth=1.5;c.stroke();
-  for(const ex of [-r*.32,r*.32]){c.fillStyle='#fff';c.beginPath();c.ellipse(ex,-r*.12,r*.22,r*.29,0,0,Math.PI*2);c.fill();c.fillStyle='#21142a';c.beginPath();c.arc(ex+r*.04,-r*.08,r*.12,0,Math.PI*2);c.fill();c.fillStyle='#fff';c.beginPath();c.arc(ex+r*.08,-r*.18,r*.045,0,Math.PI*2);c.fill();}
-  c.strokeStyle='#501127';c.lineWidth=2.5;c.beginPath();c.arc(0,r*.3,r*.25,.15,Math.PI-.15);c.stroke();c.restore();}
- // Monedas doradas coleccionables.
- for(const p of g.powders){if(p.got)continue;const x=p.x-g.worldX+g.x,y=p.y+Math.sin(nowSafeTime()*.004+p.phase)*4;if(x< -35||x>w+35)continue;c.save();c.translate(x,y);c.rotate(Math.sin(nowSafeTime()*.003+p.phase)*.12);
-  const r=p.r||11;const gold=c.createRadialGradient(-r*.35,-r*.4,1,0,0,r*1.2);gold.addColorStop(0,'#fff5a6');gold.addColorStop(.42,'#ffcf35');gold.addColorStop(1,'#c87908');
-  c.shadowColor='#ffcc35';c.shadowBlur=9;c.fillStyle=gold;c.beginPath();c.ellipse(0,0,r*.82,r,0,0,Math.PI*2);c.fill();c.shadowBlur=0;c.strokeStyle='#fff0a0';c.lineWidth=2;c.stroke();
-  c.strokeStyle='#a96808';c.lineWidth=2;c.beginPath();c.ellipse(0,0,r*.48,r*.68,0,0,Math.PI*2);c.stroke();c.fillStyle='#fff0a0';c.font='bold '+Math.round(r*1.1)+'px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('$',0,1);c.restore();}
+ // Enemigos: Majin Buu, usando el PNG subido.
+ for(const e of g.enemies){
+  const x=e.x-g.worldX+g.x,y=e.y;
+  if(x< -55||x>w+55)continue;
+  const size=(e.r||17)*3.15;
+  if(brBuuImage.complete&&brBuuImage.naturalWidth){
+   c.save();c.shadowColor='rgba(0,0,0,.28)';c.shadowBlur=5;c.drawImage(brBuuImage,x-size*.52,y-size*.58,size*1.04,size*1.16);c.restore();
+  }else{
+   c.fillStyle='#e88acb';c.beginPath();c.arc(x,y,e.r||17,0,Math.PI*2);c.fill();
+  }
+ }
+ // Bolas de dragón como monedas coleccionables.
+ for(const p of g.powders){
+  if(p.got)continue;
+  const x=p.x-g.worldX+g.x,y=p.y+Math.sin(nowSafeTime()*.004+p.phase)*4;
+  if(x< -35||x>w+35)continue;
+  c.save();c.translate(x,y);c.rotate(Math.sin(nowSafeTime()*.003+p.phase)*.12);
+  const size=(p.r||11)*2.65;
+  if(brDragonBallImage.complete&&brDragonBallImage.naturalWidth){
+   c.shadowColor='rgba(255,170,20,.65)';c.shadowBlur=8;
+   c.drawImage(brDragonBallImage,-size/2,-size/2,size,size);
+  }else{
+   c.fillStyle='#ff9f1c';c.beginPath();c.arc(0,0,size*.42,0,Math.PI*2);c.fill();
+  }
+  c.restore();
+ }
  // Spark particles when a figure-eight knot is collected.
  for(const p of g.particles){c.globalAlpha=Math.max(0,p.t/.45);c.fillStyle='#fffdf3';c.beginPath();c.arc(p.x,p.y,2.5,0,Math.PI*2);c.fill();c.globalAlpha=1;}
  // Force halo shows live input strength.
  if(force>=brThreshold){c.strokeStyle='rgba(255,218,75,'+Math.min(.8,.25+(force/brThreshold)*.15)+')';c.lineWidth=3;c.beginPath();c.arc(g.x,g.y+9,25+Math.min(12,(force-brThreshold)*2),0,Math.PI*2);c.stroke();}
   c.fillStyle=force<brThreshold?'#16496b':'#08765d';c.font='bold 12px sans-serif';c.fillText(force<brThreshold?'↓ CAÍDA':'↑ IMPULSO',g.x-31,g.y+48);
- brDrawGrigri(c,g.x,g.y+8,1.05);
+ // Personaje controlable: Goku niño sentado en la nube Nimbus.
+ if(brGokuImage.complete&&brGokuImage.naturalWidth){
+  const gw=88,gh=78;
+  c.save();c.shadowColor='rgba(0,0,0,.24)';c.shadowBlur=5;
+  c.drawImage(brGokuImage,g.x-gw*.52,g.y+8-gh*.58,gw,gh);
+  c.restore();
+ }else{
+  brDrawGrigri(c,g.x,g.y+8,1.05);
+ }
  if(g.dead){c.fillStyle='rgba(18,32,61,.35)';c.fillRect(0,0,w,h);}
 }
 function nowSafeTime(){return typeof performance!=='undefined'?performance.now():Date.now();}
