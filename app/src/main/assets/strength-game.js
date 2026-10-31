@@ -1,4 +1,5 @@
 /* SOLIDO CLIMBING · Reto de fuerza en la montaña.
+   Recordatorio: el récord y el apodo se guardan en localStorage del dispositivo.
    Usa currentForce, alimentado por el WH-C06 ya conectado. No toca el puente Bluetooth. */
 const SG_RECORD_KEY = 'solidoFeriaClimberRecordV1';
 let sgRecord = null, sgActive = false, sgPeak = 0, sgStartedAt = 0, sgFrame = null;
