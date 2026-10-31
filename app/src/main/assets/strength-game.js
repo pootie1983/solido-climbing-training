@@ -209,7 +209,7 @@ function sgRender() {
  if(recordText)recordText.textContent=sgRecord?'RÉCORD · '+sgRecord.nickname+' · '+sgFormatKg(sgRecord.kg):'¡Sé el primero en llegar a la cima!';
  if(ghost){const rp=sgRecord?sgProgress(sgRecord.kg):0;sgSetClimber(ghost,rp);ghost.style.opacity=sgRecord?'1':'0';ghost.style.visibility=sgRecord?'visible':'hidden';}
  const now=performance.now(),dt=sgVisualLastAt?Math.min(80,now-sgVisualLastAt):16;sgVisualLastAt=now;const targetProgress=sgProgress(sgPeak);sgVisualProgress+=(targetProgress-sgVisualProgress)*(1-Math.exp(-dt/115));if(Math.abs(targetProgress-sgVisualProgress)<.001)sgVisualProgress=targetProgress;
- if(live){sgSetClimber(live,sgVisualProgress);sgSetPose(live,sgVictoryShown?'victory':(sgActive?(sgVisualProgress>=.82?'effort':'climbing'):'idle'));}
+ if(live){sgSetClimber(live,sgVisualProgress);sgSetPose(live,sgVictoryShown?'victory':(sgActive?(sgVisualProgress>=.82?'effort':'climbing'):(sgCountdownActive?(sgCountdownValue>=4?'fall':'idle'):'idle')));}
  if(liveKg)liveKg.textContent=sgFormatKg(force);
  if(peakKg)peakKg.textContent=sgFormatKg(sgPeak);
  if(targetHud)targetHud.textContent=sgFormatKg(sgMaxKg);
