@@ -5741,6 +5741,12 @@ const achievementDefs=[
 // Solo logros con datos que la app puede comprobar de forma real.
 const supportedAchievementIds=new Set([
  'medal-0-a-por-las-alturas-plata',
+ 'medal-1-agarre-bronce',
+ 'medal-2-agarre-diamante',
+ 'medal-3-agarre-oro',
+ 'medal-4-agarre-plata',
+ 'medal-5-agarre-platino',
+ 'medal-6-alma-montanera-platino',
  'medal-12-conquistacumbres-oro',
  'medal-13-imparable-plata',
  'medal-14-primer-paso-bronce',
@@ -5757,6 +5763,11 @@ const supportedAchievementIds=new Set([
 achievementDefs.splice(0,achievementDefs.length,...achievementDefs.filter(a=>supportedAchievementIds.has(a.id)));
 // La medalla de inicio de agarre utiliza el dibujo que realmente dice "PRIMER AGARRE".
 const verifiedAchievementImages={
+ 'medal-1-agarre-bronce':'agarre_bronce.png',
+ 'medal-2-agarre-diamante':'agarre_diamante.png',
+ 'medal-3-agarre-oro':'agarre_oro.png',
+ 'medal-4-agarre-plata':'agarre_plata.png',
+ 'medal-5-agarre-platino':'agarre_platino.png',
  'medal-12-conquistacumbres-oro':'resistencia-infinita-oro.png',
  'medal-43-explorador-alternativo-plata':'explorador-alternativo-plata.png',
  'medal-46-leyenda-solido-diamante':'leyenda-solido-diamante.png'
