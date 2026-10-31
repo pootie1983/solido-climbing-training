@@ -101,7 +101,7 @@ function sgShowVictory(){
  const scene=document.getElementById('sgScene'),banner=document.getElementById('sgVictoryBanner'),overlay=document.getElementById('sgOverlay');
  if(scene)scene.classList.add('sg-summit-reached');
  if(banner)banner.classList.add('active');
- const climber=document.getElementById('sgCurrentClimber');if(climber)climber.textContent='🙌';
+ const climber=document.getElementById('sgCurrentClimber');if(climber)climber.textContent='🙋‍♂️';
  if(overlay)overlay.style.display='none';
  const phrase=document.getElementById('sgLevelPhrase');if(phrase)phrase.textContent='NIVEL 10 · ¡¡¡ERES EL REY DE LA MONTAÑA!!!';
  sgLaunchFireworks();sgPlayVictoryMusic();
