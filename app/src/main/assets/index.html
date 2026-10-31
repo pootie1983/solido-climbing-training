@@ -2441,6 +2441,35 @@ body.br-fullscreen-active .sg-close{display:flex}
 #solidoSplash.splash-fallback .splash-fallback-brand{display:block}
 #solidoSplash.hide{opacity:0;pointer-events:none}
 </style>
+<style id="solido-game-hub-rock-theme">
+#gameHub.game-hub-screen{position:relative;isolation:isolate;min-height:calc(100dvh - 82px);margin:-16px -16px 0;padding:0;overflow:hidden;background:#101b1c url('fondo_seleccion_juegos.png.png') center center/cover no-repeat}
+#gameHub.game-hub-screen:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#07131b70 0%,#07131b55 32%,#07120ee8 100%)}
+#gameHub .game-hub-shade{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 25%,#c6e5cf16,transparent 58%),linear-gradient(90deg,#06101635,#06101608 50%,#06101645)}
+#gameHub .game-hub-content{position:relative;z-index:1;min-height:inherit;max-width:760px;margin:0 auto;padding:clamp(22px,6vh,54px) 17px 26px;display:flex;flex-direction:column;justify-content:center}
+#gameHub .game-hub-heading{text-align:center;margin:0 auto 23px;max-width:440px;text-shadow:0 3px 12px #000}
+#gameHub .game-hub-kicker{display:inline-block;color:#d5ff9a;font-size:10px;font-weight:1000;letter-spacing:2px;padding:7px 11px;border:1px solid #d8f2b45c;border-radius:30px;background:#07150dbb}
+#gameHub .game-hub-heading h2{margin:13px 0 7px;font-size:clamp(27px,7vw,39px);line-height:1;color:#fff;font-weight:1000;letter-spacing:1px}
+#gameHub .game-hub-heading p{margin:0;color:#e0e9df;font-size:13px}
+#gameHub .game-hub-grid{display:grid;grid-template-columns:1fr;gap:14px;margin:0 auto;width:100%;max-width:520px}
+#gameHub .game-hub-card{position:relative;display:grid;grid-template-columns:100px minmax(0,1fr);align-items:center;gap:14px;width:100%;min-height:142px;padding:13px;text-align:left;color:#f7f8ed;border:1px solid #d4e5c68a;border-radius:18px;background:linear-gradient(115deg,#10221ddd,#101b1beF);box-shadow:0 9px 25px #0009,inset 0 1px #ffffff24;overflow:hidden;cursor:pointer;transition:transform .16s ease,border-color .16s ease,filter .16s ease}
+#gameHub .game-hub-card:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,#b3df7c18,transparent 55%);opacity:.9}
+#gameHub .game-hub-card:active{transform:scale(.975);filter:brightness(1.18)}
+#gameHub .game-hub-art{position:relative;width:100px;height:112px;display:grid;place-items:center;border-radius:13px;background:radial-gradient(circle at 50% 35%,#8da77c,#263e32 72%);border:1px solid #d5efb37a;box-shadow:inset 0 0 18px #07110b88}
+#gameHub .game-hub-art>span{font-size:52px;filter:drop-shadow(0 5px 4px #0009)}
+#gameHub .game-hub-art i{position:absolute;top:6px;left:8px;font-size:9px;font-style:normal;font-weight:1000;letter-spacing:1px;color:#f0ffcf}
+#gameHub .game-hub-card-summit .game-hub-art{background:radial-gradient(circle at 50% 35%,#b2b7a0,#344b43 72%)}
+#gameHub .game-hub-card-copy{position:relative;z-index:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+#gameHub .game-hub-card-copy strong{font-size:clamp(13px,3.5vw,16px);line-height:1.2;letter-spacing:.4px;color:#fff}
+#gameHub .game-hub-card-copy small{font-size:11px;line-height:1.45;color:#d0ddd3;min-height:0}
+#gameHub .game-hub-card-copy b{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:3px;padding:9px 11px;border-radius:9px;background:linear-gradient(100deg,#b6e879,#72c75b);color:#14220f;font-size:10px;letter-spacing:.8px;box-shadow:0 3px 10px #0005}
+#gameHub .game-hub-card-copy b span:last-child{font-size:17px;line-height:10px}
+#gameHub .game-hub-back{align-self:center;display:flex;align-items:center;justify-content:center;gap:9px;margin:21px auto 0;padding:12px 20px;border:1px solid #d5e5d078;border-radius:30px;background:#07141bcc;color:#f1f7ef;font-weight:900;font-size:11px;letter-spacing:1px;box-shadow:0 5px 15px #0008;cursor:pointer}
+#gameHub .game-hub-back span{font-size:18px;color:#c8f28d}
+#gameHub .game-hub-footer{text-align:center;margin:18px 0 0;color:#e1f2d2b0;font-size:9px;font-weight:900;letter-spacing:2px;text-shadow:0 2px 6px #000}
+@media(min-width:560px){#gameHub .game-hub-grid{grid-template-columns:1fr 1fr;max-width:680px;align-items:stretch}#gameHub .game-hub-card{grid-template-columns:1fr;align-content:start;min-height:245px}#gameHub .game-hub-art{width:100%;height:116px}#gameHub .game-hub-card-copy{height:100%}#gameHub .game-hub-card-copy b{margin-top:auto}}
+@media(max-width:370px){#gameHub .game-hub-card{grid-template-columns:82px minmax(0,1fr);gap:10px;padding:10px;min-height:132px}#gameHub .game-hub-art{width:82px;height:102px}#gameHub .game-hub-art>span{font-size:44px}#gameHub .game-hub-card-copy small{font-size:10px}}
+</style>
+
 <script>
 (function(){
   var splash=document.getElementById('solidoSplash');
@@ -3242,21 +3271,31 @@ body.br-fullscreen-active .sg-close{display:flex}
 
 
 
-<section id="gameHub" class="hide">
-  <div class="sectionhead"><h2>🎮 JUEGOS SOLIDO</h2><span class="tag">ARCADE</span></div>
-  <p class="muted">Elige tu desafío. Más juegos llegarán próximamente.</p>
-  <div class="game-hub-grid">
-    <button class="game-hub-card" type="button" onclick="show('climbGame')">
-      <span class="game-hub-art">🪂</span><strong>SOLIDO SKY HOPPER</strong>
-      <small>Salta plataformas y recoge monedas con el WH-C06</small><b>JUGAR AHORA →</b>
-    </button>
-    <button class="game-hub-card" type="button" onclick="show('strengthGame')">
-      <span class="game-hub-art">🧗‍♂️</span><strong>EL RETO DE LA CIMA</strong>
-      <small>Aprieta el WH-C06 y escala la montaña. ¡Supera el récord!</small><b>JUGAR AHORA →</b>
-    </button>
+<section id="gameHub" class="hide game-hub-screen">
+  <div class="game-hub-shade" aria-hidden="true"></div>
+  <div class="game-hub-content">
+    <div class="game-hub-heading">
+      <span class="game-hub-kicker">SOLIDO CLIMBING · ZONA DE DESAFÍOS</span>
+      <h2>ELIGE TU JUEGO</h2>
+      <p>Entrena, escala y supera tus propios límites.</p>
+    </div>
+    <div class="game-hub-grid">
+      <button class="game-hub-card game-hub-card-sky" type="button" onclick="show('climbGame')">
+        <span class="game-hub-art"><span>🪂</span><i>01</i></span>
+        <span class="game-hub-card-copy"><strong>SOLIDO SKY HOPPER</strong>
+        <small>Salta plataformas, esquiva obstáculos y recoge monedas con el WH-C06.</small>
+        <b><span>INICIAR DESAFÍO</span><span aria-hidden="true">➜</span></b></span>
+      </button>
+      <button class="game-hub-card game-hub-card-summit" type="button" onclick="show('strengthGame')">
+        <span class="game-hub-art"><span>🧗</span><i>02</i></span>
+        <span class="game-hub-card-copy"><strong>EL RETO DE LA CIMA</strong>
+        <small>Aprieta el WH-C06, escala la pared y conquista la cima. ¡Bate tu récord!</small>
+        <b><span>INICIAR DESAFÍO</span><span aria-hidden="true">➜</span></b></span>
+      </button>
+    </div>
+    <button class="game-hub-back" type="button" onclick="show('home')"><span>←</span> VOLVER AL INICIO</button>
+    <div class="game-hub-footer">PREPARA TU AGARRE · SUPERA TUS LÍMITES</div>
   </div>
-  <!-- Espacio reservado para la futura imagen de fondo de la pantalla de selección. -->
-  <button class="btn secondary" style="width:100%;margin-top:14px" onclick="show('home')">← Volver al inicio</button>
 </section>
 
 <section id="climbGame" class="hide">
