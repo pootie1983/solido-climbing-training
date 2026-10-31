@@ -2074,6 +2074,27 @@ body.plan-editor-open{overflow:hidden}
 }
 </style>
 
+<style id="achievement-premium-overrides">
+.ach-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+.ach-card{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;gap:8px!important;padding:12px 8px!important;text-align:center!important;min-width:0}
+.ach-medal{width:clamp(112px,34vw,150px)!important;height:clamp(112px,34vw,150px)!important;flex:0 0 auto!important;border-radius:50%!important;overflow:hidden!important;background:radial-gradient(circle,#263d49 0%,#0d1c25 72%)!important;border:2px solid #526c78!important;box-shadow:0 5px 18px #0008,inset 0 0 12px #ffffff18!important}
+.ach-medal img{width:100%!important;height:100%!important;object-fit:cover!important;transform:scale(3.15)!important;filter:grayscale(1) brightness(.78) contrast(1.12)!important;opacity:.88!important}
+.ach-card.unlocked .ach-medal img{filter:grayscale(0) brightness(1.18) contrast(1.16) saturate(1.25)!important;opacity:1!important}
+.ach-card.locked .ach-medal img{filter:grayscale(1) brightness(.78) contrast(1.12)!important;opacity:.88!important}
+.ach-card .ach-copy{width:100%;min-width:0}
+.ach-copy strong{font-size:12px!important;line-height:1.25}
+.ach-copy small{font-size:10px!important}
+.ach-progress{width:100%}
+@media(max-width:390px){.ach-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.ach-medal{width:clamp(108px,34vw,132px)!important;height:clamp(108px,34vw,132px)!important;flex-basis:auto!important}.ach-card{padding:10px 6px!important}}
+#achievementCelebration{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;padding:24px;background:radial-gradient(circle at center,#244a43f5 0%,#071016f8 68%,#020608fa 100%);opacity:0;pointer-events:none;visibility:hidden;transition:opacity .38s ease,visibility .38s ease}
+#achievementCelebration.active{opacity:1;visibility:visible}
+#achievementCelebration .celebration-title{font-size:clamp(30px,9vw,48px);font-weight:900;letter-spacing:2px;color:#d8ff85;text-align:center;text-shadow:0 0 22px #b6ff6b88}
+#achievementCelebration .celebration-medal{width:min(76vw,330px);height:min(76vw,330px);border-radius:50%;overflow:hidden;border:4px solid #f3d47b;background:#172d36;box-shadow:0 0 35px #f5d77b88,0 0 90px #8eff7a44;display:grid;place-items:center}
+#achievementCelebration .celebration-medal img{width:100%;height:100%;object-fit:cover;transform:scale(3.15);filter:brightness(1.2) contrast(1.15) saturate(1.2)}
+#achievementCelebration .celebration-name{font-size:20px;font-weight:800;color:#fff;text-align:center}
+#achievementCelebration .celebration-xp{font-size:17px;color:#c8ff9b;font-weight:700}
+</style>
+
 </head>
 
 <body>
@@ -2245,12 +2266,6 @@ body.plan-editor-open{overflow:hidden}
     </div>
   </div>
 
-  <button class="home-achievements-launch" onclick="show('achievements')">
-    <span class="home-achievements-medal" aria-hidden="true">🏅</span>
-    <span class="home-achievements-copy"><strong>MIS LOGROS Y MEDALLAS</strong><small>Consulta tus medallas, retos y experiencia</small></span>
-    <span class="home-achievements-arrow">→</span>
-  </button>
-
   <button class="home-meditation-launch" onclick="show('meditation')">
     <span class="home-meditation-symbol"><svg class="home-icon" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="medGlow" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e6ffd1"/><stop offset="1" stop-color="#68c982"/></linearGradient></defs><path d="M13 39q-8-1-8-9 0-8 9-9 3-13 17-13 13 0 17 13 11 0 11 10 0 8-9 9H13Z" fill="url(#medGlow)" opacity=".9" stroke="#d6ffdf" stroke-width="2"/><path d="M18 32q5-5 10 0t10 0 10 0" fill="none" stroke="#276b43" stroke-width="3" stroke-linecap="round"/><path d="M24 48q8 5 16 0M29 55q3 2 6 0" fill="none" stroke="#8fe9a1" stroke-width="2" stroke-linecap="round"/></svg></span>
     <span class="home-meditation-copy"><strong>MEDITACIÓN GUIADA</strong><small>Respira, enfoca tu mente y prepárate para escalar</small></span>
@@ -2375,6 +2390,12 @@ body.plan-editor-open{overflow:hidden}
     Si aparece dolor agudo en dedos, codos u hombros, detén la sesión.
     Aumenta la carga gradualmente.
   </div>
+
+  <button class="home-achievements-launch" onclick="show('achievements')">
+    <span class="home-achievements-medal" aria-hidden="true">🏅</span>
+    <span class="home-achievements-copy"><strong>MIS LOGROS Y MEDALLAS</strong><small>Consulta tus medallas, retos y experiencia</small></span>
+    <span class="home-achievements-arrow">→</span>
+  </button>
 
 </section>
 
@@ -3009,6 +3030,14 @@ body.plan-editor-open{overflow:hidden}
 </div>
 
 </main>
+
+<div id="achievementCelebration" aria-live="assertive" aria-atomic="true">
+  <div class="celebration-title">¡FELICIDADES!</div>
+  <div class="celebration-medal"><img id="celebrationMedalImage" src="" alt="Medalla conseguida"></div>
+  <div class="celebration-name" id="celebrationMedalName"></div>
+  <div class="celebration-xp" id="celebrationMedalXp"></div>
+</div>
+
 
 
 <!-- NAVEGACIÓN -->
@@ -5723,17 +5752,38 @@ function achievementValues(){
   distance:daily.date===today?Number(daily.distance||0):achievementHealth.distance
  };
 }
+let achievementCelebrationQueue=[];
+let achievementCelebrationActive=false;
+function playAchievementTrumpets(){
+ try{
+  const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return;
+  const ctx=new Ctx();const master=ctx.createGain();master.gain.setValueAtTime(.0001,ctx.currentTime);master.gain.exponentialRampToValueAtTime(.22,ctx.currentTime+.08);master.gain.setValueAtTime(.22,ctx.currentTime+2.45);master.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+2.9);master.connect(ctx.destination);
+  const notes=[523.25,659.25,783.99,1046.5,783.99,1046.5,1318.51];
+  notes.forEach((freq,i)=>{const at=ctx.currentTime+.08+i*.34;[1,2,3].forEach((harmonic,h)=>{const osc=ctx.createOscillator(),gain=ctx.createGain(),filter=ctx.createBiquadFilter();osc.type='sawtooth';osc.frequency.setValueAtTime(freq*harmonic,at);filter.type='lowpass';filter.frequency.value=harmonic===1?2400:1800;gain.gain.setValueAtTime(.0001,at);gain.gain.linearRampToValueAtTime((h===0?.12:.035)/harmonic,at+.045);gain.gain.setValueAtTime((h===0?.09:.025)/harmonic,at+.2);gain.gain.exponentialRampToValueAtTime(.0001,at+.32);osc.connect(filter);filter.connect(gain);gain.connect(master);osc.start(at);osc.stop(at+.34);});});
+  setTimeout(()=>{try{ctx.close();}catch(e){}},3400);
+ }catch(e){}
+}
+function showNextAchievementCelebration(){
+ if(achievementCelebrationActive||!achievementCelebrationQueue.length)return;
+ const item=achievementCelebrationQueue.shift(),overlay=document.getElementById('achievementCelebration');
+ if(!overlay)return;
+ achievementCelebrationActive=true;
+ const img=document.getElementById('celebrationMedalImage'),name=document.getElementById('celebrationMedalName'),xp=document.getElementById('celebrationMedalXp');
+ img.src='achievements/'+item.image;img.alt='Medalla '+item.name;name.textContent=item.name;xp.textContent='+'+item.xp+' XP · '+item.tier.toUpperCase();
+ overlay.classList.add('active');playAchievementTrumpets();
+ setTimeout(()=>{overlay.classList.remove('active');setTimeout(()=>{achievementCelebrationActive=false;showNextAchievementCelebration();},420);},3000);
+}
 function renderAchievements(){
  const host=document.getElementById('achievementList');if(!host)return;
  const values=achievementValues();
- let xp=0,unlocked=0;
- const groups={};
+ let xp=0,unlocked=0;const groups={};const newlyUnlocked=[];
  achievementDefs.forEach(a=>{
-  const value=Number(values[a.metric]||0),done=value>=a.target||!!achievementUnlocked[a.id];
+  const value=Number(values[a.metric]||0),already=!!achievementUnlocked[a.id],done=value>=a.target||already;
   if(done){
    xp+=Number(achievementUnlocked[a.id]?.xp||a.xp);unlocked++;
-   if(!achievementUnlocked[a.id]){
+   if(!already){
     achievementUnlocked[a.id]={unlockedAt:new Date().toISOString(),xp:a.xp};
+    newlyUnlocked.push(a);
     try{localStorage.setItem('solidoAchievementUnlocked',JSON.stringify(achievementUnlocked));}catch(e){}
    }
   }
@@ -5741,10 +5791,9 @@ function renderAchievements(){
  });
  const level=Math.floor(xp/500)+1;
  const unlockedEl=document.getElementById('achUnlocked'),xpEl=document.getElementById('achXp'),levelEl=document.getElementById('achLevel');
- if(unlockedEl)unlockedEl.textContent=unlocked;
- if(xpEl)xpEl.textContent=xp.toLocaleString('es-ES');
- if(levelEl)levelEl.textContent=level;
+ if(unlockedEl)unlockedEl.textContent=unlocked;if(xpEl)xpEl.textContent=xp.toLocaleString('es-ES');if(levelEl)levelEl.textContent=level;
  host.innerHTML=Object.entries(groups).map(([group,items])=>'<div class="ach-group"><h3>'+group+'</h3><div class="ach-grid">'+items.map(({a,value,done})=>'<article class="ach-card '+(done?'unlocked':'locked')+'" data-tier="'+a.tier+'"><div class="ach-medal"><img src="achievements/'+a.image+'" alt="Medalla '+a.name+'" loading="lazy" onerror="this.closest(&quot;.ach-medal&quot;).classList.add(&quot;image-missing&quot;);this.alt=&quot;Imagen no disponible: &quot;+this.alt"></div><div class="ach-copy"><strong>'+a.name+'</strong><small>'+a.desc+'</small><div class="ach-progress"><i style="width:'+Math.min(100,value/a.target*100)+'%"></i></div><small>'+Math.min(value,a.target).toLocaleString('es-ES')+' / '+a.target.toLocaleString('es-ES')+'</small><div class="ach-xp">'+(done?'Conseguido · ':'')+'+'+a.xp+' XP · '+a.tier.toUpperCase()+'</div></div></article>').join('')+'</div></div>').join('');
+ if(newlyUnlocked.length){achievementCelebrationQueue.push(...newlyUnlocked);showNextAchievementCelebration();}
 }
 
 function healthConnectRefresh(){
