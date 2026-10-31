@@ -305,7 +305,8 @@ function strengthGameSaveRecord(event) {
  if(overlay)sgSetOverlay(sgReachedSummit?'¡VICTORIA!':'¡NUEVO RÉCORD!','¡'+nickname+' ha conseguido '+sgFormatKg(sgRecord.kg)+'! ¡A ver quién consigue superarlo!');
  sgRender();
 }
-function strengthGameReset() {
+function strengthGameReset(clearRecord) {
+ if(clearRecord){try{localStorage.removeItem(SG_RECORD_KEY);}catch(e){}sgRecord=null;}
  sgActive=false;sgCountdownActive=false;sgVisualProgress=0;sgVisualLastAt=0;sgThermoBroken=false;if(sgThermoBreakTimer){clearTimeout(sgThermoBreakTimer);sgThermoBreakTimer=null;}const section=document.getElementById('strengthGame');if(section)section.classList.remove('sg-playing');if(sgCountdownTimer){clearInterval(sgCountdownTimer);sgCountdownTimer=null;}if(sgFrame)cancelAnimationFrame(sgFrame);sgFrame=null;sgStopMusic();if(sgVictoryTimer){clearTimeout(sgVictoryTimer);sgVictoryTimer=null;}sgPeak=0;sgReachedSummit=false;sgVictoryShown=false;sgLastLevel=0;sgForceFiltered=0;sgForceInitialized=false;sgLastSensorPacketAt=0;sgPendingRecord=0;
  const modal=document.getElementById('sgRecordModal');if(modal)modal.style.display='none';
  const banner=document.getElementById('sgVictoryBanner');if(banner)banner.classList.remove('active');
@@ -313,15 +314,15 @@ function strengthGameReset() {
  const scene=document.getElementById('sgScene');if(scene){scene.classList.remove('sg-summit-reached','sg-summit-near','sg-victory-camera','sg-thermo-broken','sg-thermo-broken-settled');scene.style.setProperty('--sg-progress','0');}const world=document.getElementById('sgWorld');if(world){world.style.setProperty('--sg-progress','0');world.style.transform='translateY(-75%)';}
  const climber=document.getElementById('sgCurrentClimber');if(climber)sgSetPose(climber,'idle');
  const overlay=document.getElementById('sgOverlay');
- if(overlay)sgSetOverlay('¡A POR LA CIMA!','Aprieta el WH-C06 para hacer subir al escalador. El récord anterior permanece guardado.');
+ if(overlay)sgSetOverlay('¡A POR LA CIMA!',clearRecord?'Récord borrado. Aprieta el WH-C06 para empezar una nueva marca.':'Aprieta el WH-C06 para hacer subir al escalador. Tu récord permanece guardado.');
  const start=document.getElementById('sgStartButton');if(start)start.textContent='▶ Empezar partida';
  const finish=document.getElementById('sgFinishButton');if(finish)finish.disabled=true;
  const timer=document.getElementById('sgTimer');if(timer)timer.textContent='12 s';
- const status=document.getElementById('sgGameStatus');if(status)status.textContent='Partida preparada. Tu récord se conserva.';
+ const status=document.getElementById('sgGameStatus');if(status)status.textContent=clearRecord?'Partida reiniciada. El récord anterior se ha borrado.':'Partida preparada. Tu récord se conserva.';
  sgRender();
 }
 function strengthGameClose() {
-  strengthGameReset();document.body.classList.remove('br-fullscreen-active');
+  strengthGameReset(false);document.body.classList.remove('br-fullscreen-active');
   const section=document.getElementById('strengthGame');if(section){section.classList.remove('strength-fullscreen-game');section.style.removeProperty('display');}document.documentElement.style.removeProperty('overflow');document.body.style.removeProperty('overflow');
   try{if(window.AndroidUi&&AndroidUi.exitGameFullscreen)AndroidUi.exitGameFullscreen();}catch(e){}
   show('gameHub');
