@@ -2671,19 +2671,24 @@ body.br-fullscreen-active .sg-close{display:flex}
 #plansEntrySplash.fade-out{opacity:0;pointer-events:none}
 #plansEntrySplash img{display:block;width:100%;height:100%;object-fit:contain}
 
-/* Ajustes solicitados · El reto de la cima */
+/* Ajustes corregidos · El reto de la cima */
 #sgLevelPhrase{display:none!important}
-.sg-message{font-size:clamp(14px,3.8vw,19px)!important;line-height:1.22!important}
-/* Rotura visible sin que las salpicaduras se salgan del escenario */
-#sgScene.sg-thermo-broken .sg-thermo-spill i{animation-duration:5.5s!important}
-#sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(1){--lx:-24px;--ly:34px}
-#sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(2){--lx:22px;--ly:42px}
+/* Frases inferiores más grandes, manteniendo margen respecto al termómetro */
+#sgScene .sg-message{font-size:clamp(17px,4.8vw,23px)!important;line-height:1.18!important;left:9px!important;right:48px!important;bottom:10px!important;top:auto!important;max-width:calc(100% - 58px);text-align:left!important}
+/* La victoria debe quedar delante de la pancarta, con la imagen visible */
+#sgScene.sg-victory-camera .sg-summit-climber{z-index:22!important;left:70%;top:1.5%;width:76px;height:100px}
+#sgScene.sg-victory-camera .sg-victory-banner{z-index:19!important}
+#sgScene.sg-victory-camera .sg-fireworks{z-index:20!important}
+/* Salpicaduras breves y dirigidas hacia el interior del escenario: nunca hacia el borde derecho */
+#sgScene.sg-thermo-broken .sg-thermo-spill i{animation-duration:1.8s!important}
+#sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(1){--lx:-25px;--ly:34px}
+#sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(2){--lx:-18px;--ly:42px}
 #sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(3){--lx:-14px;--ly:48px}
-#sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(4){--lx:28px;--ly:26px}
+#sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(4){--lx:-9px;--ly:26px}
 #sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(5){--lx:-30px;--ly:40px}
-#sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(6){--lx:10px;--ly:52px}
-#sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(7){--lx:-7px;--ly:28px}
-#sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(8){--lx:32px;--ly:46px}
+#sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(6){--lx:-5px;--ly:52px}
+#sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(7){--lx:-20px;--ly:28px}
+#sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(8){--lx:-12px;--ly:46px}
 </style>
 <script>
 (function(){
