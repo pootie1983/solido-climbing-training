@@ -3096,17 +3096,6 @@ body.br-fullscreen-active .sg-close{display:flex}
 <section id="gameHub" class="hide">
   <div class="sectionhead"><h2>🎮 JUEGOS SOLIDO</h2><span class="tag">ARCADE</span></div>
   <p class="muted">Elige tu desafío. Más juegos llegarán próximamente.</p>
-  <div class="sg-connect-panel"><div class="sg-connect-state"><i class="sg-connect-dot" id="sgHubConnectDot"></i><span id="sgHubConnectText">Comprobando WH-C06…</span></div><div class="row"><button class="btn" id="sgHubConnectButton" type="button" onclick="sgConnectSensor()">🔵 Conectar WH-C06</button><button class="btn secondary" id="sgHubDisconnectButton" type="button" onclick="sgDisconnectSensor()" style="display:none">Desconectar</button></div></div>
-  <div class="home-sensor-card game-hub-sensor-card">
-    <div class="home-sensor-top">
-      <div class="home-sensor-icon"><svg class="home-icon" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="sensorBodyHub" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e3f6f5"/><stop offset=".45" stop-color="#78a9a9"/><stop offset="1" stop-color="#2f666b"/></linearGradient></defs><rect x="17" y="6" width="30" height="52" rx="8" fill="url(#sensorBodyHub)" stroke="#d2f4ed" stroke-width="2"/><rect x="22" y="13" width="20" height="31" rx="3" fill="#18373d" stroke="#6eb3b0" stroke-width="1.5"/><path d="M27 34v-7l5-4 5 4v7M27 34h10" fill="none" stroke="#a4f4b5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="32" cy="51" r="2" fill="#d8fff1"/><path d="M9 20v24M55 20v24" stroke="#7ab8b5" stroke-width="2.5" stroke-linecap="round"/></svg></div>
-      <div class="home-sensor-copy"><strong>Sensor de fuerza WH-C06</strong><span id="hubWHStatus" role="status">Desconectado · Conecta para medir tu fuerza real</span></div>
-      <span class="home-sensor-dot" id="hubWHDot" aria-label="Estado desconectado"></span>
-    </div>
-    <button class="btn home-connect-btn" id="hubConnectWH" onclick="homeConnectWHC06()"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8.5 16 16M8 15.5 16 8.5"/><path d="M6 6a4 4 0 0 1 5.7 0l.3.3M12 17.7l.3.3a4 4 0 0 0 5.7-5.7l-.3-.3M6 18a4 4 0 0 1 0-5.7l.3-.3M17.7 12l.3-.3A4 4 0 0 0 12.3 6"/></svg>Conectar WH-C06</button>
-    <button class="btn secondary home-connect-btn" id="hubDisconnectWH" onclick="disconnectWHC06()" style="display:none">Desconectar sensor</button>
-    <p>El mismo sensor se comparte con todos los juegos y entrenamientos.</p>
-  </div>
   <div class="game-hub-grid">
     <button class="game-hub-card" type="button" onclick="show('climbGame')">
       <span class="game-hub-art">🪂</span><strong>SOLIDO SKY HOPPER</strong>
@@ -3168,7 +3157,6 @@ body.br-fullscreen-active .sg-close{display:flex}
   <button class="sg-close" type="button" onclick="strengthGameClose()" aria-label="Cerrar juego">×</button>
   <div class="sg-shell">
     <div class="sg-top"><span>SOLIDO ARCADE SERIES · 02</span><strong>EL RETO DE LA CIMA</strong><small>FUERZA REAL · WH-C06</small></div>
-    <div class="sg-connect-panel"><div class="sg-connect-state"><i class="sg-connect-dot" id="sgGameConnectDot"></i><span id="sgGameConnectText">WH-C06 desconectado</span></div><button class="btn home-connect-btn" id="sgGameConnectButton" type="button" onclick="sgConnectSensor()"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8.5 16 16M8 15.5 16 8.5"/><path d="M6 6a4 4 0 0 1 5.7 0l.3.3M12 17.7l.3.3a4 4 0 0 0 5.7-5.7l-.3-.3M6 18a4 4 0 0 1 0-5.7l.3-.3M17.7 12l.3-.3A4 4 0 0 0 12.3 6"/></svg>Conectar WH-C06</button><button class="btn secondary home-connect-btn" id="sgGameDisconnectButton" type="button" onclick="sgDisconnectSensor()" style="display:none">Desconectar sensor</button></div>
     <div class="sg-scoreboard">
       <div><span>RÉCORD ACTUAL</span><strong id="sgRecordKg">— kg</strong><small id="sgRecordName">Aún sin récord</small></div>
       <div><span>FUERZA EN DIRECTO</span><strong id="sgLiveKg">0,00 kg</strong><small>PICO: <b id="sgPeakKg">0,00 kg</b></small></div>
@@ -4347,12 +4335,10 @@ function brCloseFullscreenGame(){
 }
 function show(page,btn){
   if(page !== 'meditation' && typeof stopMeditation === 'function') stopMeditation(true);
-  if(page === 'climbGame' || page === 'strengthGame'){
+  if(page === 'climbGame'){
     document.body.classList.add('br-fullscreen-active');
     const gameSection=document.getElementById('climbGame');
-    const strengthSection=document.getElementById('strengthGame');
-    if(gameSection)gameSection.classList.toggle('br-fullscreen-game',page==='climbGame');
-    if(strengthSection)strengthSection.classList.toggle('strength-fullscreen-game',page==='strengthGame');
+    if(gameSection)gameSection.classList.add('br-fullscreen-game');
     try{if(window.AndroidUi&&AndroidUi.enterGameFullscreen)AndroidUi.enterGameFullscreen();}catch(e){}
   }else{
     document.body.classList.remove('br-fullscreen-active');
@@ -4380,17 +4366,6 @@ function show(page,btn){
     target.classList.remove('hide');
 
   }
-  if(page === 'strengthGame'){
-    const enterStrengthFullscreen=()=>{
-      document.body.classList.add('br-fullscreen-active');
-      const strengthSection=document.getElementById('strengthGame');
-      if(strengthSection)strengthSection.classList.add('strength-fullscreen-game');
-      try{if(window.AndroidUi&&AndroidUi.enterGameFullscreen)AndroidUi.enterGameFullscreen();}catch(e){}
-      if(typeof strengthGameOnShow==='function')strengthGameOnShow();
-    };
-    requestAnimationFrame(enterStrengthFullscreen);
-  }
-
   if(page === 'climbGame' && typeof brCanvasSize === 'function'){
     requestAnimationFrame(() => {
       brCanvasSize();
