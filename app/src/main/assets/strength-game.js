@@ -225,6 +225,7 @@ function strengthGameReset() {
  const banner=document.getElementById('sgVictoryBanner');if(banner)banner.classList.remove('active');
  const fireworks=document.getElementById('sgFireworks');if(fireworks){fireworks.classList.remove('active');fireworks.innerHTML='';}
  const scene=document.getElementById('sgScene');if(scene)scene.classList.remove('sg-summit-reached');
+ const climber=document.getElementById('sgCurrentClimber');if(climber)climber.textContent='🧗‍♂️';
  const overlay=document.getElementById('sgOverlay');
  if(overlay)sgSetOverlay('¡A POR LA CIMA!','Aprieta el WH-C06 para hacer subir al escalador. El récord anterior permanece guardado.');
  const start=document.getElementById('sgStartButton');if(start)start.textContent='▶ Empezar partida';
