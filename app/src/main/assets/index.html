@@ -2258,6 +2258,53 @@ body.br-fullscreen-active .sg-close{display:flex}
 @media(max-width:420px){.sg-climber{left:calc(50% - 47px);width:94px;height:126px}.sg-climber-tag{left:calc(50% + 31px)}.sg-record-tag{left:calc(50% + 32px)}#strengthGame.strength-fullscreen-game .sg-mountain-scene{height:54dvh;min-height:310px}.sg-climb-level{right:43px}}
 @media(min-width:700px){#strengthGame.strength-fullscreen-game>.sg-shell{max-width:900px;margin:auto}.sg-climber{width:130px;height:170px;left:calc(50% - 65px)}}
 </style>
+<style>
+/* SOLIDO CLIMBING · HUD de juego, montaña larga y termómetro vertical */
+#strengthGame.strength-fullscreen-game{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;z-index:99999!important;display:block!important;overflow:hidden!important;background:#07130e!important;padding:0!important;margin:0!important}
+#strengthGame.strength-fullscreen-game>.sg-shell{width:100%;max-width:none;height:100dvh;min-height:100dvh;padding:0;margin:0;overflow:hidden;position:relative}
+#strengthGame.strength-fullscreen-game .sg-top{display:none}
+.sg-mountain-scene{height:min(72vh,760px);min-height:480px;border-radius:0; border:0}
+.sg-world{height:400%;transform:translateY(calc((1 - var(--sg-progress, 0)) * -55%));transition:transform .12s linear;background:linear-gradient(180deg,#102b40 0%,#315e6a 24%,#617b75 50%,#9ba98d 75%,#243b31 100%);background-size:100% 100%}
+.sg-world:before{background-size:71px 83px,113px 107px,100% 240px;opacity:.48}
+.sg-mountain-back{inset:3% -18% 0;background:linear-gradient(145deg,#78958b,#294b49 80%);clip-path:polygon(0 100%,0 68%,13% 52%,25% 60%,42% 29%,55% 41%,68% 10%,82% 35%,100% 18%,100% 100%)}
+.sg-mountain-front{inset:7% -18% 0;background:linear-gradient(125deg,#c1c6a5 0%,#718b6c 38%,#294b3b 100%);clip-path:polygon(0 100%,0 68%,16% 57%,29% 70%,47% 31%,60% 45%,73% 0%,87% 29%,100% 15%,100% 100%)}
+.sg-world-ridge{position:absolute;left:-10%;right:-10%;top:25%;height:2px;background:#efffe2aa;box-shadow:0 110px 0 #efffe255,0 230px 0 #efffe244,0 360px 0 #efffe233,0 510px 0 #efffe244,0 680px 0 #efffe233,0 860px 0 #efffe244,0 1050px 0 #efffe233;transform:rotate(-9deg)}
+.sg-ridge-two{top:52%;transform:rotate(7deg);opacity:.65}.sg-ridge-three{top:78%;transform:rotate(-5deg);opacity:.55}
+.sg-summit-cloud{top:1%;height:18%}.sg-summit-flag{top:5%}
+.sg-climber{left:38%;width:clamp(56px,16vw,82px);height:clamp(80px,22vw,112px);transition:top .10s linear;will-change:top;filter:drop-shadow(0 5px 7px #000c)}
+.sg-record-climber{z-index:3}.sg-current-climber{z-index:4}
+.sg-climber-tag{left:calc(38% + clamp(48px,14vw,70px));}
+.sg-game-hud{position:absolute;z-index:10;top:max(8px,env(safe-area-inset-top));left:8px;right:58px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin:0;pointer-events:none}
+.sg-game-hud>div{padding:7px 5px;border:1px solid #c8e5c65c;border-radius:10px;background:#07150dcc;backdrop-filter:blur(7px);min-width:0}
+.sg-game-hud span,.sg-game-hud small{font-size:clamp(7px,2vw,9px);color:#d3e2d0;display:block;line-height:1.2}
+.sg-game-hud strong{font-size:clamp(13px,4vw,19px);color:#e0ff9c;display:block;margin:3px 0;white-space:nowrap}
+.sg-game-hud small b{color:#fff}
+.sg-thermometer{position:absolute;z-index:9;right:8px;top:100px;bottom:42px;width:46px;display:flex;flex-direction:column;align-items:center;gap:5px;pointer-events:none}
+.sg-thermo-track{position:relative;width:22px;flex:1;min-height:140px;border-radius:16px;background:linear-gradient(90deg,#09150f,#243b30 45%,#07120d);border:2px solid #d6efbd99;box-shadow:inset 0 0 8px #000c,0 0 12px #a6ef7344;overflow:visible}
+.sg-thermo-fill{position:absolute;bottom:0;left:2px;right:2px;height:0;border-radius:0 0 12px 12px;background:linear-gradient(0deg,#31d99b,#b7f64b 60%,#ffb84d 85%,#ff574e);box-shadow:0 0 10px #a7f64d99;transition:height .07s linear}
+.sg-thermo-ball{position:absolute;z-index:3;left:50%;bottom:0;width:28px;height:28px;transform:translate(-50%,50%);border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#e8ff8a 28%,#83d83e 64%,#397d2b);border:2px solid #f3ffce;box-shadow:0 0 13px #c5ff5b,0 2px 7px #000a;transition:bottom .07s linear}
+.sg-force-value{position:static;width:auto;font-size:10px;text-align:center;order:2}
+.sg-thermometer>small{font-size:8px;color:#fff;font-weight:900;letter-spacing:1px}
+#sgScene.sg-thermo-broken .sg-thermo-track{border-color:#ff6a62;box-shadow:0 0 15px #ff554f,inset 0 0 8px #000}
+#sgScene.sg-thermo-broken .sg-thermo-track:before,#sgScene.sg-thermo-broken .sg-thermo-track:after{content:"";position:absolute;z-index:5;top:8%;left:-6px;width:34px;height:3px;background:#ff6a62;transform:rotate(34deg);box-shadow:0 0 8px #ff5b52}
+#sgScene.sg-thermo-broken .sg-thermo-track:after{top:23%;transform:rotate(-38deg)}
+#sgScene.sg-thermo-broken .sg-thermo-ball{background:radial-gradient(circle at 35% 30%,#fff,#ffad75 30%,#e53232 70%);box-shadow:0 0 18px #ff332b;animation:sg-thermo-break .38s ease-out 2 alternate}
+@keyframes sg-thermo-break{to{transform:translate(-50%,50%) rotate(24deg) scale(1.22)}}
+.sg-climb-level{top:auto;bottom:54px;left:8px;right:60px;max-width:none}
+.sg-message{top:auto;bottom:12px;left:8px;right:60px;font-size:clamp(12px,3.5vw,18px)}
+.sg-record-line{position:absolute;z-index:8;left:8px;right:60px;bottom:84px;margin:0;color:#e0ff9c;text-shadow:0 2px 5px #000;font-size:9px}
+.sg-scene-bottom{display:none}
+.sg-overlay{z-index:15}
+.sg-overlay.sg-countdown{background:#06110b55;backdrop-filter:none}
+.sg-overlay.sg-countdown strong{font-size:clamp(68px,22vw,120px);color:#fff;text-shadow:0 0 24px #c3f36b,0 5px 14px #000}
+.sg-overlay.sg-countdown span{font-size:clamp(14px,4.5vw,22px);font-weight:1000;color:#e6ffad}
+.sg-game-controls{margin:8px 12px}
+#strengthGame.sg-playing .sg-top,#strengthGame.sg-playing .sg-game-controls,#strengthGame.sg-playing .sg-actions,#strengthGame.sg-playing .sg-status{display:none!important}
+#strengthGame.sg-playing .sg-mountain-scene{height:100dvh;min-height:100dvh;width:100vw}
+#strengthGame.sg-playing .sg-game-hud{top:max(10px,env(safe-area-inset-top))}
+#strengthGame.sg-playing .sg-close{display:block}
+@media(max-width:390px){.sg-game-hud{left:6px;right:54px;gap:4px}.sg-game-hud>div{padding:6px 3px}.sg-thermometer{right:5px;width:40px}.sg-climber{left:34%}.sg-climber-tag{left:calc(34% + 44px)}}
+</style>
 </head>
 
 <body>
@@ -3157,30 +3204,36 @@ body.br-fullscreen-active .sg-close{display:flex}
   <button class="sg-close" type="button" onclick="strengthGameClose()" aria-label="Cerrar juego">×</button>
   <div class="sg-shell">
     <div class="sg-top"><span>SOLIDO ARCADE SERIES · 02</span><strong>EL RETO DE LA CIMA</strong><small>FUERZA REAL · WH-C06</small></div>
-    <div class="sg-scoreboard">
-      <div><span>RÉCORD ACTUAL</span><strong id="sgRecordKg">— kg</strong><small id="sgRecordName">Aún sin récord</small></div>
-      <div><span>FUERZA EN DIRECTO</span><strong id="sgLiveKg">0,00 kg</strong><small>PICO: <b id="sgPeakKg">0,00 kg</b></small></div>
-    </div>
+    <div class="sg-top"><span>SOLIDO ARCADE SERIES · 02</span><strong>EL RETO DE LA CIMA</strong><small>FUERZA REAL · WH-C06</small></div>
     <div class="sg-mountain-scene" id="sgScene">
       <div class="sg-world" id="sgWorld">
         <div class="sg-sky-glow"></div><div class="sg-mountain-back"></div><div class="sg-mountain-front"></div>
-        <div class="sg-summit-cloud" id="sgSummitCloud"></div><div class="sg-summit-flag">🏁</div><div class="sg-world-ridge"></div>
+        <div class="sg-world-ridge"></div><div class="sg-world-ridge sg-ridge-two"></div><div class="sg-world-ridge sg-ridge-three"></div>
+        <div class="sg-summit-cloud" id="sgSummitCloud"></div><div class="sg-summit-flag">🏁</div>
+        <div class="sg-climber sg-record-climber" id="sgRecordClimber" aria-label="Posición del récord"><img src="climber_fall.png" alt="Récord anterior"></div>
+        <div class="sg-climber sg-current-climber" id="sgCurrentClimber" aria-label="Escalador actual"><img src="climber_idle.png" alt="Escalador SOLIDO"></div>
+        <div class="sg-climber-tag sg-record-tag" id="sgRecordTag">RÉCORD</div><div class="sg-climber-tag sg-current-tag" id="sgCurrentTag">TÚ</div>
       </div>
-      <div class="sg-climber sg-record-climber" id="sgRecordClimber" aria-label="Posición del récord"><img src="climber_fall.png" alt="Récord anterior"></div>
-      <div class="sg-climber sg-current-climber" id="sgCurrentClimber" aria-label="Escalador actual"><img src="climber_idle.png" alt="Escalador SOLIDO"></div>
-      <div class="sg-climber-tag sg-record-tag" id="sgRecordTag">RÉCORD</div><div class="sg-climber-tag sg-current-tag" id="sgCurrentTag">TÚ</div>
-      <div class="sg-scene-bottom"></div>
-      <div class="sg-force-value" id="sgForceValue">0,00 kg</div><div class="sg-force-bar"><div id="sgForceBar"></div></div>
+      <div class="sg-scoreboard sg-game-hud">
+        <div><span>RÉCORD ACTUAL</span><strong id="sgRecordKg">— kg</strong><small id="sgRecordName">Aún sin récord</small></div>
+        <div><span>FUERZA EN DIRECTO</span><strong id="sgLiveKg">0,00 kg</strong><small>PICO: <b id="sgPeakKg">0,00 kg</b></small></div>
+        <div><span>OBJETIVO</span><strong id="sgTargetHud">20 kg</strong><small>TIEMPO <b id="sgTimer">12 s</b></small></div>
+      </div>
+      <div class="sg-thermometer" id="sgThermometer" aria-label="Indicador vertical de fuerza">
+        <div class="sg-thermo-track"><div class="sg-thermo-fill" id="sgForceBar"></div><div class="sg-thermo-ball" id="sgForceBall"></div><div class="sg-thermo-crack"></div></div>
+        <div class="sg-force-value" id="sgForceValue">0,00 kg</div>
+        <small>FUERZA</small>
+      </div>
       <div class="sg-climb-level" id="sgLevelPhrase"><span>NIVEL 1</span><strong>¡PREPARADO!</strong></div>
       <div class="sg-message" id="sgMessage">¡PREPARADO PARA ESCALAR!</div>
+      <div class="sg-record-line" id="sgRecordText">¡Sé el primero en llegar a la cima!</div>
+      <div class="sg-scene-bottom"></div>
       <div class="sg-fireworks" id="sgFireworks"></div>
       <div class="sg-victory-banner" id="sgVictoryBanner"><div><strong>¡VICTORIA!</strong><span>¡HAS CONQUISTADO LA CIMA!</span></div></div>
       <div class="sg-overlay" id="sgOverlay"><strong>¡A POR LA CIMA!</strong><span>Aprieta el WH-C06 y haz que el escalador llegue a lo más alto. La fuerza real controla la subida.</span></div>
     </div>
-    <div class="sg-record-line" id="sgRecordText">¡Sé el primero en llegar a la cima!</div>
     <div class="sg-game-controls">
-      <div class="sg-scale"><label for="sgMaxKg">FUERZA NECESARIA PARA ALCANZAR LA CIMA</label><strong id="sgMaxKgLabel">20 kg = cima</strong><input id="sgMaxKg" type="range" min="5" max="100" step="5" value="20" oninput="sgSetMaxKg(this.value)"><small>La barra derecha muestra la fuerza real recibida del WH-C06.</small></div>
-      <div class="sg-time">TIEMPO<strong id="sgTimer">12 s</strong></div>
+      <div class="sg-scale"><label for="sgMaxKg">FUERZA NECESARIA PARA ALCANZAR LA CIMA</label><strong id="sgMaxKgLabel">20 kg = cima</strong><input id="sgMaxKg" type="range" min="5" max="100" step="5" value="20" oninput="sgSetMaxKg(this.value)"><small>El termómetro indica la fuerza real del WH-C06.</small></div>
     </div>
     <div class="sg-actions">
       <button class="btn" id="sgStartButton" onclick="strengthGameStart()">▶ Empezar partida</button>
