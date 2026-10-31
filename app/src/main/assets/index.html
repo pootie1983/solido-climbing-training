@@ -648,7 +648,7 @@ body.br-fullscreen-active .br-close-game{display:flex}
 @media(max-width:390px){.br-hud{grid-template-columns:repeat(2,minmax(0,1fr))}.br-scene{height:285px}.br-banner h2{font-size:24px}}
 
 
-/* Solido Sky Hopper: plataformas con scroll lateral y personaje original cepillo */
+/* DRAGON BALL: plataformas con scroll lateral y personaje original cepillo */
 .br-hopper-scene{height:330px;overflow:hidden;position:relative;background:#82d5f5;border:3px solid #172647;border-radius:14px;isolation:isolate}
 .br-hopper-scene .br-canvas{position:absolute;inset:0;z-index:1;display:block;width:100%;height:100%;min-width:0;min-height:0}
 .br-hopper-scene:before{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,#76d5f7 0%,#b8efff 64%,#e3faff 100%);pointer-events:none}
@@ -2424,16 +2424,12 @@ body.br-fullscreen-active .sg-close{display:flex}
 <div id="workoutNotice" role="alertdialog" aria-live="assertive" aria-modal="true"><div class="workout-notice-card"><div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--green)">SOLIDO CLIMBING</div><div id="workoutNoticeIcon" class="workout-notice-icon" aria-hidden="true">Ⅱ</div><h2 id="workoutNoticeTitle">DESCANSO</h2><p id="workoutNoticeMessage">Empieza el descanso.</p></div></div>
 <div id="solidoSplash" aria-label="Bienvenida SOLIDO CLIMBING">
   <img id="welcomeComic" src="./P%C3%B3ster%20c%C3%B3mic%20de%20escalada%20SOLIDO.png" alt="Bienvenida cómic SOLIDO CLIMBING" loading="eager" decoding="sync" fetchpriority="high">
-  <img id="welcomeBrand" src="./splash-solido.jpg..png?v=2" alt="SOLIDO CLIMBING — Entrenar también es escalar" loading="eager" decoding="sync">
   <div class="splash-fallback-brand" aria-hidden="true"><strong>SOLIDO</strong><span>CLIMBING</span><small>ENTRENAR TAMBIÉN ES ESCALAR</small></div>
 </div>
 <style>
 #solidoSplash{position:fixed;inset:0;z-index:99999;background:#05090c;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .55s ease}
 #solidoSplash img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;opacity:0;transition:opacity .55s ease}
 #solidoSplash #welcomeComic{opacity:1;object-fit:cover}
-#solidoSplash #welcomeBrand{opacity:0}
-#solidoSplash.show-brand #welcomeComic{opacity:0}
-#solidoSplash.show-brand #welcomeBrand{opacity:1}
 #solidoSplash.splash-fallback{flex-direction:column;gap:12px;background:radial-gradient(ellipse at center,#23382d 0%,#05090c 72%)}
 .splash-fallback-brand{display:none;text-align:center;color:#f5f7f1;letter-spacing:5px;font-weight:900;font-size:clamp(38px,10vw,64px)}
 .splash-fallback-brand span{display:block;color:#c3f36b;font-size:.48em;letter-spacing:9px}
@@ -2446,19 +2442,21 @@ body.br-fullscreen-active .sg-close{display:flex}
 #gameHub.game-hub-screen:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#07131b70 0%,#07131b55 32%,#07120ee8 100%)}
 #gameHub .game-hub-shade{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 25%,#c6e5cf16,transparent 58%),linear-gradient(90deg,#06101635,#06101608 50%,#06101645)}
 #gameHub .game-hub-content{position:relative;z-index:1;min-height:inherit;max-width:760px;margin:0 auto;padding:clamp(22px,6vh,54px) 17px 26px;display:flex;flex-direction:column;justify-content:center}
-#gameHub .game-hub-heading{text-align:center;margin:0 auto 23px;max-width:440px;text-shadow:0 3px 12px #000}
+#gameHub .game-hub-heading{text-align:center;margin:0 auto 23px;max-width:440px;text-shadow:0 3px 12px #000;background:#07120ef2;border:1px solid #d4e5c65c;border-radius:18px;padding:16px 14px;box-shadow:0 8px 24px #0009}
 #gameHub .game-hub-kicker{display:inline-block;color:#d5ff9a;font-size:10px;font-weight:1000;letter-spacing:2px;padding:7px 11px;border:1px solid #d8f2b45c;border-radius:30px;background:#07150dbb}
 #gameHub .game-hub-heading h2{margin:13px 0 7px;font-size:clamp(27px,7vw,39px);line-height:1;color:#fff;font-weight:1000;letter-spacing:1px}
 #gameHub .game-hub-heading p{margin:0;color:#e0e9df;font-size:13px}
 #gameHub .game-hub-grid{display:grid;grid-template-columns:1fr;gap:14px;margin:0 auto;width:100%;max-width:520px}
-#gameHub .game-hub-card{position:relative;display:grid;grid-template-columns:100px minmax(0,1fr);align-items:center;gap:14px;width:100%;min-height:142px;padding:13px;text-align:left;color:#f7f8ed;border:1px solid #d4e5c68a;border-radius:18px;background:linear-gradient(115deg,#10221ddd,#101b1beF);box-shadow:0 9px 25px #0009,inset 0 1px #ffffff24;overflow:hidden;cursor:pointer;transition:transform .16s ease,border-color .16s ease,filter .16s ease}
+#gameHub .game-hub-card{position:relative;display:grid;grid-template-columns:100px minmax(0,1fr);align-items:center;gap:14px;width:100%;min-height:142px;padding:13px;text-align:left;color:#f7f8ed;border:1px solid #d4e5c68a;border-radius:18px;background:linear-gradient(115deg,#091713fa,#101b1bf7);box-shadow:0 9px 25px #000b,inset 0 1px #ffffff24;overflow:hidden;cursor:pointer;transition:transform .16s ease,border-color .16s ease,filter .16s ease}
 #gameHub .game-hub-card:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,#b3df7c18,transparent 55%);opacity:.9}
 #gameHub .game-hub-card:active{transform:scale(.975);filter:brightness(1.18)}
 #gameHub .game-hub-art{position:relative;width:100px;height:112px;display:grid;place-items:center;border-radius:13px;background:radial-gradient(circle at 50% 35%,#8da77c,#263e32 72%);border:1px solid #d5efb37a;box-shadow:inset 0 0 18px #07110b88}
 #gameHub .game-hub-art>span{font-size:52px;filter:drop-shadow(0 5px 4px #0009)}
+#gameHub .game-hub-art img{display:block;width:100%;height:100%;padding:5px;object-fit:contain;filter:drop-shadow(0 5px 4px #0009)}
 #gameHub .game-hub-art i{position:absolute;top:6px;left:8px;font-size:9px;font-style:normal;font-weight:1000;letter-spacing:1px;color:#f0ffcf}
 #gameHub .game-hub-card-summit .game-hub-art{background:radial-gradient(circle at 50% 35%,#b2b7a0,#344b43 72%)}
 #gameHub .game-hub-card-copy{position:relative;z-index:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+#gameHub .game-hub-card-copy strong,#gameHub .game-hub-card-copy small{overflow-wrap:anywhere;text-shadow:0 1px 2px #0008}
 #gameHub .game-hub-card-copy strong{font-size:clamp(13px,3.5vw,16px);line-height:1.2;letter-spacing:.4px;color:#fff}
 #gameHub .game-hub-card-copy small{font-size:11px;line-height:1.45;color:#d0ddd3;min-height:0}
 #gameHub .game-hub-card-copy b{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:3px;padding:9px 11px;border-radius:9px;background:linear-gradient(100deg,#b6e879,#72c75b);color:#14220f;font-size:10px;letter-spacing:.8px;box-shadow:0 3px 10px #0005}
@@ -2467,14 +2465,14 @@ body.br-fullscreen-active .sg-close{display:flex}
 #gameHub .game-hub-back span{font-size:18px;color:#c8f28d}
 #gameHub .game-hub-footer{text-align:center;margin:18px 0 0;color:#e1f2d2b0;font-size:9px;font-weight:900;letter-spacing:2px;text-shadow:0 2px 6px #000}
 @media(min-width:560px){#gameHub .game-hub-grid{grid-template-columns:1fr 1fr;max-width:680px;align-items:stretch}#gameHub .game-hub-card{grid-template-columns:1fr;align-content:start;min-height:245px}#gameHub .game-hub-art{width:100%;height:116px}#gameHub .game-hub-card-copy{height:100%}#gameHub .game-hub-card-copy b{margin-top:auto}}
-@media(max-width:370px){#gameHub .game-hub-card{grid-template-columns:82px minmax(0,1fr);gap:10px;padding:10px;min-height:132px}#gameHub .game-hub-art{width:82px;height:102px}#gameHub .game-hub-art>span{font-size:44px}#gameHub .game-hub-card-copy small{font-size:10px}}
+@media(max-width:370px){#gameHub .game-hub-card{grid-template-columns:82px minmax(0,1fr);gap:10px;padding:10px;min-height:132px}#gameHub .game-hub-art{width:82px;height:102px}#gameHub .game-hub-art>span{font-size:44px}#gameHub .game-hub-art img{padding:3px}#gameHub .game-hub-card-copy small{font-size:10px}}
 </style>
 
 <script>
 (function(){
   var splash=document.getElementById('solidoSplash');
   var comic=document.getElementById('welcomeComic');
-  var brand=document.getElementById('welcomeBrand');
+
   document.documentElement.style.background='#05090c';
   document.body.style.overflow='hidden';
 
@@ -2528,17 +2526,14 @@ body.br-fullscreen-active .sg-close{display:flex}
     }
   }catch(e){}
 
-  // Primera bienvenida (cómic), después marca SOLIDO y finalmente el menú.
+  // Mostrar el cómic de bienvenida y después dejar paso al menú.
   window.setTimeout(function(){
     if(!splash)return;
-    splash.classList.add('show-brand');
+    splash.classList.add('hide');
     window.setTimeout(function(){
-      splash.classList.add('hide');
-      window.setTimeout(function(){
-        if(splash&&splash.parentNode)splash.parentNode.removeChild(splash);
-        document.body.style.overflow='';
-      },600);
-    },2300);
+      if(splash&&splash.parentNode)splash.parentNode.removeChild(splash);
+      document.body.style.overflow='';
+    },600);
   },2600);
 })();
 </script>
@@ -2627,7 +2622,7 @@ body.br-fullscreen-active .sg-close{display:flex}
     </div>
     <button class="btn home-connect-btn" id="homeConnectWH" onclick="homeConnectWHC06()"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8.5 16 16M8 15.5 16 8.5"/><path d="M6 6a4 4 0 0 1 5.7 0l.3.3M12 17.7l.3.3a4 4 0 0 0 5.7-5.7l-.3-.3M6 18a4 4 0 0 1 0-5.7l.3-.3M17.7 12l.3-.3A4 4 0 0 0 12.3 6"/></svg>Conectar WH-C06</button>
     <button class="btn secondary home-connect-btn" id="homeDisconnectWH" onclick="disconnectWHC06()" style="display:none">Desconectar sensor</button>
-    <p>Conéctalo aquí y podrás usar la lectura en directo en tus entrenamientos y en Solido Sky Hopper.</p>
+    <p>Conéctalo aquí y podrás usar la lectura en directo en tus entrenamientos y en DRAGON BALL.</p>
   </div>
 
 
@@ -3281,13 +3276,13 @@ body.br-fullscreen-active .sg-close{display:flex}
     </div>
     <div class="game-hub-grid">
       <button class="game-hub-card game-hub-card-sky" type="button" onclick="show('climbGame')">
-        <span class="game-hub-art"><span>🪂</span><i>01</i></span>
-        <span class="game-hub-card-copy"><strong>SOLIDO SKY HOPPER</strong>
+        <span class="game-hub-art"><img src="sky-hopper/Goku infantil sobre la nube Nimbus.png" alt="Goku sobre la nube Nimbus" loading="eager"><i>01</i></span>
+        <span class="game-hub-card-copy"><strong>DRAGON BALL</strong>
         <small>Salta plataformas, esquiva obstáculos y recoge monedas con el WH-C06.</small>
         <b><span>INICIAR DESAFÍO</span><span aria-hidden="true">➜</span></b></span>
       </button>
       <button class="game-hub-card game-hub-card-summit" type="button" onclick="show('strengthGame')">
-        <span class="game-hub-art"><span>🧗</span><i>02</i></span>
+        <span class="game-hub-art"><img src="climber_victory.png" alt="Escalador celebrando la victoria" loading="eager"><i>02</i></span>
         <span class="game-hub-card-copy"><strong>EL RETO DE LA CIMA</strong>
         <small>Aprieta el WH-C06, escala la pared y conquista la cima. ¡Bate tu récord!</small>
         <b><span>INICIAR DESAFÍO</span><span aria-hidden="true">➜</span></b></span>
@@ -3300,9 +3295,9 @@ body.br-fullscreen-active .sg-close{display:flex}
 
 <section id="climbGame" class="hide">
   <button class="br-close-game" type="button" aria-label="Cerrar juego" title="Cerrar juego" onclick="brCloseFullscreenGame()">×</button>
-  <div class="sectionhead"><h2>🎮 Solido Sky Hopper</h2><span class="tag">WH-C06 LIVE</span></div>
+  <div class="sectionhead"><h2>🎮 DRAGON BALL</h2><span class="tag">WH-C06 LIVE</span></div>
   <div class="boulder-rush">
-    <div class="br-banner"><div class="br-kicker">SOLIDO ARCADE SERIES · 01</div><h2>SOLIDO SKY HOPPER</h2><p>Salta entre plataformas, recoge monedas doradas y esquiva bolas con pinchos y ojos.</p></div>
+    <div class="br-banner"><div class="br-kicker">SOLIDO ARCADE SERIES · 01</div><h2>DRAGON BALL</h2><p>Salta entre plataformas, recoge monedas doradas y esquiva bolas con pinchos y ojos.</p></div>
     <div class="br-hopper-config">
       <div class="br-level-row"><label>FUERZA NECESARIA PARA SALTAR</label><strong id="brThresholdValue">3,0 kg</strong></div>
       <input id="brThreshold" class="br-threshold-slider" type="range" min="0.5" max="20" step="0.5" value="3" oninput="brSetThreshold(this.value)" aria-label="Fuerza necesaria para saltar">
@@ -3326,7 +3321,7 @@ body.br-fullscreen-active .sg-close{display:flex}
       <div class="br-stat"><span>💎 XP TOTAL</span><strong id="brXP">0</strong></div>
     </div>
     <div class="br-scene br-hopper-scene" id="brScene" aria-label="Juego de plataformas con monedas y bolas con pinchos">
-      <canvas id="brCanvas" class="br-canvas" role="img" aria-label="Escenario animado de Solido Sky Hopper"></canvas>
+      <canvas id="brCanvas" class="br-canvas" role="img" aria-label="Escenario animado de DRAGON BALL"></canvas>
       <div class="br-overlay" id="brOverlay"><strong>¡A por las monedas!</strong><span>El GRIGRI avanza por las plataformas. Supera el umbral de fuerza del WH-C06 para saltar, recoge monedas y esquiva las bolas con pinchos.</span><button class="btn" onclick="brStart()">▶ Empezar partida</button></div>
     </div>
     <div class="br-target-panel"><div><small>FUERZA PARA SALTAR</small><strong id="brTarget">3,0 kg</strong></div><div class="br-target-badge" id="brTargetState">ESPERANDO FUERZA</div></div>
@@ -3382,7 +3377,7 @@ body.br-fullscreen-active .sg-close{display:flex}
     <div class="sg-actions">
       <button class="btn" id="sgStartButton" onclick="strengthGameStart()">▶ Empezar partida</button>
       <button class="btn secondary" id="sgFinishButton" onclick="strengthGameFinishEarly()" disabled>Finalizar intento</button>
-      <button class="btn secondary" onclick="strengthGameReset()">↻ Reiniciar</button>
+      <button class="btn secondary" onclick="strengthGameReset(true)">↻ Reiniciar y borrar récord</button>
     </div>
     <p class="sg-status" id="sgGameStatus">Conecta el WH-C06 y aprieta para empezar. El récord se guarda en este móvil.</p>
     <div class="sg-record-modal" id="sgRecordModal" style="display:none">
@@ -4211,7 +4206,7 @@ function startForceRest(){
 
 
 /* =========================
-   SOLIDO SKY HOPPER · fuerza real WH-C06
+   DRAGON BALL · fuerza real WH-C06
    Scroll horizontal, saltos por fuerza y recogida de magnesio
 ========================= */
 const brDifficulties={
@@ -4224,7 +4219,7 @@ let brMode='quick',brDifficulty='easy',brActive=false,brFrame=null,brLast=0,brTi
 let brThreshold=3,brLastForce=0,brLastRender=0,brGame=null,brCanvas=null,brCtx=null,brCanvasW=600,brCanvasH=330,brDpr=1;
 let brCalibrating=false,brCalibrationTimer=null,brCalibrationPeak=0,brNeedsCalibration=true;
  
-// Recursos gráficos de SOLIDO SKY HOPPER
+// Recursos gráficos de DRAGON BALL
 const brGokuImage=new Image();
 const brBuuImage=new Image();
 const brDragonBallImage=new Image();
