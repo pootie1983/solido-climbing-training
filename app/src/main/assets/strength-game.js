@@ -328,7 +328,11 @@ function strengthGameSaveRecord(event) {
  const modal=document.getElementById('sgRecordModal');if(modal)modal.style.display='none';
  const status=document.getElementById('sgGameStatus');if(status)status.textContent=(sgReachedSummit?'¡VICTORIA! ':'¡NUEVO RÉCORD! ')+nickname+' consigue '+sgFormatKg(sgRecord.kg)+'. ¡La marca queda guardada en este móvil!';
  const overlay=document.getElementById('sgOverlay');
- if(overlay)sgSetOverlay(sgReachedSummit?'¡VICTORIA!':'¡NUEVO RÉCORD!','¡'+nickname+' ha conseguido '+sgFormatKg(sgRecord.kg)+'! ¡A ver quién consigue superarlo!');
+ if(sgReachedSummit){
+   if(overlay)overlay.style.display='none';
+   const banner=document.getElementById('sgVictoryBanner');if(banner)banner.classList.add('active');
+   const scene=document.getElementById('sgScene');if(scene)scene.classList.add('sg-victory-camera','sg-summit-reached');
+  }else if(overlay)sgSetOverlay('¡NUEVO RÉCORD!','¡'+nickname+' ha conseguido '+sgFormatKg(sgRecord.kg)+'! ¡A ver quién consigue superarlo!');
  sgRender();
 }
 function sgResetGameState(clearRecord) {
