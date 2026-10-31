@@ -2264,7 +2264,7 @@ body.br-fullscreen-active .sg-close{display:flex}
 #strengthGame.strength-fullscreen-game>.sg-shell{width:100%;max-width:none;height:100dvh;min-height:100dvh;padding:0;margin:0;overflow:hidden;position:relative}
 #strengthGame.strength-fullscreen-game .sg-top{display:none}
 .sg-mountain-scene{height:min(72vh,760px);min-height:480px;border-radius:0; border:0}
-.sg-world{height:400%;transform:translateY(calc((1 - var(--sg-progress, 0)) * -55%));transition:transform .12s linear;background:linear-gradient(180deg,#102b40 0%,#315e6a 24%,#617b75 50%,#9ba98d 75%,#243b31 100%);background-size:100% 100%}
+.sg-world{height:400%;transform:translateY(calc((1 - var(--sg-progress, 0)) * -75%));transition:none;background:linear-gradient(180deg,#102b40 0%,#315e6a 24%,#617b75 50%,#9ba98d 75%,#243b31 100%);background-size:100% 100%}
 .sg-world:before{background-size:71px 83px,113px 107px,100% 240px;opacity:.48}
 .sg-mountain-back{inset:3% -18% 0;background:linear-gradient(145deg,#78958b,#294b49 80%);clip-path:polygon(0 100%,0 68%,13% 52%,25% 60%,42% 29%,55% 41%,68% 10%,82% 35%,100% 18%,100% 100%)}
 .sg-mountain-front{inset:7% -18% 0;background:linear-gradient(125deg,#c1c6a5 0%,#718b6c 38%,#294b3b 100%);clip-path:polygon(0 100%,0 68%,16% 57%,29% 70%,47% 31%,60% 45%,73% 0%,87% 29%,100% 15%,100% 100%)}
@@ -2298,6 +2298,7 @@ body.br-fullscreen-active .sg-close{display:flex}
 .sg-overlay.sg-countdown{background:#06110b55;backdrop-filter:none}
 .sg-overlay.sg-countdown strong{font-size:clamp(68px,22vw,120px);color:#fff;text-shadow:0 0 24px #c3f36b,0 5px 14px #000}
 .sg-overlay.sg-countdown span{font-size:clamp(14px,4.5vw,22px);font-weight:1000;color:#e6ffad}
+.sg-overlay.sg-ready-call strong{font-size:clamp(32px,10vw,56px);color:#fff;text-shadow:0 0 18px #c3f36b,0 5px 14px #000}
 .sg-game-controls{margin:8px 12px}
 #strengthGame.sg-playing .sg-top,#strengthGame.sg-playing .sg-game-controls,#strengthGame.sg-playing .sg-actions,#strengthGame.sg-playing .sg-status{display:none!important}
 #strengthGame.sg-playing .sg-mountain-scene{height:100dvh;min-height:100dvh;width:100vw}
@@ -3203,7 +3204,6 @@ body.br-fullscreen-active .sg-close{display:flex}
 <section id="strengthGame" class="hide">
   <button class="sg-close" type="button" onclick="strengthGameClose()" aria-label="Cerrar juego">×</button>
   <div class="sg-shell">
-    <div class="sg-top"><span>SOLIDO ARCADE SERIES · 02</span><strong>EL RETO DE LA CIMA</strong><small>FUERZA REAL · WH-C06</small></div>
     <div class="sg-top"><span>SOLIDO ARCADE SERIES · 02</span><strong>EL RETO DE LA CIMA</strong><small>FUERZA REAL · WH-C06</small></div>
     <div class="sg-mountain-scene" id="sgScene">
       <div class="sg-world" id="sgWorld">
