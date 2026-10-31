@@ -2166,7 +2166,7 @@ body.br-fullscreen-active .sg-close{display:block}
 .sg-fireworks{position:absolute;z-index:12;inset:0;pointer-events:none;overflow:hidden;display:none}
 .sg-fireworks.active{display:block}
 .sg-firework{position:absolute;width:6px;height:6px;border-radius:50%;animation:sg-burst 1.15s ease-out forwards;box-shadow:0 0 8px 3px currentColor}
-@keyframes sg-burst{0%{transform:scale(.1);opacity:1}55%{opacity:1}100%{transform:scale(3.2);opacity:0}}
+@keyframes sg-burst{0%{transform:translate(0,0) scale(.1);opacity:1}55%{opacity:1}100%{transform:translate(var(--fx),var(--fy)) scale(.55);opacity:0}}
 .sg-victory-banner{position:absolute;z-index:11;inset:0;display:none;place-content:center;text-align:center;background:#06110b99;padding:20px}
 .sg-victory-banner.active{display:grid;animation:sg-victory-in .5s ease-out}
 .sg-victory-banner strong{font-size:clamp(30px,9vw,54px);font-weight:1000;color:#e4ff9b;text-shadow:0 0 16px #c3f36b,0 4px 8px #000}
