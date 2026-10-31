@@ -131,7 +131,7 @@ function sgSetOverlay(title,body){
  overlay.textContent='';
  const strong=document.createElement('strong'),span=document.createElement('span');
  strong.textContent=title;span.textContent=body;overlay.appendChild(strong);overlay.appendChild(span);
- if(!isCountdown){const start=document.createElement('button');start.type='button';start.id='sgStartButton';start.className='btn sg-overlay-start';start.textContent=/BUEN INTENTO|NO HEMOS DETECTADO|VICTORIA/i.test(String(title))?'↻ Nueva partida':'▶ Empezar partida';start.onclick=()=>strengthGameStart();overlay.appendChild(start);}
+ if(!isCountdown){const start=document.createElement('button');start.type='button';start.className='btn sg-overlay-start';start.textContent=/BUEN INTENTO|NO HEMOS DETECTADO|VICTORIA/i.test(String(title))?'↻ Nueva partida':'▶ Empezar partida';start.onclick=()=>strengthGameStart();overlay.appendChild(start);}
  overlay.style.display='grid';
 }
 function sgShowVictory(){
