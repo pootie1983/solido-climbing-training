@@ -193,7 +193,7 @@ function sgRender() {
  const level=Math.min(10,Math.max(1,Math.ceil(sgProgress(sgPeak)*10)||1));
  if(phrase&&!sgVictoryShown){if(level!==sgLastLevel){phrase.classList.remove('sg-level-pop');void phrase.offsetWidth;phrase.classList.add('sg-level-pop');sgLastLevel=level;}phrase.innerHTML='<span>NIVEL '+level+'</span><strong>'+sgLevelPhrases[level-1]+'</strong>';}
  const summit=document.getElementById('sgScene'),world=document.getElementById('sgWorld');
- if(summit){const progress=sgVisualProgress;if(world)world.style.setProperty('--sg-progress',String(progress));summit.classList.toggle('sg-summit-near',progress>=.82);summit.classList.toggle('sg-summit-reached',sgReachedSummit);}
+ if(summit){const progress=sgVisualProgress;if(world){world.style.setProperty('--sg-progress',String(progress));world.style.transform='translateY('+(-75*(1-progress)).toFixed(3)+'%)';}summit.classList.toggle('sg-summit-near',progress>=.82);summit.classList.toggle('sg-summit-reached',sgReachedSummit);}
  const recordTag=document.getElementById('sgRecordTag');if(recordTag)recordTag.style.top=(90-(sgRecord?sgProgress(sgRecord.kg):0)*82)+'%';
  const currentTag=document.getElementById('sgCurrentTag');if(currentTag)currentTag.style.top=(90-sgVisualProgress*82)+'%';
  sgUpdateConnectionUI();
@@ -306,7 +306,7 @@ function strengthGameReset() {
  const modal=document.getElementById('sgRecordModal');if(modal)modal.style.display='none';
  const banner=document.getElementById('sgVictoryBanner');if(banner)banner.classList.remove('active');
  const fireworks=document.getElementById('sgFireworks');if(fireworks){fireworks.classList.remove('active');fireworks.innerHTML='';}
- const scene=document.getElementById('sgScene');if(scene){scene.classList.remove('sg-summit-reached','sg-summit-near','sg-victory-camera');scene.style.setProperty('--sg-progress','0');}const world=document.getElementById('sgWorld');if(world)world.style.setProperty('--sg-progress','0');
+ const scene=document.getElementById('sgScene');if(scene){scene.classList.remove('sg-summit-reached','sg-summit-near','sg-victory-camera');scene.style.setProperty('--sg-progress','0');}const world=document.getElementById('sgWorld');if(world){world.style.setProperty('--sg-progress','0');world.style.transform='translateY(-75%)';}
  const climber=document.getElementById('sgCurrentClimber');if(climber)sgSetPose(climber,'idle');
  const overlay=document.getElementById('sgOverlay');
  if(overlay)sgSetOverlay('¡A POR LA CIMA!','Aprieta el WH-C06 para hacer subir al escalador. El récord anterior permanece guardado.');
