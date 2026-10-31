@@ -1147,6 +1147,11 @@ body.workout-fullscreen-active{overflow:hidden!important}
 #intervalWorkout.workout-fullscreen-active .attempt-settings input{box-sizing:border-box;width:100%;min-height:34px;padding:6px 8px;margin-top:4px;font-size:15px}
 #intervalWorkout.workout-fullscreen-active .timer-inline-clock{flex:0 0 auto;font-size:clamp(38px,8vh,58px);line-height:1;margin:0;padding:2px 0}
 #intervalWorkout.workout-fullscreen-active .attempt-live{flex:0 0 auto;display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center;gap:5px 8px;margin:0;padding:8px}
+.workout-session-peak{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;margin:2px 0;border:1px solid #477b55;border-radius:12px;background:linear-gradient(100deg,#102a21,#183b2d);color:#cfe8d4}
+.workout-session-peak span{font-size:10px;font-weight:800;letter-spacing:.7px}
+.workout-session-peak strong{font-size:22px;color:#9bff70;font-variant-numeric:tabular-nums}
+#intervalWorkout.workout-fullscreen-active .workout-session-peak{flex:0 0 auto;padding:7px 11px;margin:0}
+#intervalWorkout.workout-fullscreen-active .workout-session-peak strong{font-size:20px}
 #intervalWorkout.workout-fullscreen-active .attempt-live>span:first-child{font-size:11px}
 #intervalWorkout.workout-fullscreen-active #workoutLiveForce{font-size:clamp(18px,4vh,24px);line-height:1.1}
 #intervalWorkout.workout-fullscreen-active #workoutPhaseLabel{flex-basis:100%;text-align:center;font-size:11px;line-height:1.25}
@@ -1885,7 +1890,7 @@ body.plan-editor-open{overflow:hidden}
 .plan-choice-check{position:absolute;right:9px;top:9px;width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:#080b09;border:1px solid #48d477;color:#48d477;font-size:19px;font-weight:800}
 .plan-library-choice.selected .plan-choice-check{background:#48d477;color:#050805}
 .plan-library-choice.selected{outline:2px solid #48d477;outline-offset:2px;border-radius:14px}
-.plan-library-action{position:sticky;bottom:10px;z-index:8;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;margin:14px 0;background:#080b09;border:1px solid #244b32;border-radius:13px;color:#fff;box-shadow:0 6px 24px #0008}
+.plan-library-action{position:fixed;left:12px;right:12px;bottom:calc(82px + env(safe-area-inset-bottom));z-index:10010;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;margin:0;background:#080b09;border:1px solid #244b32;border-radius:13px;color:#fff;box-shadow:0 6px 24px #0008}.plan-library-action .btn{flex:0 0 auto}.plan-library-action span{min-width:0}body.plan-selection-active #library{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
 .plan-library-action span{color:#48d477;font-weight:700;font-size:13px}
 #planRunPage{position:fixed;inset:0;z-index:100030;overflow-y:auto;background:#050908;color:#f2f7f4;padding:calc(14px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom))}
 .plan-run-top{display:flex;align-items:center;gap:12px;border-bottom:1px solid #294238;padding:4px 0 14px}
@@ -2093,7 +2098,7 @@ body.plan-editor-open{overflow:hidden}
 .ach-copy small{font-size:10px!important}
 .ach-progress{width:100%}
 @media(max-width:390px){.ach-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.ach-medal{width:clamp(108px,34vw,132px)!important;height:clamp(108px,34vw,132px)!important;flex-basis:auto!important}.ach-card{padding:10px 6px!important}}
-#achievementCelebration{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;padding:24px;background:radial-gradient(circle at center,#244a43f5 0%,#071016f8 68%,#020608fa 100%);opacity:0;pointer-events:none;visibility:hidden;transition:opacity .38s ease,visibility .38s ease}
+#achievementCelebration{position:fixed;inset:0;z-index:100200;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;padding:24px;background:radial-gradient(circle at center,#244a43f5 0%,#071016f8 68%,#020608fa 100%);opacity:0;pointer-events:none;visibility:hidden;transition:opacity .38s ease,visibility .38s ease}
 #achievementCelebration.active{opacity:1;visibility:visible}
 #achievementCelebration .celebration-title{font-size:clamp(30px,9vw,48px);font-weight:900;letter-spacing:2px;color:#d8ff85;text-align:center;text-shadow:0 0 22px #b6ff6b88}
 #achievementCelebration .celebration-medal{width:min(76vw,330px);height:min(76vw,330px);border-radius:50%;overflow:hidden;border:4px solid #f3d47b;background:#172d36;box-shadow:0 0 35px #f5d77b88,0 0 90px #8eff7a44;display:grid;place-items:center}
@@ -2513,6 +2518,7 @@ body.plan-editor-open{overflow:hidden}
     </div>
     <div class="timer-inline-clock" id="workoutClock">00:07</div>
     <div class="attempt-live"><span>Fuerza actual / objetivo</span><strong id="workoutLiveForce">0,00 / 3,00 kg</strong><span id="workoutPhaseLabel">Preparado · mano derecha · agarre 10 mm</span></div>
+    <div class="workout-session-peak" id="workoutSessionPeakPanel"><span>FUERZA MÁXIMA DE ESTE EJERCICIO</span><strong id="workoutSessionPeakValue">0,00 kg</strong></div>
     <div class="br-progress"><div id="workoutForceBar" style="width:0%"></div></div>
     <div class="attempt-actions"><button class="btn" id="workoutStartBtn" onclick="startIntervalWorkout()">▶ Iniciar entrenamiento</button><button class="btn secondary" id="workoutStopBtn" onclick="stopIntervalWorkout()" disabled>■ Finalizar</button></div>
     <div class="muted" id="workoutResult">Las series completadas aparecerán en Progreso, filtradas por mano y tamaño de agarre.</div>
@@ -3269,6 +3275,9 @@ function workoutUi(){
  updateWorkoutSwitchOverlay();
  if(phase)phase.textContent=workoutPhase==='hold'?'SERIE '+workoutRep+'/'+workoutTotalReps+' · MANO '+workoutActiveHand.toUpperCase()+' · MANTÉN LA FUERZA':workoutPhase==='switch'?'¡CAMBIA A LA MANO '+(workoutActiveHand==='Derecha'?'IZQUIERDA':'DERECHA')+'!':workoutPhase==='rest'?'DESCANSO · PREPARA LA SIGUIENTE SERIE':workoutPhase==='done'?'ENTRENAMIENTO COMPLETADO':'Preparado · mano '+trainingHand.toLowerCase()+' · agarre '+trainingGrip+' mm';
  const f=Math.max(0,Number(currentForce)||0);
+ if(workoutRunning)workoutSessionPeak=Math.max(workoutSessionPeak,f);
+ const peak=document.getElementById('workoutSessionPeakValue');
+ if(peak)peak.textContent=workoutSessionPeak.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' kg';
  if(live)live.textContent=f.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' / '+workoutTarget.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' kg';
 
  if(bar){bar.style.width=Math.min(100,f/Math.max(.5,workoutTarget)*100)+'%';bar.style.background=f>=workoutTarget?'#7cff45':'#ffb84d';}
@@ -4219,6 +4228,7 @@ function openPlanEditor(){
   renderPlanSettings();
 }
 function closePlanEditor(){
+  document.body.classList.remove('plan-selection-active');
   const panel=document.getElementById('planConfigPanel');
   if(panel){panel.style.display='none';panel.classList.remove('plan-editor-fullscreen');}
   document.body.classList.remove('plan-editor-open');activePlanCategory='';editingPlanId=null;planDraftItems=[];renderPlan();
@@ -4237,6 +4247,7 @@ function estimatePlan(items){
 }
 function openPlanExerciseLibrary(){
   if(!activePlanCategory){alert('Primero elige una tarjeta de plan.');return;}
+  document.body.classList.add('plan-selection-active');
   const panel=document.getElementById('planConfigPanel');if(panel){panel.style.display='none';panel.classList.remove('plan-editor-fullscreen');}
   document.body.classList.remove('plan-editor-open');
   planSelectionMode=true;
@@ -4253,6 +4264,7 @@ function togglePlanExercise(id){
   renderExercises(document.querySelector('#filters .tab.active')?.textContent.trim()||'Todos');
 }
 function finishPlanExerciseSelection(){
+  document.body.classList.remove('plan-selection-active');
   planDraftItems=planSelectedIds.map(id=>{
     const existing=planDraftItems.find(item=>Number(item.id)===id);
     const ex=exercises.find(e=>Number(e.id)===id);
