@@ -204,6 +204,8 @@ function sgRender() {
  const force=sgReadGameForce();
  if(recName)recName.textContent=sgRecord?sgRecord.nickname:'Aún sin récord';
  if(recKg)recKg.textContent=sgRecord?sgFormatKg(sgRecord.kg):'— kg';
+ const recordAchievement=document.getElementById('sgRecordAchievement');
+ if(recordAchievement)recordAchievement.textContent=sgRecord?'🏆 LOGRO CONSEGUIDO · '+sgMessageFor(sgRecord.kg):'Todavía no hay logro';
  if(recordText)recordText.textContent=sgRecord?'RÉCORD · '+sgRecord.nickname+' · '+sgFormatKg(sgRecord.kg):'¡Sé el primero en llegar a la cima!';
  if(ghost){const rp=sgRecord?sgProgress(sgRecord.kg):0;sgSetClimber(ghost,rp);ghost.style.opacity=sgRecord?'1':'0';ghost.style.visibility=sgRecord?'visible':'hidden';}
  const now=performance.now(),dt=sgVisualLastAt?Math.min(80,now-sgVisualLastAt):16;sgVisualLastAt=now;const targetProgress=sgProgress(sgPeak);sgVisualProgress+=(targetProgress-sgVisualProgress)*(1-Math.exp(-dt/115));if(Math.abs(targetProgress-sgVisualProgress)<.001)sgVisualProgress=targetProgress;
