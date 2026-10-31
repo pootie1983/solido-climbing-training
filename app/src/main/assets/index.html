@@ -2201,6 +2201,9 @@ body.br-fullscreen-active .sg-close{display:block}
 body.br-fullscreen-active{overflow:hidden!important;padding-bottom:0!important}
 #strengthGame.strength-fullscreen-game{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;z-index:99999!important;display:block!important;overflow:hidden!important;background:#071019!important;padding:0!important;margin:0!important}
 #strengthGame.strength-fullscreen-game>.sg-shell{width:100%;max-width:none;height:100%;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:calc(env(safe-area-inset-top) + 7px) 10px calc(env(safe-area-inset-bottom) + 14px);scrollbar-width:none}
+#strengthGame.strength-fullscreen-game{display:block!important;visibility:visible!important;}
+#strengthGame.strength-fullscreen-game .sg-connect-panel{display:flex;flex-direction:column;gap:6px}
+#strengthGame.strength-fullscreen-game .sg-connect-panel .home-connect-btn{width:100%;min-height:42px;justify-content:center}
 #strengthGame.strength-fullscreen-game>.sg-shell::-webkit-scrollbar{display:none}
 #strengthGame.strength-fullscreen-game .sg-top{padding:3px 44px 7px 4px;min-height:50px;justify-content:center}
 #strengthGame.strength-fullscreen-game .sg-top strong{font-size:clamp(19px,5vw,25px);letter-spacing:1px}
@@ -2229,6 +2232,8 @@ body.br-fullscreen-active .sg-close{display:flex}
 .sg-climber img{width:100%;height:100%;object-fit:contain;display:block}
 .sg-record-climber{z-index:4;filter:grayscale(1) drop-shadow(0 0 7px #fff);opacity:.26}
 .sg-current-climber{z-index:6}
+.sg-overlay.sg-countdown strong{font-size:clamp(76px,22vw,132px);line-height:.95;color:#d7ff75;text-shadow:0 0 22px #b9ff63,0 5px 16px #000;font-variant-numeric:tabular-nums}
+.sg-overlay.sg-countdown span{font-size:clamp(13px,4vw,19px);font-weight:1000;letter-spacing:1.5px}
  #sgRecordClimber{opacity:1!important;filter:drop-shadow(0 0 8px #42f5d0)!important;}
  #sgRecordClimber img{filter:sepia(1) saturate(2.2) hue-rotate(125deg) brightness(1.18) contrast(1.12);}
  #sgRecordTag{color:#8fffea;border-color:#42f5d0;background:#062c2bdc;}
@@ -3153,7 +3158,7 @@ body.br-fullscreen-active .sg-close{display:flex}
   <button class="sg-close" type="button" onclick="strengthGameClose()" aria-label="Cerrar juego">×</button>
   <div class="sg-shell">
     <div class="sg-top"><span>SOLIDO ARCADE SERIES · 02</span><strong>EL RETO DE LA CIMA</strong><small>FUERZA REAL · WH-C06</small></div>
-    <div class="sg-connect-panel"><div class="sg-connect-state"><i class="sg-connect-dot" id="sgGameConnectDot"></i><span id="sgGameConnectText">WH-C06 desconectado</span></div><div class="row"><button class="btn" type="button" onclick="sgConnectSensor()">🔵 Conectar</button><button class="btn secondary" type="button" onclick="sgDisconnectSensor()">Desconectar</button></div></div>
+    <div class="sg-connect-panel"><div class="sg-connect-state"><i class="sg-connect-dot" id="sgGameConnectDot"></i><span id="sgGameConnectText">WH-C06 desconectado</span></div><button class="btn home-connect-btn" id="sgGameConnectButton" type="button" onclick="sgConnectSensor()"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8.5 16 16M8 15.5 16 8.5"/><path d="M6 6a4 4 0 0 1 5.7 0l.3.3M12 17.7l.3.3a4 4 0 0 0 5.7-5.7l-.3-.3M6 18a4 4 0 0 1 0-5.7l.3-.3M17.7 12l.3-.3A4 4 0 0 0 12.3 6"/></svg>Conectar WH-C06</button><button class="btn secondary home-connect-btn" id="sgGameDisconnectButton" type="button" onclick="sgDisconnectSensor()" style="display:none">Desconectar sensor</button></div>
     <div class="sg-scoreboard">
       <div><span>RÉCORD ACTUAL</span><strong id="sgRecordKg">— kg</strong><small id="sgRecordName">Aún sin récord</small></div>
       <div><span>FUERZA EN DIRECTO</span><strong id="sgLiveKg">0,00 kg</strong><small>PICO: <b id="sgPeakKg">0,00 kg</b></small></div>
@@ -3848,6 +3853,8 @@ function processWHC06Data(raw){
       -1000,
       weight
     );
+    // Feed the same live WH-C06 sample to the mountain game only while its countdown/game is active.
+    if(typeof sgOnSensorReading==='function')sgOnSensorReading(currentForce);
 
     if(attemptActive && currentForce > attemptPeak){
       attemptPeak=currentForce;
@@ -4362,6 +4369,16 @@ function show(page,btn){
 
     target.classList.remove('hide');
 
+  }
+  if(page === 'strengthGame'){
+    const enterStrengthFullscreen=()=>{
+      document.body.classList.add('br-fullscreen-active');
+      const strengthSection=document.getElementById('strengthGame');
+      if(strengthSection)strengthSection.classList.add('strength-fullscreen-game');
+      try{if(window.AndroidUi&&AndroidUi.enterGameFullscreen)AndroidUi.enterGameFullscreen();}catch(e){}
+      if(typeof strengthGameOnShow==='function')strengthGameOnShow();
+    };
+    requestAnimationFrame(enterStrengthFullscreen);
   }
 
   if(page === 'climbGame' && typeof brCanvasSize === 'function'){
