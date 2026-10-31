@@ -2452,6 +2452,30 @@ body.br-fullscreen-active .sg-close{display:flex}
 #gameHub .game-hub-back{border:1px solid #d4efb1a8!important;background:linear-gradient(180deg,#23382fef,#091411f2)!important;box-shadow:0 7px 18px #0009,inset 0 1px #ffffff26!important}
 @media(max-width:520px){#gameHub .game-hub-content{padding-left:14px!important;padding-right:14px!important}#gameHub .game-hub-heading{margin-bottom:17px!important}#gameHub .game-hub-card{min-height:132px!important}}
 </style>
+<style id="solido-gamehub-background-fit">
+/* Mostrar la ilustración de fondo completa, sin recortar sus bordes. */
+#gameHub.game-hub-screen{
+ position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;min-height:100dvh!important;
+ margin:0!important;padding:0!important;overflow-y:auto!important;overflow-x:hidden!important;box-sizing:border-box!important;
+ background-color:#07110f!important;background-image:url('fondo_seleccion_juegos.png.png')!important;
+ background-position:center center!important;background-size:contain!important;background-repeat:no-repeat!important;
+}
+#gameHub.game-hub-screen:before{position:fixed!important;inset:0!important;z-index:0!important;pointer-events:none!important;background:linear-gradient(180deg,#06110b12 0%,#06110b08 35%,#06110bd9 100%)!important}
+#gameHub .game-hub-content{position:relative!important;z-index:2!important;min-height:100dvh!important;box-sizing:border-box!important;justify-content:flex-end!important;padding:clamp(16px,3vh,30px) 16px max(18px,env(safe-area-inset-bottom))!important}
+#gameHub .game-hub-heading{margin-bottom:13px!important}
+#gameHub .game-hub-grid{gap:11px!important}
+#gameHub .game-hub-card{background:linear-gradient(145deg,rgba(20,37,30,.97),rgba(4,13,13,.97))!important;backdrop-filter:blur(7px)!important;-webkit-backdrop-filter:blur(7px)!important}
+#gameHub .game-hub-art{position:relative!important;overflow:hidden!important}
+#gameHub .game-hub-card-summit .game-hub-art img{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;object-position:center bottom!important;filter:drop-shadow(0 4px 7px #000b)!important}
+#gameHub .game-hub-card-summit .game-hub-art i{position:absolute!important;right:7px!important;top:7px!important}
+@media(max-height:700px){#gameHub .game-hub-content{justify-content:flex-end!important;padding-top:12px!important}#gameHub .game-hub-heading{margin-bottom:8px!important}#gameHub .game-hub-heading h2{font-size:clamp(23px,6vw,31px)!important}#gameHub .game-hub-card{min-height:116px!important;padding:10px!important}#gameHub .game-hub-art{height:88px!important}}
+</style>
+<style id="solido-climber-pose-fallback">
+.sg-current-climber[data-pose="climbing"] img{animation:sg-climber-climb .72s ease-in-out infinite alternate;transform-origin:50% 85%}
+.sg-current-climber[data-pose="effort"] img{animation:sg-climber-effort .38s ease-in-out infinite alternate;transform-origin:50% 85%;filter:drop-shadow(0 0 7px #ffd66b)}
+@keyframes sg-climber-climb{from{transform:translateY(1px) rotate(-2deg)}to{transform:translateY(-3px) rotate(2deg)}}
+@keyframes sg-climber-effort{from{transform:translateY(0) rotate(-3deg) scale(1)}to{transform:translateY(-2px) rotate(3deg) scale(1.035)}}
+</style>
 </head>
 
 <body>
@@ -3299,7 +3323,7 @@ body.br-fullscreen-active .sg-close{display:flex}
         <b><span>INICIAR DESAFÍO</span><span aria-hidden="true">➜</span></b></span>
       </button>
       <button class="game-hub-card game-hub-card-summit" type="button" onclick="show('strengthGame')">
-        <span class="game-hub-art"><span>🧗</span><i>02</i></span>
+        <span class="game-hub-art"><img src="climber_victory.png" alt="Escalador celebrando en la cima"><i>02</i></span>
         <span class="game-hub-card-copy"><strong>EL RETO DE LA CIMA</strong>
         <small>Aprieta el WH-C06, escala la pared y conquista la cima. ¡Bate tu récord!</small>
         <b><span>INICIAR DESAFÍO</span><span aria-hidden="true">➜</span></b></span>
