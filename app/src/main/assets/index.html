@@ -2081,10 +2081,10 @@ body.plan-editor-open{overflow:hidden}
 .ach-medal img{width:100%!important;height:100%!important;object-fit:cover!important;transform:scale(3.15)!important;filter:grayscale(1) brightness(.78) contrast(1.12)!important;opacity:.88!important}
 .ach-card.unlocked .ach-medal img{filter:grayscale(0) brightness(1.18) contrast(1.16) saturate(1.25)!important;opacity:1!important}
 .ach-card.locked .ach-medal img{filter:grayscale(1) brightness(.78) contrast(1.12)!important;opacity:.88!important}
-.ach-card.ach-grip .ach-medal{width:clamp(76px,22vw,96px)!important;height:clamp(76px,22vw,96px)!important;flex:0 0 auto!important;border-radius:0!important;overflow:visible!important;background:transparent!important;border:0!important;box-shadow:none!important}
-.ach-card.ach-grip .ach-medal img{width:100%!important;height:100%!important;object-fit:contain!important;transform:none!important;filter:none!important;opacity:1!important;border-radius:0!important}
-.ach-card.ach-grip.locked .ach-medal img{filter:grayscale(.35) brightness(.9)!important;opacity:.9!important}
-@media(max-width:390px){.ach-card.ach-grip .ach-medal{width:clamp(68px,20vw,82px)!important;height:clamp(68px,20vw,82px)!important}}
+/* Constancia: escudo completo y compacto, sin recorte ni zoom */
+.ach-card.ach-constancy .ach-medal{width:clamp(76px,23vw,94px)!important;height:clamp(76px,23vw,94px)!important;flex:0 0 auto!important;border-radius:0!important;overflow:visible!important;background:transparent!important;border:0!important;box-shadow:none!important}
+.ach-card.ach-constancy .ach-medal img{width:100%!important;height:100%!important;object-fit:contain!important;transform:none!important;filter:grayscale(1) brightness(.82) contrast(1.08)!important;opacity:.9!important;border-radius:0!important}
+.ach-card.ach-constancy.unlocked .ach-medal img{filter:none!important;opacity:1!important}
 .ach-card .ach-copy{width:100%;min-width:0}
 .ach-copy strong{font-size:12px!important;line-height:1.25}
 .ach-copy small{font-size:10px!important}
@@ -5844,7 +5844,7 @@ function renderAchievements(){
  const level=Math.floor(xp/500)+1;
  const unlockedEl=document.getElementById('achUnlocked'),xpEl=document.getElementById('achXp'),levelEl=document.getElementById('achLevel');
  if(unlockedEl)unlockedEl.textContent=unlocked;if(xpEl)xpEl.textContent=xp.toLocaleString('es-ES');if(levelEl)levelEl.textContent=level;
- host.innerHTML=Object.entries(groups).map(([group,items])=>'<div class="ach-group"><h3>'+group+'</h3><div class="ach-grid">'+items.map(({a,value,done})=>'<article class="ach-card '+(done?'unlocked':'locked')+(a.image&&a.image.startsWith('agarre_')?' ach-grip':'')+'" data-tier="'+a.tier+'"><div class="ach-medal"><img src="achievements/'+a.image+'" alt="Medalla '+a.name+'" loading="lazy" onerror="this.closest(&quot;.ach-medal&quot;).classList.add(&quot;image-missing&quot;);this.alt=&quot;Imagen no disponible: &quot;+this.alt"></div><div class="ach-copy"><strong>'+a.name+'</strong><small>'+a.desc+'</small><div class="ach-progress"><i style="width:'+Math.min(100,value/a.target*100)+'%"></i></div><small>'+Math.min(value,a.target).toLocaleString('es-ES')+' / '+a.target.toLocaleString('es-ES')+'</small><div class="ach-xp">'+(done?'Conseguido · ':'')+'+'+a.xp+' XP · '+a.tier.toUpperCase()+'</div></div></article>').join('')+'</div></div>').join('');
+ host.innerHTML=Object.entries(groups).map(([group,items])=>'<div class="ach-group"><h3>'+group+'</h3><div class="ach-grid">'+items.map(({a,value,done})=>'<article class="ach-card '+(done?'unlocked':'locked')+(a.image&&a.image.startsWith('constancia_')?' ach-constancy':'')+'" data-tier="'+a.tier+'"><div class="ach-medal"><img src="achievements/'+a.image+'" alt="Medalla '+a.name+'" loading="lazy" onerror="this.closest(&quot;.ach-medal&quot;).classList.add(&quot;image-missing&quot;);this.alt=&quot;Imagen no disponible: &quot;+this.alt"></div><div class="ach-copy"><strong>'+a.name+'</strong><small>'+a.desc+'</small><div class="ach-progress"><i style="width:'+Math.min(100,value/a.target*100)+'%"></i></div><small>'+Math.min(value,a.target).toLocaleString('es-ES')+' / '+a.target.toLocaleString('es-ES')+'</small><div class="ach-xp">'+(done?'Conseguido · ':'')+'+'+a.xp+' XP · '+a.tier.toUpperCase()+'</div></div></article>').join('')+'</div></div>').join('');
  if(newlyUnlocked.length){achievementCelebrationQueue.push(...newlyUnlocked);showNextAchievementCelebration();}
 }
 
