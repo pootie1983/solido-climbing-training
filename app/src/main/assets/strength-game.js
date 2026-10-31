@@ -121,7 +121,7 @@ function sgLaunchFireworks(){
   }
  }
  host.classList.add('active');
- setTimeout(()=>{host.classList.remove('active');host.innerHTML='';},5600);
+ setTimeout(()=>{host.classList.remove('active');host.innerHTML='';},8000);
 }
 function sgSetOverlay(title,body){
  const overlay=document.getElementById('sgOverlay');if(!overlay)return;
@@ -160,7 +160,7 @@ function sgClimberWallX(progress){
  return path[path.length-1][1];
 }
 function sgSetClimber(el,v) { if(el){const p=Math.max(0,Math.min(1,Number(v)||0));el.style.top=(96-p*93)+'%';el.style.left=sgClimberWallX(p)+'%';el.style.bottom='auto';} }
-function sgBreakThermometer(){if(sgThermoBroken)return;sgThermoBroken=true;const scene=document.getElementById('sgScene');if(scene){scene.classList.remove('sg-thermo-broken');void scene.offsetWidth;scene.classList.add('sg-thermo-broken');}try{if(navigator.vibrate)navigator.vibrate([120,60,180,70,260]);}catch(e){}if(sgThermoBreakTimer)clearTimeout(sgThermoBreakTimer);sgThermoBreakTimer=setTimeout(()=>{const s=document.getElementById('sgScene');if(s)s.classList.add('sg-thermo-broken-settled');sgThermoBreakTimer=null;},6500);}
+function sgBreakThermometer(){if(sgThermoBroken)return;sgThermoBroken=true;const scene=document.getElementById('sgScene');if(scene){scene.classList.remove('sg-thermo-broken');void scene.offsetWidth;scene.classList.add('sg-thermo-broken');}try{if(navigator.vibrate)navigator.vibrate([120,60,180,70,260]);}catch(e){}if(sgThermoBreakTimer)clearTimeout(sgThermoBreakTimer);sgThermoBreakTimer=setTimeout(()=>{const s=document.getElementById('sgScene');if(s)s.classList.add('sg-thermo-broken-settled');sgThermoBreakTimer=null;},8500);}
 function sgSetPose(el,pose){
  if(!el)return;
  const img=el.querySelector('img');if(!img)return;
@@ -301,7 +301,7 @@ function sgFinish() {
   sgShowVictory();
   if(status)status.textContent='¡CIMA CONQUISTADA! Disfruta de la victoria…';
   if(sgVictoryTimer)clearTimeout(sgVictoryTimer);
-  sgVictoryTimer=setTimeout(()=>{sgVictoryTimer=null;sgCompleteFinish();},5500);
+  sgVictoryTimer=setTimeout(()=>{sgVictoryTimer=null;sgCompleteFinish();},8000);
   return;
  }
  sgCompleteFinish();
@@ -331,23 +331,33 @@ function strengthGameSaveRecord(event) {
  if(overlay)sgSetOverlay(sgReachedSummit?'¡VICTORIA!':'¡NUEVO RÉCORD!','¡'+nickname+' ha conseguido '+sgFormatKg(sgRecord.kg)+'! ¡A ver quién consigue superarlo!');
  sgRender();
 }
-function strengthGameReset() {
- sgActive=false;sgCountdownActive=false;sgVisualProgress=0;sgVisualLastAt=0;sgThermoBroken=false;if(sgThermoBreakTimer){clearTimeout(sgThermoBreakTimer);sgThermoBreakTimer=null;}const section=document.getElementById('strengthGame');if(section)section.classList.remove('sg-playing');if(sgCountdownTimer){clearInterval(sgCountdownTimer);sgCountdownTimer=null;}if(sgFrame)cancelAnimationFrame(sgFrame);sgFrame=null;sgStopMusic();if(sgVictoryTimer){clearTimeout(sgVictoryTimer);sgVictoryTimer=null;}sgPeak=0;sgReachedSummit=false;sgVictoryShown=false;sgLastLevel=0;sgForceFiltered=0;sgForceInitialized=false;sgLastSensorPacketAt=0;sgPendingRecord=0;sgRecord=null;try{localStorage.removeItem(SG_RECORD_KEY);}catch(e){}
+function sgResetGameState(clearRecord) {
+ sgActive=false;sgCountdownActive=false;sgVisualProgress=0;sgVisualLastAt=0;sgThermoBroken=false;
+ if(sgThermoBreakTimer){clearTimeout(sgThermoBreakTimer);sgThermoBreakTimer=null;}
+ const section=document.getElementById('strengthGame');if(section)section.classList.remove('sg-playing');
+ if(sgCountdownTimer){clearInterval(sgCountdownTimer);sgCountdownTimer=null;}
+ if(sgFrame)cancelAnimationFrame(sgFrame);sgFrame=null;sgStopMusic();
+ if(sgVictoryTimer){clearTimeout(sgVictoryTimer);sgVictoryTimer=null;}
+ sgPeak=0;sgReachedSummit=false;sgVictoryShown=false;sgLastLevel=0;sgForceFiltered=0;sgForceInitialized=false;sgLastSensorPacketAt=0;sgPendingRecord=0;
+ if(clearRecord){sgRecord=null;try{localStorage.removeItem(SG_RECORD_KEY);}catch(e){}}
  const modal=document.getElementById('sgRecordModal');if(modal)modal.style.display='none';
  const banner=document.getElementById('sgVictoryBanner');if(banner)banner.classList.remove('active');
  const fireworks=document.getElementById('sgFireworks');if(fireworks){fireworks.classList.remove('active');fireworks.innerHTML='';}
- const scene=document.getElementById('sgScene');if(scene){scene.classList.remove('sg-summit-reached','sg-summit-near','sg-victory-camera','sg-thermo-broken','sg-thermo-broken-settled');scene.style.setProperty('--sg-progress','0');}const world=document.getElementById('sgWorld');if(world){world.style.setProperty('--sg-progress','0');world.style.transform='translateY(-75%)';}
- const climber=document.getElementById('sgCurrentClimber');if(climber)sgSetPose(climber,'idle');
+ const scene=document.getElementById('sgScene');if(scene){scene.classList.remove('sg-summit-reached','sg-summit-near','sg-victory-camera','sg-thermo-broken','sg-thermo-broken-settled');scene.style.setProperty('--sg-progress','0');}
+ const world=document.getElementById('sgWorld');if(world){world.style.setProperty('--sg-progress','0');world.style.transform='translateY(-75%)';}
+ const climber=document.getElementById('sgCurrentClimber');if(climber){climber.classList.remove('sg-at-summit');climber.style.zIndex='4';sgSetPose(climber,'idle');}
+ const summitClimber=document.getElementById('sgSummitClimber');if(summitClimber)summitClimber.style.removeProperty('z-index');
  const overlay=document.getElementById('sgOverlay');
- if(overlay)sgSetOverlay('¡A POR LA CIMA!','Récord borrado. Aprieta el WH-C06 para empezar una nueva partida.');
+ if(overlay)sgSetOverlay('¡A POR LA CIMA!',clearRecord?'Récord borrado. Aprieta el WH-C06 para empezar una nueva partida.':'Partida pausada. Tu récord sigue guardado. Aprieta el WH-C06 para empezar otra partida.');
  const start=document.getElementById('sgStartButton');if(start)start.textContent='▶ Empezar partida';
  const finish=document.getElementById('sgFinishButton');if(finish)finish.disabled=true;
  const timer=document.getElementById('sgTimer');if(timer)timer.textContent='12 s';
- const status=document.getElementById('sgGameStatus');if(status)status.textContent='Partida preparada. El récord se ha borrado.';
+ const status=document.getElementById('sgGameStatus');if(status)status.textContent=clearRecord?'Partida preparada. El récord se ha borrado.':'Partida cerrada. El récord se conserva.';
  sgRender();
 }
+function strengthGameReset() { sgResetGameState(true); }
 function strengthGameClose() {
-  strengthGameReset();document.body.classList.remove('br-fullscreen-active');
+  sgResetGameState(false);document.body.classList.remove('br-fullscreen-active');
   const section=document.getElementById('strengthGame');if(section){section.classList.remove('strength-fullscreen-game');section.style.removeProperty('display');}document.documentElement.style.removeProperty('overflow');document.body.style.removeProperty('overflow');
   try{if(window.AndroidUi&&AndroidUi.exitGameFullscreen)AndroidUi.exitGameFullscreen();}catch(e){}
   show('gameHub');
