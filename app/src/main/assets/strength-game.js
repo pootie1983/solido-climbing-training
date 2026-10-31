@@ -1,0 +1,1 @@
+/* SOLIDO CLIMBING · Summit challenge */
