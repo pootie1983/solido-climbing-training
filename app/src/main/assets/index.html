@@ -2049,6 +2049,11 @@ body.plan-selection-active #library{padding-bottom:calc(125px + env(safe-area-in
 #achievementCelebration .celebration-medal img{width:100%!important;height:100%!important;object-fit:contain!important;transform:scale(1.48)!important;padding:0!important}
 .achievement-detail-medal{width:min(92vw,440px)!important;height:min(92vw,440px)!important}
 .achievement-detail-medal img{width:100%!important;height:100%!important;object-fit:contain!important;transform:scale(1.48)!important}
+/* Igualar el tamaño visual de todas las familias de medallas en pantalla completa.
+   Las de agarre y constancia ya ocupan bien su lienzo; las demás necesitan más zoom. */
+#achievementCelebration .celebration-medal img.ach-fullscreen-zoom,
+.achievement-detail-medal img.ach-fullscreen-zoom{transform:scale(2.35)!important}
+
 </style>
 
 <style>
@@ -5866,7 +5871,7 @@ function showNextAchievementCelebration(){
  if(!overlay)return;
  achievementCelebrationActive=true;
  const img=document.getElementById('celebrationMedalImage'),name=document.getElementById('celebrationMedalName'),xp=document.getElementById('celebrationMedalXp');
- img.src='achievements/'+item.image;img.alt='Medalla '+item.name;name.textContent=item.name;xp.textContent='+'+item.xp+' XP · '+item.tier.toUpperCase();
+ img.src='achievements/'+item.image;img.alt='Medalla '+item.name;img.classList.toggle('ach-fullscreen-zoom',!(item.image&&(/^(constancia_|agarre_)/).test(item.image)));name.textContent=item.name;xp.textContent='+'+item.xp+' XP · '+item.tier.toUpperCase();
  overlay.classList.add('active');playAchievementTrumpets();
  setTimeout(()=>{overlay.classList.remove('active');setTimeout(()=>{achievementCelebrationActive=false;showNextAchievementCelebration();},420);},3000);
 }
@@ -5878,6 +5883,7 @@ function openAchievementDetail(id){
  if(!overlay||!img)return;
  img.src='achievements/'+medal.image;
  img.alt='Medalla '+medal.name;
+ img.classList.toggle('ach-fullscreen-zoom',!(medal.image&&(/^(constancia_|agarre_)/).test(medal.image)));
  document.getElementById('achievementDetailName').textContent=medal.name;
  document.getElementById('achievementDetailTier').textContent=medal.tier.toUpperCase()+' · +'+medal.xp+' XP';
  document.getElementById('achievementDetailDesc').textContent=medal.desc;
