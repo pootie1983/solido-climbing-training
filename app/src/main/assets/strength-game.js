@@ -184,7 +184,7 @@ function sgRender() {
  if(recordText)recordText.textContent=sgRecord?'RÉCORD · '+sgRecord.nickname+' · '+sgFormatKg(sgRecord.kg):'¡Sé el primero en llegar a la cima!';
  if(ghost){const rp=sgRecord?sgProgress(sgRecord.kg):0;sgSetClimber(ghost,rp);ghost.style.opacity=sgRecord?'1':'0';ghost.style.visibility=sgRecord?'visible':'hidden';}
  const now=performance.now(),dt=sgVisualLastAt?Math.min(80,now-sgVisualLastAt):16;sgVisualLastAt=now;const targetProgress=sgProgress(sgPeak);sgVisualProgress+=(targetProgress-sgVisualProgress)*(1-Math.exp(-dt/115));if(Math.abs(targetProgress-sgVisualProgress)<.001)sgVisualProgress=targetProgress;
- if(live){sgSetClimber(live,sgVisualProgress);sgSetPose(live,sgVictoryShown?'victory':(sgActive?(force>=sgMaxKg*.55?'effort':'climbing'):'idle'));}
+ if(live){sgSetClimber(live,sgVisualProgress);const sitting=sgCountdownActive&&sgCountdownValue>=4;live.classList.toggle('sg-countdown-sitting',sitting);sgSetPose(live,sgVictoryShown?'victory':(sitting?'fall':(sgActive?(force>=sgMaxKg*.55?'effort':'climbing'):'idle')));}
  if(liveKg)liveKg.textContent=sgFormatKg(force);
  if(peakKg)peakKg.textContent=sgFormatKg(sgPeak);
  if(targetHud)targetHud.textContent=sgFormatKg(sgMaxKg);
@@ -213,7 +213,7 @@ function strengthGameStart() {
  sgForceFiltered=Math.max(0,Number(typeof currentForce!=='undefined'?currentForce:0)||0);sgForceInitialized=true;sgLastSensorPacketAt=performance.now();
  sgCountdownActive=true;sgCountdownValue=8;sgActive=false;
  const scene=document.getElementById('sgScene');if(scene){scene.classList.remove('sg-summit-reached','sg-summit-near','sg-victory-camera','sg-thermo-broken','sg-thermo-broken-settled');scene.style.setProperty('--sg-progress','0');}
- const climber=document.getElementById('sgCurrentClimber');if(climber){climber.classList.remove('sg-at-summit');climber.style.zIndex='6';sgSetPose(climber,'idle');}
+ const climber=document.getElementById('sgCurrentClimber');if(climber){climber.classList.remove('sg-at-summit','sg-countdown-sitting');climber.style.zIndex='6';sgSetPose(climber,'idle');}
  const banner=document.getElementById('sgVictoryBanner');if(banner)banner.classList.remove('active');
  const overlay=document.getElementById('sgOverlay');if(overlay)sgSetOverlay('8','');
  const start=document.getElementById('sgStartButton');if(start){start.textContent='Cuenta atrás…';start.disabled=true;}
@@ -229,7 +229,7 @@ function strengthGameStart() {
    if(overlay)sgSetOverlay(countdownDisplay,'');
    if(timer)timer.textContent=countdownDisplay;
    if(status)status.textContent=countdownDisplay;
-   const idle=document.getElementById('sgCurrentClimber');if(idle)sgSetPose(idle,'idle');
+   const idle=document.getElementById('sgCurrentClimber');if(idle){const sitting=sgCountdownValue>=4;idle.classList.toggle('sg-countdown-sitting',sitting);sgSetPose(idle,sitting?'fall':'idle');}
    return;
   }
   clearInterval(sgCountdownTimer);sgCountdownTimer=null;sgCountdownActive=false;
@@ -239,7 +239,7 @@ function strengthGameStart() {
 function sgBeginTimedGame(){
  sgPeak=0;sgReachedSummit=false;sgVictoryShown=false;sgStartedAt=performance.now();sgActive=true;
  const overlay=document.getElementById('sgOverlay');if(overlay)overlay.style.display='none';
- const climber=document.getElementById('sgCurrentClimber');if(climber)sgSetPose(climber,'climbing');
+ const climber=document.getElementById('sgCurrentClimber');if(climber){climber.classList.remove('sg-countdown-sitting');sgSetPose(climber,'climbing');}
  const start=document.getElementById('sgStartButton');if(start){start.textContent='Midiendo fuerza…';start.disabled=false;}
  const finish=document.getElementById('sgFinishButton');if(finish)finish.disabled=false;
  const status=document.getElementById('sgGameStatus');if(status)status.textContent='¡YA! Aprieta: tienes 12 segundos para llegar a la cima.';
@@ -312,7 +312,7 @@ function strengthGameReset(clearRecord) {
  const banner=document.getElementById('sgVictoryBanner');if(banner)banner.classList.remove('active');
  const fireworks=document.getElementById('sgFireworks');if(fireworks){fireworks.classList.remove('active');fireworks.innerHTML='';}
  const scene=document.getElementById('sgScene');if(scene){scene.classList.remove('sg-summit-reached','sg-summit-near','sg-victory-camera','sg-thermo-broken','sg-thermo-broken-settled');scene.style.setProperty('--sg-progress','0');}const world=document.getElementById('sgWorld');if(world){world.style.setProperty('--sg-progress','0');world.style.transform='translateY(-75%)';}
- const climber=document.getElementById('sgCurrentClimber');if(climber)sgSetPose(climber,'idle');
+ const climber=document.getElementById('sgCurrentClimber');if(climber){climber.classList.remove('sg-countdown-sitting');sgSetPose(climber,'idle');}
  const overlay=document.getElementById('sgOverlay');
  if(overlay)sgSetOverlay('¡A POR LA CIMA!',clearRecord?'Récord borrado. Aprieta el WH-C06 para empezar una nueva marca.':'Aprieta el WH-C06 para hacer subir al escalador. Tu récord permanece guardado.');
  const start=document.getElementById('sgStartButton');if(start)start.textContent='▶ Empezar partida';
