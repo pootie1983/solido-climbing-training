@@ -5738,7 +5738,37 @@ const achievementDefs=[
 ];
 // Mostrar únicamente logros medibles por la aplicación.
 // Pasos: lectura diaria real del reloj a través de Health Connect.
-// Se conserva la colección completa: no ocultar logros para disimular imágenes mal asociadas.
+// Solo logros con datos que la app puede comprobar de forma real.
+const supportedAchievementIds=new Set([
+ 'medal-0-a-por-las-alturas-plata',
+ 'medal-1-agarre-bronce',
+ 'medal-2-agarre-diamante',
+ 'medal-3-agarre-oro',
+ 'medal-4-agarre-plata',
+ 'medal-5-agarre-platino',
+ 'medal-6-alma-montanera-platino',
+ 'medal-12-conquistacumbres-oro',
+ 'medal-13-imparable-plata',
+ 'medal-14-primer-paso-bronce',
+ 'medal-15-sin-excusas-diamante',
+ 'medal-21-descanso-inteligente-platino',
+ 'medal-37-equilibrio-interior-oro',
+ 'medal-43-explorador-alternativo-plata',
+ 'medal-44-explorador-plata',
+ 'medal-45-leyenda-de-las-cumbres-diamante',
+ 'medal-46-leyenda-solido-diamante',
+ 'medal-47-mente-solido-diamante',
+ 'medal-48-mente-tranquila-plata',
+ 'medal-54-un-momento-para-mi-bronce',
+ 'medal-55-primer-sendero-alternativo-bronce',
+ 'medal-56-primer-sendero-bronce'
+]);
+achievementDefs.splice(0,achievementDefs.length,...achievementDefs.filter(a=>supportedAchievementIds.has(a.id)));
+// La medalla de inicio de agarre utiliza el dibujo que realmente dice "PRIMER AGARRE".
+const verifiedAchievementImages={
+ 'medal-1-agarre-bronce':'primer-agarre-bronce.png'
+};
+achievementDefs.forEach(a=>{if(verifiedAchievementImages[a.id])a.image=verifiedAchievementImages[a.id];});
 achievementDefs.forEach(a=>{
  if(a.image==='recuperacion/leyenda-solido-diamante.png')a.image='leyenda-solido-diamante.png';
 });
