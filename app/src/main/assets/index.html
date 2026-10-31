@@ -5738,22 +5738,11 @@ const achievementDefs=[
 ];
 // Mostrar únicamente logros medibles por la aplicación.
 // Pasos: lectura diaria real del reloj a través de Health Connect.
-const supportedAchievementIds=new Set([
- 'medal-0-a-por-las-alturas-plata',
- 'medal-1-agarre-bronce',
- 'medal-14-primer-paso-bronce',
- 'medal-45-leyenda-de-las-cumbres-diamante',
- 'medal-56-primer-sendero-bronce'
-]);
-achievementDefs.splice(0,achievementDefs.length,...achievementDefs.filter(a=>supportedAchievementIds.has(a.id)));
- // Asociaciones verificadas visualmente: los nombres originales de varios PNG no
- // coinciden con el texto que aparece dibujado en la medalla.
- const verifiedAchievementImages={
-  'medal-1-agarre-bronce':'primer-agarre-bronce.png',
-  'medal-14-primer-paso-bronce':'primer-paso-bronce.png',
-  'medal-56-primer-sendero-bronce':'primer-sendero-bronce.png'
- };
- achievementDefs.forEach(a=>{if(verifiedAchievementImages[a.id])a.image=verifiedAchievementImages[a.id];});
+// Se conserva la colección completa: no ocultar logros para disimular imágenes mal asociadas.
+achievementDefs.forEach(a=>{
+ if(a.image==='recuperacion/leyenda-solido-diamante.png')a.image='leyenda-solido-diamante.png';
+});
+achievementDefs.forEach(a=>{if(verifiedAchievementImages[a.id])a.image=verifiedAchievementImages[a.id];});
 
 achievementDefs.forEach(a=>{
  if(a.metric==='force')a.desc='Registra '+a.target+' mediciones de fuerza de agarre';
