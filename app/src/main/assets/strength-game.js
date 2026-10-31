@@ -161,7 +161,17 @@ function sgClimberWallX(progress){
 }
 function sgSetClimber(el,v) { if(el){const p=Math.max(0,Math.min(1,Number(v)||0));el.style.top=(90-p*87)+'%';el.style.left=sgClimberWallX(p)+'%';el.style.bottom='auto';} }
 function sgBreakThermometer(){if(sgThermoBroken)return;sgThermoBroken=true;const scene=document.getElementById('sgScene');if(scene){scene.classList.remove('sg-thermo-broken');void scene.offsetWidth;scene.classList.add('sg-thermo-broken');}try{if(navigator.vibrate)navigator.vibrate([120,60,180,70,260]);}catch(e){}if(sgThermoBreakTimer)clearTimeout(sgThermoBreakTimer);sgThermoBreakTimer=setTimeout(()=>{const s=document.getElementById('sgScene');if(s)s.classList.add('sg-thermo-broken-settled');sgThermoBreakTimer=null;},3200);}
-function sgSetPose(el,pose){if(!el)return;const img=el.querySelector('img');if(!img)return;if(el.dataset.pose===pose)return;el.dataset.pose=pose;img.src='climber_'+pose+'.png';}
+function sgSetPose(el,pose){
+ if(!el)return;
+ const img=el.querySelector('img');if(!img)return;
+ const safePose=['idle','climbing','effort','victory'].includes(pose)?pose:'idle';
+ if(el.dataset.pose===safePose)return;
+ el.dataset.pose=safePose;
+ // Solo existen los archivos idle y victory en assets. Reutilizamos idle
+ // durante la subida/esfuerzo para evitar una ruta inexistente que oculte al escalador.
+ const imageFile=safePose==='victory'?'climber_victory.png':'climber_idle.png';
+ if(!img.getAttribute('src')||!img.getAttribute('src').endsWith(imageFile))img.src=imageFile;
+}
 function sgMessageFor(v) {
  const p=sgProgress(v),level=Math.min(10,Math.max(1,Math.ceil(p*10)||1));
  return sgLevelPhrases[level-1];
