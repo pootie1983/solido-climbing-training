@@ -4254,6 +4254,7 @@ function updateHomeWHStatus(connected, message){
   if(dot){dot.classList.toggle('connected',!!connected);dot.setAttribute('aria-label',connected?'Conectado':'Desconectado');}
   if(connect)connect.style.display=connected?'none':'block';
   if(disconnect)disconnect.style.display=connected?'block':'none';
+  if(typeof sgUpdateConnectionUI==='function')sgUpdateConnectionUI();
 }
 /* =========================
    NAVEGACIÓN
