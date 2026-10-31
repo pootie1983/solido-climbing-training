@@ -2153,7 +2153,35 @@ body.br-fullscreen-active .sg-close{display:block}
 .sg-mountain-front{position:absolute;inset:24% -8% 0;background:linear-gradient(135deg,#a5ad91,#536e57 68%,#263e32);clip-path:polygon(0 100%,13% 75%,29% 81%,45% 0,59% 36%,72% 28%,100% 100%);border-top:2px solid #d5dfc0}
 .sg-mountain-front:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(130deg,transparent 0 30px,#e7f0dc20 31px 33px)}
 .sg-summit-flag{position:absolute;z-index:2;left:43%;top:20%;font-size:24px;filter:drop-shadow(0 2px 3px #0008)}
-.sg-climber{position:absolute;z-index:4;left:42%;font-size:34px;line-height:1;transition:bottom .08s linear;filter:drop-shadow(0 3px 3px #0009)}
+.sg-climber{position:absolute;z-index:4;left:39%;width:54px;height:78px;display:grid;place-items:center;font-size:42px;line-height:1;transition:bottom .08s linear;filter:drop-shadow(0 4px 5px #000b)}
+.sg-record-climber{z-index:3;filter:grayscale(1) drop-shadow(0 0 5px #fff);opacity:.28}.sg-current-climber{z-index:4}
+.sg-climber-tag{position:absolute;z-index:5;left:calc(39% + 48px);font-size:8px;font-weight:900;letter-spacing:.5px;padding:3px 5px;border-radius:5px;background:#07110bd9;color:#fff}
+.sg-record-tag{bottom:calc(16px + 66%);opacity:.85}.sg-current-tag{bottom:19px;color:#d5ff9d}
+.sg-force-bar{position:absolute;z-index:7;top:65px;bottom:24px;right:10px;width:34px;border-radius:12px;background:#07120dd9;border:1px solid #d4e9c255;overflow:hidden;display:flex;align-items:flex-end}
+.sg-force-bar div{width:100%;height:0;background:linear-gradient(0deg,#39d9a0,#b5fa4a 60%,#ffbd4a 84%,#ff635d);transition:height .06s;box-shadow:0 0 12px #9df65377}
+.sg-force-value{position:absolute;z-index:8;right:4px;top:36px;width:48px;text-align:center;font-size:9px;font-weight:900;color:#fff;text-shadow:0 1px 4px #000}
+.sg-summit-cloud{position:absolute;z-index:5;left:27%;top:0;width:42%;height:28%;background:radial-gradient(ellipse at 50% 65%,#e7f0e5 0 22%,#c6d5d0 45%,#9db4b5aa 70%,transparent 72%);filter:blur(2px);transition:opacity .5s}
+.sg-summit-flag{opacity:0;transition:opacity .5s}.sg-scene-bottom{z-index:2}
+.sg-message{left:8px;right:54px}
+.sg-fireworks{position:absolute;z-index:12;inset:0;pointer-events:none;overflow:hidden;display:none}
+.sg-fireworks.active{display:block}
+.sg-firework{position:absolute;width:6px;height:6px;border-radius:50%;animation:sg-burst 1.15s ease-out forwards;box-shadow:0 0 8px 3px currentColor}
+@keyframes sg-burst{0%{transform:scale(.1);opacity:1}55%{opacity:1}100%{transform:scale(3.2);opacity:0}}
+.sg-victory-banner{position:absolute;z-index:11;inset:0;display:none;place-content:center;text-align:center;background:#06110b99;padding:20px}
+.sg-victory-banner.active{display:grid;animation:sg-victory-in .5s ease-out}
+.sg-victory-banner strong{font-size:clamp(30px,9vw,54px);font-weight:1000;color:#e4ff9b;text-shadow:0 0 16px #c3f36b,0 4px 8px #000}
+.sg-victory-banner span{font-size:15px;font-weight:900;color:#fff;margin-top:8px;text-shadow:0 2px 5px #000}
+@keyframes sg-victory-in{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+.sg-connect-panel{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px;border:1px solid #354739;border-radius:12px;background:#111b14;margin:8px 0 10px}
+.sg-connect-state{display:flex;align-items:center;gap:7px;font-size:11px;color:#d8e5d2}
+.sg-connect-dot{width:9px;height:9px;border-radius:50%;background:#68766a}.sg-connect-dot.connected{background:#8df05b;box-shadow:0 0 10px #8df05b}
+.sg-connect-panel .btn{padding:9px 12px;font-size:11px}
+.sg-climb-level{position:absolute;z-index:6;left:8px;bottom:26px;max-width:calc(100% - 58px);padding:6px 8px;border-radius:8px;background:#06110bd9;color:#fff;font-size:10px;font-weight:900}
+.sg-summit-reached .sg-summit-cloud{opacity:0}.sg-summit-reached .sg-summit-flag{opacity:1}
+.sg-summit-reached .sg-current-climber{font-size:44px;transform:rotate(-8deg) scale(1.12)}
+.sg-game-controls{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:10px}
+.sg-game-controls .sg-scale{min-width:0}
+@media(max-width:390px){.sg-climber{left:35%;width:48px}.sg-climber-tag{left:calc(35% + 43px)}.sg-force-bar{right:7px;width:30px}.sg-force-value{right:0}.sg-message{right:45px}.sg-climb-level{max-width:calc(100% - 48px)}}
 .sg-record-climber{z-index:3;filter:grayscale(1) drop-shadow(0 0 5px #fff);opacity:.28}.sg-current-climber{z-index:4}
 .sg-climber-tag{position:absolute;z-index:5;left:calc(42% + 34px);font-size:8px;font-weight:900;letter-spacing:.5px;padding:3px 5px;border-radius:5px;background:#07110bd9;color:#fff}
 .sg-record-tag{bottom:calc(16px + 66%);opacity:.85}.sg-current-tag{bottom:19px;color:#d5ff9d}
@@ -3007,13 +3035,14 @@ body.br-fullscreen-active .sg-close{display:block}
 <section id="gameHub" class="hide">
   <div class="sectionhead"><h2>🎮 JUEGOS SOLIDO</h2><span class="tag">ARCADE</span></div>
   <p class="muted">Elige tu desafío. Más juegos llegarán próximamente.</p>
+  <div class="sg-connect-panel"><div class="sg-connect-state"><i class="sg-connect-dot" id="sgHubConnectDot"></i><span id="sgHubConnectText">Comprobando WH-C06…</span></div><div class="row"><button class="btn" id="sgHubConnectButton" type="button" onclick="sgConnectSensor()">🔵 Conectar WH-C06</button><button class="btn secondary" id="sgHubDisconnectButton" type="button" onclick="sgDisconnectSensor()" style="display:none">Desconectar</button></div></div>
   <div class="game-hub-grid">
     <button class="game-hub-card" type="button" onclick="show('climbGame')">
       <span class="game-hub-art">🪂</span><strong>SOLIDO SKY HOPPER</strong>
       <small>Salta plataformas y recoge monedas con el WH-C06</small><b>JUGAR AHORA →</b>
     </button>
     <button class="game-hub-card" type="button" onclick="show('strengthGame')">
-      <span class="game-hub-art">🧗</span><strong>EL RETO DE LA CIMA</strong>
+      <span class="game-hub-art">🧗‍♂️</span><strong>EL RETO DE LA CIMA</strong>
       <small>Aprieta el WH-C06 y escala la montaña. ¡Supera el récord!</small><b>JUGAR AHORA →</b>
     </button>
   </div>
@@ -3068,23 +3097,29 @@ body.br-fullscreen-active .sg-close{display:block}
   <button class="sg-close" type="button" onclick="strengthGameClose()" aria-label="Cerrar juego">×</button>
   <div class="sg-shell">
     <div class="sg-top"><span>SOLIDO ARCADE SERIES · 02</span><strong>EL RETO DE LA CIMA</strong><small>FUERZA REAL · WH-C06</small></div>
+    <div class="sg-connect-panel"><div class="sg-connect-state"><i class="sg-connect-dot" id="sgGameConnectDot"></i><span id="sgGameConnectText">WH-C06 desconectado</span></div><div class="row"><button class="btn" type="button" onclick="sgConnectSensor()">🔵 Conectar</button><button class="btn secondary" type="button" onclick="sgDisconnectSensor()">Desconectar</button></div></div>
     <div class="sg-scoreboard">
       <div><span>RÉCORD ACTUAL</span><strong id="sgRecordKg">— kg</strong><small id="sgRecordName">Aún sin récord</small></div>
-      <div><span>TU FUERZA</span><strong id="sgLiveKg">0,00 kg</strong><small>PICO: <b id="sgPeakKg">0,00 kg</b></small></div>
+      <div><span>FUERZA EN DIRECTO</span><strong id="sgLiveKg">0,00 kg</strong><small>PICO: <b id="sgPeakKg">0,00 kg</b></small></div>
     </div>
     <div class="sg-mountain-scene" id="sgScene">
       <div class="sg-sky-glow"></div><div class="sg-summit-flag">🏁</div>
       <div class="sg-mountain-back"></div><div class="sg-mountain-front"></div>
-      <div class="sg-climber sg-record-climber" id="sgRecordClimber" aria-label="Escalador del récord">🧗</div>
-      <div class="sg-climber sg-current-climber" id="sgCurrentClimber" aria-label="Escalador actual">🧗</div>
-      <div class="sg-climber-tag sg-record-tag">RÉCORD</div><div class="sg-climber-tag sg-current-tag">TÚ</div>
-      <div class="sg-scene-bottom"></div><div class="sg-force-bar"><div id="sgForceBar"></div></div>
+      <div class="sg-summit-cloud" id="sgSummitCloud"></div>
+      <div class="sg-climber sg-record-climber" id="sgRecordClimber" aria-label="Posición del récord">🧗‍♀️</div>
+      <div class="sg-climber sg-current-climber" id="sgCurrentClimber" aria-label="Escalador actual">🧗‍♂️</div>
+      <div class="sg-climber-tag sg-record-tag" id="sgRecordTag">RÉCORD</div><div class="sg-climber-tag sg-current-tag" id="sgCurrentTag">TÚ</div>
+      <div class="sg-scene-bottom"></div>
+      <div class="sg-force-value" id="sgForceValue">0,00 kg</div><div class="sg-force-bar"><div id="sgForceBar"></div></div>
+      <div class="sg-climb-level" id="sgLevelPhrase">NIVEL 1 · ¡PREPARADO!</div>
       <div class="sg-message" id="sgMessage">¡PREPARADO PARA ESCALAR!</div>
-      <div class="sg-overlay" id="sgOverlay"><strong>¡A POR LA CIMA!</strong><span>Aprieta el WH-C06 para hacer subir al escalador. Tienes 12 segundos para alcanzar la mayor altura posible.</span></div>
+      <div class="sg-fireworks" id="sgFireworks"></div>
+      <div class="sg-victory-banner" id="sgVictoryBanner"><div><strong>¡VICTORIA!</strong><span>¡HAS CONQUISTADO LA CIMA!</span></div></div>
+      <div class="sg-overlay" id="sgOverlay"><strong>¡A POR LA CIMA!</strong><span>Aprieta el WH-C06 y haz que el escalador llegue a lo más alto. La fuerza real controla la subida.</span></div>
     </div>
     <div class="sg-record-line" id="sgRecordText">¡Sé el primero en llegar a la cima!</div>
-    <div class="sg-controls">
-      <div class="sg-scale"><label for="sgMaxKg">FUERZA PARA LLEGAR A LA CIMA</label><strong id="sgMaxKgLabel">20 kg = cima</strong><input id="sgMaxKg" type="range" min="5" max="100" step="5" value="20" oninput="sgSetMaxKg(this.value)"><small>La altura se calcula con la fuerza real medida en kg.</small></div>
+    <div class="sg-game-controls">
+      <div class="sg-scale"><label for="sgMaxKg">FUERZA NECESARIA PARA ALCANZAR LA CIMA</label><strong id="sgMaxKgLabel">20 kg = cima</strong><input id="sgMaxKg" type="range" min="5" max="100" step="5" value="20" oninput="sgSetMaxKg(this.value)"><small>La barra derecha muestra la fuerza real recibida del WH-C06.</small></div>
       <div class="sg-time">TIEMPO<strong id="sgTimer">12 s</strong></div>
     </div>
     <div class="sg-actions">
