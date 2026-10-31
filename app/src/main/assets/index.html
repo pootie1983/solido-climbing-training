@@ -2548,6 +2548,23 @@ body.br-fullscreen-active .sg-close{display:flex}
 #sgRecordClimber img{filter:none!important}
 #sgRecordClimber{filter:drop-shadow(0 0 8px #42f5d0)!important}
 </style>
+
+<style id="solido-game-ground-and-thermo-fix-20261031">
+/* La base del mundo queda alineada con el césped fijo: el escalador arranca apoyado. */
+#strengthGame .sg-ground-grass{z-index:5!important;height:clamp(42px,10vh,78px)!important}
+#strengthGame .sg-ground-grass i{animation:sg-grass-wind 1.65s ease-in-out infinite alternate!important;transform-origin:bottom center!important}
+#strengthGame .sg-ground-grass i:nth-child(3n){animation-duration:2.1s!important;animation-delay:-.7s!important}
+@keyframes sg-grass-wind{0%{rotate:-9deg}50%{rotate:4deg}100%{rotate:11deg}}
+#strengthGame .sg-thermo-flash{position:absolute;z-index:12;inset:-24px;border-radius:24px;pointer-events:none;opacity:0;background:radial-gradient(ellipse at center,#fff 0%,#fff9b8 12%,#ff6a4d66 35%,transparent 72%)}
+#sgScene.sg-thermo-broken .sg-thermo-flash{animation:sg-thermo-flash-burst .62s ease-out 1}
+@keyframes sg-thermo-flash-burst{0%{opacity:0;transform:scale(.35)}18%{opacity:1;transform:scale(1.12)}100%{opacity:0;transform:scale(1.65)}}
+#sgScene.sg-thermo-broken .sg-thermo-ball{animation:sg-thermo-ball-pop .55s cubic-bezier(.16,.9,.24,1) 1!important}
+@keyframes sg-thermo-ball-pop{0%{opacity:1;transform:translate(-50%,50%) scale(1)}35%{opacity:1;transform:translate(-50%,50%) scale(1.8)}100%{opacity:0;transform:translate(-50%,50%) scale(.15)}}
+#sgScene.sg-thermo-broken .sg-thermo-bulb{animation:sg-bulb-burst .42s ease-out 2!important}
+#sgScene.sg-thermo-broken-settled .sg-thermo-ball{opacity:0}
+#sgScene.sg-thermo-broken-settled .sg-thermo-fill{opacity:.18}
+@media(prefers-reduced-motion:reduce){#strengthGame .sg-ground-grass i{animation:none!important}}
+</style>
 </head>
 
 <body>
@@ -3472,7 +3489,7 @@ body.br-fullscreen-active .sg-close{display:flex}
         <div><span>OBJETIVO</span><strong id="sgTargetHud">20 kg</strong><small>TIEMPO <b id="sgTimer">12 s</b></small></div>
       </div>
       <div class="sg-thermometer" id="sgThermometer" aria-label="Indicador vertical de fuerza">
-        <div class="sg-thermo-track"><div class="sg-thermo-fill" id="sgForceBar"></div><div class="sg-thermo-ball" id="sgForceBall"></div><div class="sg-thermo-bulb"></div><div class="sg-thermo-crack"></div><div class="sg-thermo-shards"><i></i><i></i><i></i><i></i></div></div>
+        <div class="sg-thermo-track"><div class="sg-thermo-fill" id="sgForceBar"></div><div class="sg-thermo-ball" id="sgForceBall"></div><div class="sg-thermo-bulb"></div><div class="sg-thermo-crack"></div><div class="sg-thermo-shards"><i></i><i></i><i></i><i></i></div><div class="sg-thermo-flash"></div></div>
         <div class="sg-force-value" id="sgForceValue">0,00 kg</div>
         <small>FUERZA</small>
       </div>
