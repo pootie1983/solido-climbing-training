@@ -83,7 +83,7 @@ function sgLaunchFireworks(){
   for(let i=0;i<14;i++){
    const dot=document.createElement('i'),angle=(Math.PI*2*i)/14,r=18+Math.random()*30;
    dot.className='sg-firework';dot.style.left=cx+'%';dot.style.top=cy+'%';dot.style.color=colors[burst%colors.length];
-   dot.style.transform='translate('+Math.cos(angle)*r+'px,'+Math.sin(angle)*r+'px)';
+   dot.style.setProperty('--fx',(Math.cos(angle)*r)+'px');dot.style.setProperty('--fy',(Math.sin(angle)*r)+'px');
    dot.style.animationDelay=(Math.random()*.7)+'s';host.appendChild(dot);
   }
  }
@@ -101,6 +101,7 @@ function sgShowVictory(){
  const scene=document.getElementById('sgScene'),banner=document.getElementById('sgVictoryBanner'),overlay=document.getElementById('sgOverlay');
  if(scene)scene.classList.add('sg-summit-reached');
  if(banner)banner.classList.add('active');
+ const climber=document.getElementById('sgCurrentClimber');if(climber)climber.textContent='🙌';
  if(overlay)overlay.style.display='none';
  const phrase=document.getElementById('sgLevelPhrase');if(phrase)phrase.textContent='NIVEL 10 · ¡¡¡ERES EL REY DE LA MONTAÑA!!!';
  sgLaunchFireworks();sgPlayVictoryMusic();
@@ -162,6 +163,7 @@ function strengthGameStart() {
  if(!sgSensorConnected()){const status=document.getElementById('sgGameStatus');if(status)status.textContent='Primero conecta el WH-C06 para medir fuerza real.';sgUpdateConnectionUI();return;}
  sgPeak=0;sgReachedSummit=false;sgVictoryShown=false;sgStartedAt=performance.now();sgActive=true;
  const scene=document.getElementById('sgScene');if(scene)scene.classList.remove('sg-summit-reached');
+ const climber=document.getElementById('sgCurrentClimber');if(climber)climber.textContent='🧗‍♂️';
  const banner=document.getElementById('sgVictoryBanner');if(banner)banner.classList.remove('active');
  const overlay=document.getElementById('sgOverlay');if(overlay)overlay.style.display='none';
  const start=document.getElementById('sgStartButton');if(start)start.textContent='Midiendo fuerza…';
