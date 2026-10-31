@@ -2476,6 +2476,72 @@ body.br-fullscreen-active .sg-close{display:flex}
 @keyframes sg-climber-climb{from{transform:translateY(1px) rotate(-2deg)}to{transform:translateY(-3px) rotate(2deg)}}
 @keyframes sg-climber-effort{from{transform:translateY(0) rotate(-3deg) scale(1)}to{transform:translateY(-2px) rotate(3deg) scale(1.035)}}
 </style>
+
+<style id="solido-final-game-polish-20261031">
+/* Selector: ilustración a pantalla completa y controles agrupados en la franja inferior. */
+#gameHub.game-hub-screen{
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+}
+#gameHub .game-hub-content{
+  min-height:100dvh!important;
+  justify-content:flex-end!important;
+  padding:clamp(14px,2.5vh,24px) 14px max(16px,env(safe-area-inset-bottom))!important;
+}
+#gameHub .game-hub-heading{margin-bottom:10px!important}
+#gameHub .game-hub-grid{gap:9px!important}
+#gameHub .game-hub-card{min-height:clamp(104px,16vh,138px)!important;padding:10px!important}
+#gameHub .game-hub-art{height:clamp(78px,12vh,102px)!important}
+#gameHub .game-hub-back{margin-top:12px!important}
+#gameHub .game-hub-footer{margin-top:9px!important}
+@media(max-height:620px){
+  #gameHub .game-hub-content{padding-top:max(8px,env(safe-area-inset-top))!important}
+  #gameHub .game-hub-heading{margin-bottom:6px!important}
+  #gameHub .game-hub-heading p{font-size:11px!important}
+  #gameHub .game-hub-card{min-height:94px!important}
+  #gameHub .game-hub-art{height:72px!important}
+  #gameHub .game-hub-back{margin-top:8px!important;padding:9px 16px!important}
+  #gameHub .game-hub-footer{display:none!important}
+}
+/* El terreno queda anclado al borde inferior de la pantalla, fuera del mundo móvil. */
+#strengthGame .sg-ground-grass{
+  position:absolute!important;z-index:4!important;left:-4%!important;right:0!important;bottom:0!important;
+  height:clamp(38px,9vh,72px)!important;
+  background:linear-gradient(180deg,#a9c47d 0%,#648c4a 27%,#294b32 100%)!important;
+  border-top:3px solid #dbe5aa!important;
+  clip-path:polygon(0 22%,12% 30%,26% 18%,42% 28%,58% 10%,76% 24%,90% 9%,100% 18%,100% 100%,0 100%)!important;
+  pointer-events:none!important;
+}
+#strengthGame .sg-ground-grass i{bottom:58%!important;height:clamp(18px,4vh,31px)!important}
+#strengthGame .sg-scene-bottom{z-index:5!important;height:10px!important;border-top:2px solid #dce9b7!important}
+#strengthGame .sg-climb-level{
+  z-index:11!important;left:8px!important;right:60px!important;bottom:clamp(58px,11vh,82px)!important;
+  min-height:78px!important;padding:12px 15px!important;gap:5px!important;
+  border:1px solid #e4ffb6!important;border-radius:15px!important;
+  background:linear-gradient(110deg,#061a24f5,#17464af2 58%,#79521df2)!important;
+  box-shadow:0 0 24px #b8ff6a88,0 8px 18px #000b,inset 0 0 18px #fff2!important;
+  text-shadow:0 2px 5px #000!important;
+}
+#strengthGame .sg-climb-level span{
+  font-size:clamp(13px,3.6vw,17px)!important;letter-spacing:2.2px!important;
+  color:#e5ff82!important;text-shadow:0 0 10px #baff58!important;
+}
+#strengthGame .sg-climb-level strong{
+  font-size:clamp(21px,6vw,31px)!important;line-height:1.12!important;
+  font-weight:1000!important;letter-spacing:.15px!important;color:#fff!important;
+  text-shadow:0 2px 4px #000,0 0 12px #d6ff73cc!important;
+}
+#strengthGame .sg-record-achievement{
+  display:block!important;margin-top:4px!important;color:#d9ff9a!important;
+  font-size:clamp(8px,2.2vw,10px)!important;line-height:1.25!important;
+  font-weight:900!important;white-space:normal!important;text-shadow:0 1px 4px #000!important;
+}
+@media(max-width:420px){
+  #strengthGame .sg-climb-level{right:55px!important;bottom:62px!important;min-height:72px!important;padding:10px 12px!important}
+  #strengthGame .sg-climb-level strong{font-size:clamp(19px,5.7vw,26px)!important}
+}
+</style>
 </head>
 
 <body>
@@ -3385,7 +3451,7 @@ body.br-fullscreen-active .sg-close{display:flex}
         <div class="sg-cliff-wall" aria-hidden="true"><div class="sg-cliff-ledge"></div><div class="sg-cliff-summit"></div></div>
         <div class="sg-wall-cloud sg-wall-cloud-one" aria-hidden="true"></div><div class="sg-wall-cloud sg-wall-cloud-two" aria-hidden="true"></div><div class="sg-wall-cloud sg-wall-cloud-three" aria-hidden="true"></div>
         <div class="sg-bird sg-bird-one" aria-hidden="true">⌁</div><div class="sg-bird sg-bird-two" aria-hidden="true">⌁</div><div class="sg-bird sg-bird-three" aria-hidden="true">⌁</div><div class="sg-bird sg-bird-four" aria-hidden="true">⌁</div>
-        <div class="sg-ground-grass" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        
         <div class="sg-sky-glow"></div><div class="sg-mountain-back"></div><div class="sg-mountain-front"></div>
         <div class="sg-world-ridge"></div><div class="sg-world-ridge sg-ridge-two"></div><div class="sg-world-ridge sg-ridge-three"></div>
         <div class="sg-summit-cloud" id="sgSummitCloud"></div><div class="sg-summit-flag">🏁</div>
@@ -3393,8 +3459,9 @@ body.br-fullscreen-active .sg-close{display:flex}
         <div class="sg-climber sg-current-climber" id="sgCurrentClimber" aria-label="Escalador actual"><img src="climber_idle.png" alt="Escalador SOLIDO"></div>
         <div class="sg-climber-tag sg-record-tag" id="sgRecordTag">RÉCORD</div><div class="sg-climber-tag sg-current-tag" id="sgCurrentTag">TÚ</div>
       </div>
+      <div class="sg-ground-grass" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <div class="sg-scoreboard sg-game-hud">
-        <div><span>RÉCORD ACTUAL</span><strong id="sgRecordKg">— kg</strong><small id="sgRecordName">Aún sin récord</small></div>
+        <div><span>RÉCORD ACTUAL</span><strong id="sgRecordKg">— kg</strong><small id="sgRecordName">Aún sin récord</small><small class="sg-record-achievement" id="sgRecordAchievement">Todavía no hay logro</small></div>
         <div><span>FUERZA EN DIRECTO</span><strong id="sgLiveKg">0,00 kg</strong><small>PICO: <b id="sgPeakKg">0,00 kg</b></small></div>
         <div><span>OBJETIVO</span><strong id="sgTargetHud">20 kg</strong><small>TIEMPO <b id="sgTimer">12 s</b></small></div>
       </div>
@@ -4561,7 +4628,7 @@ function brCloseFullscreenGame(){
   document.body.classList.remove('br-fullscreen-active');
   document.getElementById('climbGame').classList.remove('br-fullscreen-game');
   try{if(window.AndroidUi&&AndroidUi.exitGameFullscreen)AndroidUi.exitGameFullscreen();}catch(e){}
-  show('home');
+  show('gameHub');
 }
 function show(page,btn){
   if(window.solidoPlansSplashTimer){clearTimeout(window.solidoPlansSplashTimer);window.solidoPlansSplashTimer=null;}
