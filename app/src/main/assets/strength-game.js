@@ -159,7 +159,7 @@ function sgClimberWallX(progress){
  for(let i=1;i<path.length;i++){if(p<=path[i][0]){const a=path[i-1],b=path[i],t=(p-a[0])/(b[0]-a[0]);return a[1]+(b[1]-a[1])*t;}}
  return path[path.length-1][1];
 }
-function sgSetClimber(el,v) { if(el){const p=Math.max(0,Math.min(1,Number(v)||0));el.style.top=(90-p*87)+'%';el.style.left=sgClimberWallX(p)+'%';el.style.bottom='auto';} }
+function sgSetClimber(el,v) { if(el){const p=Math.max(0,Math.min(1,Number(v)||0));el.style.top=(96-p*93)+'%';el.style.left=sgClimberWallX(p)+'%';el.style.bottom='auto';} }
 function sgBreakThermometer(){if(sgThermoBroken)return;sgThermoBroken=true;const scene=document.getElementById('sgScene');if(scene){scene.classList.remove('sg-thermo-broken');void scene.offsetWidth;scene.classList.add('sg-thermo-broken');}try{if(navigator.vibrate)navigator.vibrate([120,60,180,70,260]);}catch(e){}if(sgThermoBreakTimer)clearTimeout(sgThermoBreakTimer);sgThermoBreakTimer=setTimeout(()=>{const s=document.getElementById('sgScene');if(s)s.classList.add('sg-thermo-broken-settled');sgThermoBreakTimer=null;},3200);}
 function sgSetPose(el,pose){
  if(!el)return;
@@ -216,16 +216,16 @@ function sgRender() {
  if(message)message.textContent=sgMessageFor(sgActive?force:sgPeak);
  const progressForce=sgProgress(force),bar=document.getElementById('sgForceBar');if(bar){bar.style.height=(progressForce*100).toFixed(1)+'%';const hue=Math.round(125*(1-progressForce));bar.style.background='linear-gradient(180deg,hsl('+hue+',95%,62%),hsl('+hue+',88%,40%))';}
  const ball=document.getElementById('sgForceBall');if(ball){ball.style.bottom=(progressForce*100).toFixed(1)+'%';const hue=Math.round(125*(1-progressForce));ball.style.background='radial-gradient(circle at 32% 25%,#fff,hsl('+hue+',100%,75%) 35%,hsl('+hue+',88%,43%) 75%)';}
- if(progressForce>=0.85)sgBreakThermometer();
+ if(sgActive&&progressForce>=0.84)sgBreakThermometer();
  const forceText=document.getElementById('sgForceValue');if(forceText)forceText.textContent=sgFormatKg(force);
  const phrase=document.getElementById('sgLevelPhrase');
  const level=Math.min(10,Math.max(1,Math.ceil(sgProgress(sgPeak)*10)||1));
  if(phrase&&!sgVictoryShown){if(level!==sgLastLevel){phrase.classList.remove('sg-level-pop');void phrase.offsetWidth;phrase.classList.add('sg-level-pop');sgLastLevel=level;}phrase.innerHTML='<span>NIVEL '+level+'</span><strong>'+sgLevelPhrases[level-1]+'</strong>';}
  const grass=document.querySelector('#sgScene .sg-ground-grass');if(grass){const grassOpacity=Math.max(0,Math.min(1,(0.20-sgVisualProgress)/0.20));grass.style.opacity=grassOpacity.toFixed(3);grass.style.visibility=sgVisualProgress>=0.20?'hidden':'visible';}
   const summit=document.getElementById('sgScene'),world=document.getElementById('sgWorld');
- if(summit){const progress=sgVisualProgress;if(world){world.style.setProperty('--sg-progress',String(progress));world.style.transform='translateY('+(-82.5*(1-progress)).toFixed(3)+'%)';}summit.classList.toggle('sg-summit-near',progress>=.82);summit.classList.toggle('sg-summit-reached',sgReachedSummit);}
- const recordTag=document.getElementById('sgRecordTag');if(recordTag){const rp=sgRecord?sgProgress(sgRecord.kg):0;recordTag.style.top=(90-rp*87)+'%';recordTag.style.left=(sgClimberWallX(rp)+7)+'%';}
- const currentTag=document.getElementById('sgCurrentTag');if(currentTag){currentTag.style.top=(90-sgVisualProgress*87)+'%';currentTag.style.left=(sgClimberWallX(sgVisualProgress)+7)+'%';}
+ if(summit){const progress=sgVisualProgress;if(world){world.style.setProperty('--sg-progress',String(progress));world.style.transform='translateY('+(-75*(1-progress)).toFixed(3)+'%)';}summit.classList.toggle('sg-summit-near',progress>=.82);summit.classList.toggle('sg-summit-reached',sgReachedSummit);}
+ const recordTag=document.getElementById('sgRecordTag');if(recordTag){const rp=sgRecord?sgProgress(sgRecord.kg):0;recordTag.style.top=(96-rp*93)+'%';recordTag.style.left=(sgClimberWallX(rp)+7)+'%';}
+ const currentTag=document.getElementById('sgCurrentTag');if(currentTag){currentTag.style.top=(96-sgVisualProgress*93)+'%';currentTag.style.left=(sgClimberWallX(sgVisualProgress)+7)+'%';}
  sgUpdateConnectionUI();
 }
 function strengthGameStart() {
@@ -239,7 +239,7 @@ function strengthGameStart() {
  sgForceFiltered=Math.max(0,Number(typeof currentForce!=='undefined'?currentForce:0)||0);sgForceInitialized=true;sgLastSensorPacketAt=performance.now();
  sgCountdownActive=true;sgCountdownValue=8;sgActive=false;
  const scene=document.getElementById('sgScene');if(scene){scene.classList.remove('sg-summit-reached','sg-summit-near','sg-victory-camera','sg-thermo-broken','sg-thermo-broken-settled');scene.style.setProperty('--sg-progress','0');}
- const climber=document.getElementById('sgCurrentClimber');if(climber){climber.classList.remove('sg-at-summit');climber.style.zIndex='6';sgSetPose(climber,'idle');}
+ const climber=document.getElementById('sgCurrentClimber');if(climber){climber.classList.remove('sg-at-summit');climber.style.zIndex='6';sgSetClimber(climber,0);sgSetPose(climber,'fall');}
  const banner=document.getElementById('sgVictoryBanner');if(banner)banner.classList.remove('active');
  const overlay=document.getElementById('sgOverlay');if(overlay)sgSetOverlay('8','');
  const start=document.getElementById('sgStartButton');if(start){start.textContent='Cuenta atrás…';start.disabled=true;}
@@ -255,7 +255,7 @@ function strengthGameStart() {
    if(overlay)sgSetOverlay(countdownDisplay,'');
    if(timer)timer.textContent=countdownDisplay;
    if(status)status.textContent=countdownDisplay;
-   const idle=document.getElementById('sgCurrentClimber');if(idle)sgSetPose(idle,'idle');
+   const idle=document.getElementById('sgCurrentClimber');if(idle){sgSetClimber(idle,0);sgSetPose(idle,sgCountdownValue>=4?'fall':'idle');}
    return;
   }
   clearInterval(sgCountdownTimer);sgCountdownTimer=null;sgCountdownActive=false;
@@ -336,7 +336,7 @@ function strengthGameReset() {
  const modal=document.getElementById('sgRecordModal');if(modal)modal.style.display='none';
  const banner=document.getElementById('sgVictoryBanner');if(banner)banner.classList.remove('active');
  const fireworks=document.getElementById('sgFireworks');if(fireworks){fireworks.classList.remove('active');fireworks.innerHTML='';}
- const scene=document.getElementById('sgScene');if(scene){scene.classList.remove('sg-summit-reached','sg-summit-near','sg-victory-camera','sg-thermo-broken','sg-thermo-broken-settled');scene.style.setProperty('--sg-progress','0');}const world=document.getElementById('sgWorld');if(world){world.style.setProperty('--sg-progress','0');world.style.transform='translateY(-82.5%)';}
+ const scene=document.getElementById('sgScene');if(scene){scene.classList.remove('sg-summit-reached','sg-summit-near','sg-victory-camera','sg-thermo-broken','sg-thermo-broken-settled');scene.style.setProperty('--sg-progress','0');}const world=document.getElementById('sgWorld');if(world){world.style.setProperty('--sg-progress','0');world.style.transform='translateY(-75%)';}
  const climber=document.getElementById('sgCurrentClimber');if(climber)sgSetPose(climber,'idle');
  const overlay=document.getElementById('sgOverlay');
  if(overlay)sgSetOverlay('¡A POR LA CIMA!','Aprieta el WH-C06 para hacer subir al escalador. El récord anterior permanece guardado.');
