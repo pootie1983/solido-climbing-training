@@ -2054,6 +2054,77 @@ body.plan-selection-active #library{padding-bottom:calc(125px + env(safe-area-in
 #achievementCelebration .celebration-medal img.ach-fullscreen-zoom,
 .achievement-detail-medal img.ach-fullscreen-zoom{transform:scale(2.35)!important}
 
+/* PULIDO DE JUGABILIDAD: pared, cristal, cima y ambiente */
+.sg-climber{transition:top .12s linear,left .12s linear}
+.sg-climber img{object-fit:contain}
+.sg-climber-tag{transition:top .12s linear,left .12s linear}
+.sg-overlay-start{display:inline-flex;align-items:center;justify-content:center;margin:12px auto 0;min-width:190px;min-height:48px;font-size:16px;font-weight:900;box-shadow:0 5px 18px #0009;pointer-events:auto}
+#strengthGame.sg-playing .sg-overlay-start{display:none}
+.sg-victory-banner{pointer-events:none}
+.sg-victory-banner.active{background:linear-gradient(180deg,#08130c18,#07110b48)}
+.sg-current-climber.sg-at-summit{filter:drop-shadow(0 0 12px #ffe89b) drop-shadow(0 5px 8px #000)}
+.sg-thermo-track{width:27px!important;border:2px solid #e6f8f4cc!important;border-radius:18px 18px 14px 14px!important;background:linear-gradient(90deg,#b4d5dc88 0%,#f5ffff45 20%,#8eb8c766 47%,#faffff55 75%,#7699a288 100%)!important;box-shadow:inset 2px 0 5px #fff9,inset -3px 0 7px #284e5d99,0 0 12px #d9faff55!important;backdrop-filter:blur(2px)}
+.sg-thermo-track:before{content:"";position:absolute;z-index:4;top:7px;bottom:8px;left:5px;width:4px;border-radius:8px;background:linear-gradient(180deg,#fff9,#fff1,transparent);pointer-events:none}
+.sg-thermo-track:after{content:"";position:absolute;z-index:4;top:12px;bottom:14px;right:4px;width:2px;border-radius:8px;background:#eaffff55;pointer-events:none}
+.sg-thermo-fill{left:4px!important;right:4px!important;border-radius:0 0 10px 10px!important;box-shadow:0 0 10px currentColor,inset 0 2px 3px #fff9!important;transition:height .09s linear,background .15s linear!important}
+.sg-thermo-ball{width:19px!important;height:10px!important;border-radius:50%!important;border:1px solid #fff!important;box-shadow:0 0 12px currentColor,0 1px 4px #0009!important;transform:translate(-50%,50%)!important;transition:bottom .09s linear,background .15s linear!important}
+.sg-thermo-bulb{position:absolute;z-index:2;left:50%;bottom:-18px;width:35px;height:35px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle at 32% 25%,#fff,#ff765d 22%,#e22e24 65%,#8f1818);border:2px solid #efffffcc;box-shadow:inset 2px 2px 5px #fff8,0 0 12px #ff493f99}
+.sg-thermo-bulb:after{content:"";position:absolute;left:8px;top:5px;width:7px;height:12px;border-radius:50%;background:#fff9;transform:rotate(28deg)}
+#sgScene.sg-thermo-broken .sg-thermo-track{animation:sg-glass-shatter .72s ease-in-out 4 alternate!important;overflow:visible}
+#sgScene.sg-thermo-broken .sg-thermo-track:before,#sgScene.sg-thermo-broken .sg-thermo-track:after{background:#fff!important;box-shadow:0 0 9px #fff,0 0 18px #ff584d!important}
+#sgScene.sg-thermo-broken .sg-thermo-fill{filter:brightness(1.5);opacity:.7}
+#sgScene.sg-thermo-broken .sg-thermo-bulb{animation:sg-bulb-burst 1s ease-in-out 3 alternate;box-shadow:0 0 25px #ff382e,0 0 40px #ffb15c}
+#sgScene.sg-thermo-broken .sg-thermo-shards{position:absolute;inset:-15px;z-index:8;pointer-events:none}
+#sgScene.sg-thermo-broken .sg-thermo-shards i{position:absolute;left:50%;top:45%;width:3px;height:35px;background:linear-gradient(#fff,#9edce8 60%,#fff);box-shadow:0 0 8px #fff;transform-origin:top;animation:sg-shard-fly 2.4s ease-out forwards}
+#sgScene.sg-thermo-broken .sg-thermo-shards i:nth-child(1){transform:rotate(-68deg);--sx:-26px;--sy:-34px}
+#sgScene.sg-thermo-broken .sg-thermo-shards i:nth-child(2){transform:rotate(72deg);--sx:30px;--sy:-25px;animation-delay:.12s}
+#sgScene.sg-thermo-broken .sg-thermo-shards i:nth-child(3){transform:rotate(-25deg);--sx:-16px;--sy:32px;animation-delay:.2s}
+#sgScene.sg-thermo-broken .sg-thermo-shards i:nth-child(4){transform:rotate(28deg);--sx:18px;--sy:39px;animation-delay:.28s}
+#sgScene.sg-thermo-broken-settled .sg-thermo-shards i{opacity:0}
+@keyframes sg-glass-shatter{0%{transform:translateX(0) rotate(0);filter:brightness(1)}25%{transform:translateX(-3px) rotate(-3deg);filter:brightness(2)}50%{transform:translateX(4px) rotate(4deg);filter:brightness(1.5)}100%{transform:translateX(0) rotate(0);filter:brightness(1)}}
+@keyframes sg-bulb-burst{0%{transform:translateX(-50%) scale(1)}55%{transform:translateX(-50%) scale(1.35)}100%{transform:translateX(-50%) scale(.92)}}
+@keyframes sg-shard-fly{0%{opacity:1}100%{opacity:0;translate:var(--sx) var(--sy);rotate:70deg}}
+.sg-wall-cloud{animation:sg-cloud-drift 13s ease-in-out infinite alternate}
+.sg-wall-cloud-two{animation-duration:17s;animation-delay:-6s}
+.sg-wall-cloud-three{animation-duration:19s;animation-delay:-11s}
+.sg-bird{animation:sg-bird-flight 5.5s ease-in-out infinite}
+.sg-bird-two{animation-delay:-1.4s;animation-duration:6.5s}
+.sg-bird-three{animation-delay:-3s;animation-duration:7s}
+.sg-bird-four{animation-delay:-4s;animation-duration:6s}
+.sg-bird:after{content:"";position:absolute;left:48%;top:48%;width:13px;height:2px;background:currentColor;border-radius:100%;transform:rotate(-35deg);transform-origin:left}
+.sg-ground-grass i{animation:sg-grass-sway 2.2s ease-in-out infinite alternate}
+.sg-ground-grass i:nth-child(2n){animation-delay:-.8s;animation-duration:1.7s}
+.sg-cliff-wall{background-size:100% 100%;animation:sg-wall-light 9s ease-in-out infinite alternate}
+@keyframes sg-cloud-drift{0%{translate:-12px 0;opacity:.55}100%{translate:22px -8px;opacity:.95}}
+@keyframes sg-bird-flight{0%,100%{translate:0 0;rotate:-8deg}50%{translate:22px -14px;rotate:8deg}}
+@keyframes sg-grass-sway{from{rotate:-8deg}to{rotate:12deg}}
+@keyframes sg-wall-light{from{filter:brightness(.95)}to{filter:brightness(1.08)}}
+@media(prefers-reduced-motion:reduce){.sg-wall-cloud,.sg-bird,.sg-ground-grass i,.sg-cliff-wall{animation:none!important}}
+
+.sg-wall-cloud{overflow:visible}
+.sg-wall-cloud:before,.sg-wall-cloud:after{content:"";position:absolute;bottom:12px;width:70px;height:48px;border-radius:50%;background:linear-gradient(145deg,#fff,#e6f1ef 72%,#c4d9d7);box-shadow:0 2px 7px #45606b22}
+.sg-wall-cloud:before{left:24px;bottom:20px;width:58px;height:58px}
+.sg-wall-cloud:after{left:70px;bottom:8px;width:75px;height:40px}
+.sg-bird{font-family:Georgia,serif;font-style:italic;filter:drop-shadow(0 2px 2px #fff8)}
+.sg-bird:before{content:"";position:absolute;left:0;top:4px;width:24px;height:17px;border-top:3px solid currentColor;border-radius:80% 80% 0 0;transform:rotate(-24deg);transform-origin:right bottom;animation:sg-wing-flap .42s ease-in-out infinite alternate}
+.sg-bird:after{width:17px;height:12px;border-top:3px solid currentColor;background:transparent;transform:rotate(24deg);animation:sg-wing-flap .42s ease-in-out infinite alternate-reverse}
+.sg-current-climber.sg-at-summit{animation:sg-summit-pose .65s ease-out both}
+#sgScene.sg-victory-camera .sg-current-tag{display:none}
+@keyframes sg-wing-flap{from{scale:1 1;rotate:-13deg}to{scale:1 .45;rotate:18deg}}
+@keyframes sg-summit-pose{from{transform:translateY(15px) scale(.8)}to{transform:translateY(0) scale(1.12)}}
+
+.sg-summit-climber{display:none;position:absolute;z-index:14;top:1.5%;left:73%;width:62px;height:88px;place-items:center;filter:drop-shadow(0 0 12px #ffe89b) drop-shadow(0 5px 8px #000);pointer-events:none}
+.sg-summit-climber img{width:100%;height:100%;object-fit:contain}
+#sgScene.sg-victory-camera .sg-summit-climber{display:grid;animation:sg-summit-pose .65s ease-out both}
+#sgScene.sg-victory-camera #sgCurrentClimber{opacity:0}
+.sg-victory-banner{z-index:12}
+.sg-victory-banner.active{background:linear-gradient(180deg,#08130c08 0%,#07110b28 40%,#07110b52 100%)}
+
+
+/* Montaña extendida: recorrido largo, continuo y con cámara acompañando al escalador. */
+.sg-world{height:400%!important;transition:transform .34s cubic-bezier(.2,.72,.22,1)!important}
+.sg-cliff-wall{height:100%!important}
+#sgScene.sg-thermo-broken .sg-thermo-track{filter:brightness(1.7) drop-shadow(0 0 12px #fff)!important}
 </style>
 
 <style>
@@ -3987,6 +4058,8 @@ function processWHC06Data(raw){
       -1000,
       weight
     );
+    // Reenvía cada lectura WH-C06 al minijuego durante la cuenta atrás o partida.
+    if(typeof sgOnSensorReading === 'function') sgOnSensorReading(Math.max(0,currentForce));
 
     if(attemptActive && currentForce > attemptPeak){
       attemptPeak=currentForce;
