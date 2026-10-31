@@ -125,7 +125,7 @@ function sgLaunchFireworks(){
 }
 function sgSetOverlay(title,body){
  const overlay=document.getElementById('sgOverlay');if(!overlay)return;
- overlay.classList.toggle('sg-countdown',/^\\d+$/.test(String(title)));
+ overlay.classList.toggle('sg-countdown',/^\d+$/.test(String(title)));
  overlay.classList.toggle('sg-ready-call',/PREPARADOS|LISTOS|VAMOS/i.test(String(title)));
  overlay.textContent='';
  const strong=document.createElement('strong'),span=document.createElement('span');
@@ -156,7 +156,6 @@ function sgMessageFor(v) {
  return sgLevelPhrases[level-1];
 }
 function strengthGameOnShow() {
- sgEnterFullscreen();
  sgLoadRecord();
  const slider=document.getElementById('sgMaxKg');
  if(slider){const n=Number(localStorage.getItem('solidoFeriaMaxKg')||20);sgMaxKg=Number.isFinite(n)?Math.max(5,Math.min(100,n)):20;slider.value=String(sgMaxKg);}
@@ -217,9 +216,10 @@ function strengthGameStart() {
   sgCountdownValue--;
   if(sgCountdownValue>0){
    const readyText=sgCountdownValue===3?'¡PREPARADOS!':sgCountdownValue===2?'¡LISTOS!':sgCountdownValue===1?'¡VAMOS!':'';
-   if(overlay)sgSetOverlay(String(sgCountdownValue),readyText);
-   if(timer)timer.textContent=String(sgCountdownValue);
-   if(status)status.textContent=readyText||'Cuenta atrás…';
+   const countdownDisplay=sgCountdownValue>=4?String(sgCountdownValue):readyText;
+   if(overlay)sgSetOverlay(countdownDisplay,'');
+   if(timer)timer.textContent=countdownDisplay;
+   if(status)status.textContent=countdownDisplay;
    const idle=document.getElementById('sgCurrentClimber');if(idle)sgSetPose(idle,'idle');
    return;
   }
