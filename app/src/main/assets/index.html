@@ -2134,6 +2134,41 @@ body.plan-selection-active #library{padding-bottom:calc(125px + env(safe-area-in
 
 </style>
 
+
+<style>
+.game-hub-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.game-hub-card{min-width:0;display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:9px;padding:15px;border:1px solid #52634d;border-radius:16px;background:linear-gradient(145deg,#1c2b21,#101713);color:#f4f7ef;cursor:pointer}
+.game-hub-art{width:100%;height:110px;display:grid;place-items:center;border-radius:11px;background:radial-gradient(circle at 50% 35%,#56704b,#1c3025 70%);font-size:58px}
+.game-hub-card strong{font-size:13px;line-height:1.25}.game-hub-card small{font-size:11px;line-height:1.45;color:#b9c6b5;min-height:48px}.game-hub-card b{font-size:10px;color:#c3f36b;letter-spacing:.5px;margin-top:auto}
+#strengthGame.strength-fullscreen-game{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;z-index:99999!important;display:block!important;overflow:hidden!important;background:#08120d!important;padding:0!important;margin:0!important;box-sizing:border-box}
+#strengthGame.strength-fullscreen-game>.sg-shell{height:100dvh;min-height:100dvh;overflow:auto;overscroll-behavior:contain;padding:calc(env(safe-area-inset-top) + 10px) 12px calc(env(safe-area-inset-bottom) + 10px);box-sizing:border-box}
+.sg-close{display:none;position:fixed;top:max(8px,env(safe-area-inset-top));right:10px;z-index:100001;width:38px;height:38px;border:1px solid #ffffff88;border-radius:50%;background:#b33b3b;color:#fff;font-size:25px;line-height:1}
+body.br-fullscreen-active .sg-close{display:block}
+.sg-shell{position:relative;max-width:650px;margin:0 auto;color:#f5f7ef}
+.sg-top{text-align:center;padding:8px 0 12px;display:flex;flex-direction:column;gap:4px}.sg-top span{font-size:9px;letter-spacing:2px;color:#c3f36b}.sg-top strong{font-size:22px;letter-spacing:.5px}.sg-top small{font-size:10px;color:#a8b6a6}
+.sg-scoreboard{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:5px 0 10px}.sg-scoreboard>div{padding:9px;border:1px solid #344638;border-radius:10px;background:#111c14;min-width:0}.sg-scoreboard span,.sg-scoreboard small{display:block;font-size:9px;color:#a9b7a7}.sg-scoreboard strong{display:block;font-size:20px;color:#d2fa91;margin:3px 0}.sg-scoreboard small b{color:#fff}
+.sg-mountain-scene{height:min(53vh,440px);min-height:300px;position:relative;overflow:hidden;border:1px solid #536d51;border-radius:15px;background:linear-gradient(#142b38 0%,#42616a 53%,#9aab86 100%);isolation:isolate}
+.sg-sky-glow{position:absolute;width:130px;height:130px;border-radius:50%;background:#f6e8a9;opacity:.45;right:13%;top:8%;filter:blur(3px)}
+.sg-mountain-back{position:absolute;inset:14% -10% 0;background:#536c62;clip-path:polygon(0 100%,15% 56%,27% 71%,46% 10%,61% 51%,75% 31%,100% 100%);opacity:.8}
+.sg-mountain-front{position:absolute;inset:24% -8% 0;background:linear-gradient(135deg,#a5ad91,#536e57 68%,#263e32);clip-path:polygon(0 100%,13% 75%,29% 81%,45% 0,59% 36%,72% 28%,100% 100%);border-top:2px solid #d5dfc0}
+.sg-mountain-front:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(130deg,transparent 0 30px,#e7f0dc20 31px 33px)}
+.sg-summit-flag{position:absolute;z-index:2;left:43%;top:20%;font-size:24px;filter:drop-shadow(0 2px 3px #0008)}
+.sg-climber{position:absolute;z-index:4;left:42%;font-size:34px;line-height:1;transition:bottom .08s linear;filter:drop-shadow(0 3px 3px #0009)}
+.sg-record-climber{z-index:3;filter:grayscale(1) drop-shadow(0 0 5px #fff);opacity:.28}.sg-current-climber{z-index:4}
+.sg-climber-tag{position:absolute;z-index:5;left:calc(42% + 34px);font-size:8px;font-weight:900;letter-spacing:.5px;padding:3px 5px;border-radius:5px;background:#07110bd9;color:#fff}
+.sg-record-tag{bottom:calc(16px + 66%);opacity:.85}.sg-current-tag{bottom:19px;color:#d5ff9d}
+.sg-scene-bottom{position:absolute;bottom:0;left:0;right:0;height:15px;background:#273e2d;border-top:2px solid #8fa77d}
+.sg-force-bar{position:absolute;z-index:6;bottom:22px;left:12px;right:12px;height:7px;border-radius:6px;background:#17271d;overflow:hidden}.sg-force-bar div{height:100%;width:0;background:linear-gradient(90deg,#45c77c,#c3f36b,#ffe36e);transition:width .08s}
+.sg-message{position:absolute;z-index:7;top:10px;left:8px;right:8px;text-align:center;font-weight:1000;font-size:clamp(14px,4vw,20px);color:#f7ffe9;text-shadow:0 2px 6px #07110d}
+.sg-overlay{position:absolute;z-index:8;inset:0;display:grid;place-content:center;gap:10px;text-align:center;padding:24px;background:#06110bd9}.sg-overlay strong{font-size:22px;color:#d2fa91}.sg-overlay span{font-size:12px;line-height:1.5;color:#edf4e8;max-width:280px;margin:auto}
+.sg-record-line{text-align:center;margin:10px 0;color:#c3f36b;font-size:10px;font-weight:800;letter-spacing:.5px}
+.sg-controls{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:10px}.sg-scale{padding:10px;border:1px solid #354739;border-radius:10px;background:#111b14}.sg-scale label{display:block;font-size:9px;color:#aab8a8}.sg-scale strong{display:block;font-size:13px;color:#d4f7a2;margin:4px 0}.sg-scale input{width:100%;accent-color:#c3f36b}.sg-scale small{font-size:9px;color:#91a18f}.sg-time{font-size:9px;color:#aab8a8;text-align:center}.sg-time strong{display:block;font-size:20px;color:#fff;margin-top:5px}
+.sg-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.sg-actions .btn{min-width:0}.sg-actions .btn:first-child{grid-column:1/-1}.sg-actions button:disabled{opacity:.4}
+.sg-status{text-align:center;color:#aab8a8;font-size:10px;line-height:1.45;margin:10px 0}
+.sg-record-modal{position:absolute;z-index:20;inset:0;display:grid;place-items:center;background:#020804e8;padding:20px}.sg-record-modal form{width:min(100%,330px);display:flex;flex-direction:column;gap:12px;padding:20px;border:1px solid #c3f36b;border-radius:15px;background:#17251a;box-shadow:0 12px 45px #000b}.sg-record-modal strong{text-align:center;font-size:21px;color:#d3fa91}.sg-record-modal span{text-align:center;font-size:12px;line-height:1.5}.sg-record-modal input{width:100%;padding:12px;border:1px solid #65785e;border-radius:8px;background:#0c150e;color:#fff;font-size:16px;box-sizing:border-box}
+@media(max-width:390px){.game-hub-grid{gap:8px}.game-hub-card{padding:10px}.game-hub-art{height:90px}.sg-mountain-scene{min-height:280px}.sg-scoreboard strong{font-size:17px}}
+</style>
+
 </head>
 
 <body>
@@ -2412,7 +2447,7 @@ body.plan-selection-active #library{padding-bottom:calc(125px + env(safe-area-in
       <small>Crea tus bloques en el muro</small>
     </div>
 
-    <div class="tile" onclick="show('climbGame')">
+    <div class="tile" onclick="show('gameHub')">
       <div class="emoji"><svg class="home-icon" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="pad" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dbe9dc"/><stop offset=".5" stop-color="#8aab98"/><stop offset="1" stop-color="#436a53"/></linearGradient><linearGradient id="btn" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d4ff9a"/><stop offset="1" stop-color="#54b663"/></linearGradient></defs><path d="M17 19h30q9 0 12 10l4 15q2 8-5 10-4 1-8-3l-7-7H21l-7 7q-4 4-8 2-6-2-4-10l4-14q2-10 11-10Z" transform="translate(1 -3) scale(.94)" fill="url(#pad)" stroke="#d0e5d3" stroke-width="2"/><path d="M17 29v14M10 36h14" stroke="#244d38" stroke-width="4" stroke-linecap="round"/><circle cx="43" cy="31" r="4" fill="url(#btn)" stroke="#eaffcf"/><circle cx="51" cy="39" r="4" fill="#caff91" stroke="#eaffcf"/><circle cx="38" cy="41" r="2" fill="#31583e"/><path d="M22 23h20" stroke="#f5fff2" stroke-width="1.5" opacity=".7"/></svg></div>
       <strong>Juego de fuerza</strong>
       <small>Escala con el sensor</small>
@@ -2968,6 +3003,24 @@ body.plan-selection-active #library{padding-bottom:calc(125px + env(safe-area-in
 </section>
 
 
+
+<section id="gameHub" class="hide">
+  <div class="sectionhead"><h2>🎮 JUEGOS SOLIDO</h2><span class="tag">ARCADE</span></div>
+  <p class="muted">Elige tu desafío. Más juegos llegarán próximamente.</p>
+  <div class="game-hub-grid">
+    <button class="game-hub-card" type="button" onclick="show('climbGame')">
+      <span class="game-hub-art">🪂</span><strong>SOLIDO SKY HOPPER</strong>
+      <small>Salta plataformas y recoge monedas con el WH-C06</small><b>JUGAR AHORA →</b>
+    </button>
+    <button class="game-hub-card" type="button" onclick="show('strengthGame')">
+      <span class="game-hub-art">🧗</span><strong>EL RETO DE LA CIMA</strong>
+      <small>Aprieta el WH-C06 y escala la montaña. ¡Supera el récord!</small><b>JUGAR AHORA →</b>
+    </button>
+  </div>
+  <!-- Espacio reservado para la futura imagen de fondo de la pantalla de selección. -->
+  <button class="btn secondary" style="width:100%;margin-top:14px" onclick="show('home')">← Volver al inicio</button>
+</section>
+
 <section id="climbGame" class="hide">
   <button class="br-close-game" type="button" aria-label="Cerrar juego" title="Cerrar juego" onclick="brCloseFullscreenGame()">×</button>
   <div class="sectionhead"><h2>🎮 Solido Sky Hopper</h2><span class="tag">WH-C06 LIVE</span></div>
@@ -3009,6 +3062,47 @@ body.plan-selection-active #library{padding-bottom:calc(125px + env(safe-area-in
     <p class="game-hint">La fuerza real del WH-C06 controla los saltos. Recoge monedas doradas y esquiva las bolas con pinchos. Entrena sin dolor y descansa entre rondas.</p>
   </div>
 </section>
+
+
+<section id="strengthGame" class="hide">
+  <button class="sg-close" type="button" onclick="strengthGameClose()" aria-label="Cerrar juego">×</button>
+  <div class="sg-shell">
+    <div class="sg-top"><span>SOLIDO ARCADE SERIES · 02</span><strong>EL RETO DE LA CIMA</strong><small>FUERZA REAL · WH-C06</small></div>
+    <div class="sg-scoreboard">
+      <div><span>RÉCORD ACTUAL</span><strong id="sgRecordKg">— kg</strong><small id="sgRecordName">Aún sin récord</small></div>
+      <div><span>TU FUERZA</span><strong id="sgLiveKg">0,00 kg</strong><small>PICO: <b id="sgPeakKg">0,00 kg</b></small></div>
+    </div>
+    <div class="sg-mountain-scene" id="sgScene">
+      <div class="sg-sky-glow"></div><div class="sg-summit-flag">🏁</div>
+      <div class="sg-mountain-back"></div><div class="sg-mountain-front"></div>
+      <div class="sg-climber sg-record-climber" id="sgRecordClimber" aria-label="Escalador del récord">🧗</div>
+      <div class="sg-climber sg-current-climber" id="sgCurrentClimber" aria-label="Escalador actual">🧗</div>
+      <div class="sg-climber-tag sg-record-tag">RÉCORD</div><div class="sg-climber-tag sg-current-tag">TÚ</div>
+      <div class="sg-scene-bottom"></div><div class="sg-force-bar"><div id="sgForceBar"></div></div>
+      <div class="sg-message" id="sgMessage">¡PREPARADO PARA ESCALAR!</div>
+      <div class="sg-overlay" id="sgOverlay"><strong>¡A POR LA CIMA!</strong><span>Aprieta el WH-C06 para hacer subir al escalador. Tienes 12 segundos para alcanzar la mayor altura posible.</span></div>
+    </div>
+    <div class="sg-record-line" id="sgRecordText">¡Sé el primero en llegar a la cima!</div>
+    <div class="sg-controls">
+      <div class="sg-scale"><label for="sgMaxKg">FUERZA PARA LLEGAR A LA CIMA</label><strong id="sgMaxKgLabel">20 kg = cima</strong><input id="sgMaxKg" type="range" min="5" max="100" step="5" value="20" oninput="sgSetMaxKg(this.value)"><small>La altura se calcula con la fuerza real medida en kg.</small></div>
+      <div class="sg-time">TIEMPO<strong id="sgTimer">12 s</strong></div>
+    </div>
+    <div class="sg-actions">
+      <button class="btn" id="sgStartButton" onclick="strengthGameStart()">▶ Empezar partida</button>
+      <button class="btn secondary" id="sgFinishButton" onclick="strengthGameFinishEarly()" disabled>Finalizar intento</button>
+      <button class="btn secondary" onclick="strengthGameReset()">↻ Reiniciar</button>
+    </div>
+    <p class="sg-status" id="sgGameStatus">Conecta el WH-C06 y aprieta para empezar. El récord se guarda en este móvil.</p>
+    <div class="sg-record-modal" id="sgRecordModal" style="display:none">
+      <form onsubmit="strengthGameSaveRecord(event)">
+        <strong>🏆 ¡NUEVO RÉCORD!</strong><span>Has llegado a <b id="sgNewRecordScore">0 kg</b>. Escribe tu apodo:</span>
+        <input id="sgNickname" type="text" maxlength="18" placeholder="Tu apodo" autocomplete="nickname" required>
+        <button class="btn" type="submit">Guardar récord</button>
+      </form>
+    </div>
+  </div>
+</section>
+
 
 
 <!-- MEDITACIÓN GUIADA -->
@@ -4143,14 +4237,19 @@ function brCloseFullscreenGame(){
 }
 function show(page,btn){
   if(page !== 'meditation' && typeof stopMeditation === 'function') stopMeditation(true);
-  if(page === 'climbGame'){
+  if(page === 'climbGame' || page === 'strengthGame'){
     document.body.classList.add('br-fullscreen-active');
-    document.getElementById('climbGame').classList.add('br-fullscreen-game');
+    const gameSection=document.getElementById('climbGame');
+    const strengthSection=document.getElementById('strengthGame');
+    if(gameSection)gameSection.classList.toggle('br-fullscreen-game',page==='climbGame');
+    if(strengthSection)strengthSection.classList.toggle('strength-fullscreen-game',page==='strengthGame');
     try{if(window.AndroidUi&&AndroidUi.enterGameFullscreen)AndroidUi.enterGameFullscreen();}catch(e){}
   }else{
     document.body.classList.remove('br-fullscreen-active');
     const gameSection=document.getElementById('climbGame');
+    const strengthSection=document.getElementById('strengthGame');
     if(gameSection)gameSection.classList.remove('br-fullscreen-game');
+    if(strengthSection)strengthSection.classList.remove('strength-fullscreen-game');
     try{if(window.AndroidUi&&AndroidUi.exitGameFullscreen)AndroidUi.exitGameFullscreen();}catch(e){}
   }
 
@@ -4178,6 +4277,8 @@ function show(page,btn){
       if(typeof brDrawScene === 'function') brDrawScene(Number(currentForce)||0);
     });
   }
+
+  if(page === 'strengthGame' && typeof strengthGameOnShow === 'function') strengthGameOnShow();
 
   document
     .querySelectorAll('.nav button')
@@ -5979,6 +6080,8 @@ window.onHealthConnectData=function(data){
 healthConnectRefresh();
 
 </script>
+
+<script src="strength-game.js"></script>
 
 </body>
 </html>
