@@ -1890,7 +1890,7 @@ body.plan-editor-open{overflow:hidden}
 .plan-choice-check{position:absolute;right:9px;top:9px;width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:#080b09;border:1px solid #48d477;color:#48d477;font-size:19px;font-weight:800}
 .plan-library-choice.selected .plan-choice-check{background:#48d477;color:#050805}
 .plan-library-choice.selected{outline:2px solid #48d477;outline-offset:2px;border-radius:14px}
-.plan-library-action{position:fixed;left:12px;right:12px;bottom:calc(82px + env(safe-area-inset-bottom));z-index:10010;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;margin:0;background:#080b09;border:1px solid #244b32;border-radius:13px;color:#fff;box-shadow:0 6px 24px #0008}.plan-library-action .btn{flex:0 0 auto}.plan-library-action span{min-width:0}body.plan-selection-active #library{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
+.plan-library-action{position:fixed;left:12px;right:12px;bottom:calc(68px + env(safe-area-inset-bottom));z-index:10010;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;margin:0;background:#080b09;border:1px solid #244b32;border-radius:13px;color:#fff;box-shadow:0 6px 24px #0008}.plan-library-action .btn{flex:0 0 auto}.plan-library-action span{min-width:0}body.plan-selection-active #library{padding-bottom:calc(145px + env(safe-area-inset-bottom))}
 .plan-library-action span{color:#48d477;font-weight:700;font-size:13px}
 #planRunPage{position:fixed;inset:0;z-index:100030;overflow-y:auto;background:#050908;color:#f2f7f4;padding:calc(14px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom))}
 .plan-run-top{display:flex;align-items:center;gap:12px;border-bottom:1px solid #294238;padding:4px 0 14px}
@@ -2105,6 +2105,20 @@ body.plan-editor-open{overflow:hidden}
 #achievementCelebration .celebration-medal img{width:100%;height:100%;object-fit:cover;transform:scale(3.15);filter:brightness(1.2) contrast(1.15) saturate(1.2)}
 #achievementCelebration .celebration-name{font-size:20px;font-weight:800;color:#fff;text-align:center}
 #achievementCelebration .celebration-xp{font-size:17px;color:#c8ff9b;font-weight:700}
+/* Detalle de medallas conseguidas: imagen completa y cierre accesible */
+.ach-card.unlocked[role="button"]{cursor:pointer}
+.ach-card.unlocked[role="button"]:active{transform:scale(.985)}
+#achievementDetailOverlay{position:fixed;inset:0;z-index:100250;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:58px 22px 28px;background:radial-gradient(circle at center,#244a43 0%,#071016 72%,#020608 100%);text-align:center}
+#achievementDetailOverlay.active{display:flex}
+.achievement-detail-close{position:absolute;top:calc(12px + env(safe-area-inset-top));right:16px;width:42px;height:42px;border:1px solid #63816b;border-radius:50%;background:#14251c;color:#caff9b;font-size:30px;line-height:1;z-index:2}
+.achievement-detail-medal{width:min(78vw,360px);height:min(78vw,360px);display:grid;place-items:center}
+.achievement-detail-medal img{display:block;width:100%;height:100%;object-fit:contain;transform:none!important;filter:brightness(1.08) contrast(1.08) saturate(1.08)}
+.achievement-detail-name{font-size:24px;font-weight:900;color:#fff}
+.achievement-detail-tier{font-size:15px;font-weight:800;color:#caff9b;letter-spacing:1px}
+.achievement-detail-desc{max-width:320px;color:#c4d5ce;font-size:13px;line-height:1.5}
+#achievementCelebration .celebration-medal img{object-fit:contain!important;transform:none!important;padding:12px;filter:brightness(1.08) contrast(1.08) saturate(1.08)}
+#achievementCelebration .celebration-medal{background:radial-gradient(circle,#203b36,#10212b)}
+
 </style>
 
 </head>
@@ -3043,6 +3057,14 @@ body.plan-editor-open{overflow:hidden}
 </div>
 
 </main>
+
+<div id="achievementDetailOverlay" aria-hidden="true">
+  <button type="button" class="achievement-detail-close" onclick="closeAchievementDetail()" aria-label="Cerrar">×</button>
+  <div class="achievement-detail-medal"><img id="achievementDetailImage" src="" alt="Medalla conseguida"></div>
+  <div id="achievementDetailName" class="achievement-detail-name"></div>
+  <div id="achievementDetailTier" class="achievement-detail-tier"></div>
+  <div id="achievementDetailDesc" class="achievement-detail-desc"></div>
+</div>
 
 <div id="achievementCelebration" aria-live="assertive" aria-atomic="true">
   <div class="celebration-title">¡FELICIDADES!</div>
@@ -4425,7 +4447,7 @@ function renderExercises(category='Todos'){
   if(oldBar)oldBar.remove();
   if(planSelectionMode){
     const bar=document.createElement('div');bar.id='planLibraryAction';bar.className='plan-library-action';
-    bar.innerHTML='<span>'+planSelectedIds.length+' ejercicios seleccionados</span><button type="button" class="btn" onclick="finishPlanExerciseSelection()">Continuar ›</button>';
+    bar.innerHTML='<span>'+planSelectedIds.length+' ejercicios seleccionados</span><button type="button" class="btn" onclick="finishPlanExerciseSelection()">Guardar ›</button>';
     list.parentNode.appendChild(bar);
   }
 }
@@ -5840,6 +5862,23 @@ function showNextAchievementCelebration(){
  overlay.classList.add('active');playAchievementTrumpets();
  setTimeout(()=>{overlay.classList.remove('active');setTimeout(()=>{achievementCelebrationActive=false;showNextAchievementCelebration();},420);},3000);
 }
+function openAchievementDetail(id){
+ const medal=achievementDefs.find(a=>a.id===id);
+ if(!medal||!achievementUnlocked[medal.id])return;
+ const overlay=document.getElementById('achievementDetailOverlay');
+ const img=document.getElementById('achievementDetailImage');
+ if(!overlay||!img)return;
+ img.src='achievements/'+medal.image;
+ img.alt='Medalla '+medal.name;
+ document.getElementById('achievementDetailName').textContent=medal.name;
+ document.getElementById('achievementDetailTier').textContent=medal.tier.toUpperCase()+' · +'+medal.xp+' XP';
+ document.getElementById('achievementDetailDesc').textContent=medal.desc;
+ overlay.classList.add('active');overlay.setAttribute('aria-hidden','false');
+}
+function closeAchievementDetail(){
+ const overlay=document.getElementById('achievementDetailOverlay');
+ if(overlay){overlay.classList.remove('active');overlay.setAttribute('aria-hidden','true');}
+}
 function renderAchievements(){
  const host=document.getElementById('achievementList');if(!host)return;
  const values=achievementValues();
@@ -5859,7 +5898,7 @@ function renderAchievements(){
  const level=Math.floor(xp/500)+1;
  const unlockedEl=document.getElementById('achUnlocked'),xpEl=document.getElementById('achXp'),levelEl=document.getElementById('achLevel');
  if(unlockedEl)unlockedEl.textContent=unlocked;if(xpEl)xpEl.textContent=xp.toLocaleString('es-ES');if(levelEl)levelEl.textContent=level;
- host.innerHTML=Object.entries(groups).map(([group,items])=>'<div class="ach-group"><h3>'+group+'</h3><div class="ach-grid">'+items.map(({a,value,done})=>'<article class="ach-card '+(done?'unlocked':'locked')+(a.image&&a.image.startsWith('constancia_')?' ach-constancy':(a.image&&a.image.startsWith('agarre_')?' ach-grip':''))+'" data-tier="'+a.tier+'"><div class="ach-medal"><img src="achievements/'+a.image+'" alt="Medalla '+a.name+'" loading="lazy" onerror="this.closest(&quot;.ach-medal&quot;).classList.add(&quot;image-missing&quot;);this.alt=&quot;Imagen no disponible: &quot;+this.alt"></div><div class="ach-copy"><strong>'+a.name+'</strong><small>'+a.desc+'</small><div class="ach-progress"><i style="width:'+Math.min(100,value/a.target*100)+'%"></i></div><small>'+Math.min(value,a.target).toLocaleString('es-ES')+' / '+a.target.toLocaleString('es-ES')+'</small><div class="ach-xp">'+(done?'Conseguido · ':'')+'+'+a.xp+' XP · '+a.tier.toUpperCase()+'</div></div></article>').join('')+'</div></div>').join('');
+ host.innerHTML=Object.entries(groups).map(([group,items])=>'<div class="ach-group"><h3>'+group+'</h3><div class="ach-grid">'+items.map(({a,value,done})=>'<article class="ach-card '+(done?'unlocked':'locked')+(a.image&&a.image.startsWith('constancia_')?' ach-constancy':(a.image&&a.image.startsWith('agarre_')?' ach-grip':''))+'" data-tier="'+a.tier+'" '+(done?'role="button" tabindex="0" aria-label="Ver medalla '+a.name+'" onclick="openAchievementDetail(\''+a.id+'\')"':'')+'><div class="ach-medal"><img src="achievements/'+a.image+'" alt="Medalla '+a.name+'" loading="lazy" onerror="this.closest(&quot;.ach-medal&quot;).classList.add(&quot;image-missing&quot;);this.alt=&quot;Imagen no disponible: &quot;+this.alt"></div><div class="ach-copy"><strong>'+a.name+'</strong><small>'+a.desc+'</small><div class="ach-progress"><i style="width:'+Math.min(100,value/a.target*100)+'%"></i></div><small>'+Math.min(value,a.target).toLocaleString('es-ES')+' / '+a.target.toLocaleString('es-ES')+'</small><div class="ach-xp">'+(done?'Conseguido · ':'')+'+'+a.xp+' XP · '+a.tier.toUpperCase()+'</div></div></article>').join('')+'</div></div>').join('');
  if(newlyUnlocked.length){achievementCelebrationQueue.push(...newlyUnlocked);showNextAchievementCelebration();}
 }
 
