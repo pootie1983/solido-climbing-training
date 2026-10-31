@@ -4315,6 +4315,7 @@ function show(page,btn){
   }
 
   if(page === 'strengthGame' && typeof strengthGameOnShow === 'function') strengthGameOnShow();
+  if(page === 'gameHub' && typeof sgUpdateConnectionUI === 'function') sgUpdateConnectionUI();
 
   document
     .querySelectorAll('.nav button')
