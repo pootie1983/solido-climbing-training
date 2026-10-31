@@ -44,14 +44,14 @@ function sgSensorConnected(){
 }
 function sgUpdateConnectionUI(){
  const connected=sgSensorConnected();
- const dot=document.getElementById('sgGameConnectDot');if(dot)dot.classList.toggle('connected',connected);
- const label=document.getElementById('sgGameConnectText');if(label)label.textContent=connected?'WH-C06 conectado · listo para jugar':'WH-C06 desconectado';
- const connect=document.getElementById('sgGameConnectButton'),disconnect=document.getElementById('sgGameDisconnectButton');
- if(connect)connect.style.display=connected?'none':'inline-flex';
- if(disconnect)disconnect.style.display=connected?'inline-flex':'none';
- const homeConnect=document.getElementById('homeConnectWH'),homeDisconnect=document.getElementById('homeDisconnectWH');
- if(homeConnect&&connect)connect.disabled=homeConnect.disabled;
- if(homeDisconnect&&disconnect)disconnect.disabled=homeDisconnect.disabled;
+ const ids=[['sgGameConnectDot','sgGameConnectButton','sgGameDisconnectButton','sgGameConnectText'],['homeWHDot','homeConnectWH','homeDisconnectWH','homeWHStatus'],['hubWHDot','hubConnectWH','hubDisconnectWH','hubWHStatus']];
+ ids.forEach(([dotId,connectId,disconnectId,statusId])=>{
+  const dot=document.getElementById(dotId),connect=document.getElementById(connectId),disconnect=document.getElementById(disconnectId),status=document.getElementById(statusId);
+  if(dot){dot.classList.toggle('connected',connected);dot.setAttribute('aria-label',connected?'Conectado':'Desconectado');}
+  if(connect)connect.style.display=connected?'none':'block';
+  if(disconnect)disconnect.style.display=connected?'block':'none';
+  if(status)status.textContent=connected?'Conectado · Recibiendo fuerza':'Desconectado · Conecta para medir tu fuerza real';
+ });
 }
 function sgConnectSensor(){
  try{
@@ -68,8 +68,11 @@ function sgDisconnectSensor(){
 function sgEnterFullscreen(){
  const section=document.getElementById('strengthGame');
  document.body.classList.add('br-fullscreen-active');
- if(section)section.classList.add('strength-fullscreen-game');
+ if(section){section.classList.remove('hide');section.classList.add('strength-fullscreen-game');section.style.setProperty('display','block','important');}
+ document.documentElement.style.setProperty('overflow','hidden');
+ document.body.style.setProperty('overflow','hidden');
  try{if(window.AndroidUi&&AndroidUi.enterGameFullscreen)AndroidUi.enterGameFullscreen();}catch(e){}
+ requestAnimationFrame(()=>{if(section){section.classList.add('strength-fullscreen-game');section.scrollTop=0;}});
 }
 function sgStartSuspenseMusic(){
  try{
@@ -126,6 +129,8 @@ function sgLaunchFireworks(){
 }
 function sgSetOverlay(title,body){
  const overlay=document.getElementById('sgOverlay');if(!overlay)return;
+ overlay.classList.toggle('sg-countdown',/^\\d+$/.test(String(title)));
+ overlay.classList.toggle('sg-ready-call',/PREPARADOS|LISTOS|VAMOS/i.test(String(title)));
  overlay.textContent='';
  const strong=document.createElement('strong'),span=document.createElement('span');
  strong.textContent=title;span.textContent=body;overlay.appendChild(strong);overlay.appendChild(span);overlay.style.display='grid';
@@ -215,9 +220,10 @@ function strengthGameStart() {
  sgCountdownTimer=setInterval(()=>{
   sgCountdownValue--;
   if(sgCountdownValue>0){
-   if(overlay)sgSetOverlay(String(sgCountdownValue),'PREPÁRATE… LA PARTIDA COMIENZA EN '+sgCountdownValue);
+   const readyText=sgCountdownValue===3?'¡PREPARADOS!':sgCountdownValue===2?'¡LISTOS!':sgCountdownValue===1?'¡VAMOS!':'PREPÁRATE';
+   if(overlay)sgSetOverlay(String(sgCountdownValue),readyText);
    if(timer)timer.textContent=String(sgCountdownValue);
-   if(status)status.textContent='Cuenta atrás: '+sgCountdownValue+'…';
+   if(status)status.textContent=readyText;
    const idle=document.getElementById('sgCurrentClimber');if(idle)sgSetPose(idle,'idle');
    return;
   }
