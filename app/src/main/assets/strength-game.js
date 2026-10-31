@@ -178,6 +178,7 @@ function sgTick(now) {
  if(force>sgPeak)sgPeak=force;
  if(force>=sgMaxKg)sgReachedSummit=true;
  sgRender();
+ if(sgReachedSummit){sgFinish();return;}
  const left=Math.max(0,Math.ceil((sgDurationMs-(now-sgStartedAt))/1000));
  const timer=document.getElementById('sgTimer');if(timer)timer.textContent=left+' s';
  if(now-sgStartedAt>=sgDurationMs){sgFinish();return;}
