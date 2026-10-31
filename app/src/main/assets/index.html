@@ -2022,17 +2022,19 @@ body.plan-editor-open{overflow:hidden}
 .ach-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
 .ach-card{display:flex;gap:10px;align-items:center;min-width:0;padding:11px;background:linear-gradient(145deg,#1a303b,#10212b);border:1px solid #304651;border-radius:14px}
 .ach-card.unlocked{border-color:#8a713d;background:linear-gradient(145deg,#342b1b,#17252a)}
-.ach-medal{width:82px;height:82px;flex:0 0 82px;border-radius:12px;display:grid;place-items:center;background:transparent;border:0;box-shadow:none;overflow:visible}
-.ach-medal img{display:block;width:100%;height:100%;object-fit:contain;border-radius:0;padding:0}.ach-card.locked .ach-medal img{filter:grayscale(1);opacity:.58}
-.ach-card[data-tier="plata"] .ach-medal{background:linear-gradient(145deg,#f2f5f5,#6c858b);border-color:#dce8e8}
-.ach-card[data-tier="oro"] .ach-medal{background:linear-gradient(145deg,#fff0a2,#a66b16);border-color:#ffe08a}
-.ach-card[data-tier="platino"] .ach-medal{background:linear-gradient(145deg,#e4f8ff,#7896ad);border-color:#d5f2ff}
-.ach-card[data-tier="diamante"] .ach-medal{background:linear-gradient(145deg,#d5ffff,#5489b5);border-color:#9cecff}
-.ach-card.locked .ach-medal{filter:grayscale(1);opacity:.42}
+.ach-medal{width:104px;height:104px;flex:0 0 104px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#294754,#10232e);border:1px solid #52717c;box-shadow:0 3px 12px #0005;overflow:hidden}
+.ach-medal img{display:block;width:100%;height:100%;object-fit:cover;border-radius:50%;padding:0;transform:scale(1.08);filter:brightness(1.65) contrast(1.3) saturate(1.2)}
+.ach-card.locked .ach-medal img{filter:brightness(1.55) contrast(1.25) saturate(1.15);opacity:1}
+.ach-card[data-tier="bronce"] .ach-medal{border-color:#b77a49}
+.ach-card[data-tier="plata"] .ach-medal{border-color:#dce8e8}
+.ach-card[data-tier="oro"] .ach-medal{border-color:#ffe08a}
+.ach-card[data-tier="platino"] .ach-medal{border-color:#d5f2ff}
+.ach-card[data-tier="diamante"] .ach-medal{border-color:#9cecff}
+.ach-card.locked .ach-medal{filter:none;opacity:1}
 .ach-copy{min-width:0;flex:1}.ach-copy strong{display:block;font-size:12px}.ach-copy small{display:block;color:var(--muted);font-size:10px;line-height:1.35;margin-top:4px}
 .ach-progress{height:5px;border-radius:8px;background:#263c46;margin-top:7px;overflow:hidden}.ach-progress i{display:block;height:100%;background:var(--green);border-radius:8px}
 .ach-xp{font-size:10px;color:var(--green);margin-top:4px}
-@media(max-width:390px){.ach-grid{grid-template-columns:1fr}.ach-medal{width:72px;height:72px;flex-basis:72px}}
+@media(max-width:390px){.ach-grid{grid-template-columns:1fr}.ach-medal{width:96px;height:96px;flex-basis:96px}}
 
 </style>
 
