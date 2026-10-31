@@ -2151,28 +2151,27 @@ body.plan-selection-active #library{padding-bottom:calc(125px + env(safe-area-in
 <div id="workoutNotice" role="alertdialog" aria-live="assertive" aria-modal="true"><div class="workout-notice-card"><div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--green)">SOLIDO CLIMBING</div><div id="workoutNoticeIcon" class="workout-notice-icon" aria-hidden="true">Ⅱ</div><h2 id="workoutNoticeTitle">DESCANSO</h2><p id="workoutNoticeMessage">Empieza el descanso.</p></div></div>
 <div id="solidoSplash" aria-label="Bienvenida SOLIDO CLIMBING">
   <img id="welcomeComic" src="./P%C3%B3ster%20c%C3%B3mic%20de%20escalada%20SOLIDO.png" alt="Bienvenida cómic SOLIDO CLIMBING" loading="eager" decoding="sync" fetchpriority="high">
-  <img id="welcomeBrand" src="./splash-solido.jpg..png?v=2" alt="SOLIDO CLIMBING — Entrenar también es escalar" loading="eager" decoding="sync">
   <div class="splash-fallback-brand" aria-hidden="true"><strong>SOLIDO</strong><span>CLIMBING</span><small>ENTRENAR TAMBIÉN ES ESCALAR</small></div>
 </div>
 <style>
 #solidoSplash{position:fixed;inset:0;z-index:99999;background:#05090c;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .55s ease}
 #solidoSplash img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;opacity:0;transition:opacity .55s ease}
 #solidoSplash #welcomeComic{opacity:1;object-fit:cover}
-#solidoSplash #welcomeBrand{opacity:0}
-#solidoSplash.show-brand #welcomeComic{opacity:0}
-#solidoSplash.show-brand #welcomeBrand{opacity:1}
 #solidoSplash.splash-fallback{flex-direction:column;gap:12px;background:radial-gradient(ellipse at center,#23382d 0%,#05090c 72%)}
 .splash-fallback-brand{display:none;text-align:center;color:#f5f7f1;letter-spacing:5px;font-weight:900;font-size:clamp(38px,10vw,64px)}
 .splash-fallback-brand span{display:block;color:#c3f36b;font-size:.48em;letter-spacing:9px}
 .splash-fallback-brand small{display:block;margin-top:22px;font-size:10px;letter-spacing:3px;color:#c8d0c8}
 #solidoSplash.splash-fallback .splash-fallback-brand{display:block}
 #solidoSplash.hide{opacity:0;pointer-events:none}
+#plansEntrySplash{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;background:#05090c;opacity:0;pointer-events:none;transition:opacity .85s ease}
+#plansEntrySplash.visible{display:flex;opacity:1;pointer-events:auto}
+#plansEntrySplash.fade-out{opacity:0;pointer-events:none}
+#plansEntrySplash img{display:block;width:100%;height:100%;object-fit:contain}
 </style>
 <script>
 (function(){
   var splash=document.getElementById('solidoSplash');
   var comic=document.getElementById('welcomeComic');
-  var brand=document.getElementById('welcomeBrand');
   document.documentElement.style.background='#05090c';
   document.body.style.overflow='hidden';
 
@@ -2226,18 +2225,15 @@ body.plan-selection-active #library{padding-bottom:calc(125px + env(safe-area-in
     }
   }catch(e){}
 
-  // Primera bienvenida (cómic), después marca SOLIDO y finalmente el menú.
+  // La bienvenida muestra únicamente el cómic; la imagen de marca se reserva para Planes.
   window.setTimeout(function(){
     if(!splash)return;
-    splash.classList.add('show-brand');
+    splash.classList.add('hide');
     window.setTimeout(function(){
-      splash.classList.add('hide');
-      window.setTimeout(function(){
-        if(splash&&splash.parentNode)splash.parentNode.removeChild(splash);
-        document.body.style.overflow='';
-      },600);
-    },2300);
-  },2600);
+      if(splash&&splash.parentNode)splash.parentNode.removeChild(splash);
+      document.body.style.overflow='';
+    },600);
+  },4900);
 })();
 </script>
 
@@ -2442,6 +2438,7 @@ body.plan-selection-active #library{padding-bottom:calc(125px + env(safe-area-in
 <!-- PLANES -->
 
 <section id="plans" class="hide">
+  <div id="plansEntrySplash" aria-hidden="true"><img src="./splash-solido.jpg..png?v=2" alt=""></div>
   <div class="sectionhead"><h2>Planes de entrenamiento</h2><span class="tag">PERSONALIZA</span></div>
   <p class="muted">Elige una tarjeta para crear tu plan. Puedes cambiar el orden para montar una sesión completa.</p>
   <div id="planCategoryList" class="plan-category-grid"></div>
@@ -4142,6 +4139,9 @@ function brCloseFullscreenGame(){
   show('home');
 }
 function show(page,btn){
+  if(window.solidoPlansSplashTimer){clearTimeout(window.solidoPlansSplashTimer);window.solidoPlansSplashTimer=null;}
+  const previousPlansSplash=document.getElementById('plansEntrySplash');
+  if(previousPlansSplash){previousPlansSplash.classList.remove('visible','fade-out');previousPlansSplash.style.display='none';}
   if(page !== 'meditation' && typeof stopMeditation === 'function') stopMeditation(true);
   if(page === 'climbGame'){
     document.body.classList.add('br-fullscreen-active');
@@ -4170,6 +4170,22 @@ function show(page,btn){
 
     target.classList.remove('hide');
 
+  }
+
+  if(page === 'plans'){
+    const plansSplash=document.getElementById('plansEntrySplash');
+    if(plansSplash){
+      plansSplash.style.display='flex';
+      requestAnimationFrame(function(){plansSplash.classList.add('visible');});
+      window.solidoPlansSplashTimer=window.setTimeout(function(){
+        plansSplash.classList.add('fade-out');
+        window.solidoPlansSplashTimer=window.setTimeout(function(){
+          plansSplash.classList.remove('visible','fade-out');
+          plansSplash.style.display='none';
+          window.solidoPlansSplashTimer=null;
+        },900);
+      },2000);
+    }
   }
 
   if(page === 'climbGame' && typeof brCanvasSize === 'function'){
