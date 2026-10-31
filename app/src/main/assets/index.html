@@ -2016,6 +2016,7 @@ body.plan-editor-open{overflow:hidden}
 .ach-card{display:flex;gap:10px;align-items:center;min-width:0;padding:11px;background:linear-gradient(145deg,#1a303b,#10212b);border:1px solid #304651;border-radius:14px}
 .ach-card.unlocked{border-color:#8a713d;background:linear-gradient(145deg,#342b1b,#17252a)}
 .ach-medal{width:58px;height:58px;flex:0 0 58px;border-radius:50%;display:grid;place-items:center;font-size:29px;background:radial-gradient(circle at 35% 25%,#fff8,#ffffff08 38%),linear-gradient(145deg,#a96b35,#593719);border:3px solid #d39a5b;box-shadow:inset 0 0 0 2px #4a2e1a,0 4px 12px #0006}
+.ach-medal img{display:block;width:100%;height:100%;object-fit:contain;border-radius:50%;padding:2px}.ach-card.locked .ach-medal img{filter:grayscale(1);opacity:.48}
 .ach-card[data-tier="plata"] .ach-medal{background:linear-gradient(145deg,#f2f5f5,#6c858b);border-color:#dce8e8}
 .ach-card[data-tier="oro"] .ach-medal{background:linear-gradient(145deg,#fff0a2,#a66b16);border-color:#ffe08a}
 .ach-card[data-tier="platino"] .ach-medal{background:linear-gradient(145deg,#e4f8ff,#7896ad);border-color:#d5f2ff}
@@ -5640,22 +5641,22 @@ function achievementLocalDateKey(date=new Date()){
   return year+'-'+month+'-'+day;
 }
 const achievementDefs=[
- {id:'sessions-1',group:'Constancia',name:'Primer paso',desc:'Completa tu primer entrenamiento',target:1,metric:'sessions',tier:'bronce',icon:'🥾',xp:50},
- {id:'sessions-5',group:'Constancia',name:'Ritmo constante',desc:'Completa 5 entrenamientos',target:5,metric:'sessions',tier:'plata',icon:'⛰️',xp:100},
- {id:'sessions-10',group:'Constancia',name:'Imparable',desc:'Completa 10 entrenamientos',target:10,metric:'sessions',tier:'oro',icon:'🏔️',xp:250},
- {id:'sessions-25',group:'Constancia',name:'Disciplina de acero',desc:'Completa 25 entrenamientos',target:25,metric:'sessions',tier:'platino',icon:'🛡️',xp:500},
- {id:'sessions-50',group:'Constancia',name:'Leyenda SOLIDO',desc:'Completa 50 entrenamientos',target:50,metric:'sessions',tier:'diamante',icon:'👑',xp:1000},
- {id:'minutes-60',group:'Resistencia',name:'Una hora de esfuerzo',desc:'Acumula 60 minutos entrenando',target:60,metric:'minutes',tier:'bronce',icon:'⏱️',xp:50},
- {id:'minutes-300',group:'Resistencia',name:'Motor SOLIDO',desc:'Acumula 5 horas de entrenamiento',target:300,metric:'minutes',tier:'plata',icon:'🔥',xp:100},
- {id:'minutes-1000',group:'Resistencia',name:'Resistencia infinita',desc:'Acumula 1.000 minutos',target:1000,metric:'minutes',tier:'oro',icon:'⚡',xp:250},
- {id:'force-1',group:'Fuerza',name:'Agarre de acero',desc:'Registra tu primera medición con WH-C06',target:1,metric:'force',tier:'bronce',icon:'✊',xp:50},
- {id:'force-10',group:'Fuerza',name:'Dedos de hierro',desc:'Registra 10 mediciones de fuerza',target:10,metric:'force',tier:'plata',icon:'🧗',xp:100},
- {id:'force-25',group:'Fuerza',name:'Rey de la pared',desc:'Registra 25 mediciones de fuerza',target:25,metric:'force',tier:'oro',icon:'🏆',xp:250},
- {id:'meditation-1',group:'Mente y recuperación',name:'Un momento para mí',desc:'Completa una sesión de meditación registrada',target:1,metric:'meditation',tier:'bronce',icon:'🧘',xp:50},
- {id:'meditation-5',group:'Mente y recuperación',name:'Mente tranquila',desc:'Completa 5 sesiones de meditación registradas',target:5,metric:'meditation',tier:'plata',icon:'🌿',xp:100},
- {id:'steps-5000',group:'Actividad diaria',name:'Primeros pasos',desc:'Alcanza 5.000 pasos en el día',target:5000,metric:'steps',tier:'bronce',icon:'👣',xp:50},
- {id:'steps-10000',group:'Actividad diaria',name:'Explorador diario',desc:'Alcanza 10.000 pasos en el día',target:10000,metric:'steps',tier:'oro',icon:'🥾',xp:250},
- {id:'distance-5',group:'Actividad diaria',name:'Kilómetros en marcha',desc:'Recorre 5 km en el día según Health Connect',target:5,metric:'distance',tier:'plata',icon:'🏃',xp:100}
+ {id:'sessions-1',group:'Constancia',name:'Primer paso',desc:'Completa tu primer entrenamiento',target:1,metric:'sessions',tier:'bronce',icon:'🥾',category:'constancia',image:'primer-paso-bronce.png',xp:50},
+ {id:'sessions-5',group:'Constancia',name:'Ritmo constante',desc:'Completa 5 entrenamientos',target:5,metric:'sessions',tier:'plata',icon:'⛰️',category:'constancia',image:'imparable-plata.png',xp:100},
+ {id:'sessions-10',group:'Constancia',name:'Imparable',desc:'Completa 10 entrenamientos',target:10,metric:'sessions',tier:'oro',icon:'🏔️',category:'constancia',image:'sin-excusas-diamante.png',xp:250},
+ {id:'sessions-25',group:'Constancia',name:'Disciplina de acero',desc:'Completa 25 entrenamientos',target:25,metric:'sessions',tier:'platino',icon:'🛡️',category:'constancia',image:'leyenda-solido-diamante.png',xp:500},
+ {id:'sessions-50',group:'Constancia',name:'Leyenda SOLIDO',desc:'Completa 50 entrenamientos',target:50,metric:'sessions',tier:'diamante',icon:'👑',category:'constancia',image:'leyenda-de-las-cumbres-diamante.png',xp:1000},
+ {id:'minutes-60',group:'Resistencia',name:'Una hora de esfuerzo',desc:'Acumula 60 minutos entrenando',target:60,metric:'minutes',tier:'bronce',icon:'⏱️',category:'cardio',image:'zonas-cardio-bronce.png',xp:50},
+ {id:'minutes-300',group:'Resistencia',name:'Motor SOLIDO',desc:'Acumula 5 horas de entrenamiento',target:300,metric:'minutes',tier:'plata',icon:'🔥',category:'cardio',image:'motor-solido-platino.png',xp:100},
+ {id:'minutes-1000',group:'Resistencia',name:'Resistencia infinita',desc:'Acumula 1.000 minutos',target:1000,metric:'minutes',tier:'oro',icon:'⚡',category:'cardio',image:'resistencia-infinita-oro.png',xp:250},
+ {id:'force-1',group:'Fuerza',name:'Agarre de acero',desc:'Registra tu primera medición con WH-C06',target:1,metric:'force',tier:'bronce',icon:'✊',category:'escalada-fuerza',image:'primer-agarre-bronce.png',xp:50},
+ {id:'force-10',group:'Fuerza',name:'Dedos de hierro',desc:'Registra 10 mediciones de fuerza',target:10,metric:'force',tier:'plata',icon:'🧗',category:'escalada-fuerza',image:'agarre-plata.png',xp:100},
+ {id:'force-25',group:'Fuerza',name:'Rey de la pared',desc:'Registra 25 mediciones de fuerza',target:25,metric:'force',tier:'oro',icon:'🏆',category:'escalada-fuerza',image:'rey-de-la-pared-oro.png',xp:250},
+ {id:'meditation-1',group:'Mente y recuperación',name:'Un momento para mí',desc:'Completa una sesión de meditación registrada',target:1,metric:'meditation',tier:'bronce',icon:'🧘',category:'meditacion',image:'un-momento-para-mi-bronce.png',xp:50},
+ {id:'meditation-5',group:'Mente y recuperación',name:'Mente tranquila',desc:'Completa 5 sesiones de meditación registradas',target:5,metric:'meditation',tier:'plata',icon:'🌿',category:'meditacion',image:'mente-tranquila-plata.png',xp:100},
+ {id:'steps-5000',group:'Actividad diaria',name:'Primeros pasos',desc:'Alcanza 5.000 pasos en el día',target:5000,metric:'steps',tier:'bronce',icon:'👣',category:'senderismo',image:'primer-sendero-bronce.png',xp:50},
+ {id:'steps-10000',group:'Actividad diaria',name:'Explorador diario',desc:'Alcanza 10.000 pasos en el día',target:10000,metric:'steps',tier:'oro',icon:'🥾',category:'senderismo',image:'explorador-plata.png',xp:250},
+ {id:'distance-5',group:'Actividad diaria',name:'Kilómetros en marcha',desc:'Recorre 5 km en el día según Health Connect',target:5,metric:'distance',tier:'plata',icon:'🏃',category:'senderismo',image:'distancia-5km-10km-bronce.png',xp:100}
 ];
 let achievementHealth={steps:0,distance:0};
 let achievementUnlocked=(()=>{try{return JSON.parse(localStorage.getItem('solidoAchievementUnlocked')||'{}');}catch(e){return {};}})();
@@ -5694,7 +5695,7 @@ function renderAchievements(){
  if(unlockedEl)unlockedEl.textContent=unlocked;
  if(xpEl)xpEl.textContent=xp.toLocaleString('es-ES');
  if(levelEl)levelEl.textContent=level;
- host.innerHTML=Object.entries(groups).map(([group,items])=>'<div class="ach-group"><h3>'+group+'</h3><div class="ach-grid">'+items.map(({a,value,done})=>'<article class="ach-card '+(done?'unlocked':'locked')+'" data-tier="'+a.tier+'"><div class="ach-medal">'+(done?a.icon:'🔒')+'</div><div class="ach-copy"><strong>'+a.name+'</strong><small>'+a.desc+'</small><div class="ach-progress"><i style="width:'+Math.min(100,value/a.target*100)+'%"></i></div><small>'+Math.min(value,a.target).toLocaleString('es-ES')+' / '+a.target.toLocaleString('es-ES')+'</small><div class="ach-xp">'+(done?'Conseguido · ':'')+'+'+a.xp+' XP · '+a.tier.toUpperCase()+'</div></div></article>').join('')+'</div></div>').join('');
+ host.innerHTML=Object.entries(groups).map(([group,items])=>'<div class="ach-group"><h3>'+group+'</h3><div class="ach-grid">'+items.map(({a,value,done})=>'<article class="ach-card '+(done?'unlocked':'locked')+'" data-tier="'+a.tier+'"><div class="ach-medal"><img src="achievements/'+a.category+'/'+a.image+'" alt="Medalla '+a.name+'" loading="lazy" onerror="this.style.display=\'none\'"></div><div class="ach-copy"><strong>'+a.name+'</strong><small>'+a.desc+'</small><div class="ach-progress"><i style="width:'+Math.min(100,value/a.target*100)+'%"></i></div><small>'+Math.min(value,a.target).toLocaleString('es-ES')+' / '+a.target.toLocaleString('es-ES')+'</small><div class="ach-xp">'+(done?'Conseguido · ':'')+'+'+a.xp+' XP · '+a.tier.toUpperCase()+'</div></div></article>').join('')+'</div></div>').join('');
 }
 
 function healthConnectRefresh(){
