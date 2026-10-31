@@ -2488,6 +2488,7 @@ body.br-fullscreen-active .sg-close{display:flex}
   min-height:100dvh!important;
   justify-content:flex-end!important;
   padding:clamp(14px,2.5vh,24px) 14px max(16px,env(safe-area-inset-bottom))!important;
+  transform:translateY(-2vh)!important;
 }
 #gameHub .game-hub-heading{margin-bottom:10px!important}
 #gameHub .game-hub-grid{gap:9px!important}
@@ -2507,7 +2508,7 @@ body.br-fullscreen-active .sg-close{display:flex}
 /* El terreno queda anclado al borde inferior de la pantalla, fuera del mundo móvil. */
 #strengthGame .sg-ground-grass{
   position:absolute!important;z-index:4!important;left:-4%!important;right:0!important;bottom:0!important;
-  height:clamp(38px,9vh,72px)!important;
+  height:clamp(38px,9vh,72px)!important;opacity:1;transition:opacity .4s ease!important;
   background:linear-gradient(180deg,#a9c47d 0%,#648c4a 27%,#294b32 100%)!important;
   border-top:3px solid #dbe5aa!important;
   clip-path:polygon(0 22%,12% 30%,26% 18%,42% 28%,58% 10%,76% 24%,90% 9%,100% 18%,100% 100%,0 100%)!important;
