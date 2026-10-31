@@ -2134,6 +2134,253 @@ body.plan-selection-active #library{padding-bottom:calc(125px + env(safe-area-in
 
 </style>
 
+<style>
+.game-hub-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.game-hub-card{min-width:0;display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:9px;padding:15px;border:1px solid #52634d;border-radius:16px;background:linear-gradient(145deg,#1c2b21,#101713);color:#f4f7ef;cursor:pointer}
+.game-hub-art{width:100%;height:110px;display:grid;place-items:center;border-radius:11px;background:radial-gradient(circle at 50% 35%,#56704b,#1c3025 70%);font-size:58px}
+.game-hub-card strong{font-size:13px;line-height:1.25}.game-hub-card small{font-size:11px;line-height:1.45;color:#b9c6b5;min-height:48px}.game-hub-card b{font-size:10px;color:#c3f36b;letter-spacing:.5px;margin-top:auto}
+#strengthGame.strength-fullscreen-game{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;z-index:99999!important;display:block!important;overflow:hidden!important;background:#08120d!important;padding:0!important;margin:0!important;box-sizing:border-box}
+#strengthGame.strength-fullscreen-game>.sg-shell{height:100dvh;min-height:100dvh;overflow:auto;overscroll-behavior:contain;padding:calc(env(safe-area-inset-top) + 10px) 12px calc(env(safe-area-inset-bottom) + 10px);box-sizing:border-box}
+.sg-close{display:none;position:fixed;top:max(8px,env(safe-area-inset-top));right:10px;z-index:100001;width:38px;height:38px;border:1px solid #ffffff88;border-radius:50%;background:#b33b3b;color:#fff;font-size:25px;line-height:1}
+body.br-fullscreen-active .sg-close{display:block}
+.sg-shell{position:relative;max-width:650px;margin:0 auto;color:#f5f7ef}
+.sg-top{text-align:center;padding:8px 0 12px;display:flex;flex-direction:column;gap:4px}.sg-top span{font-size:9px;letter-spacing:2px;color:#c3f36b}.sg-top strong{font-size:22px;letter-spacing:.5px}.sg-top small{font-size:10px;color:#a8b6a6}
+.sg-scoreboard{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:5px 0 10px}.sg-scoreboard>div{padding:9px;border:1px solid #344638;border-radius:10px;background:#111c14;min-width:0}.sg-scoreboard span,.sg-scoreboard small{display:block;font-size:9px;color:#a9b7a7}.sg-scoreboard strong{display:block;font-size:20px;color:#d2fa91;margin:3px 0}.sg-scoreboard small b{color:#fff}
+.sg-mountain-scene{height:min(53vh,440px);min-height:300px;position:relative;overflow:hidden;border:1px solid #536d51;border-radius:15px;background:linear-gradient(#142b38 0%,#42616a 53%,#9aab86 100%);isolation:isolate}
+.sg-sky-glow{position:absolute;width:130px;height:130px;border-radius:50%;background:#f6e8a9;opacity:.45;right:13%;top:8%;filter:blur(3px)}
+.sg-mountain-back{position:absolute;inset:14% -10% 0;background:#536c62;clip-path:polygon(0 100%,15% 56%,27% 71%,46% 10%,61% 51%,75% 31%,100% 100%);opacity:.8}
+.sg-mountain-front{position:absolute;inset:24% -8% 0;background:linear-gradient(135deg,#a5ad91,#536e57 68%,#263e32);clip-path:polygon(0 100%,13% 75%,29% 81%,45% 0,59% 36%,72% 28%,100% 100%);border-top:2px solid #d5dfc0}
+.sg-mountain-front:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(130deg,transparent 0 30px,#e7f0dc20 31px 33px)}
+.sg-summit-flag{position:absolute;z-index:2;left:43%;top:20%;font-size:24px;filter:drop-shadow(0 2px 3px #0008)}
+.sg-climber{position:absolute;z-index:4;left:39%;width:54px;height:78px;display:grid;place-items:center;font-size:42px;line-height:1;transition:bottom .08s linear;filter:drop-shadow(0 4px 5px #000b)}
+.sg-record-climber{z-index:3;filter:grayscale(1) drop-shadow(0 0 5px #fff);opacity:.28}.sg-current-climber{z-index:4}
+.sg-climber-tag{position:absolute;z-index:5;left:calc(39% + 48px);font-size:8px;font-weight:900;letter-spacing:.5px;padding:3px 5px;border-radius:5px;background:#07110bd9;color:#fff}
+.sg-record-tag{bottom:calc(16px + 66%);opacity:.85}.sg-current-tag{bottom:19px;color:#d5ff9d}
+.sg-force-bar{position:absolute;z-index:7;top:65px;bottom:24px;right:10px;width:34px;border-radius:12px;background:#07120dd9;border:1px solid #d4e9c255;overflow:hidden;display:flex;align-items:flex-end}
+.sg-force-bar div{width:100%;height:0;background:linear-gradient(0deg,#39d9a0,#b5fa4a 60%,#ffbd4a 84%,#ff635d);transition:height .06s;box-shadow:0 0 12px #9df65377}
+.sg-force-value{position:absolute;z-index:8;right:4px;top:36px;width:48px;text-align:center;font-size:9px;font-weight:900;color:#fff;text-shadow:0 1px 4px #000}
+.sg-summit-cloud{position:absolute;z-index:5;left:27%;top:0;width:42%;height:28%;background:radial-gradient(ellipse at 50% 65%,#e7f0e5 0 22%,#c6d5d0 45%,#9db4b5aa 70%,transparent 72%);filter:blur(2px);transition:opacity .5s}
+.sg-summit-flag{opacity:0;transition:opacity .5s}.sg-scene-bottom{z-index:2}
+.sg-message{left:8px;right:54px}
+.sg-fireworks{position:absolute;z-index:12;inset:0;pointer-events:none;overflow:hidden;display:none}
+.sg-fireworks.active{display:block}
+.sg-firework{position:absolute;width:6px;height:6px;border-radius:50%;animation:sg-burst 1.15s ease-out forwards;box-shadow:0 0 8px 3px currentColor}
+@keyframes sg-burst{0%{transform:translate(0,0) scale(.1);opacity:1}55%{opacity:1}100%{transform:translate(var(--fx),var(--fy)) scale(.55);opacity:0}}
+.sg-victory-banner{position:absolute;z-index:11;inset:0;display:none;place-content:center;text-align:center;background:#06110b99;padding:20px}
+.sg-victory-banner.active{display:grid;animation:sg-victory-in .5s ease-out}
+.sg-victory-banner strong{font-size:clamp(30px,9vw,54px);font-weight:1000;color:#e4ff9b;text-shadow:0 0 16px #c3f36b,0 4px 8px #000}
+.sg-victory-banner span{font-size:15px;font-weight:900;color:#fff;margin-top:8px;text-shadow:0 2px 5px #000}
+@keyframes sg-victory-in{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+.sg-connect-panel{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px;border:1px solid #354739;border-radius:12px;background:#111b14;margin:8px 0 10px}
+.sg-connect-state{display:flex;align-items:center;gap:7px;font-size:11px;color:#d8e5d2}
+.sg-connect-dot{width:9px;height:9px;border-radius:50%;background:#68766a}.sg-connect-dot.connected{background:#8df05b;box-shadow:0 0 10px #8df05b}
+.sg-connect-panel .btn{padding:9px 12px;font-size:11px}
+.sg-climb-level{position:absolute;z-index:6;left:8px;bottom:26px;max-width:calc(100% - 58px);padding:6px 8px;border-radius:8px;background:#06110bd9;color:#fff;font-size:10px;font-weight:900}
+.sg-summit-reached .sg-summit-cloud{opacity:0}.sg-summit-reached .sg-summit-flag{opacity:1}
+.sg-summit-reached .sg-current-climber{font-size:44px;transform:rotate(-8deg) scale(1.12)}
+.sg-game-controls{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:10px}
+.sg-game-controls .sg-scale{min-width:0}
+@media(max-width:390px){.sg-climber{left:35%;width:48px}.sg-climber-tag{left:calc(35% + 43px)}.sg-force-bar{right:7px;width:30px}.sg-force-value{right:0}.sg-message{right:45px}.sg-climb-level{max-width:calc(100% - 48px)}}
+.sg-record-climber{z-index:3;filter:grayscale(1) drop-shadow(0 0 5px #fff);opacity:.28}.sg-current-climber{z-index:4}
+.sg-climber-tag{position:absolute;z-index:5;left:calc(42% + 34px);font-size:8px;font-weight:900;letter-spacing:.5px;padding:3px 5px;border-radius:5px;background:#07110bd9;color:#fff}
+.sg-record-tag{bottom:calc(16px + 66%);opacity:.85}.sg-current-tag{bottom:19px;color:#d5ff9d}
+.sg-scene-bottom{position:absolute;bottom:0;left:0;right:0;height:15px;background:#273e2d;border-top:2px solid #8fa77d}
+.sg-force-bar{position:absolute;z-index:6;bottom:22px;left:12px;right:12px;height:7px;border-radius:6px;background:#17271d;overflow:hidden}.sg-force-bar div{height:100%;width:0;background:linear-gradient(90deg,#45c77c,#c3f36b,#ffe36e);transition:width .08s}
+.sg-message{position:absolute;z-index:7;top:10px;left:8px;right:8px;text-align:center;font-weight:1000;font-size:clamp(14px,4vw,20px);color:#f7ffe9;text-shadow:0 2px 6px #07110d}
+.sg-overlay{position:absolute;z-index:8;inset:0;display:grid;place-content:center;gap:10px;text-align:center;padding:24px;background:#06110bd9}.sg-overlay strong{font-size:22px;color:#d2fa91}.sg-overlay span{font-size:12px;line-height:1.5;color:#edf4e8;max-width:280px;margin:auto}
+.sg-record-line{text-align:center;margin:10px 0;color:#c3f36b;font-size:10px;font-weight:800;letter-spacing:.5px}
+.sg-controls{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:10px}.sg-scale{padding:10px;border:1px solid #354739;border-radius:10px;background:#111b14}.sg-scale label{display:block;font-size:9px;color:#aab8a8}.sg-scale strong{display:block;font-size:13px;color:#d4f7a2;margin:4px 0}.sg-scale input{width:100%;accent-color:#c3f36b}.sg-scale small{font-size:9px;color:#91a18f}.sg-time{font-size:9px;color:#aab8a8;text-align:center}.sg-time strong{display:block;font-size:20px;color:#fff;margin-top:5px}
+.sg-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.sg-actions .btn{min-width:0}.sg-actions .btn:first-child{grid-column:1/-1}.sg-actions button:disabled{opacity:.4}
+.sg-status{text-align:center;color:#aab8a8;font-size:10px;line-height:1.45;margin:10px 0}
+.sg-record-modal{position:absolute;z-index:20;inset:0;display:grid;place-items:center;background:#020804e8;padding:20px}.sg-record-modal form{width:min(100%,330px);display:flex;flex-direction:column;gap:12px;padding:20px;border:1px solid #c3f36b;border-radius:15px;background:#17251a;box-shadow:0 12px 45px #000b}.sg-record-modal strong{text-align:center;font-size:21px;color:#d3fa91}.sg-record-modal span{text-align:center;font-size:12px;line-height:1.5}.sg-record-modal input{width:100%;padding:12px;border:1px solid #65785e;border-radius:8px;background:#0c150e;color:#fff;font-size:16px;box-sizing:border-box}
+@media(max-width:390px){.game-hub-grid{gap:8px}.game-hub-card{padding:10px}.game-hub-art{height:90px}.sg-mountain-scene{min-height:280px}.sg-scoreboard strong{font-size:17px}}
+</style>
+<style id="sg-camera-fullscreen-polish">
+body.br-fullscreen-active{overflow:hidden!important;padding-bottom:0!important}
+#strengthGame.strength-fullscreen-game{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;z-index:99999!important;display:block!important;overflow:hidden!important;background:#071019!important;padding:0!important;margin:0!important}
+#strengthGame.strength-fullscreen-game>.sg-shell{width:100%;max-width:none;height:100%;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:calc(env(safe-area-inset-top) + 7px) 10px calc(env(safe-area-inset-bottom) + 14px);scrollbar-width:none}
+#strengthGame.strength-fullscreen-game{display:block!important;visibility:visible!important;}
+#strengthGame.strength-fullscreen-game .sg-connect-panel{display:flex;flex-direction:column;gap:6px}
+#strengthGame.strength-fullscreen-game .sg-connect-panel .home-connect-btn{width:100%;min-height:42px;justify-content:center}
+#strengthGame.strength-fullscreen-game>.sg-shell::-webkit-scrollbar{display:none}
+#strengthGame.strength-fullscreen-game .sg-top{padding:3px 44px 7px 4px;min-height:50px;justify-content:center}
+#strengthGame.strength-fullscreen-game .sg-top strong{font-size:clamp(19px,5vw,25px);letter-spacing:1px}
+#strengthGame.strength-fullscreen-game .sg-connect-panel{margin:4px 0 7px;padding:7px 9px}
+#strengthGame.strength-fullscreen-game .sg-scoreboard{margin:5px 0 7px;gap:7px}
+#strengthGame.strength-fullscreen-game .sg-scoreboard>div{padding:7px 9px}
+#strengthGame.strength-fullscreen-game .sg-mountain-scene{height:56dvh;min-height:330px;max-height:620px;border-radius:13px;border:1px solid #77929a;background:linear-gradient(#071a2c,#356276 55%,#a9b8a0);box-shadow:0 10px 30px #0008}
+.sg-close{display:none;position:fixed;top:max(7px,env(safe-area-inset-top));right:9px;z-index:100001;width:32px;height:32px;border:1px solid #ffffffaa;border-radius:50%;background:#d53d4b;color:#fff;font-size:23px;font-weight:900;line-height:1;box-shadow:0 3px 12px #0009;align-items:center;justify-content:center;padding:0}
+body.br-fullscreen-active .sg-close{display:flex}
+.sg-shell{max-width:760px}
+.sg-mountain-scene{position:relative;isolation:isolate;overflow:hidden}
+.sg-world{position:absolute;z-index:1;left:0;right:0;top:0;height:200%;overflow:hidden;transform:translateY(calc((1 - var(--sg-progress, 0)) * -50%));transition:transform .28s cubic-bezier(.2,.7,.2,1);background:linear-gradient(180deg,#102b40 0%,#416b78 40%,#9ba98d 100%)}
+.sg-world:before{content:"";position:absolute;inset:0;background-image:radial-gradient(#fff9 1px,transparent 1.5px),radial-gradient(#d9f3ff77 1px,transparent 1.5px);background-size:71px 83px,113px 107px;background-position:8px 14px,42px 61px;opacity:.4}
+.sg-sky-glow{position:absolute;width:145px;height:145px;border-radius:50%;background:#fff0bd;opacity:.6;right:12%;top:12%;filter:blur(5px)}
+.sg-mountain-back{position:absolute;inset:15% -15% 0;background:linear-gradient(145deg,#718b84,#294b49 80%);clip-path:polygon(0 100%,0 61%,13% 52%,25% 60%,42% 29%,55% 41%,68% 10%,82% 35%,100% 18%,100% 100%);opacity:.95}
+.sg-mountain-front{position:absolute;inset:22% -15% 0;background:linear-gradient(125deg,#c1c6a5 0%,#718b6c 38%,#294b3b 100%);clip-path:polygon(0 100%,0 68%,16% 57%,29% 70%,45% 0%,60% 45%,73% 28%,87% 55%,100% 15%,100% 100%);border-top:2px solid #e3edce}
+.sg-mountain-front:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(132deg,transparent 0 27px,#eff9e022 28px 30px)}
+.sg-world-ridge{position:absolute;left:-10%;right:-10%;top:57%;height:1px;background:#efffe2aa;box-shadow:0 40px 0 #efffe233,0 85px 0 #efffe222,0 130px 0 #efffe222;transform:rotate(-9deg)}
+.sg-summit-cloud{position:absolute;z-index:3;left:28%;top:24%;width:44%;height:11%;background:radial-gradient(ellipse at 50% 65%,#f5fbf0 0 20%,#d7e5e0 45%,#9db4b5aa 70%,transparent 72%);filter:blur(2px);opacity:0;transition:opacity .5s}
+.sg-summit-flag{position:absolute;z-index:4;left:47%;top:27%;font-size:clamp(28px,8vw,42px);filter:drop-shadow(0 3px 4px #000a);opacity:0;transform:scale(.7);transition:opacity .45s,transform .45s}
+#sgScene.sg-summit-near .sg-summit-cloud,#sgScene.sg-summit-near .sg-summit-flag{opacity:1}
+#sgScene.sg-summit-near .sg-summit-flag{transform:scale(1)}
+#sgScene.sg-summit-reached .sg-summit-cloud{opacity:1}
+#sgScene.sg-summit-reached .sg-summit-flag{opacity:1;transform:scale(1.15)}
+.sg-climber{position:absolute;z-index:5;left:calc(50% - 54px);top:53%;bottom:auto!important;width:108px;height:142px;display:flex;align-items:center;justify-content:center;transition:filter .2s;filter:drop-shadow(0 7px 9px #000b)}
+.sg-climber img{width:100%;height:100%;object-fit:contain;display:block}
+.sg-record-climber{z-index:4;filter:grayscale(1) drop-shadow(0 0 7px #fff);opacity:.26}
+.sg-current-climber{z-index:6}
+.sg-overlay.sg-countdown strong{font-size:clamp(76px,22vw,132px);line-height:.95;color:#d7ff75;text-shadow:0 0 22px #b9ff63,0 5px 16px #000;font-variant-numeric:tabular-nums}
+.sg-overlay.sg-countdown span{font-size:clamp(13px,4vw,19px);font-weight:1000;letter-spacing:1.5px}
+ #sgRecordClimber{opacity:1!important;filter:drop-shadow(0 0 8px #42f5d0)!important;}
+ #sgRecordClimber img{filter:sepia(1) saturate(2.2) hue-rotate(125deg) brightness(1.18) contrast(1.12);}
+ #sgRecordTag{color:#8fffea;border-color:#42f5d0;background:#062c2bdc;}
+.sg-climber-tag{position:absolute;z-index:7;left:calc(50% + 40px);top:57%;bottom:auto!important;font-size:9px;font-weight:1000;letter-spacing:.8px;padding:4px 7px;border-radius:7px;background:#07110de8;color:#fff;border:1px solid #ffffff55}
+.sg-record-tag{top:51%;left:calc(50% + 42px);opacity:.8}
+.sg-current-tag{color:#d5ff9d}
+.sg-scene-bottom{position:absolute;z-index:2;bottom:0;left:0;right:0;height:17px;background:linear-gradient(#5a744e,#1b392c);border-top:2px solid #d5e4bd}
+.sg-force-value{position:absolute;z-index:9;right:5px;top:8px;width:60px;text-align:center;font-size:10px;font-weight:1000;color:#fff;text-shadow:0 2px 5px #000}
+.sg-force-bar{position:absolute;z-index:8;top:38px;bottom:18px;right:13px;left:auto;width:13px;height:auto;border-radius:10px;background:#06120dcc;border:1px solid #e2f4c566;overflow:hidden;display:flex;align-items:flex-end}
+.sg-force-bar div{width:100%;height:0;background:linear-gradient(0deg,#39d9a0,#b5fa4a 60%,#ffbd4a 84%,#ff635d);transition:height .08s}
+.sg-climb-level{position:absolute;z-index:10;left:9px;right:45px;bottom:12px;max-width:none;padding:10px 13px;border:1px solid #fff8;border-radius:12px;background:linear-gradient(110deg,#081a25ed,#173e43ed 58%,#60421be8);box-shadow:0 0 20px #b8ff6a55,inset 0 0 16px #ffffff12;text-align:left;color:#fff;display:flex;flex-direction:column;gap:2px;min-height:58px;justify-content:center}
+.sg-climb-level span{font-size:10px;font-weight:1000;letter-spacing:2px;color:#d5ff73}
+.sg-climb-level strong{font-size:clamp(14px,3.8vw,20px);line-height:1.12;font-weight:1000;text-shadow:0 2px 6px #000,0 0 12px #d6ff73aa}
+.sg-climb-level.sg-level-pop{animation:sg-level-impact .62s cubic-bezier(.16,.9,.24,1)}
+@keyframes sg-level-impact{0%{transform:scale(.78) translateY(14px);opacity:.25;filter:brightness(2)}45%{transform:scale(1.07);opacity:1;filter:brightness(1.5)}100%{transform:scale(1);filter:brightness(1)}}
+.sg-message{top:10px;left:10px;right:48px;text-align:left;font-size:clamp(11px,3vw,14px);font-weight:900;color:#fff;text-shadow:0 2px 6px #000}
+.sg-overlay{z-index:15}.sg-fireworks{z-index:20}.sg-victory-banner{z-index:19}
+#strengthGame.strength-fullscreen-game .sg-game-controls{margin-top:8px;gap:8px}
+#strengthGame.strength-fullscreen-game .sg-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+#strengthGame.strength-fullscreen-game .sg-actions .btn{flex:1 1 30%;min-width:0;padding:11px 8px;font-size:12px}
+#strengthGame.strength-fullscreen-game .sg-status{margin:7px 0 4px;font-size:11px}
+@media(max-width:420px){.sg-climber{left:calc(50% - 47px);width:94px;height:126px}.sg-climber-tag{left:calc(50% + 31px)}.sg-record-tag{left:calc(50% + 32px)}#strengthGame.strength-fullscreen-game .sg-mountain-scene{height:54dvh;min-height:310px}.sg-climb-level{right:43px}}
+@media(min-width:700px){#strengthGame.strength-fullscreen-game>.sg-shell{max-width:900px;margin:auto}.sg-climber{width:130px;height:170px;left:calc(50% - 65px)}}
+</style>
+<style>
+/* SOLIDO CLIMBING · HUD de juego, montaña larga y termómetro vertical */
+#strengthGame.strength-fullscreen-game{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;z-index:99999!important;display:block!important;overflow:hidden!important;background:#07130e!important;padding:0!important;margin:0!important}
+#strengthGame.strength-fullscreen-game>.sg-shell{width:100%;max-width:none;height:100dvh;min-height:100dvh;padding:0;margin:0;overflow:hidden;position:relative}
+#strengthGame.strength-fullscreen-game .sg-top{display:none}
+.sg-mountain-scene{height:min(72vh,760px);min-height:480px;border-radius:0; border:0}
+.sg-world{height:400%;transform:translateY(-75%);transition:none;background:linear-gradient(180deg,#102b40 0%,#315e6a 24%,#617b75 50%,#9ba98d 75%,#243b31 100%);background-size:100% 100%}
+.sg-world:before{background-size:71px 83px,113px 107px,100% 240px;opacity:.48}
+.sg-mountain-back{inset:3% -18% 0;background:linear-gradient(145deg,#78958b,#294b49 80%);clip-path:polygon(0 100%,0 68%,13% 52%,25% 60%,42% 29%,55% 41%,68% 10%,82% 35%,100% 18%,100% 100%)}
+.sg-mountain-front{inset:7% -18% 0;background:linear-gradient(125deg,#c1c6a5 0%,#718b6c 38%,#294b3b 100%);clip-path:polygon(0 100%,0 68%,16% 57%,29% 70%,47% 31%,60% 45%,73% 0%,87% 29%,100% 15%,100% 100%)}
+.sg-world-ridge{position:absolute;left:-10%;right:-10%;top:25%;height:2px;background:#efffe2aa;box-shadow:0 110px 0 #efffe255,0 230px 0 #efffe244,0 360px 0 #efffe233,0 510px 0 #efffe244,0 680px 0 #efffe233,0 860px 0 #efffe244,0 1050px 0 #efffe233;transform:rotate(-9deg)}
+.sg-ridge-two{top:52%;transform:rotate(7deg);opacity:.65}.sg-ridge-three{top:78%;transform:rotate(-5deg);opacity:.55}
+.sg-summit-cloud{top:1%;height:18%}.sg-summit-flag{top:5%}
+.sg-climber{left:38%;width:clamp(56px,16vw,82px);height:clamp(80px,22vw,112px);transition:top .10s linear;will-change:top;filter:drop-shadow(0 5px 7px #000c)}
+.sg-record-climber{z-index:3}.sg-current-climber{z-index:4}
+.sg-climber-tag{left:calc(38% + clamp(48px,14vw,70px));}
+.sg-game-hud{position:absolute;z-index:10;top:max(8px,env(safe-area-inset-top));left:8px;right:58px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin:0;pointer-events:none}
+.sg-game-hud>div{padding:7px 5px;border:1px solid #c8e5c65c;border-radius:10px;background:#07150dcc;backdrop-filter:blur(7px);min-width:0}
+.sg-game-hud span,.sg-game-hud small{font-size:clamp(7px,2vw,9px);color:#d3e2d0;display:block;line-height:1.2}
+.sg-game-hud strong{font-size:clamp(13px,4vw,19px);color:#e0ff9c;display:block;margin:3px 0;white-space:nowrap}
+.sg-game-hud small b{color:#fff}
+.sg-thermometer{position:absolute;z-index:9;right:8px;top:100px;bottom:42px;width:46px;display:flex;flex-direction:column;align-items:center;gap:5px;pointer-events:none}
+.sg-thermo-track{position:relative;width:22px;flex:1;min-height:140px;border-radius:16px;background:linear-gradient(90deg,#09150f,#243b30 45%,#07120d);border:2px solid #d6efbd99;box-shadow:inset 0 0 8px #000c,0 0 12px #a6ef7344;overflow:visible}
+.sg-thermo-fill{position:absolute;bottom:0;left:2px;right:2px;height:0;border-radius:0 0 12px 12px;background:linear-gradient(0deg,#31d99b,#b7f64b 60%,#ffb84d 85%,#ff574e);box-shadow:0 0 10px #a7f64d99;transition:height .07s linear}
+.sg-thermo-ball{position:absolute;z-index:3;left:50%;bottom:0;width:28px;height:28px;transform:translate(-50%,50%);border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#e8ff8a 28%,#83d83e 64%,#397d2b);border:2px solid #f3ffce;box-shadow:0 0 13px #c5ff5b,0 2px 7px #000a;transition:bottom .07s linear}
+.sg-force-value{position:static;width:auto;font-size:10px;text-align:center;order:2}
+.sg-thermometer>small{font-size:8px;color:#fff;font-weight:900;letter-spacing:1px}
+#sgScene.sg-thermo-broken .sg-thermo-track{border-color:#ff6a62;box-shadow:0 0 15px #ff554f,inset 0 0 8px #000}
+#sgScene.sg-thermo-broken .sg-thermo-track:before,#sgScene.sg-thermo-broken .sg-thermo-track:after{content:"";position:absolute;z-index:5;top:8%;left:-6px;width:34px;height:3px;background:#ff6a62;transform:rotate(34deg);box-shadow:0 0 8px #ff5b52}
+#sgScene.sg-thermo-broken .sg-thermo-track:after{top:23%;transform:rotate(-38deg)}
+#sgScene.sg-thermo-broken .sg-thermo-ball{background:radial-gradient(circle at 35% 30%,#fff,#ffad75 30%,#e53232 70%);box-shadow:0 0 18px #ff332b;animation:sg-thermo-break .38s ease-out 2 alternate}
+@keyframes sg-thermo-break{to{transform:translate(-50%,50%) rotate(24deg) scale(1.22)}}
+.sg-climb-level{top:auto;bottom:54px;left:8px;right:60px;max-width:none}
+.sg-message{top:auto;bottom:12px;left:8px;right:60px;font-size:clamp(12px,3.5vw,18px)}
+.sg-record-line{position:absolute;z-index:8;left:8px;right:60px;bottom:84px;margin:0;color:#e0ff9c;text-shadow:0 2px 5px #000;font-size:9px}
+.sg-scene-bottom{display:none}
+.sg-overlay{z-index:15}
+.sg-overlay.sg-countdown{background:#06110b55;backdrop-filter:none}
+.sg-overlay.sg-countdown strong{font-size:clamp(68px,22vw,120px);color:#fff;text-shadow:0 0 24px #c3f36b,0 5px 14px #000}
+.sg-overlay.sg-countdown span{font-size:clamp(14px,4.5vw,22px);font-weight:1000;color:#e6ffad}
+.sg-overlay.sg-ready-call strong{font-size:clamp(32px,10vw,56px);color:#fff;text-shadow:0 0 18px #c3f36b,0 5px 14px #000}
+.sg-game-controls{margin:8px 12px}
+#strengthGame.sg-playing .sg-top,#strengthGame.sg-playing .sg-game-controls,#strengthGame.sg-playing .sg-actions,#strengthGame.sg-playing .sg-status{display:none!important}
+#strengthGame.sg-playing .sg-mountain-scene{height:100dvh;min-height:100dvh;width:100vw}
+#strengthGame.sg-playing .sg-game-hud{top:max(10px,env(safe-area-inset-top))}
+#strengthGame.sg-playing .sg-close{display:block}
+@media(max-width:390px){.sg-game-hud{left:6px;right:54px;gap:4px}.sg-game-hud>div{padding:6px 3px}.sg-thermometer{right:5px;width:40px}.sg-climber{left:34%}.sg-climber-tag{left:calc(34% + 44px)}}
+
+/* REDISEÑO DE MONTAÑA: pared alpina rocosa, crestas y nieve */
+.sg-world{background:linear-gradient(180deg,#6f9aa5 0%,#b6c8bd 17%,#607e76 42%,#354f43 72%,#172c25 100%)!important}
+.sg-world:before{background-image:linear-gradient(155deg,transparent 0 47%,#f1f3df12 47.2% 47.8%,transparent 48%),linear-gradient(25deg,transparent 0 61%,#071d1b33 61.2% 62%,transparent 62.2%),radial-gradient(ellipse at 50% 12%,#fff7 0 1px,transparent 2px);background-size:100% 360px,100% 440px,100% 100%;opacity:.85}
+.sg-sky-glow{width:180px;height:180px;background:#fff4d8;opacity:.45;right:8%;top:7%;filter:blur(18px)}
+.sg-mountain-back{inset:2% -22% 0!important;opacity:1!important;background:linear-gradient(112deg,#263f40 0%,#526e68 28%,#81978b 47%,#3b5953 70%,#203a35 100%)!important;clip-path:polygon(0 100%,0 57%,8% 49%,15% 58%,24% 39%,32% 47%,42% 14%,49% 25%,58% 5%,66% 32%,76% 19%,85% 39%,94% 28%,100% 43%,100% 100%)!important}
+.sg-mountain-back:before{content:"";position:absolute;inset:0;background:linear-gradient(132deg,transparent 0 38%,#e1e8d8 38.2% 39.2%,transparent 39.5%),linear-gradient(48deg,transparent 0 56%,#dce5d7 56.2% 57%,transparent 57.3%),linear-gradient(160deg,transparent 0 66%,#142e2c88 66.2% 67%,transparent 67.3%);clip-path:polygon(0 100%,0 57%,8% 49%,15% 58%,24% 39%,32% 47%,42% 14%,49% 25%,58% 5%,66% 32%,76% 19%,85% 39%,94% 28%,100% 43%,100% 100%)}
+.sg-mountain-front{inset:7% -22% 0!important;border:0!important;background:linear-gradient(112deg,#d0d1b5 0%,#9cae98 18%,#6b8876 38%,#3d5e50 67%,#1e392f 100%)!important;clip-path:polygon(0 100%,0 67%,12% 58%,22% 72%,34% 42%,42% 53%,54% 0%,63% 22%,72% 12%,81% 40%,91% 27%,100% 46%,100% 100%)!important}
+.sg-mountain-front:before{content:"";position:absolute;inset:0;background:linear-gradient(140deg,#f5f4dc 0 10%,#d9e0cf 10.5% 18%,transparent 18.5%),linear-gradient(35deg,transparent 0 43%,#e2e5d3 43.3% 47%,transparent 47.5%),linear-gradient(150deg,transparent 0 28%,#233f37aa 28.2% 29%,transparent 29.5%),linear-gradient(30deg,transparent 0 64%,#142d2b99 64.2% 65%,transparent 65.5%);clip-path:polygon(0 100%,0 67%,12% 58%,22% 72%,34% 42%,42% 53%,54% 0%,63% 22%,72% 12%,81% 40%,91% 27%,100% 46%,100% 100%)}
+.sg-mountain-front:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(118deg,transparent 0 42px,#f0f1dc20 43px 45px,transparent 46px 87px),linear-gradient(72deg,transparent 0 44%,#122d2b45 44.2% 45%,transparent 45.2%);clip-path:polygon(0 100%,0 67%,12% 58%,22% 72%,34% 42%,42% 53%,54% 0%,63% 22%,72% 12%,81% 40%,91% 27%,100% 46%,100% 100%)}
+.sg-world-ridge{left:-12%;right:-12%;top:30%;height:3px;background:linear-gradient(90deg,transparent,#dce5d0aa 18%,#263f35 45%,#dce5d055 72%,transparent);box-shadow:0 160px 0 #e2e8d033,0 390px 0 #e2e8d022,0 640px 0 #e2e8d033,0 920px 0 #e2e8d022;transform:rotate(-12deg)}
+.sg-ridge-two,.sg-ridge-three{opacity:.3}
+.sg-summit-cloud{left:32%;top:-1%;width:36%;height:17%;opacity:0}
+.sg-summit-flag{left:42%;top:4%;font-size:clamp(30px,9vw,46px)}
+
+/* ESCENARIO EL RETO DE LA CIMA: pared vertical de escalada */
+.sg-world{background:linear-gradient(180deg,#85b6c7 0%,#b9d5d1 20%,#dce4cf 42%,#c5d6b8 72%,#8ca66e 100%)!important}
+.sg-world:before{content:"";position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse at 12% 14%,#fff9 0 1px,transparent 2px),radial-gradient(ellipse at 32% 39%,#fff8 0 1px,transparent 2px),linear-gradient(180deg,transparent 0 80%,#7c9a61 80.2% 100%);background-size:83px 97px,113px 121px,100% 100%;opacity:.55}
+.sg-mountain-back,.sg-mountain-front,.sg-world-ridge{display:none!important}
+.sg-cliff-wall{position:absolute;z-index:1;top:0;right:-2%;width:61%;height:100%;overflow:hidden;background:linear-gradient(105deg,#553b2b 0%,#8a6244 10%,#bd9468 19%,#896344 36%,#b58a5c 53%,#765239 76%,#493323 100%);clip-path:polygon(36% 0,100% 0,100% 100%,0 100%,8% 93%,5% 85%,13% 77%,9% 68%,18% 60%,13% 52%,24% 44%,18% 35%,29% 27%,25% 18%,39% 10%);box-shadow:-15px 0 30px #243b2d66}
+.sg-cliff-wall:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(172deg,transparent 0 47px,#4b302638 48px 51px,transparent 53px 91px),repeating-linear-gradient(78deg,transparent 0 62px,#f0d2a044 63px 66px,transparent 68px 116px),linear-gradient(115deg,#f4d7a2aa 0 2%,transparent 14% 34%,#4b2e20aa 35% 37%,transparent 55% 72%,#f6dfb566 73% 75%,transparent 85%);opacity:.8}
+.sg-cliff-wall:after{content:"";position:absolute;inset:0;background:linear-gradient(145deg,transparent 0 12%,#e7c79a 12.2% 12.8%,transparent 13.1%),linear-gradient(25deg,transparent 0 27%,#4d302699 27.2% 28%,transparent 28.3%),linear-gradient(155deg,transparent 0 49%,#e7c99eaa 49.2% 49.8%,transparent 50.1%),linear-gradient(35deg,transparent 0 68%,#50332299 68.2% 69%,transparent 69.3%);mix-blend-mode:soft-light}
+.sg-cliff-ledge{position:absolute;left:-1%;right:0;top:0;height:100%;background:repeating-linear-gradient(165deg,transparent 0 112px,#293c35aa 113px 117px,transparent 119px 178px);clip-path:polygon(0 100%,8% 93%,5% 85%,13% 77%,9% 68%,18% 60%,13% 52%,24% 44%,18% 35%,29% 27%,25% 18%,39% 10%,36% 0,0 0)}
+.sg-cliff-summit{position:absolute;top:0;left:34%;width:66%;height:12%;background:linear-gradient(180deg,#e8d4b0,#ad8058 55%,#64432e);clip-path:polygon(0 100%,12% 62%,25% 73%,41% 28%,56% 44%,69% 0,82% 27%,100% 15%,100% 100%)}
+.sg-ground-grass{position:absolute;z-index:2;left:-4%;right:0;bottom:0;height:9%;background:linear-gradient(180deg,#9bb477 0%,#567c42 26%,#274b32 100%);border-top:3px solid #d0d7a2;clip-path:polygon(0 22%,12% 30%,26% 18%,42% 28%,58% 10%,76% 24%,90% 9%,100% 18%,100% 100%,0 100%)}
+.sg-ground-grass i{position:absolute;bottom:58%;width:3px;height:30px;background:#c6d28d;transform-origin:bottom;transform:rotate(-25deg);border-radius:100%}
+.sg-ground-grass i:nth-child(1){left:7%;height:26px}.sg-ground-grass i:nth-child(2){left:15%;height:18px;transform:rotate(22deg)}.sg-ground-grass i:nth-child(3){left:23%;height:31px}.sg-ground-grass i:nth-child(4){left:31%;height:20px;transform:rotate(28deg)}.sg-ground-grass i:nth-child(5){left:40%;height:27px}.sg-ground-grass i:nth-child(6){left:51%;height:22px;transform:rotate(20deg)}.sg-ground-grass i:nth-child(7){left:63%;height:32px}.sg-ground-grass i:nth-child(8){left:75%;height:21px;transform:rotate(27deg)}.sg-ground-grass i:nth-child(9){left:87%;height:28px}.sg-ground-grass i:nth-child(10){left:95%;height:17px;transform:rotate(22deg)}
+.sg-wall-cloud{position:absolute;z-index:2;width:145px;height:56px;border-radius:50%;background:radial-gradient(ellipse at 35% 60%,#fff 0 24%,#f4faf3 25% 48%,#d7e5e0bb 68%,transparent 72%);filter:blur(1px);opacity:.8}
+.sg-wall-cloud-one{top:21%;left:5%}.sg-wall-cloud-two{top:49%;left:28%;transform:scale(.78)}.sg-wall-cloud-three{top:72%;left:1%;transform:scale(.62)}
+.sg-bird{position:absolute;z-index:3;color:#233b3a;font-size:50px;font-weight:900;line-height:1;transform:rotate(-10deg);text-shadow:0 1px 1px #fff7}
+.sg-bird-one{top:16%;left:17%;font-size:43px}.sg-bird-two{top:37%;left:6%;font-size:35px;transform:rotate(8deg)}.sg-bird-three{top:59%;left:29%;font-size:46px}.sg-bird-four{top:79%;left:12%;font-size:31px}
+.sg-summit-cloud{z-index:4;left:50%;top:0;width:38%;height:12%}
+.sg-summit-flag{z-index:5;left:62%;top:2%}
+.sg-climber{z-index:6}
+.sg-record-climber{z-index:5}
+</style>
+<style id="solido-game-hub-rock-theme">
+#gameHub.game-hub-screen{position:relative;isolation:isolate;min-height:calc(100dvh - 82px);margin:-16px -16px 0;padding:0;overflow:hidden;background:#101b1c url('fondo_seleccion_juegos.png.png') center center/cover no-repeat}
+#gameHub.game-hub-screen:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#07131b70 0%,#07131b55 32%,#07120ee8 100%)}
+#gameHub .game-hub-shade{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 25%,#c6e5cf16,transparent 58%),linear-gradient(90deg,#06101635,#06101608 50%,#06101645)}
+#gameHub .game-hub-content{position:relative;z-index:1;min-height:inherit;max-width:760px;margin:0 auto;padding:clamp(22px,6vh,54px) 17px 26px;display:flex;flex-direction:column;justify-content:center}
+#gameHub .game-hub-heading{text-align:center;margin:0 auto 23px;max-width:440px;text-shadow:0 3px 12px #000}
+#gameHub .game-hub-kicker{display:inline-block;color:#d5ff9a;font-size:10px;font-weight:1000;letter-spacing:2px;padding:7px 11px;border:1px solid #d8f2b45c;border-radius:30px;background:#07150dbb}
+#gameHub .game-hub-heading h2{margin:13px 0 7px;font-size:clamp(27px,7vw,39px);line-height:1;color:#fff;font-weight:1000;letter-spacing:1px}
+#gameHub .game-hub-heading p{margin:0;color:#e0e9df;font-size:13px}
+#gameHub .game-hub-grid{display:grid;grid-template-columns:1fr;gap:14px;margin:0 auto;width:100%;max-width:520px}
+#gameHub .game-hub-card{position:relative;display:grid;grid-template-columns:100px minmax(0,1fr);align-items:center;gap:14px;width:100%;min-height:142px;padding:13px;text-align:left;color:#f7f8ed;border:1px solid #d4e5c68a;border-radius:18px;background:linear-gradient(115deg,#10221ddd,#101b1beF);box-shadow:0 9px 25px #0009,inset 0 1px #ffffff24;overflow:hidden;cursor:pointer;transition:transform .16s ease,border-color .16s ease,filter .16s ease}
+#gameHub .game-hub-card:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,#b3df7c18,transparent 55%);opacity:.9}
+#gameHub .game-hub-card:active{transform:scale(.975);filter:brightness(1.18)}
+#gameHub .game-hub-art{position:relative;width:100px;height:112px;display:grid;place-items:center;border-radius:13px;background:radial-gradient(circle at 50% 35%,#8da77c,#263e32 72%);border:1px solid #d5efb37a;box-shadow:inset 0 0 18px #07110b88}
+#gameHub .game-hub-art>span{font-size:52px;filter:drop-shadow(0 5px 4px #0009)}
+#gameHub .game-hub-art i{position:absolute;top:6px;left:8px;font-size:9px;font-style:normal;font-weight:1000;letter-spacing:1px;color:#f0ffcf}
+#gameHub .game-hub-card-summit .game-hub-art{background:radial-gradient(circle at 50% 35%,#b2b7a0,#344b43 72%)}
+#gameHub .game-hub-card-copy{position:relative;z-index:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+#gameHub .game-hub-card-copy strong{font-size:clamp(13px,3.5vw,16px);line-height:1.2;letter-spacing:.4px;color:#fff}
+#gameHub .game-hub-card-copy small{font-size:11px;line-height:1.45;color:#d0ddd3;min-height:0}
+#gameHub .game-hub-card-copy b{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:3px;padding:9px 11px;border-radius:9px;background:linear-gradient(100deg,#b6e879,#72c75b);color:#14220f;font-size:10px;letter-spacing:.8px;box-shadow:0 3px 10px #0005}
+#gameHub .game-hub-card-copy b span:last-child{font-size:17px;line-height:10px}
+#gameHub .game-hub-back{align-self:center;display:flex;align-items:center;justify-content:center;gap:9px;margin:21px auto 0;padding:12px 20px;border:1px solid #d5e5d078;border-radius:30px;background:#07141bcc;color:#f1f7ef;font-weight:900;font-size:11px;letter-spacing:1px;box-shadow:0 5px 15px #0008;cursor:pointer}
+#gameHub .game-hub-back span{font-size:18px;color:#c8f28d}
+#gameHub .game-hub-footer{text-align:center;margin:18px 0 0;color:#e1f2d2b0;font-size:9px;font-weight:900;letter-spacing:2px;text-shadow:0 2px 6px #000}
+@media(min-width:560px){#gameHub .game-hub-grid{grid-template-columns:1fr 1fr;max-width:680px;align-items:stretch}#gameHub .game-hub-card{grid-template-columns:1fr;align-content:start;min-height:245px}#gameHub .game-hub-art{width:100%;height:116px}#gameHub .game-hub-card-copy{height:100%}#gameHub .game-hub-card-copy b{margin-top:auto}}
+@media(max-width:370px){#gameHub .game-hub-card{grid-template-columns:82px minmax(0,1fr);gap:10px;padding:10px;min-height:132px}#gameHub .game-hub-art{width:82px;height:102px}#gameHub .game-hub-art>span{font-size:44px}#gameHub .game-hub-card-copy small{font-size:10px}}
+</style>
+<style id="solido-premium-gamehub">
+#gameHub.game-hub-screen{position:fixed!important;inset:0!important;z-index:10000!important;width:100vw!important;height:100vh!important;height:100dvh!important;min-height:100dvh!important;margin:0!important;padding:0!important;overflow:auto!important;box-sizing:border-box!important;background:#07110f url('fondo_seleccion_juegos.png.png') center center/cover no-repeat!important}
+#gameHub.game-hub-screen:before{position:fixed!important;inset:0!important;z-index:0!important;content:"";pointer-events:none;background:linear-gradient(180deg,rgba(3,10,12,.48),rgba(3,10,12,.18) 42%,rgba(3,10,12,.78))!important}
+#gameHub .game-hub-shade{position:fixed!important;inset:0!important;z-index:0!important;pointer-events:none}
+#gameHub .game-hub-content{position:relative!important;z-index:2!important;min-height:100dvh!important;max-width:900px!important;box-sizing:border-box!important;padding:max(26px,env(safe-area-inset-top)) 18px max(24px,env(safe-area-inset-bottom))!important;justify-content:center!important}
+#gameHub .game-hub-card{border:1px solid rgba(207,239,176,.8)!important;border-radius:22px!important;background:linear-gradient(145deg,rgba(25,43,35,.94),rgba(5,15,17,.94))!important;box-shadow:0 15px 34px rgba(0,0,0,.58),inset 0 1px rgba(255,255,255,.23),inset 0 -2px rgba(0,0,0,.3)!important;backdrop-filter:blur(10px) saturate(1.15)!important;-webkit-backdrop-filter:blur(10px) saturate(1.15)!important;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease!important}
+#gameHub .game-hub-card:after{content:"";position:absolute;inset:5px;border:1px solid rgba(221,246,193,.2);border-radius:17px;pointer-events:none}
+#gameHub .game-hub-card:active{transform:translateY(2px) scale(.985)!important;box-shadow:0 6px 16px #0009,inset 0 2px 7px #0008!important}
+#gameHub .game-hub-art{border-radius:17px!important;border:1px solid #d8f3b6!important;box-shadow:inset 0 0 22px #06110b,0 0 18px #b5e87928!important}
+#gameHub .game-hub-card-copy strong{font-weight:1000!important;letter-spacing:.75px!important;text-shadow:0 2px 8px #000!important}
+#gameHub .game-hub-card-copy b{border:1px solid #e4ffc0!important;background:linear-gradient(180deg,#d8ff9b,#8ccf58 52%,#5e9e42)!important;box-shadow:0 4px 0 #365d2e,0 8px 15px #0008,inset 0 1px #fff9!important;letter-spacing:1.1px!important}
+#gameHub .game-hub-back{border:1px solid #d4efb1a8!important;background:linear-gradient(180deg,#23382fef,#091411f2)!important;box-shadow:0 7px 18px #0009,inset 0 1px #ffffff26!important}
+@media(max-width:520px){#gameHub .game-hub-content{padding-left:14px!important;padding-right:14px!important}#gameHub .game-hub-heading{margin-bottom:17px!important}#gameHub .game-hub-card{min-height:132px!important}}
+</style>
 </head>
 
 <body>
@@ -2408,7 +2655,7 @@ body.plan-selection-active #library{padding-bottom:calc(125px + env(safe-area-in
       <small>Crea tus bloques en el muro</small>
     </div>
 
-    <div class="tile" onclick="show('climbGame')">
+    <div class="tile" onclick="show('gameHub')">
       <div class="emoji"><svg class="home-icon" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="pad" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dbe9dc"/><stop offset=".5" stop-color="#8aab98"/><stop offset="1" stop-color="#436a53"/></linearGradient><linearGradient id="btn" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d4ff9a"/><stop offset="1" stop-color="#54b663"/></linearGradient></defs><path d="M17 19h30q9 0 12 10l4 15q2 8-5 10-4 1-8-3l-7-7H21l-7 7q-4 4-8 2-6-2-4-10l4-14q2-10 11-10Z" transform="translate(1 -3) scale(.94)" fill="url(#pad)" stroke="#d0e5d3" stroke-width="2"/><path d="M17 29v14M10 36h14" stroke="#244d38" stroke-width="4" stroke-linecap="round"/><circle cx="43" cy="31" r="4" fill="url(#btn)" stroke="#eaffcf"/><circle cx="51" cy="39" r="4" fill="#caff91" stroke="#eaffcf"/><circle cx="38" cy="41" r="2" fill="#31583e"/><path d="M22 23h20" stroke="#f5fff2" stroke-width="1.5" opacity=".7"/></svg></div>
       <strong>Juego de fuerza</strong>
       <small>Escala con el sensor</small>
@@ -2965,6 +3212,33 @@ body.plan-selection-active #library{padding-bottom:calc(125px + env(safe-area-in
 </section>
 
 
+<section id="gameHub" class="hide game-hub-screen">
+  <div class="game-hub-shade" aria-hidden="true"></div>
+  <div class="game-hub-content">
+    <div class="game-hub-heading">
+      <span class="game-hub-kicker">SOLIDO CLIMBING · ZONA DE DESAFÍOS</span>
+      <h2>ELIGE TU JUEGO</h2>
+      <p>Entrena, escala y supera tus propios límites.</p>
+    </div>
+    <div class="game-hub-grid">
+      <button class="game-hub-card game-hub-card-sky" type="button" onclick="show('climbGame')">
+        <span class="game-hub-art"><span>🪂</span><i>01</i></span>
+        <span class="game-hub-card-copy"><strong>SOLIDO SKY HOPPER</strong>
+        <small>Salta plataformas, esquiva obstáculos y recoge monedas con el WH-C06.</small>
+        <b><span>INICIAR DESAFÍO</span><span aria-hidden="true">➜</span></b></span>
+      </button>
+      <button class="game-hub-card game-hub-card-summit" type="button" onclick="show('strengthGame')">
+        <span class="game-hub-art"><span>🧗</span><i>02</i></span>
+        <span class="game-hub-card-copy"><strong>EL RETO DE LA CIMA</strong>
+        <small>Aprieta el WH-C06, escala la pared y conquista la cima. ¡Bate tu récord!</small>
+        <b><span>INICIAR DESAFÍO</span><span aria-hidden="true">➜</span></b></span>
+      </button>
+    </div>
+    <button class="game-hub-back" type="button" onclick="show('home')"><span>←</span> VOLVER AL INICIO</button>
+    <div class="game-hub-footer">PREPARA TU AGARRE · SUPERA TUS LÍMITES</div>
+  </div>
+</section>
+
 <section id="climbGame" class="hide">
   <button class="br-close-game" type="button" aria-label="Cerrar juego" title="Cerrar juego" onclick="brCloseFullscreenGame()">×</button>
   <div class="sectionhead"><h2>🎮 Solido Sky Hopper</h2><span class="tag">WH-C06 LIVE</span></div>
@@ -3004,6 +3278,60 @@ body.plan-selection-active #library{padding-bottom:calc(125px + env(safe-area-in
     <div class="br-actions"><button class="btn" id="brStartButton" onclick="brStart()">▶ Empezar a saltar</button><button class="btn secondary" onclick="brReset()">↻ Reiniciar</button><button class="btn secondary" onclick="show('fingerForce')">✊ Sensor WH-C06</button></div>
     <div class="br-achievements"><div class="br-ach" id="brAchCombo"><strong>🔥</strong>Combo x5</div><div class="br-ach" id="brAchHolds"><strong>✦</strong>10 presas</div><div class="br-ach" id="brAchClean"><strong>🏆</strong>Ronda limpia</div></div>
     <p class="game-hint">La fuerza real del WH-C06 controla los saltos. Recoge monedas doradas y esquiva las bolas con pinchos. Entrena sin dolor y descansa entre rondas.</p>
+  </div>
+</section>
+
+<section id="strengthGame" class="hide">
+  <button class="sg-close" type="button" onclick="strengthGameClose()" aria-label="Cerrar juego">×</button>
+  <div class="sg-shell">
+    <div class="sg-top"><span>SOLIDO ARCADE SERIES · 02</span><strong>EL RETO DE LA CIMA</strong><small>FUERZA REAL · WH-C06</small></div>
+    <div class="sg-mountain-scene" id="sgScene">
+      <div class="sg-world" id="sgWorld">
+        <div class="sg-cliff-wall" aria-hidden="true"><div class="sg-cliff-ledge"></div><div class="sg-cliff-summit"></div></div>
+        <div class="sg-wall-cloud sg-wall-cloud-one" aria-hidden="true"></div><div class="sg-wall-cloud sg-wall-cloud-two" aria-hidden="true"></div><div class="sg-wall-cloud sg-wall-cloud-three" aria-hidden="true"></div>
+        <div class="sg-bird sg-bird-one" aria-hidden="true">⌁</div><div class="sg-bird sg-bird-two" aria-hidden="true">⌁</div><div class="sg-bird sg-bird-three" aria-hidden="true">⌁</div><div class="sg-bird sg-bird-four" aria-hidden="true">⌁</div>
+        <div class="sg-ground-grass" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="sg-sky-glow"></div><div class="sg-mountain-back"></div><div class="sg-mountain-front"></div>
+        <div class="sg-world-ridge"></div><div class="sg-world-ridge sg-ridge-two"></div><div class="sg-world-ridge sg-ridge-three"></div>
+        <div class="sg-summit-cloud" id="sgSummitCloud"></div><div class="sg-summit-flag">🏁</div>
+        <div class="sg-climber sg-record-climber" id="sgRecordClimber" aria-label="Posición del récord"><img src="climber_fall.png" alt="Récord anterior"></div>
+        <div class="sg-climber sg-current-climber" id="sgCurrentClimber" aria-label="Escalador actual"><img src="climber_idle.png" alt="Escalador SOLIDO"></div>
+        <div class="sg-climber-tag sg-record-tag" id="sgRecordTag">RÉCORD</div><div class="sg-climber-tag sg-current-tag" id="sgCurrentTag">TÚ</div>
+      </div>
+      <div class="sg-scoreboard sg-game-hud">
+        <div><span>RÉCORD ACTUAL</span><strong id="sgRecordKg">— kg</strong><small id="sgRecordName">Aún sin récord</small></div>
+        <div><span>FUERZA EN DIRECTO</span><strong id="sgLiveKg">0,00 kg</strong><small>PICO: <b id="sgPeakKg">0,00 kg</b></small></div>
+        <div><span>OBJETIVO</span><strong id="sgTargetHud">20 kg</strong><small>TIEMPO <b id="sgTimer">12 s</b></small></div>
+      </div>
+      <div class="sg-thermometer" id="sgThermometer" aria-label="Indicador vertical de fuerza">
+        <div class="sg-thermo-track"><div class="sg-thermo-fill" id="sgForceBar"></div><div class="sg-thermo-ball" id="sgForceBall"></div><div class="sg-thermo-bulb"></div><div class="sg-thermo-crack"></div><div class="sg-thermo-shards"><i></i><i></i><i></i><i></i></div></div>
+        <div class="sg-force-value" id="sgForceValue">0,00 kg</div>
+        <small>FUERZA</small>
+      </div>
+      <div class="sg-climb-level" id="sgLevelPhrase"><span>NIVEL 1</span><strong>¡PREPARADO!</strong></div>
+      <div class="sg-message" id="sgMessage">¡PREPARADO PARA ESCALAR!</div>
+      <div class="sg-record-line" id="sgRecordText">¡Sé el primero en llegar a la cima!</div>
+      <div class="sg-scene-bottom"></div>
+      <div class="sg-fireworks" id="sgFireworks"></div>
+      <div class="sg-victory-banner" id="sgVictoryBanner"><div><strong>¡VICTORIA!</strong><span>¡HAS CONQUISTADO LA CIMA!</span></div></div><div class="sg-summit-climber" id="sgSummitClimber" aria-hidden="true"><img src="climber_victory.png" alt=""></div>
+      <div class="sg-overlay" id="sgOverlay"><strong>¡A POR LA CIMA!</strong><span>Aprieta el WH-C06 y haz que el escalador llegue a lo más alto. La fuerza real controla la subida.</span><button type="button" class="btn sg-overlay-start" onclick="strengthGameStart()">▶ Empezar partida</button></div>
+    </div>
+    <div class="sg-game-controls">
+      <div class="sg-scale"><label for="sgMaxKg">FUERZA NECESARIA PARA ALCANZAR LA CIMA</label><strong id="sgMaxKgLabel">20 kg = cima</strong><input id="sgMaxKg" type="range" min="5" max="100" step="5" value="20" oninput="sgSetMaxKg(this.value)"><small>El termómetro indica la fuerza real del WH-C06.</small></div>
+    </div>
+    <div class="sg-actions">
+      <button class="btn" id="sgStartButton" onclick="strengthGameStart()">▶ Empezar partida</button>
+      <button class="btn secondary" id="sgFinishButton" onclick="strengthGameFinishEarly()" disabled>Finalizar intento</button>
+      <button class="btn secondary" onclick="strengthGameReset()">↻ Reiniciar</button>
+    </div>
+    <p class="sg-status" id="sgGameStatus">Conecta el WH-C06 y aprieta para empezar. El récord se guarda en este móvil.</p>
+    <div class="sg-record-modal" id="sgRecordModal" style="display:none">
+      <form onsubmit="strengthGameSaveRecord(event)">
+        <strong>🏆 ¡NUEVO RÉCORD!</strong><span>Has llegado a <b id="sgNewRecordScore">0 kg</b>. Escribe tu apodo:</span>
+        <input id="sgNickname" type="text" maxlength="18" placeholder="Tu apodo" autocomplete="nickname" required>
+        <button class="btn" type="submit">Guardar récord</button>
+      </form>
+    </div>
   </div>
 </section>
 
@@ -4143,14 +4471,18 @@ function show(page,btn){
   const previousPlansSplash=document.getElementById('plansEntrySplash');
   if(previousPlansSplash){previousPlansSplash.classList.remove('visible','fade-out');previousPlansSplash.style.display='none';}
   if(page !== 'meditation' && typeof stopMeditation === 'function') stopMeditation(true);
-  if(page === 'climbGame'){
+  if(page === 'climbGame' || page === 'strengthGame'){
     document.body.classList.add('br-fullscreen-active');
-    document.getElementById('climbGame').classList.add('br-fullscreen-game');
+    if(page === 'climbGame') document.getElementById('climbGame').classList.add('br-fullscreen-game');
+    const strengthSection=document.getElementById('strengthGame');
+    if(page === 'strengthGame' && strengthSection) strengthSection.classList.add('strength-fullscreen-game');
     try{if(window.AndroidUi&&AndroidUi.enterGameFullscreen)AndroidUi.enterGameFullscreen();}catch(e){}
   }else{
     document.body.classList.remove('br-fullscreen-active');
     const gameSection=document.getElementById('climbGame');
     if(gameSection)gameSection.classList.remove('br-fullscreen-game');
+    const strengthSection=document.getElementById('strengthGame');
+    if(strengthSection)strengthSection.classList.remove('strength-fullscreen-game');
     try{if(window.AndroidUi&&AndroidUi.exitGameFullscreen)AndroidUi.exitGameFullscreen();}catch(e){}
   }
 
@@ -4187,6 +4519,9 @@ function show(page,btn){
       },2000);
     }
   }
+
+  if(page === 'strengthGame' && typeof strengthGameOnShow === 'function') strengthGameOnShow();
+  if(page === 'gameHub' && typeof sgUpdateConnectionUI === 'function') sgUpdateConnectionUI();
 
   if(page === 'climbGame' && typeof brCanvasSize === 'function'){
     requestAnimationFrame(() => {
@@ -5996,6 +6331,7 @@ healthConnectRefresh();
 
 </script>
 
+<script src="strength-game.js"></script>
 </body>
 </html>
 <!-- Build trigger: splash de Planes con desvanecimiento suave. -->
