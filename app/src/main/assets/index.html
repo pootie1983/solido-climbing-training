@@ -3097,6 +3097,16 @@ body.br-fullscreen-active .sg-close{display:flex}
   <div class="sectionhead"><h2>🎮 JUEGOS SOLIDO</h2><span class="tag">ARCADE</span></div>
   <p class="muted">Elige tu desafío. Más juegos llegarán próximamente.</p>
   <div class="sg-connect-panel"><div class="sg-connect-state"><i class="sg-connect-dot" id="sgHubConnectDot"></i><span id="sgHubConnectText">Comprobando WH-C06…</span></div><div class="row"><button class="btn" id="sgHubConnectButton" type="button" onclick="sgConnectSensor()">🔵 Conectar WH-C06</button><button class="btn secondary" id="sgHubDisconnectButton" type="button" onclick="sgDisconnectSensor()" style="display:none">Desconectar</button></div></div>
+  <div class="home-sensor-card game-hub-sensor-card">
+    <div class="home-sensor-top">
+      <div class="home-sensor-icon"><svg class="home-icon" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="sensorBodyHub" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e3f6f5"/><stop offset=".45" stop-color="#78a9a9"/><stop offset="1" stop-color="#2f666b"/></linearGradient></defs><rect x="17" y="6" width="30" height="52" rx="8" fill="url(#sensorBodyHub)" stroke="#d2f4ed" stroke-width="2"/><rect x="22" y="13" width="20" height="31" rx="3" fill="#18373d" stroke="#6eb3b0" stroke-width="1.5"/><path d="M27 34v-7l5-4 5 4v7M27 34h10" fill="none" stroke="#a4f4b5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="32" cy="51" r="2" fill="#d8fff1"/><path d="M9 20v24M55 20v24" stroke="#7ab8b5" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+      <div class="home-sensor-copy"><strong>Sensor de fuerza WH-C06</strong><span id="hubWHStatus" role="status">Desconectado · Conecta para medir tu fuerza real</span></div>
+      <span class="home-sensor-dot" id="hubWHDot" aria-label="Estado desconectado"></span>
+    </div>
+    <button class="btn home-connect-btn" id="hubConnectWH" onclick="homeConnectWHC06()"><svg class="home-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8.5 16 16M8 15.5 16 8.5"/><path d="M6 6a4 4 0 0 1 5.7 0l.3.3M12 17.7l.3.3a4 4 0 0 0 5.7-5.7l-.3-.3M6 18a4 4 0 0 1 0-5.7l.3-.3M17.7 12l.3-.3A4 4 0 0 0 12.3 6"/></svg>Conectar WH-C06</button>
+    <button class="btn secondary home-connect-btn" id="hubDisconnectWH" onclick="disconnectWHC06()" style="display:none">Desconectar sensor</button>
+    <p>El mismo sensor se comparte con todos los juegos y entrenamientos.</p>
+  </div>
   <div class="game-hub-grid">
     <button class="game-hub-card" type="button" onclick="show('climbGame')">
       <span class="game-hub-art">🪂</span><strong>SOLIDO SKY HOPPER</strong>
@@ -4310,14 +4320,14 @@ function homeConnectWHC06(){
   }
 }
 function updateHomeWHStatus(connected, message){
-  const status=document.getElementById('homeWHStatus');
-  const dot=document.getElementById('homeWHDot');
-  const connect=document.getElementById('homeConnectWH');
-  const disconnect=document.getElementById('homeDisconnectWH');
-  if(status)status.textContent=message||(connected?'Conectado · Recibiendo fuerza':'Desconectado · Conecta para medir tu fuerza real');
-  if(dot){dot.classList.toggle('connected',!!connected);dot.setAttribute('aria-label',connected?'Conectado':'Desconectado');}
-  if(connect)connect.style.display=connected?'none':'block';
-  if(disconnect)disconnect.style.display=connected?'block':'none';
+  const msg=message||(connected?'Conectado · Recibiendo fuerza':'Desconectado · Conecta para medir tu fuerza real');
+  [['homeWHStatus','homeWHDot','homeConnectWH','homeDisconnectWH'],['hubWHStatus','hubWHDot','hubConnectWH','hubDisconnectWH']].forEach(ids=>{
+    const status=document.getElementById(ids[0]),dot=document.getElementById(ids[1]),connect=document.getElementById(ids[2]),disconnect=document.getElementById(ids[3]);
+    if(status)status.textContent=msg;
+    if(dot){dot.classList.toggle('connected',!!connected);dot.setAttribute('aria-label',connected?'Conectado':'Desconectado');}
+    if(connect)connect.style.display=connected?'none':'block';
+    if(disconnect)disconnect.style.display=connected?'block':'none';
+  });
   if(typeof sgUpdateConnectionUI==='function')sgUpdateConnectionUI();
 }
 /* =========================
