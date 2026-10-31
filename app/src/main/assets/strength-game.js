@@ -164,13 +164,19 @@ function sgBreakThermometer(){if(sgThermoBroken)return;sgThermoBroken=true;const
 function sgSetPose(el,pose){
  if(!el)return;
  const img=el.querySelector('img');if(!img)return;
- const safePose=['idle','climbing','effort','victory'].includes(pose)?pose:'idle';
- if(el.dataset.pose===safePose)return;
- el.dataset.pose=safePose;
- // Solo existen los archivos idle y victory en assets. Reutilizamos idle
- // durante la subida/esfuerzo para evitar una ruta inexistente que oculte al escalador.
- const imageFile=safePose==='victory'?'climber_victory.png':'climber_idle.png';
- if(!img.getAttribute('src')||!img.getAttribute('src').endsWith(imageFile))img.src=imageFile;
+ const safePose=['idle','climbing','effort','fall','victory'].includes(pose)?pose:'idle';
+ const imageByPose={
+  idle:'climber_idle.png',
+  climbing:'climber_climbing.png',
+  effort:'climber_effort.png',
+  fall:'climber_fall.png',
+  victory:'climber_victory.png'
+ };
+ const imageFile=imageByPose[safePose]||imageByPose.idle;
+ if(el.dataset.pose!==safePose||!img.getAttribute('src')||!img.getAttribute('src').endsWith(imageFile)){
+  img.src=imageFile;
+  el.dataset.pose=safePose;
+ }
 }
 function sgMessageFor(v) {
  const p=sgProgress(v),level=Math.min(10,Math.max(1,Math.ceil(p*10)||1));
@@ -201,7 +207,7 @@ function sgRender() {
  if(recordText)recordText.textContent=sgRecord?'RÉCORD · '+sgRecord.nickname+' · '+sgFormatKg(sgRecord.kg):'¡Sé el primero en llegar a la cima!';
  if(ghost){const rp=sgRecord?sgProgress(sgRecord.kg):0;sgSetClimber(ghost,rp);ghost.style.opacity=sgRecord?'1':'0';ghost.style.visibility=sgRecord?'visible':'hidden';}
  const now=performance.now(),dt=sgVisualLastAt?Math.min(80,now-sgVisualLastAt):16;sgVisualLastAt=now;const targetProgress=sgProgress(sgPeak);sgVisualProgress+=(targetProgress-sgVisualProgress)*(1-Math.exp(-dt/115));if(Math.abs(targetProgress-sgVisualProgress)<.001)sgVisualProgress=targetProgress;
- if(live){sgSetClimber(live,sgVisualProgress);sgSetPose(live,sgVictoryShown?'victory':(sgActive?(force>=sgMaxKg*.55?'effort':'climbing'):'idle'));}
+ if(live){sgSetClimber(live,sgVisualProgress);sgSetPose(live,sgVictoryShown?'victory':(sgActive?(sgVisualProgress>=.82?'effort':'climbing'):'idle'));}
  if(liveKg)liveKg.textContent=sgFormatKg(force);
  if(peakKg)peakKg.textContent=sgFormatKg(sgPeak);
  if(targetHud)targetHud.textContent=sgFormatKg(sgMaxKg);
