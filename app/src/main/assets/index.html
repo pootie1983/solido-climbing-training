@@ -5736,6 +5736,31 @@ const achievementDefs=[
 {id:"medal-55-primer-sendero-alternativo-bronce",group:"Senderismo y montaña",name:"Primer Sendero Alternativo",desc:"Alcanza 1000 pasos",target:1000,metric:"steps",tier:"bronce",icon:"🏅",image:"senderismo/primer-sendero-alternativo-bronce.png",xp:50},
 {id:"medal-56-primer-sendero-bronce",group:"Senderismo y montaña",name:"Primer Sendero",desc:"Alcanza 1000 pasos",target:1000,metric:"steps",tier:"bronce",icon:"🏅",image:"senderismo/primer-sendero-bronce.png",xp:50}
 ];
+// Mostrar únicamente logros que la app puede medir con datos reales.
+// No se muestran senderismo/desnivel, pasos, zonas cardio, dominadas ni core:
+// esta versión no registra esas actividades de forma específica y verificable.
+const supportedAchievementIds=new Set([
+ 'medal-13-imparable-plata',
+ 'medal-14-primer-paso-bronce',
+ 'medal-15-sin-excusas-diamante',
+ 'medal-1-agarre-bronce',
+ 'medal-2-agarre-diamante',
+ 'medal-3-agarre-oro',
+ 'medal-4-agarre-plata',
+ 'medal-5-agarre-platino',
+ 'medal-21-descanso-inteligente-platino',
+ 'medal-37-equilibrio-interior-oro',
+ 'medal-46-leyenda-solido-diamante',
+ 'medal-47-mente-solido-diamante',
+ 'medal-48-mente-tranquila-plata',
+ 'medal-54-un-momento-para-mi-bronce'
+]);
+achievementDefs.splice(0,achievementDefs.length,...achievementDefs.filter(a=>supportedAchievementIds.has(a.id)));
+achievementDefs.forEach(a=>{
+ if(a.metric==='force')a.desc='Registra '+a.target+' mediciones de fuerza de agarre';
+ if(a.metric==='sessions')a.desc='Completa '+a.target+' sesiones de entrenamiento';
+ if(a.metric==='meditation')a.desc='Completa '+a.target+' sesiones de meditación';
+});
 let achievementHealth={steps:0,distance:0};
 let achievementUnlocked=(()=>{try{return JSON.parse(localStorage.getItem('solidoAchievementUnlocked')||'{}');}catch(e){return {};}})();
 function achievementValues(){
