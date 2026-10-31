@@ -74,20 +74,20 @@ function sgStartSuspenseMusic(){
  try{
   const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return;
   if(!sgAudio)sgAudio=new Ctx();if(sgAudio.state==='suspended')sgAudio.resume();sgStopMusic();
-  const ctx=sgAudio,master=ctx.createGain();master.gain.value=.105;master.connect(ctx.destination);sgAudio._sgMaster=master;
+  const ctx=sgAudio,master=ctx.createGain();master.gain.value=.25;master.connect(ctx.destination);sgAudio._sgMaster=master;
   const chords=[[146.83,174.61,220],[116.54,146.83,174.61],[130.81,164.81,196],[98,130.81,164.81]];
   const notes=[293.66,349.23,440,392,349.23,293.66,261.63,329.63];let step=0;
   const pad=(frequencies,duration)=>frequencies.forEach((freq,i)=>{
    const osc=ctx.createOscillator(),gain=ctx.createGain(),filter=ctx.createBiquadFilter();osc.type='sawtooth';osc.frequency.value=freq*(i===0?.5:1);filter.type='lowpass';filter.frequency.value=850;
-   gain.gain.setValueAtTime(.0001,ctx.currentTime);gain.gain.linearRampToValueAtTime(.026,ctx.currentTime+.35);gain.gain.setTargetAtTime(.0001,ctx.currentTime+duration-.35,.18);
+   gain.gain.setValueAtTime(.0001,ctx.currentTime);gain.gain.linearRampToValueAtTime(.055,ctx.currentTime+.35);gain.gain.setTargetAtTime(.0001,ctx.currentTime+duration-.35,.18);
    osc.connect(filter);filter.connect(gain);gain.connect(master);osc.start();osc.stop(ctx.currentTime+duration);
   });
   const pulse=()=>{
    if(!sgActive||!sgAudio||!sgAudio._sgMaster)return;
    const now=ctx.currentTime,idx=step%8;if(idx===0)pad(chords[Math.floor(step/8)%chords.length],3.35);
    const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='triangle';osc.frequency.setValueAtTime(notes[idx],now);osc.frequency.exponentialRampToValueAtTime(notes[idx]*.985,now+.22);
-   gain.gain.setValueAtTime(.0001,now);gain.gain.linearRampToValueAtTime(.075,now+.025);gain.gain.exponentialRampToValueAtTime(.0001,now+.34);osc.connect(gain);gain.connect(master);osc.start(now);osc.stop(now+.36);
-   if(idx===0||idx===4){const drum=ctx.createOscillator(),dg=ctx.createGain();drum.type='sine';drum.frequency.setValueAtTime(92,now);drum.frequency.exponentialRampToValueAtTime(43,now+.22);dg.gain.setValueAtTime(.0001,now);dg.gain.linearRampToValueAtTime(.16,now+.012);dg.gain.exponentialRampToValueAtTime(.0001,now+.27);drum.connect(dg);dg.connect(master);drum.start(now);drum.stop(now+.29);}
+   gain.gain.setValueAtTime(.0001,now);gain.gain.linearRampToValueAtTime(.15,now+.025);gain.gain.exponentialRampToValueAtTime(.0001,now+.34);osc.connect(gain);gain.connect(master);osc.start(now);osc.stop(now+.36);
+   if(idx===0||idx===4){const drum=ctx.createOscillator(),dg=ctx.createGain();drum.type='sine';drum.frequency.setValueAtTime(92,now);drum.frequency.exponentialRampToValueAtTime(43,now+.22);dg.gain.setValueAtTime(.0001,now);dg.gain.linearRampToValueAtTime(.25,now+.012);dg.gain.exponentialRampToValueAtTime(.0001,now+.27);drum.connect(dg);dg.connect(master);drum.start(now);drum.stop(now+.29);}
    step++;sgMusicTimer=setTimeout(pulse,430);
   };pulse();
  }catch(e){}
@@ -101,10 +101,10 @@ function sgPlayVictoryMusic(){
   const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return;
   if(!sgAudio)sgAudio=new Ctx();if(sgAudio.state==='suspended')sgAudio.resume();
   const ctx=sgAudio,master=ctx.createGain(),now=ctx.currentTime;
-  master.gain.setValueAtTime(.0001,now);master.gain.linearRampToValueAtTime(.23,now+.12);master.gain.setValueAtTime(.2,now+4.7);master.gain.exponentialRampToValueAtTime(.0001,now+5.8);master.connect(ctx.destination);
+  master.gain.setValueAtTime(.0001,now);master.gain.linearRampToValueAtTime(.4,now+.12);master.gain.setValueAtTime(.35,now+4.7);master.gain.exponentialRampToValueAtTime(.0001,now+5.8);master.connect(ctx.destination);
   const notes=[523.25,659.25,783.99,1046.5,783.99,1046.5,1318.51,1046.5,1318.51,1567.98,1318.51,1567.98,2093];
-  notes.forEach((freq,i)=>{const at=now+.08+i*.42,osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='triangle';osc.frequency.value=freq;gain.gain.setValueAtTime(.0001,at);gain.gain.linearRampToValueAtTime(.2,at+.04);gain.gain.exponentialRampToValueAtTime(.0001,at+.38);osc.connect(gain);gain.connect(master);osc.start(at);osc.stop(at+.4);});
-  const bass=ctx.createOscillator(),bassGain=ctx.createGain();bass.type='sine';bass.frequency.setValueAtTime(65.41,now);bassGain.gain.setValueAtTime(.0001,now);bassGain.gain.linearRampToValueAtTime(.16,now+.3);bassGain.gain.setTargetAtTime(.0001,now+5.1,.2);bass.connect(bassGain);bassGain.connect(master);bass.start(now);bass.stop(now+5.6);
+  notes.forEach((freq,i)=>{const at=now+.08+i*.42,osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='triangle';osc.frequency.value=freq;gain.gain.setValueAtTime(.0001,at);gain.gain.linearRampToValueAtTime(.28,at+.04);gain.gain.exponentialRampToValueAtTime(.0001,at+.38);osc.connect(gain);gain.connect(master);osc.start(at);osc.stop(at+.4);});
+  const bass=ctx.createOscillator(),bassGain=ctx.createGain();bass.type='sine';bass.frequency.setValueAtTime(65.41,now);bassGain.gain.setValueAtTime(.0001,now);bassGain.gain.linearRampToValueAtTime(.23,now+.3);bassGain.gain.setTargetAtTime(.0001,now+5.1,.2);bass.connect(bassGain);bassGain.connect(master);bass.start(now);bass.stop(now+5.6);
  }catch(e){}
 }
 function sgLaunchFireworks(){
@@ -160,7 +160,7 @@ function sgClimberWallX(progress){
  return path[path.length-1][1];
 }
 function sgSetClimber(el,v) { if(el){const p=Math.max(0,Math.min(1,Number(v)||0));el.style.top=(96-p*93)+'%';el.style.left=sgClimberWallX(p)+'%';el.style.bottom='auto';} }
-function sgBreakThermometer(){if(sgThermoBroken)return;sgThermoBroken=true;const scene=document.getElementById('sgScene');if(scene){scene.classList.remove('sg-thermo-broken');void scene.offsetWidth;scene.classList.add('sg-thermo-broken');}try{if(navigator.vibrate)navigator.vibrate([120,60,180,70,260]);}catch(e){}if(sgThermoBreakTimer)clearTimeout(sgThermoBreakTimer);sgThermoBreakTimer=setTimeout(()=>{const s=document.getElementById('sgScene');if(s)s.classList.add('sg-thermo-broken-settled');sgThermoBreakTimer=null;},3200);}
+function sgBreakThermometer(){if(sgThermoBroken)return;sgThermoBroken=true;const scene=document.getElementById('sgScene');if(scene){scene.classList.remove('sg-thermo-broken');void scene.offsetWidth;scene.classList.add('sg-thermo-broken');}try{if(navigator.vibrate)navigator.vibrate([120,60,180,70,260]);}catch(e){}if(sgThermoBreakTimer)clearTimeout(sgThermoBreakTimer);sgThermoBreakTimer=setTimeout(()=>{const s=document.getElementById('sgScene');if(s)s.classList.add('sg-thermo-broken-settled');sgThermoBreakTimer=null;},6500);}
 function sgSetPose(el,pose){
  if(!el)return;
  const img=el.querySelector('img');if(!img)return;
@@ -332,18 +332,18 @@ function strengthGameSaveRecord(event) {
  sgRender();
 }
 function strengthGameReset() {
- sgActive=false;sgCountdownActive=false;sgVisualProgress=0;sgVisualLastAt=0;sgThermoBroken=false;if(sgThermoBreakTimer){clearTimeout(sgThermoBreakTimer);sgThermoBreakTimer=null;}const section=document.getElementById('strengthGame');if(section)section.classList.remove('sg-playing');if(sgCountdownTimer){clearInterval(sgCountdownTimer);sgCountdownTimer=null;}if(sgFrame)cancelAnimationFrame(sgFrame);sgFrame=null;sgStopMusic();if(sgVictoryTimer){clearTimeout(sgVictoryTimer);sgVictoryTimer=null;}sgPeak=0;sgReachedSummit=false;sgVictoryShown=false;sgLastLevel=0;sgForceFiltered=0;sgForceInitialized=false;sgLastSensorPacketAt=0;sgPendingRecord=0;
+ sgActive=false;sgCountdownActive=false;sgVisualProgress=0;sgVisualLastAt=0;sgThermoBroken=false;if(sgThermoBreakTimer){clearTimeout(sgThermoBreakTimer);sgThermoBreakTimer=null;}const section=document.getElementById('strengthGame');if(section)section.classList.remove('sg-playing');if(sgCountdownTimer){clearInterval(sgCountdownTimer);sgCountdownTimer=null;}if(sgFrame)cancelAnimationFrame(sgFrame);sgFrame=null;sgStopMusic();if(sgVictoryTimer){clearTimeout(sgVictoryTimer);sgVictoryTimer=null;}sgPeak=0;sgReachedSummit=false;sgVictoryShown=false;sgLastLevel=0;sgForceFiltered=0;sgForceInitialized=false;sgLastSensorPacketAt=0;sgPendingRecord=0;sgRecord=null;try{localStorage.removeItem(SG_RECORD_KEY);}catch(e){}
  const modal=document.getElementById('sgRecordModal');if(modal)modal.style.display='none';
  const banner=document.getElementById('sgVictoryBanner');if(banner)banner.classList.remove('active');
  const fireworks=document.getElementById('sgFireworks');if(fireworks){fireworks.classList.remove('active');fireworks.innerHTML='';}
  const scene=document.getElementById('sgScene');if(scene){scene.classList.remove('sg-summit-reached','sg-summit-near','sg-victory-camera','sg-thermo-broken','sg-thermo-broken-settled');scene.style.setProperty('--sg-progress','0');}const world=document.getElementById('sgWorld');if(world){world.style.setProperty('--sg-progress','0');world.style.transform='translateY(-75%)';}
  const climber=document.getElementById('sgCurrentClimber');if(climber)sgSetPose(climber,'idle');
  const overlay=document.getElementById('sgOverlay');
- if(overlay)sgSetOverlay('¡A POR LA CIMA!','Aprieta el WH-C06 para hacer subir al escalador. El récord anterior permanece guardado.');
+ if(overlay)sgSetOverlay('¡A POR LA CIMA!','Récord borrado. Aprieta el WH-C06 para empezar una nueva partida.');
  const start=document.getElementById('sgStartButton');if(start)start.textContent='▶ Empezar partida';
  const finish=document.getElementById('sgFinishButton');if(finish)finish.disabled=true;
  const timer=document.getElementById('sgTimer');if(timer)timer.textContent='12 s';
- const status=document.getElementById('sgGameStatus');if(status)status.textContent='Partida preparada. Tu récord se conserva.';
+ const status=document.getElementById('sgGameStatus');if(status)status.textContent='Partida preparada. El récord se ha borrado.';
  sgRender();
 }
 function strengthGameClose() {
