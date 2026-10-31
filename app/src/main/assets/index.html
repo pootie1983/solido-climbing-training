@@ -2007,6 +2007,13 @@ body.plan-editor-open{overflow:hidden}
 .health-connect-button{width:100%;margin-top:12px}
 
 
+.home-achievements-launch{width:100%;display:flex;align-items:center;gap:13px;margin:14px 0;padding:16px;text-align:left;color:var(--text);background:linear-gradient(120deg,#183a36,#102b34);border:1px solid #4b806c;border-radius:16px;cursor:pointer}
+.home-achievements-medal{width:48px;height:48px;flex:0 0 48px;display:grid;place-items:center;border-radius:13px;background:#254b42;font-size:27px}
+.home-achievements-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:5px}
+.home-achievements-copy strong{font-size:12px;letter-spacing:.5px;color:#e8fff1}
+.home-achievements-copy small{font-size:11px;line-height:1.35;color:#b5d7c8}
+.home-achievements-arrow{font-size:25px;color:#a8e6be}
+
 /* LOGROS SOLIDO */
 .ach-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0 18px}
 .ach-summary>div{background:#10232e;border:1px solid #29434d;border-radius:13px;padding:12px 8px;text-align:center}
@@ -2015,8 +2022,8 @@ body.plan-editor-open{overflow:hidden}
 .ach-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
 .ach-card{display:flex;gap:10px;align-items:center;min-width:0;padding:11px;background:linear-gradient(145deg,#1a303b,#10212b);border:1px solid #304651;border-radius:14px}
 .ach-card.unlocked{border-color:#8a713d;background:linear-gradient(145deg,#342b1b,#17252a)}
-.ach-medal{width:58px;height:58px;flex:0 0 58px;border-radius:50%;display:grid;place-items:center;font-size:29px;background:radial-gradient(circle at 35% 25%,#fff8,#ffffff08 38%),linear-gradient(145deg,#a96b35,#593719);border:3px solid #d39a5b;box-shadow:inset 0 0 0 2px #4a2e1a,0 4px 12px #0006}
-.ach-medal img{display:block;width:100%;height:100%;object-fit:contain;border-radius:50%;padding:2px}.ach-card.locked .ach-medal img{filter:grayscale(1);opacity:.48}
+.ach-medal{width:82px;height:82px;flex:0 0 82px;border-radius:12px;display:grid;place-items:center;background:transparent;border:0;box-shadow:none;overflow:visible}
+.ach-medal img{display:block;width:100%;height:100%;object-fit:contain;border-radius:0;padding:0}.ach-card.locked .ach-medal img{filter:grayscale(1);opacity:.58}
 .ach-card[data-tier="plata"] .ach-medal{background:linear-gradient(145deg,#f2f5f5,#6c858b);border-color:#dce8e8}
 .ach-card[data-tier="oro"] .ach-medal{background:linear-gradient(145deg,#fff0a2,#a66b16);border-color:#ffe08a}
 .ach-card[data-tier="platino"] .ach-medal{background:linear-gradient(145deg,#e4f8ff,#7896ad);border-color:#d5f2ff}
@@ -2025,7 +2032,7 @@ body.plan-editor-open{overflow:hidden}
 .ach-copy{min-width:0;flex:1}.ach-copy strong{display:block;font-size:12px}.ach-copy small{display:block;color:var(--muted);font-size:10px;line-height:1.35;margin-top:4px}
 .ach-progress{height:5px;border-radius:8px;background:#263c46;margin-top:7px;overflow:hidden}.ach-progress i{display:block;height:100%;background:var(--green);border-radius:8px}
 .ach-xp{font-size:10px;color:var(--green);margin-top:4px}
-@media(max-width:390px){.ach-grid{grid-template-columns:1fr}.ach-medal{width:52px;height:52px;flex-basis:52px}}
+@media(max-width:390px){.ach-grid{grid-template-columns:1fr}.ach-medal{width:72px;height:72px;flex-basis:72px}}
 
 </style>
 
@@ -2235,6 +2242,12 @@ body.plan-editor-open{overflow:hidden}
       <button class="btn" onclick="show('plans')">Ver mi plan →</button>
     </div>
   </div>
+
+  <button class="home-achievements-launch" onclick="show('achievements')">
+    <span class="home-achievements-medal" aria-hidden="true">🏅</span>
+    <span class="home-achievements-copy"><strong>MIS LOGROS Y MEDALLAS</strong><small>Consulta tus medallas, retos y experiencia</small></span>
+    <span class="home-achievements-arrow">→</span>
+  </button>
 
   <button class="home-meditation-launch" onclick="show('meditation')">
     <span class="home-meditation-symbol"><svg class="home-icon" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="medGlow" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e6ffd1"/><stop offset="1" stop-color="#68c982"/></linearGradient></defs><path d="M13 39q-8-1-8-9 0-8 9-9 3-13 17-13 13 0 17 13 11 0 11 10 0 8-9 9H13Z" fill="url(#medGlow)" opacity=".9" stroke="#d6ffdf" stroke-width="2"/><path d="M18 32q5-5 10 0t10 0 10 0" fill="none" stroke="#276b43" stroke-width="3" stroke-linecap="round"/><path d="M24 48q8 5 16 0M29 55q3 2 6 0" fill="none" stroke="#8fe9a1" stroke-width="2" stroke-linecap="round"/></svg></span>
@@ -3045,14 +3058,7 @@ body.plan-editor-open{overflow:hidden}
     Progreso
 
   </button>
-
-
-  <button data-page="achievements" onclick="show('achievements',this)">
-    <span>🏅</span>
-    Logros
-  </button>
-
-  <button
+<button
     data-page="profile"
     onclick="show('profile',this)">
 
@@ -5641,22 +5647,63 @@ function achievementLocalDateKey(date=new Date()){
   return year+'-'+month+'-'+day;
 }
 const achievementDefs=[
- {id:'sessions-1',group:'Constancia',name:'Primer paso',desc:'Completa tu primer entrenamiento',target:1,metric:'sessions',tier:'bronce',icon:'🥾',category:'constancia',image:'primer-paso-bronce.png',xp:50},
- {id:'sessions-5',group:'Constancia',name:'Ritmo constante',desc:'Completa 5 entrenamientos',target:5,metric:'sessions',tier:'plata',icon:'⛰️',category:'constancia',image:'imparable-plata.png',xp:100},
- {id:'sessions-10',group:'Constancia',name:'Imparable',desc:'Completa 10 entrenamientos',target:10,metric:'sessions',tier:'oro',icon:'🏔️',category:'constancia',image:'sin-excusas-diamante.png',xp:250},
- {id:'sessions-25',group:'Constancia',name:'Disciplina de acero',desc:'Completa 25 entrenamientos',target:25,metric:'sessions',tier:'platino',icon:'🛡️',category:'recuperacion',image:'leyenda-solido-diamante.png',xp:500},
- {id:'sessions-50',group:'Constancia',name:'Leyenda SOLIDO',desc:'Completa 50 entrenamientos',target:50,metric:'sessions',tier:'diamante',icon:'👑',category:'senderismo',image:'leyenda-de-las-cumbres-diamante.png',xp:1000},
- {id:'minutes-60',group:'Resistencia',name:'Una hora de esfuerzo',desc:'Acumula 60 minutos entrenando',target:60,metric:'minutes',tier:'bronce',icon:'⏱️',category:'cardio',image:'zonas-cardio-bronce.png',xp:50},
- {id:'minutes-300',group:'Resistencia',name:'Motor SOLIDO',desc:'Acumula 5 horas de entrenamiento',target:300,metric:'minutes',tier:'plata',icon:'🔥',category:'cardio',image:'motor-solido-platino.png',xp:100},
- {id:'minutes-1000',group:'Resistencia',name:'Resistencia infinita',desc:'Acumula 1.000 minutos',target:1000,metric:'minutes',tier:'oro',icon:'⚡',category:'cardio',image:'resistencia-infinita-oro.png',xp:250},
- {id:'force-1',group:'Fuerza',name:'Agarre de acero',desc:'Registra tu primera medición con WH-C06',target:1,metric:'force',tier:'bronce',icon:'✊',category:'escalada-fuerza',image:'primer-agarre-bronce.png',xp:50},
- {id:'force-10',group:'Fuerza',name:'Dedos de hierro',desc:'Registra 10 mediciones de fuerza',target:10,metric:'force',tier:'plata',icon:'🧗',category:'escalada-fuerza',image:'agarre-plata.png',xp:100},
- {id:'force-25',group:'Fuerza',name:'Rey de la pared',desc:'Registra 25 mediciones de fuerza',target:25,metric:'force',tier:'oro',icon:'🏆',category:'escalada-fuerza',image:'rey-de-la-pared-oro.png',xp:250},
- {id:'meditation-1',group:'Mente y recuperación',name:'Un momento para mí',desc:'Completa una sesión de meditación registrada',target:1,metric:'meditation',tier:'bronce',icon:'🧘',category:'meditacion',image:'un-momento-para-mi-bronce.png',xp:50},
- {id:'meditation-5',group:'Mente y recuperación',name:'Mente tranquila',desc:'Completa 5 sesiones de meditación registradas',target:5,metric:'meditation',tier:'plata',icon:'🌿',category:'meditacion',image:'mente-tranquila-plata.png',xp:100},
- {id:'steps-5000',group:'Actividad diaria',name:'Primeros pasos',desc:'Alcanza 5.000 pasos en el día',target:5000,metric:'steps',tier:'bronce',icon:'👣',category:'senderismo',image:'primer-sendero-bronce.png',xp:50},
- {id:'steps-10000',group:'Actividad diaria',name:'Explorador diario',desc:'Alcanza 10.000 pasos en el día',target:10000,metric:'steps',tier:'oro',icon:'🥾',category:'senderismo',image:'explorador-plata.png',xp:250},
- {id:'distance-5',group:'Actividad diaria',name:'Kilómetros en marcha',desc:'Recorre 5 km en el día según Health Connect',target:5,metric:'distance',tier:'plata',icon:'🏃',category:'senderismo',image:'distancia-5km-10km-bronce.png',xp:100}
+{id:"medal-0-a-por-las-alturas-plata",group:"Senderismo y montaña",name:"A Por Las Alturas",desc:"Alcanza 5000 pasos",target:5000,metric:"steps",tier:"plata",icon:"🏅",image:"senderismo/a-por-las-alturas-plata.png",xp:100},
+{id:"medal-1-agarre-bronce",group:"Escalada y fuerza",name:"Agarre",desc:"Completa 1 entrenamientos o mediciones",target:1,metric:"force",tier:"bronce",icon:"🏅",image:"escalada-fuerza/agarre-bronce.png",xp:50},
+{id:"medal-2-agarre-diamante",group:"Escalada y fuerza",name:"Agarre",desc:"Completa 50 entrenamientos o mediciones",target:50,metric:"force",tier:"diamante",icon:"🏅",image:"escalada-fuerza/agarre-diamante.png",xp:1000},
+{id:"medal-3-agarre-oro",group:"Escalada y fuerza",name:"Agarre",desc:"Completa 10 entrenamientos o mediciones",target:10,metric:"force",tier:"oro",icon:"🏅",image:"escalada-fuerza/agarre-oro.png",xp:250},
+{id:"medal-4-agarre-plata",group:"Escalada y fuerza",name:"Agarre",desc:"Completa 5 entrenamientos o mediciones",target:5,metric:"force",tier:"plata",icon:"🏅",image:"escalada-fuerza/agarre-plata.png",xp:100},
+{id:"medal-5-agarre-platino",group:"Escalada y fuerza",name:"Agarre",desc:"Completa 25 entrenamientos o mediciones",target:25,metric:"force",tier:"platino",icon:"🏅",image:"escalada-fuerza/agarre-platino.png",xp:500},
+{id:"medal-6-alma-montanera-platino",group:"Senderismo y montaña",name:"Alma Montanera",desc:"Alcanza 25.000 pasos",target:25000,metric:"steps",tier:"platino",icon:"🏅",image:"senderismo/alma-montanera-platino.png",xp:500},
+{id:"medal-7-motor-solido-platino",group:"Resistencia",name:"Motor Solido",desc:"Acumula 1000 minutos de actividad",target:1000,metric:"minutes",tier:"platino",icon:"🏅",image:"cardio/motor-solido-platino.png",xp:500},
+{id:"medal-8-pulmones-de-montana-diamante",group:"Resistencia",name:"Pulmones De Montana",desc:"Acumula 2000 minutos de actividad",target:2000,metric:"minutes",tier:"diamante",icon:"🏅",image:"cardio/pulmones-de-montana-diamante.png",xp:1000},
+{id:"medal-9-pulmones-de-montana-platino",group:"Resistencia",name:"Pulmones De Montana",desc:"Acumula 1000 minutos de actividad",target:1000,metric:"minutes",tier:"platino",icon:"🏅",image:"cardio/pulmones-de-montana-platino.png",xp:500},
+{id:"medal-10-resistencia-infinita-oro",group:"Resistencia",name:"Resistencia Infinita",desc:"Acumula 600 minutos de actividad",target:600,metric:"minutes",tier:"oro",icon:"🏅",image:"cardio/resistencia-infinita-oro.png",xp:250},
+{id:"medal-11-zonas-cardio-bronce",group:"Resistencia",name:"Zonas Cardio",desc:"Acumula 60 minutos de actividad",target:60,metric:"minutes",tier:"bronce",icon:"🏅",image:"cardio/zonas-cardio-bronce.png",xp:50},
+{id:"medal-12-conquistacumbres-oro",group:"Senderismo y montaña",name:"Conquistacumbres",desc:"Alcanza 10.000 pasos",target:10000,metric:"steps",tier:"oro",icon:"🏅",image:"senderismo/conquistacumbres-oro.png",xp:250},
+{id:"medal-13-imparable-plata",group:"Constancia",name:"Imparable",desc:"Completa 5 entrenamientos o mediciones",target:5,metric:"sessions",tier:"plata",icon:"🏅",image:"constancia/imparable-plata.png",xp:100},
+{id:"medal-14-primer-paso-bronce",group:"Constancia",name:"Primer Paso",desc:"Completa 1 entrenamientos o mediciones",target:1,metric:"sessions",tier:"bronce",icon:"🏅",image:"constancia/primer-paso-bronce.png",xp:50},
+{id:"medal-15-sin-excusas-diamante",group:"Constancia",name:"Sin Excusas",desc:"Completa 50 entrenamientos o mediciones",target:50,metric:"sessions",tier:"diamante",icon:"🏅",image:"constancia/sin-excusas-diamante.png",xp:1000},
+{id:"medal-16-core-bronce",group:"Escalada y fuerza",name:"Core",desc:"Completa 1 entrenamientos o mediciones",target:1,metric:"force",tier:"bronce",icon:"🏅",image:"escalada-fuerza/core-bronce.png",xp:50},
+{id:"medal-17-core-diamante",group:"Escalada y fuerza",name:"Core",desc:"Completa 50 entrenamientos o mediciones",target:50,metric:"force",tier:"diamante",icon:"🏅",image:"escalada-fuerza/core-diamante.png",xp:1000},
+{id:"medal-18-core-oro",group:"Escalada y fuerza",name:"Core",desc:"Completa 10 entrenamientos o mediciones",target:10,metric:"force",tier:"oro",icon:"🏅",image:"escalada-fuerza/core-oro.png",xp:250},
+{id:"medal-19-core-plata",group:"Escalada y fuerza",name:"Core",desc:"Completa 5 entrenamientos o mediciones",target:5,metric:"force",tier:"plata",icon:"🏅",image:"escalada-fuerza/core-plata.png",xp:100},
+{id:"medal-20-core-platino",group:"Escalada y fuerza",name:"Core",desc:"Completa 25 entrenamientos o mediciones",target:25,metric:"force",tier:"platino",icon:"🏅",image:"escalada-fuerza/core-platino.png",xp:500},
+{id:"medal-21-descanso-inteligente-platino",group:"Mente y recuperación",name:"Descanso Inteligente",desc:"Completa 25 sesiones de recuperación",target:25,metric:"meditation",tier:"platino",icon:"🏅",image:"meditacion/descanso-inteligente-platino.png",xp:500},
+{id:"medal-22-desnivel-acumulado-bronce",group:"Senderismo y montaña",name:"Desnivel Acumulado",desc:"Acumula 1 km de actividad",target:1,metric:"distance",tier:"bronce",icon:"🏅",image:"senderismo/desnivel-acumulado-bronce.png",xp:50},
+{id:"medal-23-desnivel-acumulado-diamante",group:"Senderismo y montaña",name:"Desnivel Acumulado",desc:"Acumula 50 km de actividad",target:50,metric:"distance",tier:"diamante",icon:"🏅",image:"senderismo/desnivel-acumulado-diamante.png",xp:1000},
+{id:"medal-24-desnivel-acumulado-oro",group:"Senderismo y montaña",name:"Desnivel Acumulado",desc:"Acumula 10 km de actividad",target:10,metric:"distance",tier:"oro",icon:"🏅",image:"senderismo/desnivel-acumulado-oro.png",xp:250},
+{id:"medal-25-desnivel-acumulado-plata",group:"Senderismo y montaña",name:"Desnivel Acumulado",desc:"Acumula 5 km de actividad",target:5,metric:"distance",tier:"plata",icon:"🏅",image:"senderismo/desnivel-acumulado-plata.png",xp:100},
+{id:"medal-26-desnivel-acumulado-platino",group:"Senderismo y montaña",name:"Desnivel Acumulado",desc:"Acumula 25 km de actividad",target:25,metric:"distance",tier:"platino",icon:"🏅",image:"senderismo/desnivel-acumulado-platino.png",xp:500},
+{id:"medal-27-distancia-5km-10km-bronce",group:"Senderismo y montaña",name:"Distancia 5km 10km",desc:"Acumula 1 km de actividad",target:1,metric:"distance",tier:"bronce",icon:"🏅",image:"senderismo/distancia-5km-10km-bronce.png",xp:50},
+{id:"medal-28-distancia-5km-10km-diamante",group:"Senderismo y montaña",name:"Distancia 5km 10km",desc:"Acumula 50 km de actividad",target:50,metric:"distance",tier:"diamante",icon:"🏅",image:"senderismo/distancia-5km-10km-diamante.png",xp:1000},
+{id:"medal-29-distancia-5km-10km-oro",group:"Senderismo y montaña",name:"Distancia 5km 10km",desc:"Acumula 10 km de actividad",target:10,metric:"distance",tier:"oro",icon:"🏅",image:"senderismo/distancia-5km-10km-oro.png",xp:250},
+{id:"medal-30-distancia-5km-10km-plata",group:"Senderismo y montaña",name:"Distancia 5km 10km",desc:"Acumula 5 km de actividad",target:5,metric:"distance",tier:"plata",icon:"🏅",image:"senderismo/distancia-5km-10km-plata.png",xp:100},
+{id:"medal-31-distancia-5km-10km-platino",group:"Senderismo y montaña",name:"Distancia 5km 10km",desc:"Acumula 25 km de actividad",target:25,metric:"distance",tier:"platino",icon:"🏅",image:"senderismo/distancia-5km-10km-platino.png",xp:500},
+{id:"medal-32-dominadas-bronce",group:"Escalada y fuerza",name:"Dominadas",desc:"Completa 1 entrenamientos o mediciones",target:1,metric:"force",tier:"bronce",icon:"🏅",image:"escalada-fuerza/dominadas-bronce.png",xp:50},
+{id:"medal-33-dominadas-diamante",group:"Escalada y fuerza",name:"Dominadas",desc:"Completa 50 entrenamientos o mediciones",target:50,metric:"force",tier:"diamante",icon:"🏅",image:"escalada-fuerza/dominadas-diamante.png",xp:1000},
+{id:"medal-34-dominadas-oro",group:"Escalada y fuerza",name:"Dominadas",desc:"Completa 10 entrenamientos o mediciones",target:10,metric:"force",tier:"oro",icon:"🏅",image:"escalada-fuerza/dominadas-oro.png",xp:250},
+{id:"medal-35-dominadas-plata",group:"Escalada y fuerza",name:"Dominadas",desc:"Completa 5 entrenamientos o mediciones",target:5,metric:"force",tier:"plata",icon:"🏅",image:"escalada-fuerza/dominadas-plata.png",xp:100},
+{id:"medal-36-dominadas-platino",group:"Escalada y fuerza",name:"Dominadas",desc:"Completa 25 entrenamientos o mediciones",target:25,metric:"force",tier:"platino",icon:"🏅",image:"escalada-fuerza/dominadas-platino.png",xp:500},
+{id:"medal-37-equilibrio-interior-oro",group:"Mente y recuperación",name:"Equilibrio Interior",desc:"Completa 10 sesiones de recuperación",target:10,metric:"meditation",tier:"oro",icon:"🏅",image:"meditacion/equilibrio-interior-oro.png",xp:250},
+{id:"medal-38-fuerza-solido-oro",group:"Escalada y fuerza",name:"Fuerza Solido",desc:"Completa 10 entrenamientos o mediciones",target:10,metric:"force",tier:"oro",icon:"🏅",image:"escalada-fuerza/fuerza-solido-oro.png",xp:250},
+{id:"medal-39-hierro-nuevo-bronce",group:"Escalada y fuerza",name:"Hierro Nuevo",desc:"Completa 1 entrenamientos o mediciones",target:1,metric:"force",tier:"bronce",icon:"🏅",image:"escalada-fuerza/hierro-nuevo-bronce.png",xp:50},
+{id:"medal-40-musculo-de-acero-plata",group:"Escalada y fuerza",name:"Musculo De Acero",desc:"Completa 5 entrenamientos o mediciones",target:5,metric:"force",tier:"plata",icon:"🏅",image:"escalada-fuerza/musculo-de-acero-plata.png",xp:100},
+{id:"medal-41-primer-agarre-bronce",group:"Escalada y fuerza",name:"Primer Agarre",desc:"Completa 1 entrenamientos o mediciones",target:1,metric:"force",tier:"bronce",icon:"🏅",image:"escalada-fuerza/primer-agarre-bronce.png",xp:50},
+{id:"medal-42-rey-de-la-pared-oro",group:"Escalada y fuerza",name:"Rey De La Pared",desc:"Completa 10 entrenamientos o mediciones",target:10,metric:"force",tier:"oro",icon:"🏅",image:"escalada-fuerza/rey-de-la-pared-oro.png",xp:250},
+{id:"medal-43-explorador-alternativo-plata",group:"Senderismo y montaña",name:"Explorador Alternativo",desc:"Alcanza 5000 pasos",target:5000,metric:"steps",tier:"plata",icon:"🏅",image:"senderismo/explorador-alternativo-plata.png",xp:100},
+{id:"medal-44-explorador-plata",group:"Senderismo y montaña",name:"Explorador",desc:"Alcanza 5000 pasos",target:5000,metric:"steps",tier:"plata",icon:"🏅",image:"senderismo/explorador-plata.png",xp:100},
+{id:"medal-45-leyenda-de-las-cumbres-diamante",group:"Senderismo y montaña",name:"Leyenda De Las Cumbres",desc:"Alcanza 50.000 pasos",target:50000,metric:"steps",tier:"diamante",icon:"🏅",image:"senderismo/leyenda-de-las-cumbres-diamante.png",xp:1000},
+{id:"medal-46-leyenda-solido-diamante",group:"Mente y recuperación",name:"Leyenda Solido",desc:"Completa 50 sesiones de recuperación",target:50,metric:"meditation",tier:"diamante",icon:"🏅",image:"recuperacion/leyenda-solido-diamante.png",xp:1000},
+{id:"medal-47-mente-solido-diamante",group:"Mente y recuperación",name:"Mente Solido",desc:"Completa 50 sesiones de recuperación",target:50,metric:"meditation",tier:"diamante",icon:"🏅",image:"meditacion/mente-solido-diamante.png",xp:1000},
+{id:"medal-48-mente-tranquila-plata",group:"Mente y recuperación",name:"Mente Tranquila",desc:"Completa 5 sesiones de recuperación",target:5,metric:"meditation",tier:"plata",icon:"🏅",image:"meditacion/mente-tranquila-plata.png",xp:100},
+{id:"medal-49-minutos-meditacion-bronce",group:"Mente y recuperación",name:"Minutos Meditacion",desc:"Acumula 60 minutos de actividad",target:60,metric:"minutes",tier:"bronce",icon:"🏅",image:"meditacion/minutos-meditacion-bronce.png",xp:50},
+{id:"medal-50-minutos-meditacion-diamante",group:"Mente y recuperación",name:"Minutos Meditacion",desc:"Acumula 2000 minutos de actividad",target:2000,metric:"minutes",tier:"diamante",icon:"🏅",image:"meditacion/minutos-meditacion-diamante.png",xp:1000},
+{id:"medal-51-minutos-meditacion-oro",group:"Mente y recuperación",name:"Minutos Meditacion",desc:"Acumula 600 minutos de actividad",target:600,metric:"minutes",tier:"oro",icon:"🏅",image:"meditacion/minutos-meditacion-oro.png",xp:250},
+{id:"medal-52-minutos-meditacion-plata",group:"Mente y recuperación",name:"Minutos Meditacion",desc:"Acumula 300 minutos de actividad",target:300,metric:"minutes",tier:"plata",icon:"🏅",image:"meditacion/minutos-meditacion-plata.png",xp:100},
+{id:"medal-53-minutos-meditacion-platino",group:"Mente y recuperación",name:"Minutos Meditacion",desc:"Acumula 1000 minutos de actividad",target:1000,metric:"minutes",tier:"platino",icon:"🏅",image:"meditacion/minutos-meditacion-platino.png",xp:500},
+{id:"medal-54-un-momento-para-mi-bronce",group:"Mente y recuperación",name:"Un Momento Para Mi",desc:"Completa 1 sesiones de recuperación",target:1,metric:"meditation",tier:"bronce",icon:"🏅",image:"meditacion/un-momento-para-mi-bronce.png",xp:50},
+{id:"medal-55-primer-sendero-alternativo-bronce",group:"Senderismo y montaña",name:"Primer Sendero Alternativo",desc:"Alcanza 1000 pasos",target:1000,metric:"steps",tier:"bronce",icon:"🏅",image:"senderismo/primer-sendero-alternativo-bronce.png",xp:50},
+{id:"medal-56-primer-sendero-bronce",group:"Senderismo y montaña",name:"Primer Sendero",desc:"Alcanza 1000 pasos",target:1000,metric:"steps",tier:"bronce",icon:"🏅",image:"senderismo/primer-sendero-bronce.png",xp:50}
 ];
 let achievementHealth={steps:0,distance:0};
 let achievementUnlocked=(()=>{try{return JSON.parse(localStorage.getItem('solidoAchievementUnlocked')||'{}');}catch(e){return {};}})();
@@ -5695,7 +5742,7 @@ function renderAchievements(){
  if(unlockedEl)unlockedEl.textContent=unlocked;
  if(xpEl)xpEl.textContent=xp.toLocaleString('es-ES');
  if(levelEl)levelEl.textContent=level;
- host.innerHTML=Object.entries(groups).map(([group,items])=>'<div class="ach-group"><h3>'+group+'</h3><div class="ach-grid">'+items.map(({a,value,done})=>'<article class="ach-card '+(done?'unlocked':'locked')+'" data-tier="'+a.tier+'"><div class="ach-medal"><img src="achievements/'+a.category+'/'+a.image+'" alt="Medalla '+a.name+'" loading="lazy" onerror="this.style.display=\'none\'"></div><div class="ach-copy"><strong>'+a.name+'</strong><small>'+a.desc+'</small><div class="ach-progress"><i style="width:'+Math.min(100,value/a.target*100)+'%"></i></div><small>'+Math.min(value,a.target).toLocaleString('es-ES')+' / '+a.target.toLocaleString('es-ES')+'</small><div class="ach-xp">'+(done?'Conseguido · ':'')+'+'+a.xp+' XP · '+a.tier.toUpperCase()+'</div></div></article>').join('')+'</div></div>').join('');
+ host.innerHTML=Object.entries(groups).map(([group,items])=>'<div class="ach-group"><h3>'+group+'</h3><div class="ach-grid">'+items.map(({a,value,done})=>'<article class="ach-card '+(done?'unlocked':'locked')+'" data-tier="'+a.tier+'"><div class="ach-medal"><img src="achievements/'+a.image+'" alt="Medalla '+a.name+'" loading="lazy" onerror="this.closest('.ach-medal').classList.add('image-missing');this.alt='Imagen no disponible: '+this.alt"></div><div class="ach-copy"><strong>'+a.name+'</strong><small>'+a.desc+'</small><div class="ach-progress"><i style="width:'+Math.min(100,value/a.target*100)+'%"></i></div><small>'+Math.min(value,a.target).toLocaleString('es-ES')+' / '+a.target.toLocaleString('es-ES')+'</small><div class="ach-xp">'+(done?'Conseguido · ':'')+'+'+a.xp+' XP · '+a.tier.toUpperCase()+'</div></div></article>').join('')+'</div></div>').join('');
 }
 
 function healthConnectRefresh(){
