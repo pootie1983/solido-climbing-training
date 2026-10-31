@@ -9,6 +9,7 @@ import android.webkit.WebViewClient
 import android.webkit.WebChromeClient
 import android.webkit.ValueCallback
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.provider.MediaStore
 import android.graphics.Bitmap
 import android.util.Base64
@@ -33,6 +34,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var web: WebView
     private lateinit var whc06Bridge: WHC06Bridge
     private var gameFullscreenRequested = false
+    private var previousRequestedOrientation: Int? = null
     private var fileChooserCallback: ValueCallback<Array<android.net.Uri>>? = null
     private val fileChooserRequestCode = 2001
     private val densityCameraRequestCode = 2002
@@ -134,6 +136,8 @@ class MainActivity : ComponentActivity() {
     fun enterGameFullscreen() {
         runOnUiThread {
             gameFullscreenRequested = true
+            if (previousRequestedOrientation == null) previousRequestedOrientation = requestedOrientation
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             applyGameFullscreen()
         }
     }
@@ -142,6 +146,8 @@ class MainActivity : ComponentActivity() {
     fun exitGameFullscreen() {
         runOnUiThread {
             gameFullscreenRequested = false
+            previousRequestedOrientation?.let { requestedOrientation = it }
+            previousRequestedOrientation = null
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
                 window.insetsController?.show(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
                 window.setDecorFitsSystemWindows(true)
