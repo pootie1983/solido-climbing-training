@@ -68,7 +68,7 @@ function sgDisconnectSensor(){
 function sgEnterFullscreen(){
  const section=document.getElementById('strengthGame');
  document.body.classList.add('br-fullscreen-active');
- if(section){section.classList.remove('hide');section.classList.add('strength-fullscreen-game');section.style.setProperty('display','block','important');}
+ if(section){section.classList.remove('hide');section.classList.add('strength-fullscreen-game');}
  document.documentElement.style.setProperty('overflow','hidden');
  document.body.style.setProperty('overflow','hidden');
  try{if(window.AndroidUi&&AndroidUi.enterGameFullscreen)AndroidUi.enterGameFullscreen();}catch(e){}
@@ -317,7 +317,7 @@ function strengthGameReset() {
 }
 function strengthGameClose() {
   strengthGameReset();document.body.classList.remove('br-fullscreen-active');
-  const section=document.getElementById('strengthGame');if(section)section.classList.remove('strength-fullscreen-game');
+  const section=document.getElementById('strengthGame');if(section){section.classList.remove('strength-fullscreen-game');section.style.removeProperty('display');}document.documentElement.style.removeProperty('overflow');document.body.style.removeProperty('overflow');
   try{if(window.AndroidUi&&AndroidUi.exitGameFullscreen)AndroidUi.exitGameFullscreen();}catch(e){}
   show('gameHub');
 }
