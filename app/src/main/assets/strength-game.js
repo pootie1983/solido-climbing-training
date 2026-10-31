@@ -44,14 +44,10 @@ function sgSensorConnected(){
 }
 function sgUpdateConnectionUI(){
  const connected=sgSensorConnected();
- const ids=[['sgGameConnectDot','sgGameConnectButton','sgGameDisconnectButton','sgGameConnectText'],['homeWHDot','homeConnectWH','homeDisconnectWH','homeWHStatus'],['hubWHDot','hubConnectWH','hubDisconnectWH','hubWHStatus']];
- ids.forEach(([dotId,connectId,disconnectId,statusId])=>{
-  const dot=document.getElementById(dotId),connect=document.getElementById(connectId),disconnect=document.getElementById(disconnectId),status=document.getElementById(statusId);
-  if(dot){dot.classList.toggle('connected',connected);dot.setAttribute('aria-label',connected?'Conectado':'Desconectado');}
-  if(connect)connect.style.display=connected?'none':'block';
-  if(disconnect)disconnect.style.display=connected?'block':'none';
-  if(status)status.textContent=connected?'Conectado · Recibiendo fuerza':'Desconectado · Conecta para medir tu fuerza real';
- });
+ const dot=document.getElementById('sgGameConnectDot');
+ if(dot)dot.classList.toggle('connected',connected);
+ const label=document.getElementById('sgGameConnectText');
+ if(label)label.textContent=connected?'WH-C06 conectado · listo para jugar':'WH-C06 desconectado';
 }
 function sgConnectSensor(){
  try{
@@ -201,8 +197,8 @@ function sgRender() {
 }
 function strengthGameStart() {
  if(sgActive||sgCountdownActive)return;
+ if(!sgSensorConnected()){const status=document.getElementById('sgGameStatus');if(status)status.textContent='Primero conecta el WH-C06 desde la pantalla de inicio.';return;}
  sgEnterFullscreen();
- if(!sgSensorConnected()){const status=document.getElementById('sgGameStatus');if(status)status.textContent='Primero conecta el WH-C06 para medir fuerza real.';sgUpdateConnectionUI();return;}
  if(sgCountdownTimer){clearInterval(sgCountdownTimer);sgCountdownTimer=null;}
  if(sgVictoryTimer){clearTimeout(sgVictoryTimer);sgVictoryTimer=null;}
  sgPeak=0;sgReachedSummit=false;sgVictoryShown=false;sgLastLevel=0;
@@ -211,7 +207,7 @@ function strengthGameStart() {
  const scene=document.getElementById('sgScene');if(scene){scene.classList.remove('sg-summit-reached','sg-summit-near','sg-victory-camera');scene.style.setProperty('--sg-progress','0');}
  const climber=document.getElementById('sgCurrentClimber');if(climber)sgSetPose(climber,'idle');
  const banner=document.getElementById('sgVictoryBanner');if(banner)banner.classList.remove('active');
- const overlay=document.getElementById('sgOverlay');if(overlay)sgSetOverlay('8','PREPÁRATE… LA PARTIDA COMIENZA EN 8');
+ const overlay=document.getElementById('sgOverlay');if(overlay)sgSetOverlay('8','');
  const start=document.getElementById('sgStartButton');if(start){start.textContent='Cuenta atrás…';start.disabled=true;}
  const finish=document.getElementById('sgFinishButton');if(finish)finish.disabled=true;
  const status=document.getElementById('sgGameStatus');if(status)status.textContent='Cuenta atrás: prepárate. Cuando llegue a cero tendrás 12 segundos.';
@@ -220,10 +216,10 @@ function strengthGameStart() {
  sgCountdownTimer=setInterval(()=>{
   sgCountdownValue--;
   if(sgCountdownValue>0){
-   const readyText=sgCountdownValue===3?'¡PREPARADOS!':sgCountdownValue===2?'¡LISTOS!':sgCountdownValue===1?'¡VAMOS!':'PREPÁRATE';
+   const readyText=sgCountdownValue===3?'¡PREPARADOS!':sgCountdownValue===2?'¡LISTOS!':sgCountdownValue===1?'¡VAMOS!':'';
    if(overlay)sgSetOverlay(String(sgCountdownValue),readyText);
    if(timer)timer.textContent=String(sgCountdownValue);
-   if(status)status.textContent=readyText;
+   if(status)status.textContent=readyText||'Cuenta atrás…';
    const idle=document.getElementById('sgCurrentClimber');if(idle)sgSetPose(idle,'idle');
    return;
   }
