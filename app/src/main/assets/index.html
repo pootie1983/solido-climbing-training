@@ -2564,6 +2564,78 @@ body.br-fullscreen-active .sg-close{display:flex}
 #sgScene.sg-thermo-broken-settled .sg-thermo-ball{opacity:0}
 #sgScene.sg-thermo-broken-settled .sg-thermo-fill{opacity:.18}
 @media(prefers-reduced-motion:reduce){#strengthGame .sg-ground-grass i{animation:none!important}}
+/* Ajustes solicitados: personaje despejado, récord celeste y rotura espectacular del termómetro. */
+#strengthGame .sg-climb-level{
+  top:clamp(88px,16vh,132px)!important;
+  bottom:auto!important;
+  left:8px!important;
+  right:60px!important;
+  z-index:11!important;
+}
+@media(max-width:420px){
+  #strengthGame .sg-climb-level{top:clamp(86px,15vh,118px)!important;right:55px!important}
+}
+#sgRecordClimber img{
+  filter:brightness(0) saturate(100%) invert(76%) sepia(31%) saturate(1436%) hue-rotate(139deg) brightness(102%) contrast(101%)!important;
+}
+#sgRecordClimber{filter:drop-shadow(0 0 9px #54dfff)!important;opacity:1!important}
+#sgScene.sg-thermo-broken .sg-thermo-track{
+  animation:sg-thermo-glass-explode .72s cubic-bezier(.18,.8,.22,1) 1 forwards!important;
+  overflow:visible!important;
+}
+@keyframes sg-thermo-glass-explode{
+  0%{transform:translateX(0) rotate(0) scale(1);opacity:1;filter:brightness(1)}
+  16%{transform:translateX(-4px) rotate(-7deg) scale(1.08);opacity:1;filter:brightness(2.4)}
+  38%{transform:translateX(5px) rotate(8deg) scale(1.13);opacity:.95;filter:brightness(1.8)}
+  100%{transform:translateX(0) rotate(15deg) scale(.72);opacity:.16;filter:brightness(1.4)}
+}
+#sgScene.sg-thermo-broken .sg-thermo-fill{
+  transform-origin:bottom center;
+  animation:sg-red-liquid-drop .82s cubic-bezier(.2,.7,.25,1) forwards!important;
+  background:linear-gradient(180deg,#ff8b75 0%,#ff3028 48%,#a90012 100%)!important;
+  box-shadow:0 0 15px #ff2b28,0 0 25px #ff6b45!important;
+}
+@keyframes sg-red-liquid-drop{
+  0%{opacity:1;transform:scaleY(1)}
+  22%{opacity:1;transform:scaleY(1.08)}
+  100%{opacity:0;transform:translateY(85px) scaleY(.18)}
+}
+#sgScene.sg-thermo-broken .sg-thermo-bulb{
+  animation:sg-red-bulb-burst .62s cubic-bezier(.15,.85,.25,1) 1 forwards!important;
+}
+@keyframes sg-red-bulb-burst{
+  0%{transform:translateX(-50%) scale(1);opacity:1}
+  32%{transform:translateX(-50%) scale(1.85);opacity:1}
+  100%{transform:translateX(-50%) scale(.1);opacity:0}
+}
+#sgScene .sg-thermo-spill{position:absolute;z-index:13;left:50%;top:39%;width:0;height:0;pointer-events:none}
+#sgScene .sg-thermo-spill i{
+  position:absolute;left:0;top:0;width:8px;height:13px;border-radius:65% 35% 65% 45%;
+  background:linear-gradient(135deg,#ffb09a 0%,#ff3028 42%,#a80016 100%);
+  box-shadow:0 0 8px #ff332b;opacity:0;transform:translate(-50%,-50%) scale(.3);
+}
+#sgScene.sg-thermo-broken .sg-thermo-spill i{animation:sg-liquid-splash 1.25s cubic-bezier(.12,.72,.2,1) forwards}
+#sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(1){--lx:-35px;--ly:68px;--lr:-52deg;animation-delay:.02s}
+#sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(2){--lx:31px;--ly:83px;--lr:48deg;animation-delay:.06s}
+#sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(3){--lx:-19px;--ly:112px;--lr:-25deg;animation-delay:.1s}
+#sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(4){--lx:43px;--ly:48px;--lr:68deg;animation-delay:.14s}
+#sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(5){--lx:-48px;--ly:94px;--lr:-70deg;animation-delay:.18s}
+#sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(6){--lx:12px;--ly:132px;--lr:18deg;animation-delay:.22s}
+#sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(7){--lx:-8px;--ly:54px;--lr:-18deg;animation-delay:.26s}
+#sgScene.sg-thermo-broken .sg-thermo-spill i:nth-child(8){--lx:54px;--ly:116px;--lr:75deg;animation-delay:.3s}
+@keyframes sg-liquid-splash{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.25) rotate(0)}
+  12%{opacity:1;transform:translate(-50%,-50%) scale(1.25) rotate(var(--lr))}
+  72%{opacity:1;transform:translate(calc(-50% + var(--lx)),calc(-50% + var(--ly))) scale(.9) rotate(calc(var(--lr) + 35deg))}
+  100%{opacity:0;transform:translate(calc(-50% + var(--lx)),calc(-50% + var(--ly) + 24px)) scale(.45) rotate(calc(var(--lr) + 70deg))}
+}
+#sgScene.sg-thermo-broken-settled .sg-thermo-spill i{opacity:0}
+@media(prefers-reduced-motion:reduce){
+  #sgScene.sg-thermo-broken .sg-thermo-track,
+  #sgScene.sg-thermo-broken .sg-thermo-fill,
+  #sgScene.sg-thermo-broken .sg-thermo-bulb,
+  #sgScene.sg-thermo-broken .sg-thermo-spill i{animation-duration:.01ms!important}
+}
 </style>
 </head>
 
@@ -3489,7 +3561,7 @@ body.br-fullscreen-active .sg-close{display:flex}
         <div><span>OBJETIVO</span><strong id="sgTargetHud">20 kg</strong><small>TIEMPO <b id="sgTimer">12 s</b></small></div>
       </div>
       <div class="sg-thermometer" id="sgThermometer" aria-label="Indicador vertical de fuerza">
-        <div class="sg-thermo-track"><div class="sg-thermo-fill" id="sgForceBar"></div><div class="sg-thermo-ball" id="sgForceBall"></div><div class="sg-thermo-bulb"></div><div class="sg-thermo-crack"></div><div class="sg-thermo-shards"><i></i><i></i><i></i><i></i></div><div class="sg-thermo-flash"></div></div>
+        <div class="sg-thermo-track"><div class="sg-thermo-fill" id="sgForceBar"></div><div class="sg-thermo-ball" id="sgForceBall"></div><div class="sg-thermo-bulb"></div><div class="sg-thermo-crack"></div><div class="sg-thermo-shards"><i></i><i></i><i></i><i></i></div><div class="sg-thermo-spill"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="sg-thermo-flash"></div></div>
         <div class="sg-force-value" id="sgForceValue">0,00 kg</div>
         <small>FUERZA</small>
       </div>
