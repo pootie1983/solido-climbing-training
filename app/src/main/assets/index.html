@@ -2113,6 +2113,13 @@ body.plan-selection-active #library{padding-bottom:calc(125px + env(safe-area-in
 #sgScene.sg-victory-camera .sg-current-tag{display:none}
 @keyframes sg-wing-flap{from{scale:1 1;rotate:-13deg}to{scale:1 .45;rotate:18deg}}
 @keyframes sg-summit-pose{from{transform:translateY(15px) scale(.8)}to{transform:translateY(0) scale(1.12)}}
+
+.sg-summit-climber{display:none;position:absolute;z-index:14;top:1.5%;left:73%;width:62px;height:88px;place-items:center;filter:drop-shadow(0 0 12px #ffe89b) drop-shadow(0 5px 8px #000);pointer-events:none}
+.sg-summit-climber img{width:100%;height:100%;object-fit:contain}
+#sgScene.sg-victory-camera .sg-summit-climber{display:grid;animation:sg-summit-pose .65s ease-out both}
+#sgScene.sg-victory-camera #sgCurrentClimber{opacity:0}
+.sg-victory-banner{z-index:12}
+.sg-victory-banner.active{background:linear-gradient(180deg,#08130c08 0%,#07110b28 40%,#07110b52 100%)}
 </style>
 
 <style>
@@ -3327,7 +3334,7 @@ body.br-fullscreen-active .sg-close{display:flex}
       <div class="sg-record-line" id="sgRecordText">¡Sé el primero en llegar a la cima!</div>
       <div class="sg-scene-bottom"></div>
       <div class="sg-fireworks" id="sgFireworks"></div>
-      <div class="sg-victory-banner" id="sgVictoryBanner"><div><strong>¡VICTORIA!</strong><span>¡HAS CONQUISTADO LA CIMA!</span></div></div>
+      <div class="sg-victory-banner" id="sgVictoryBanner"><div><strong>¡VICTORIA!</strong><span>¡HAS CONQUISTADO LA CIMA!</span></div></div><div class="sg-summit-climber" id="sgSummitClimber" aria-hidden="true"><img src="climber_victory.png" alt=""></div>
       <div class="sg-overlay" id="sgOverlay"><strong>¡A POR LA CIMA!</strong><span>Aprieta el WH-C06 y haz que el escalador llegue a lo más alto. La fuerza real controla la subida.</span><button type="button" class="btn sg-overlay-start" onclick="strengthGameStart()">▶ Empezar partida</button></div>
     </div>
     <div class="sg-game-controls">
