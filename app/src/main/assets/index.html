@@ -2319,6 +2319,27 @@ body.br-fullscreen-active .sg-close{display:flex}
 .sg-ridge-two,.sg-ridge-three{opacity:.3}
 .sg-summit-cloud{left:32%;top:-1%;width:36%;height:17%;opacity:0}
 .sg-summit-flag{left:42%;top:4%;font-size:clamp(30px,9vw,46px)}
+
+/* ESCENARIO EL RETO DE LA CIMA: pared vertical de escalada */
+.sg-world{background:linear-gradient(180deg,#85b6c7 0%,#b9d5d1 20%,#dce4cf 42%,#c5d6b8 72%,#8ca66e 100%)!important}
+.sg-world:before{content:"";position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse at 12% 14%,#fff9 0 1px,transparent 2px),radial-gradient(ellipse at 32% 39%,#fff8 0 1px,transparent 2px),linear-gradient(180deg,transparent 0 80%,#7c9a61 80.2% 100%);background-size:83px 97px,113px 121px,100% 100%;opacity:.55}
+.sg-mountain-back,.sg-mountain-front,.sg-world-ridge{display:none!important}
+.sg-cliff-wall{position:absolute;z-index:1;top:0;right:-2%;width:61%;height:100%;overflow:hidden;background:linear-gradient(105deg,#46544b 0%,#899083 10%,#b4b09a 19%,#817f70 36%,#a9a48e 53%,#666f65 76%,#394c45 100%);clip-path:polygon(36% 0,100% 0,100% 100%,0 100%,8% 93%,5% 85%,13% 77%,9% 68%,18% 60%,13% 52%,24% 44%,18% 35%,29% 27%,25% 18%,39% 10%);box-shadow:-15px 0 30px #243b2d66}
+.sg-cliff-wall:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(172deg,transparent 0 47px,#283a3338 48px 51px,transparent 53px 91px),repeating-linear-gradient(78deg,transparent 0 62px,#e1ddc744 63px 66px,transparent 68px 116px),linear-gradient(115deg,#f2ead4aa 0 2%,transparent 14% 34%,#243d35aa 35% 37%,transparent 55% 72%,#f4edda66 73% 75%,transparent 85%);opacity:.8}
+.sg-cliff-wall:after{content:"";position:absolute;inset:0;background:linear-gradient(145deg,transparent 0 12%,#d7d2bd 12.2% 12.8%,transparent 13.1%),linear-gradient(25deg,transparent 0 27%,#35473f99 27.2% 28%,transparent 28.3%),linear-gradient(155deg,transparent 0 49%,#e2ddc2aa 49.2% 49.8%,transparent 50.1%),linear-gradient(35deg,transparent 0 68%,#2a403899 68.2% 69%,transparent 69.3%);mix-blend-mode:soft-light}
+.sg-cliff-ledge{position:absolute;left:-1%;right:0;top:0;height:100%;background:repeating-linear-gradient(165deg,transparent 0 112px,#293c35aa 113px 117px,transparent 119px 178px);clip-path:polygon(0 100%,8% 93%,5% 85%,13% 77%,9% 68%,18% 60%,13% 52%,24% 44%,18% 35%,29% 27%,25% 18%,39% 10%,36% 0,0 0)}
+.sg-cliff-summit{position:absolute;top:0;left:34%;width:66%;height:12%;background:linear-gradient(180deg,#e5e4d1,#a7a895 55%,#596b60);clip-path:polygon(0 100%,12% 62%,25% 73%,41% 28%,56% 44%,69% 0,82% 27%,100% 15%,100% 100%)}
+.sg-ground-grass{position:absolute;z-index:2;left:-4%;right:0;bottom:0;height:9%;background:linear-gradient(180deg,#9bb477 0%,#567c42 26%,#274b32 100%);border-top:3px solid #d0d7a2;clip-path:polygon(0 22%,12% 30%,26% 18%,42% 28%,58% 10%,76% 24%,90% 9%,100% 18%,100% 100%,0 100%)}
+.sg-ground-grass i{position:absolute;bottom:58%;width:3px;height:30px;background:#c6d28d;transform-origin:bottom;transform:rotate(-25deg);border-radius:100%}
+.sg-ground-grass i:nth-child(1){left:7%;height:26px}.sg-ground-grass i:nth-child(2){left:15%;height:18px;transform:rotate(22deg)}.sg-ground-grass i:nth-child(3){left:23%;height:31px}.sg-ground-grass i:nth-child(4){left:31%;height:20px;transform:rotate(28deg)}.sg-ground-grass i:nth-child(5){left:40%;height:27px}.sg-ground-grass i:nth-child(6){left:51%;height:22px;transform:rotate(20deg)}.sg-ground-grass i:nth-child(7){left:63%;height:32px}.sg-ground-grass i:nth-child(8){left:75%;height:21px;transform:rotate(27deg)}.sg-ground-grass i:nth-child(9){left:87%;height:28px}.sg-ground-grass i:nth-child(10){left:95%;height:17px;transform:rotate(22deg)}
+.sg-wall-cloud{position:absolute;z-index:2;width:145px;height:56px;border-radius:50%;background:radial-gradient(ellipse at 35% 60%,#fff 0 24%,#f4faf3 25% 48%,#d7e5e0bb 68%,transparent 72%);filter:blur(1px);opacity:.8}
+.sg-wall-cloud-one{top:21%;left:5%}.sg-wall-cloud-two{top:49%;left:28%;transform:scale(.78)}.sg-wall-cloud-three{top:72%;left:1%;transform:scale(.62)}
+.sg-bird{position:absolute;z-index:3;color:#233b3a;font-size:50px;font-weight:900;line-height:1;transform:rotate(-10deg);text-shadow:0 1px 1px #fff7}
+.sg-bird-one{top:16%;left:17%;font-size:43px}.sg-bird-two{top:37%;left:6%;font-size:35px;transform:rotate(8deg)}.sg-bird-three{top:59%;left:29%;font-size:46px}.sg-bird-four{top:79%;left:12%;font-size:31px}
+.sg-summit-cloud{z-index:4;left:50%;top:0;width:38%;height:12%}
+.sg-summit-flag{z-index:5;left:62%;top:2%}
+.sg-climber{z-index:6}
+.sg-record-climber{z-index:5}
 </style>
 </head>
 
@@ -3221,6 +3242,10 @@ body.br-fullscreen-active .sg-close{display:flex}
     <div class="sg-top"><span>SOLIDO ARCADE SERIES · 02</span><strong>EL RETO DE LA CIMA</strong><small>FUERZA REAL · WH-C06</small></div>
     <div class="sg-mountain-scene" id="sgScene">
       <div class="sg-world" id="sgWorld">
+        <div class="sg-cliff-wall" aria-hidden="true"><div class="sg-cliff-ledge"></div><div class="sg-cliff-summit"></div></div>
+        <div class="sg-wall-cloud sg-wall-cloud-one" aria-hidden="true"></div><div class="sg-wall-cloud sg-wall-cloud-two" aria-hidden="true"></div><div class="sg-wall-cloud sg-wall-cloud-three" aria-hidden="true"></div>
+        <div class="sg-bird sg-bird-one" aria-hidden="true">⌁</div><div class="sg-bird sg-bird-two" aria-hidden="true">⌁</div><div class="sg-bird sg-bird-three" aria-hidden="true">⌁</div><div class="sg-bird sg-bird-four" aria-hidden="true">⌁</div>
+        <div class="sg-ground-grass" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
         <div class="sg-sky-glow"></div><div class="sg-mountain-back"></div><div class="sg-mountain-front"></div>
         <div class="sg-world-ridge"></div><div class="sg-world-ridge sg-ridge-two"></div><div class="sg-world-ridge sg-ridge-three"></div>
         <div class="sg-summit-cloud" id="sgSummitCloud"></div><div class="sg-summit-flag">🏁</div>
