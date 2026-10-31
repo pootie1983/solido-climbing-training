@@ -2197,6 +2197,59 @@ body.br-fullscreen-active .sg-close{display:block}
 @media(max-width:390px){.game-hub-grid{gap:8px}.game-hub-card{padding:10px}.game-hub-art{height:90px}.sg-mountain-scene{min-height:280px}.sg-scoreboard strong{font-size:17px}}
 </style>
 
+<style id="sg-camera-fullscreen-polish">
+body.br-fullscreen-active{overflow:hidden!important;padding-bottom:0!important}
+#strengthGame.strength-fullscreen-game{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;z-index:99999!important;display:block!important;overflow:hidden!important;background:#071019!important;padding:0!important;margin:0!important}
+#strengthGame.strength-fullscreen-game>.sg-shell{width:100%;max-width:none;height:100%;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:calc(env(safe-area-inset-top) + 7px) 10px calc(env(safe-area-inset-bottom) + 14px);scrollbar-width:none}
+#strengthGame.strength-fullscreen-game>.sg-shell::-webkit-scrollbar{display:none}
+#strengthGame.strength-fullscreen-game .sg-top{padding:3px 44px 7px 4px;min-height:50px;justify-content:center}
+#strengthGame.strength-fullscreen-game .sg-top strong{font-size:clamp(19px,5vw,25px);letter-spacing:1px}
+#strengthGame.strength-fullscreen-game .sg-connect-panel{margin:4px 0 7px;padding:7px 9px}
+#strengthGame.strength-fullscreen-game .sg-scoreboard{margin:5px 0 7px;gap:7px}
+#strengthGame.strength-fullscreen-game .sg-scoreboard>div{padding:7px 9px}
+#strengthGame.strength-fullscreen-game .sg-mountain-scene{height:56dvh;min-height:330px;max-height:620px;border-radius:13px;border:1px solid #77929a;background:linear-gradient(#071a2c,#356276 55%,#a9b8a0);box-shadow:0 10px 30px #0008}
+.sg-close{display:none;position:fixed;top:max(7px,env(safe-area-inset-top));right:9px;z-index:100001;width:32px;height:32px;border:1px solid #ffffffaa;border-radius:50%;background:#d53d4b;color:#fff;font-size:23px;font-weight:900;line-height:1;box-shadow:0 3px 12px #0009;align-items:center;justify-content:center;padding:0}
+body.br-fullscreen-active .sg-close{display:flex}
+.sg-shell{max-width:760px}
+.sg-mountain-scene{position:relative;isolation:isolate;overflow:hidden}
+.sg-world{position:absolute;z-index:1;left:0;right:0;top:0;height:200%;overflow:hidden;transform:translateY(calc((1 - var(--sg-progress, 0)) * -50%));transition:transform .28s cubic-bezier(.2,.7,.2,1);background:linear-gradient(180deg,#102b40 0%,#416b78 40%,#9ba98d 100%)}
+.sg-world:before{content:"";position:absolute;inset:0;background-image:radial-gradient(#fff9 1px,transparent 1.5px),radial-gradient(#d9f3ff77 1px,transparent 1.5px);background-size:71px 83px,113px 107px;background-position:8px 14px,42px 61px;opacity:.4}
+.sg-sky-glow{position:absolute;width:145px;height:145px;border-radius:50%;background:#fff0bd;opacity:.6;right:12%;top:12%;filter:blur(5px)}
+.sg-mountain-back{position:absolute;inset:15% -15% 0;background:linear-gradient(145deg,#718b84,#294b49 80%);clip-path:polygon(0 100%,0 61%,13% 52%,25% 60%,42% 29%,55% 41%,68% 10%,82% 35%,100% 18%,100% 100%);opacity:.95}
+.sg-mountain-front{position:absolute;inset:22% -15% 0;background:linear-gradient(125deg,#c1c6a5 0%,#718b6c 38%,#294b3b 100%);clip-path:polygon(0 100%,0 68%,16% 57%,29% 70%,47% 31%,60% 45%,73% 0%,87% 29%,100% 15%,100% 100%);border-top:2px solid #e3edce}
+.sg-mountain-front:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(132deg,transparent 0 27px,#eff9e022 28px 30px)}
+.sg-world-ridge{position:absolute;left:-10%;right:-10%;top:57%;height:1px;background:#efffe2aa;box-shadow:0 40px 0 #efffe233,0 85px 0 #efffe222,0 130px 0 #efffe222;transform:rotate(-9deg)}
+.sg-summit-cloud{position:absolute;z-index:3;left:28%;top:24%;width:44%;height:11%;background:radial-gradient(ellipse at 50% 65%,#f5fbf0 0 20%,#d7e5e0 45%,#9db4b5aa 70%,transparent 72%);filter:blur(2px);opacity:0;transition:opacity .5s}
+.sg-summit-flag{position:absolute;z-index:4;left:47%;top:27%;font-size:clamp(28px,8vw,42px);filter:drop-shadow(0 3px 4px #000a);opacity:0;transform:scale(.7);transition:opacity .45s,transform .45s}
+#sgScene.sg-summit-near .sg-summit-cloud,#sgScene.sg-summit-near .sg-summit-flag{opacity:1}
+#sgScene.sg-summit-near .sg-summit-flag{transform:scale(1)}
+#sgScene.sg-summit-reached .sg-summit-cloud{opacity:1}
+#sgScene.sg-summit-reached .sg-summit-flag{opacity:1;transform:scale(1.15)}
+.sg-climber{position:absolute;z-index:5;left:calc(50% - 54px);top:53%;bottom:auto!important;width:108px;height:142px;display:flex;align-items:center;justify-content:center;transition:filter .2s;filter:drop-shadow(0 7px 9px #000b)}
+.sg-climber img{width:100%;height:100%;object-fit:contain;display:block}
+.sg-record-climber{z-index:4;filter:grayscale(1) drop-shadow(0 0 7px #fff);opacity:.26}
+.sg-current-climber{z-index:6}
+.sg-climber-tag{position:absolute;z-index:7;left:calc(50% + 40px);top:57%;bottom:auto!important;font-size:9px;font-weight:1000;letter-spacing:.8px;padding:4px 7px;border-radius:7px;background:#07110de8;color:#fff;border:1px solid #ffffff55}
+.sg-record-tag{top:51%;left:calc(50% + 42px);opacity:.8}
+.sg-current-tag{color:#d5ff9d}
+.sg-scene-bottom{position:absolute;z-index:2;bottom:0;left:0;right:0;height:17px;background:linear-gradient(#5a744e,#1b392c);border-top:2px solid #d5e4bd}
+.sg-force-value{position:absolute;z-index:9;right:5px;top:8px;width:60px;text-align:center;font-size:10px;font-weight:1000;color:#fff;text-shadow:0 2px 5px #000}
+.sg-force-bar{position:absolute;z-index:8;top:38px;bottom:18px;right:13px;left:auto;width:13px;height:auto;border-radius:10px;background:#06120dcc;border:1px solid #e2f4c566;overflow:hidden;display:flex;align-items:flex-end}
+.sg-force-bar div{width:100%;height:0;background:linear-gradient(0deg,#39d9a0,#b5fa4a 60%,#ffbd4a 84%,#ff635d);transition:height .08s}
+.sg-climb-level{position:absolute;z-index:10;left:9px;right:45px;bottom:12px;max-width:none;padding:10px 13px;border:1px solid #fff8;border-radius:12px;background:linear-gradient(110deg,#081a25ed,#173e43ed 58%,#60421be8);box-shadow:0 0 20px #b8ff6a55,inset 0 0 16px #ffffff12;text-align:left;color:#fff;display:flex;flex-direction:column;gap:2px;min-height:58px;justify-content:center}
+.sg-climb-level span{font-size:10px;font-weight:1000;letter-spacing:2px;color:#d5ff73}
+.sg-climb-level strong{font-size:clamp(14px,3.8vw,20px);line-height:1.12;font-weight:1000;text-shadow:0 2px 6px #000,0 0 12px #d6ff73aa}
+.sg-climb-level.sg-level-pop{animation:sg-level-impact .62s cubic-bezier(.16,.9,.24,1)}
+@keyframes sg-level-impact{0%{transform:scale(.78) translateY(14px);opacity:.25;filter:brightness(2)}45%{transform:scale(1.07);opacity:1;filter:brightness(1.5)}100%{transform:scale(1);filter:brightness(1)}}
+.sg-message{top:10px;left:10px;right:48px;text-align:left;font-size:clamp(11px,3vw,14px);font-weight:900;color:#fff;text-shadow:0 2px 6px #000}
+.sg-overlay{z-index:15}.sg-fireworks{z-index:20}.sg-victory-banner{z-index:19}
+#strengthGame.strength-fullscreen-game .sg-game-controls{margin-top:8px;gap:8px}
+#strengthGame.strength-fullscreen-game .sg-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+#strengthGame.strength-fullscreen-game .sg-actions .btn{flex:1 1 30%;min-width:0;padding:11px 8px;font-size:12px}
+#strengthGame.strength-fullscreen-game .sg-status{margin:7px 0 4px;font-size:11px}
+@media(max-width:420px){.sg-climber{left:calc(50% - 47px);width:94px;height:126px}.sg-climber-tag{left:calc(50% + 31px)}.sg-record-tag{left:calc(50% + 32px)}#strengthGame.strength-fullscreen-game .sg-mountain-scene{height:54dvh;min-height:310px}.sg-climb-level{right:43px}}
+@media(min-width:700px){#strengthGame.strength-fullscreen-game>.sg-shell{max-width:900px;margin:auto}.sg-climber{width:130px;height:170px;left:calc(50% - 65px)}}
+</style>
 </head>
 
 <body>
@@ -3103,15 +3156,16 @@ body.br-fullscreen-active .sg-close{display:block}
       <div><span>FUERZA EN DIRECTO</span><strong id="sgLiveKg">0,00 kg</strong><small>PICO: <b id="sgPeakKg">0,00 kg</b></small></div>
     </div>
     <div class="sg-mountain-scene" id="sgScene">
-      <div class="sg-sky-glow"></div><div class="sg-summit-flag">🏁</div>
-      <div class="sg-mountain-back"></div><div class="sg-mountain-front"></div>
-      <div class="sg-summit-cloud" id="sgSummitCloud"></div>
-      <div class="sg-climber sg-record-climber" id="sgRecordClimber" aria-label="Posición del récord">🧗‍♀️</div>
-      <div class="sg-climber sg-current-climber" id="sgCurrentClimber" aria-label="Escalador actual">🧗‍♂️</div>
+      <div class="sg-world" id="sgWorld">
+        <div class="sg-sky-glow"></div><div class="sg-mountain-back"></div><div class="sg-mountain-front"></div>
+        <div class="sg-summit-cloud" id="sgSummitCloud"></div><div class="sg-summit-flag">🏁</div><div class="sg-world-ridge"></div>
+      </div>
+      <div class="sg-climber sg-record-climber" id="sgRecordClimber" aria-label="Posición del récord"><img src="climber_climbing.png" alt=""></div>
+      <div class="sg-climber sg-current-climber" id="sgCurrentClimber" aria-label="Escalador actual"><img src="climber_idle.png" alt="Escalador SOLIDO"></div>
       <div class="sg-climber-tag sg-record-tag" id="sgRecordTag">RÉCORD</div><div class="sg-climber-tag sg-current-tag" id="sgCurrentTag">TÚ</div>
       <div class="sg-scene-bottom"></div>
       <div class="sg-force-value" id="sgForceValue">0,00 kg</div><div class="sg-force-bar"><div id="sgForceBar"></div></div>
-      <div class="sg-climb-level" id="sgLevelPhrase">NIVEL 1 · ¡PREPARADO!</div>
+      <div class="sg-climb-level" id="sgLevelPhrase"><span>NIVEL 1</span><strong>¡PREPARADO!</strong></div>
       <div class="sg-message" id="sgMessage">¡PREPARADO PARA ESCALAR!</div>
       <div class="sg-fireworks" id="sgFireworks"></div>
       <div class="sg-victory-banner" id="sgVictoryBanner"><div><strong>¡VICTORIA!</strong><span>¡HAS CONQUISTADO LA CIMA!</span></div></div>
