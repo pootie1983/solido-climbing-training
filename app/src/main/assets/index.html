@@ -2305,6 +2305,20 @@ body.br-fullscreen-active .sg-close{display:flex}
 #strengthGame.sg-playing .sg-game-hud{top:max(10px,env(safe-area-inset-top))}
 #strengthGame.sg-playing .sg-close{display:block}
 @media(max-width:390px){.sg-game-hud{left:6px;right:54px;gap:4px}.sg-game-hud>div{padding:6px 3px}.sg-thermometer{right:5px;width:40px}.sg-climber{left:34%}.sg-climber-tag{left:calc(34% + 44px)}}
+
+/* REDISEÑO DE MONTAÑA: pared alpina rocosa, crestas y nieve */
+.sg-world{background:linear-gradient(180deg,#6f9aa5 0%,#b6c8bd 17%,#607e76 42%,#354f43 72%,#172c25 100%)!important}
+.sg-world:before{background-image:linear-gradient(155deg,transparent 0 47%,#f1f3df12 47.2% 47.8%,transparent 48%),linear-gradient(25deg,transparent 0 61%,#071d1b33 61.2% 62%,transparent 62.2%),radial-gradient(ellipse at 50% 12%,#fff7 0 1px,transparent 2px);background-size:100% 360px,100% 440px,100% 100%;opacity:.85}
+.sg-sky-glow{width:180px;height:180px;background:#fff4d8;opacity:.45;right:8%;top:7%;filter:blur(18px)}
+.sg-mountain-back{inset:2% -22% 0!important;opacity:1!important;background:linear-gradient(112deg,#263f40 0%,#526e68 28%,#81978b 47%,#3b5953 70%,#203a35 100%)!important;clip-path:polygon(0 100%,0 57%,8% 49%,15% 58%,24% 39%,32% 47%,42% 14%,49% 25%,58% 5%,66% 32%,76% 19%,85% 39%,94% 28%,100% 43%,100% 100%)!important}
+.sg-mountain-back:before{content:"";position:absolute;inset:0;background:linear-gradient(132deg,transparent 0 38%,#e1e8d8 38.2% 39.2%,transparent 39.5%),linear-gradient(48deg,transparent 0 56%,#dce5d7 56.2% 57%,transparent 57.3%),linear-gradient(160deg,transparent 0 66%,#142e2c88 66.2% 67%,transparent 67.3%);clip-path:polygon(0 100%,0 57%,8% 49%,15% 58%,24% 39%,32% 47%,42% 14%,49% 25%,58% 5%,66% 32%,76% 19%,85% 39%,94% 28%,100% 43%,100% 100%)}
+.sg-mountain-front{inset:7% -22% 0!important;border:0!important;background:linear-gradient(112deg,#d0d1b5 0%,#9cae98 18%,#6b8876 38%,#3d5e50 67%,#1e392f 100%)!important;clip-path:polygon(0 100%,0 67%,12% 58%,22% 72%,34% 42%,42% 53%,54% 0%,63% 22%,72% 12%,81% 40%,91% 27%,100% 46%,100% 100%)!important}
+.sg-mountain-front:before{content:"";position:absolute;inset:0;background:linear-gradient(140deg,#f5f4dc 0 10%,#d9e0cf 10.5% 18%,transparent 18.5%),linear-gradient(35deg,transparent 0 43%,#e2e5d3 43.3% 47%,transparent 47.5%),linear-gradient(150deg,transparent 0 28%,#233f37aa 28.2% 29%,transparent 29.5%),linear-gradient(30deg,transparent 0 64%,#142d2b99 64.2% 65%,transparent 65.5%);clip-path:polygon(0 100%,0 67%,12% 58%,22% 72%,34% 42%,42% 53%,54% 0%,63% 22%,72% 12%,81% 40%,91% 27%,100% 46%,100% 100%)}
+.sg-mountain-front:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(118deg,transparent 0 42px,#f0f1dc20 43px 45px,transparent 46px 87px),linear-gradient(72deg,transparent 0 44%,#122d2b45 44.2% 45%,transparent 45.2%);clip-path:polygon(0 100%,0 67%,12% 58%,22% 72%,34% 42%,42% 53%,54% 0%,63% 22%,72% 12%,81% 40%,91% 27%,100% 46%,100% 100%)}
+.sg-world-ridge{left:-12%;right:-12%;top:30%;height:3px;background:linear-gradient(90deg,transparent,#dce5d0aa 18%,#263f35 45%,#dce5d055 72%,transparent);box-shadow:0 160px 0 #e2e8d033,0 390px 0 #e2e8d022,0 640px 0 #e2e8d033,0 920px 0 #e2e8d022;transform:rotate(-12deg)}
+.sg-ridge-two,.sg-ridge-three{opacity:.3}
+.sg-summit-cloud{left:32%;top:-1%;width:36%;height:17%;opacity:0}
+.sg-summit-flag{left:42%;top:4%;font-size:clamp(30px,9vw,46px)}
 </style>
 </head>
 
