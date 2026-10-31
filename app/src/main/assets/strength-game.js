@@ -4,6 +4,101 @@
 const SG_RECORD_KEY = 'solidoFeriaClimberRecordV1';
 let sgRecord = null, sgActive = false, sgPeak = 0, sgStartedAt = 0, sgFrame = null;
 let sgDurationMs = 12000, sgMaxKg = 20, sgPendingRecord = 0;
+let sgReachedSummit=false, sgVictoryShown=false, sgMusicTimer=null, sgAudio=null, sgMusicStep=0;
+const sgLevelPhrases=[
+ '¡Hasta las cabras suben más rápido!',
+ '¡Vamos, que no estás subiendo al sofá!',
+ '¡Tus brazos empiezan a negociar!',
+ '¡La montaña ya sabe quién eres!',
+ '¡Medio camino! ¡No te rajes ahora!',
+ '¡Tus antebrazos están pidiendo vacaciones!',
+ '¡Ya casi puedes tocar las nubes!',
+ '¡La cima está temblando al verte!',
+ '¡Un último esfuerzo, leyenda!',
+ '¡¡¡ERES EL REY DE LA MONTAÑA!!!'
+];
+function sgSensorConnected(){
+ const status=document.getElementById('whStatus');
+ const homeDot=document.getElementById('homeWHDot');
+ return !!((homeDot&&homeDot.classList.contains('connected'))||(status&&/conectado/i.test(status.textContent)));
+}
+function sgUpdateConnectionUI(){
+ const connected=sgSensorConnected();
+ ['sgHubConnectDot','sgGameConnectDot'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('connected',connected);});
+ ['sgHubConnectText','sgGameConnectText'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=connected?'WH-C06 conectado · listo para jugar':'WH-C06 desconectado';});
+ const connect=document.getElementById('sgHubConnectButton'),disconnect=document.getElementById('sgHubDisconnectButton');
+ if(connect)connect.style.display=connected?'none':'inline-flex';
+ if(disconnect)disconnect.style.display=connected?'inline-flex':'none';
+}
+function sgConnectSensor(){
+ try{
+  if(typeof connectWHC06==='function')connectWHC06();
+  else {const status=document.getElementById('sgGameStatus');if(status)status.textContent='No se encuentra el control de conexión WH-C06.';}
+  setTimeout(sgUpdateConnectionUI,250);
+ }catch(e){const status=document.getElementById('sgGameStatus');if(status)status.textContent='No se pudo iniciar la conexión: '+(e.message||e);}
+}
+function sgDisconnectSensor(){
+ try{if(typeof disconnectWHC06==='function')disconnectWHC06();}catch(e){}
+ sgUpdateConnectionUI();
+}
+function sgStartSuspenseMusic(){
+ try{
+  const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return;
+  if(!sgAudio)sgAudio=new Ctx();
+  if(sgAudio.state==='suspended')sgAudio.resume();
+  sgStopMusic();
+  const ctx=sgAudio,master=ctx.createGain();master.gain.value=.055;master.connect(ctx.destination);
+  const bass=ctx.createOscillator(),bassGain=ctx.createGain();bass.type='sawtooth';bass.frequency.value=55;bassGain.gain.value=.35;bass.connect(bassGain);bassGain.connect(master);bass.start();
+  const pulse=()=>{
+   if(!sgActive||!sgAudio)return;
+   const now=ctx.currentTime,notes=[110,146.83,123.47,164.81],freq=notes[sgMusicStep++%notes.length];
+   const osc=ctx.createOscillator(),gain=ctx.createGain(),filter=ctx.createBiquadFilter();
+   osc.type='triangle';osc.frequency.setValueAtTime(freq,now);osc.frequency.exponentialRampToValueAtTime(freq*.72,now+.45);
+   filter.type='lowpass';filter.frequency.value=500;gain.gain.setValueAtTime(.0001,now);gain.gain.linearRampToValueAtTime(.25,now+.04);gain.gain.exponentialRampToValueAtTime(.0001,now+.52);
+   osc.connect(filter);filter.connect(gain);gain.connect(master);osc.start(now);osc.stop(now+.55);
+   sgMusicTimer=setTimeout(pulse,650);
+  };
+  sgMusicTimer=setTimeout(pulse,100);
+  sgAudio._sgMaster=master;sgAudio._sgBass=bass;
+ }catch(e){}
+}
+function sgStopMusic(){
+ if(sgMusicTimer){clearTimeout(sgMusicTimer);sgMusicTimer=null;}
+ if(sgAudio){try{if(sgAudio._sgBass){sgAudio._sgBass.stop();sgAudio._sgBass=null;}if(sgAudio._sgMaster){sgAudio._sgMaster.gain.setTargetAtTime(.0001,sgAudio.currentTime,.08);sgAudio._sgMaster=null;}}catch(e){}}
+}
+function sgPlayVictoryMusic(){
+ try{
+  const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return;
+  if(!sgAudio)sgAudio=new Ctx();if(sgAudio.state==='suspended')sgAudio.resume();
+  const ctx=sgAudio,master=ctx.createGain(),now=ctx.currentTime;master.gain.setValueAtTime(.0001,now);master.gain.linearRampToValueAtTime(.2,now+.08);master.gain.exponentialRampToValueAtTime(.0001,now+3.3);master.connect(ctx.destination);
+  [523.25,659.25,783.99,1046.5,783.99,1046.5,1318.51].forEach((freq,i)=>{const at=now+.08+i*.36,osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='triangle';osc.frequency.value=freq;gain.gain.setValueAtTime(.0001,at);gain.gain.linearRampToValueAtTime(.22,at+.04);gain.gain.exponentialRampToValueAtTime(.0001,at+.33);osc.connect(gain);gain.connect(master);osc.start(at);osc.stop(at+.35);});
+ }catch(e){}
+}
+function sgLaunchFireworks(){
+ const host=document.getElementById('sgFireworks');if(!host)return;
+ host.innerHTML='';
+ const colors=['#fff36b','#ff6b8a','#8af7ff','#b7ff6b','#e9a2ff','#ffb45c'];
+ for(let burst=0;burst<9;burst++){
+  const cx=8+Math.random()*84,cy=10+Math.random()*68;
+  for(let i=0;i<14;i++){
+   const dot=document.createElement('i'),angle=(Math.PI*2*i)/14,r=18+Math.random()*30;
+   dot.className='sg-firework';dot.style.left=cx+'%';dot.style.top=cy+'%';dot.style.color=colors[burst%colors.length];
+   dot.style.transform='translate('+Math.cos(angle)*r+'px,'+Math.sin(angle)*r+'px)';
+   dot.style.animationDelay=(Math.random()*.7)+'s';host.appendChild(dot);
+  }
+ }
+ host.classList.add('active');
+ setTimeout(()=>{host.classList.remove('active');host.innerHTML='';},4200);
+}
+function sgShowVictory(){
+ if(sgVictoryShown)return;sgVictoryShown=true;sgStopMusic();
+ const scene=document.getElementById('sgScene'),banner=document.getElementById('sgVictoryBanner'),overlay=document.getElementById('sgOverlay');
+ if(scene)scene.classList.add('sg-summit-reached');
+ if(banner)banner.classList.add('active');
+ if(overlay)overlay.style.display='none';
+ const phrase=document.getElementById('sgLevelPhrase');if(phrase)phrase.textContent='NIVEL 10 · ¡¡¡ERES EL REY DE LA MONTAÑA!!!';
+ sgLaunchFireworks();sgPlayVictoryMusic();
+}
 function sgLoadRecord() {
   try {
     const v = JSON.parse(localStorage.getItem(SG_RECORD_KEY) || 'null');
