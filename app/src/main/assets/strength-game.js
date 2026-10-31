@@ -216,12 +216,13 @@ function sgRender() {
  if(message)message.textContent=sgMessageFor(sgActive?force:sgPeak);
  const progressForce=sgProgress(force),bar=document.getElementById('sgForceBar');if(bar){bar.style.height=(progressForce*100).toFixed(1)+'%';const hue=Math.round(125*(1-progressForce));bar.style.background='linear-gradient(180deg,hsl('+hue+',95%,62%),hsl('+hue+',88%,40%))';}
  const ball=document.getElementById('sgForceBall');if(ball){ball.style.bottom=(progressForce*100).toFixed(1)+'%';const hue=Math.round(125*(1-progressForce));ball.style.background='radial-gradient(circle at 32% 25%,#fff,hsl('+hue+',100%,75%) 35%,hsl('+hue+',88%,43%) 75%)';}
- if(force>=sgMaxKg)sgBreakThermometer();
+ if(progressForce>=0.85)sgBreakThermometer();
  const forceText=document.getElementById('sgForceValue');if(forceText)forceText.textContent=sgFormatKg(force);
  const phrase=document.getElementById('sgLevelPhrase');
  const level=Math.min(10,Math.max(1,Math.ceil(sgProgress(sgPeak)*10)||1));
  if(phrase&&!sgVictoryShown){if(level!==sgLastLevel){phrase.classList.remove('sg-level-pop');void phrase.offsetWidth;phrase.classList.add('sg-level-pop');sgLastLevel=level;}phrase.innerHTML='<span>NIVEL '+level+'</span><strong>'+sgLevelPhrases[level-1]+'</strong>';}
- const summit=document.getElementById('sgScene'),world=document.getElementById('sgWorld');
+ const grass=document.querySelector('#sgScene .sg-ground-grass');if(grass){const grassOpacity=Math.max(0,Math.min(1,(0.20-sgVisualProgress)/0.20));grass.style.opacity=grassOpacity.toFixed(3);grass.style.visibility=sgVisualProgress>=0.20?'hidden':'visible';}
+  const summit=document.getElementById('sgScene'),world=document.getElementById('sgWorld');
  if(summit){const progress=sgVisualProgress;if(world){world.style.setProperty('--sg-progress',String(progress));world.style.transform='translateY('+(-82.5*(1-progress)).toFixed(3)+'%)';}summit.classList.toggle('sg-summit-near',progress>=.82);summit.classList.toggle('sg-summit-reached',sgReachedSummit);}
  const recordTag=document.getElementById('sgRecordTag');if(recordTag){const rp=sgRecord?sgProgress(sgRecord.kg):0;recordTag.style.top=(90-rp*87)+'%';recordTag.style.left=(sgClimberWallX(rp)+7)+'%';}
  const currentTag=document.getElementById('sgCurrentTag');if(currentTag){currentTag.style.top=(90-sgVisualProgress*87)+'%';currentTag.style.left=(sgClimberWallX(sgVisualProgress)+7)+'%';}
