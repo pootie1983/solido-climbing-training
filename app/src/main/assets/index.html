@@ -2111,6 +2111,8 @@ body.plan-selection-active #library{padding-bottom:calc(125px + env(safe-area-in
 .sg-bird:after{width:17px;height:12px;border-top:3px solid currentColor;background:transparent;transform:rotate(24deg);animation:sg-wing-flap .42s ease-in-out infinite alternate-reverse}
 .sg-current-climber.sg-at-summit{animation:sg-summit-pose .65s ease-out both}
 #sgScene.sg-victory-camera .sg-current-tag{display:none}
+#sgScene.sg-victory-camera .sg-record-climber,#sgScene.sg-victory-camera .sg-record-tag{display:none!important}
+.sg-climber.sg-countdown-sitting{top:auto!important;bottom:3%!important;left:calc(50% - 27px)!important;width:54px!important;height:78px!important}
 @keyframes sg-wing-flap{from{scale:1 1;rotate:-13deg}to{scale:1 .45;rotate:18deg}}
 @keyframes sg-summit-pose{from{transform:translateY(15px) scale(.8)}to{transform:translateY(0) scale(1.12)}}
 
@@ -2441,8 +2443,8 @@ body.br-fullscreen-active .sg-close{display:flex}
 #gameHub.game-hub-screen{position:relative;isolation:isolate;min-height:calc(100dvh - 82px);margin:-16px -16px 0;padding:0;overflow:hidden;background:#101b1c url('fondo_seleccion_juegos.png.png') center center/cover no-repeat}
 #gameHub.game-hub-screen:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#07131b70 0%,#07131b55 32%,#07120ee8 100%)}
 #gameHub .game-hub-shade{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 25%,#c6e5cf16,transparent 58%),linear-gradient(90deg,#06101635,#06101608 50%,#06101645)}
-#gameHub .game-hub-content{position:relative;z-index:1;min-height:inherit;max-width:760px;margin:0 auto;padding:clamp(22px,6vh,54px) 17px 26px;display:flex;flex-direction:column;justify-content:center}
-#gameHub .game-hub-heading{text-align:center;margin:0 auto 23px;max-width:440px;text-shadow:0 3px 12px #000;background:#07120ef2;border:1px solid #d4e5c65c;border-radius:18px;padding:16px 14px;box-shadow:0 8px 24px #0009}
+#gameHub .game-hub-content{position:relative;z-index:1;min-height:inherit;max-width:760px;margin:0 auto;padding:12px 17px 22px;display:flex;flex-direction:column;justify-content:flex-end}
+#gameHub .game-hub-heading{text-align:center;margin:0 auto 18px;max-width:440px;text-shadow:0 3px 12px #000;background:transparent;border:0;border-radius:0;padding:0;box-shadow:none}
 #gameHub .game-hub-kicker{display:inline-block;color:#d5ff9a;font-size:10px;font-weight:1000;letter-spacing:2px;padding:7px 11px;border:1px solid #d8f2b45c;border-radius:30px;background:#07150dbb}
 #gameHub .game-hub-heading h2{margin:13px 0 7px;font-size:clamp(27px,7vw,39px);line-height:1;color:#fff;font-weight:1000;letter-spacing:1px}
 #gameHub .game-hub-heading p{margin:0;color:#e0e9df;font-size:13px}
@@ -4554,7 +4556,7 @@ function brCloseFullscreenGame(){
   document.body.classList.remove('br-fullscreen-active');
   document.getElementById('climbGame').classList.remove('br-fullscreen-game');
   try{if(window.AndroidUi&&AndroidUi.exitGameFullscreen)AndroidUi.exitGameFullscreen();}catch(e){}
-  show('home');
+  show('gameHub');
 }
 function show(page,btn){
   if(page !== 'meditation' && typeof stopMeditation === 'function') stopMeditation(true);
