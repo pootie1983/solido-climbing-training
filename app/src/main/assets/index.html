@@ -2101,6 +2101,18 @@ body.plan-selection-active #library{padding-bottom:calc(125px + env(safe-area-in
 @keyframes sg-grass-sway{from{rotate:-8deg}to{rotate:12deg}}
 @keyframes sg-wall-light{from{filter:brightness(.95)}to{filter:brightness(1.08)}}
 @media(prefers-reduced-motion:reduce){.sg-wall-cloud,.sg-bird,.sg-ground-grass i,.sg-cliff-wall{animation:none!important}}
+
+.sg-wall-cloud{overflow:visible}
+.sg-wall-cloud:before,.sg-wall-cloud:after{content:"";position:absolute;bottom:12px;width:70px;height:48px;border-radius:50%;background:linear-gradient(145deg,#fff,#e6f1ef 72%,#c4d9d7);box-shadow:0 2px 7px #45606b22}
+.sg-wall-cloud:before{left:24px;bottom:20px;width:58px;height:58px}
+.sg-wall-cloud:after{left:70px;bottom:8px;width:75px;height:40px}
+.sg-bird{font-family:Georgia,serif;font-style:italic;filter:drop-shadow(0 2px 2px #fff8)}
+.sg-bird:before{content:"";position:absolute;left:0;top:4px;width:24px;height:17px;border-top:3px solid currentColor;border-radius:80% 80% 0 0;transform:rotate(-24deg);transform-origin:right bottom;animation:sg-wing-flap .42s ease-in-out infinite alternate}
+.sg-bird:after{width:17px;height:12px;border-top:3px solid currentColor;background:transparent;transform:rotate(24deg);animation:sg-wing-flap .42s ease-in-out infinite alternate-reverse}
+.sg-current-climber.sg-at-summit{animation:sg-summit-pose .65s ease-out both}
+#sgScene.sg-victory-camera .sg-current-tag{display:none}
+@keyframes sg-wing-flap{from{scale:1 1;rotate:-13deg}to{scale:1 .45;rotate:18deg}}
+@keyframes sg-summit-pose{from{transform:translateY(15px) scale(.8)}to{transform:translateY(0) scale(1.12)}}
 </style>
 
 <style>
