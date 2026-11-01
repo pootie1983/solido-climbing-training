@@ -22,7 +22,8 @@
     const equipment=$('coachEquipment')?.value||'gimnasio';
     const limitations=$('coachLimitations')?.value.trim()||'';
     const ok=write('solidoCoachDays',days)&&write('solidoCoachExperience',experience)&&write('solidoCoachEquipment',equipment)&&write('solidoCoachLimitations',limitations);
-    render();\n    const status=$('coachSaveStatus');
+    render();
+    const status=$('coachSaveStatus');
     if(status)status.textContent=ok?'Preferencias guardadas en este dispositivo.':'No se pudieron guardar todos los datos.';
   };
   function buildLocalAdvice(sessionList,profile,preferences,personality){
@@ -41,7 +42,8 @@
     else{title='Siguiente paso: regularidad';body='Llevas '+completed.length+' sesiones y '+minutes+' minutos registrados en los últimos 7 días. Tu disponibilidad es de '+days+' días por semana. Intenta repartir las sesiones y evita encadenar trabajos intensos de dedos en días consecutivos.';}
     if(last&&now-last.date.getTime()<24*60*60*1000){body+=' Como has registrado actividad en las últimas 24 horas, valora hoy una jornada suave o de descanso antes de volver a cargar fuerte.';}
     if(preferences.limitations.trim()){body+=' Has indicado esta limitación: '+preferences.limitations+'. Ajusta cualquier ejercicio que la empeore y detén la actividad si aparece dolor.';}
-    if(personality==='gracioso'){body='¡A por ello, que la roca no se escala sola! '+body;}else if(personality==='estricto'){body='Objetivo claro: '+body;}else{body='Vamos paso a paso: '+body;}\n    return {title,body};
+    if(personality==='gracioso'){body='¡A por ello, que la roca no se escala sola! '+body;}else if(personality==='estricto'){body='Objetivo claro: '+body;}else{body='Vamos paso a paso: '+body;}
+    return {title,body};
   }
   function render(){
     const p=personalities.find(x=>x.id===read('solidoCoachPersonality','cercano'))||personalities[0];
