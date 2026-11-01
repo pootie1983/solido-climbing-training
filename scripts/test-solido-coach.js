@@ -306,14 +306,19 @@ console.log('SOLIDO COACH recovery gate checks passed: recent sessions, short sl
 
 
 const bridge = fs.readFileSync('app/src/main/java/com/solidoclimbing/training/HealthConnectBridge.kt', 'utf8');
-assert.match(bridge, /private val requiredPermissions = setOf\([\s\S]*?StepsRecord::class[\s\S]*?DistanceRecord::class[\s\S]*?TotalCaloriesBurnedRecord::class[\s\S]*?HeartRateRecord::class[\s\S]*?\)/, 'Required Health Connect permissions must include core activity metrics');
+const mainActivity = fs.readFileSync('app/src/main/java/com/solidoclimbing/training/MainActivity.kt', 'utf8');
+assert.match(mainActivity, /healthPermissions: Set<String> = setOf\([\s\S]*?HeartRateRecord::class[\s\S]*?SleepSessionRecord::class/, 'The Android permission request should offer optional heart rate and sleep access');
+
+assert.match(bridge, /private val requiredPermissions = setOf\([\s\S]*?StepsRecord::class[\s\S]*?DistanceRecord::class[\s\S]*?TotalCaloriesBurnedRecord::class[\s\S]*?\)/, 'Only steps, distance and calories should be required for core Health Connect data');
+assert.doesNotMatch(bridge.match(/private val requiredPermissions = setOf\([\s\S]*?\n    \)/)?.[0] || '', /HeartRateRecord|SleepSessionRecord/, 'Heart rate and sleep must remain optional');
+assert.match(bridge, /private val optionalHeartRatePermission =\s*HealthPermission\.getReadPermission\(HeartRateRecord::class\)/);
 assert.doesNotMatch(bridge.match(/private val requiredPermissions = setOf\([\s\S]*?\n    \)/)?.[0] || '', /SleepSessionRecord/, 'Sleep must remain optional');
 assert.match(bridge, /private val optionalSleepPermission =\s*HealthPermission\.getReadPermission\(SleepSessionRecord::class\)/);
 assert.match(bridge, /if \(granted\.contains\(optionalSleepPermission\)\)/);
 assert.match(bridge, /val sleepMinutes = if \(granted\.contains\(optionalSleepPermission\)\) \{\s*try \{/);
 assert.match(bridge, /catch \(_:\s*Exception\)\s*\{\s*null\s*\}/, 'A sleep read failure must be isolated and treated as missing optional data');
 assert.match(bridge, /result\.put\("status", "ok"\)[\s\S]*?val sleepMinutes = if[\s\S]*?result\.put\("sleepMinutes", sleepMinutes \?: JSONObject\.NULL\)/, 'Core metrics must remain successful when optional sleep data is unavailable');
-assert.match(bridge, /val averageBpm = try \{[\s\S]*?HeartRateRecord::class[\s\S]*?catch \(_:\s*Exception\)\s*\{\s*null\s*\}[\s\S]*?result\.put\("heartRate", averageBpm \?: JSONObject\.NULL\)/, 'A heart-rate read failure must not invalidate steps and calories');
+assert.match(bridge, /val averageBpm = if \(granted\.contains\(optionalHeartRatePermission\)\) \{\s*try \{[\s\S]*?HeartRateRecord::class[\s\S]*?catch \(_:\s*Exception\)\s*\{\s*null\s*\}[\s\S]*?result\.put\("heartRate", averageBpm \?: JSONObject\.NULL\)/, 'Heart rate is read only with its optional permission and failures do not invalidate steps and calories');
 
 
 assert.match(bridge, /result\.put\("sleepMinutes", sleepMinutes \?: JSONObject\.NULL\)/);
