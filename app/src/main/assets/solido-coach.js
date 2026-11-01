@@ -36,7 +36,10 @@
     if(item&&item.ts){const parsed=new Date(item.ts);if(Number.isFinite(parsed.getTime()))return parsed;}
     const value=String(item&&item.date||'');
     const match=value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:,?\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
-    return match?new Date(Number(match[3]),Number(match[2])-1,Number(match[1]),Number(match[4]||0),Number(match[5]||0),Number(match[6]||0)):null;
+    if(!match)return null;
+    const parsed=new Date(Number(match[3]),Number(match[2])-1,Number(match[1]),Number(match[4]||0),Number(match[5]||0),Number(match[6]||0));
+    if(parsed.getFullYear()!==Number(match[3])||parsed.getMonth()!==Number(match[2])-1||parsed.getDate()!==Number(match[1]))return null;
+    return Number.isFinite(parsed.getTime())?parsed:null;
   }
   function getActivityStats(sessionList){
     const now=Date.now(),monthAgo=now-30*24*60*60*1000;
@@ -44,14 +47,14 @@
     const month=dated.filter(row=>row.date.getTime()>=monthAgo&&row.date.getTime()<=now);
     const minutes=month.reduce((sum,row)=>sum+Math.max(0,Number(row.item.mins)||0),0);
     const forceRows=month.filter(row=>Number(row.item.force)>0);
-    const allForceRows=dated.filter(row=>Number(row.item.force)>0).sort((a,b)=>b.date-a.date);
+    const allForceRows=dated.filter(row=>row.date.getTime()<=now&&Number(row.item.force)>0).sort((a,b)=>b.date-a.date);
     const bestForce=allForceRows.reduce((best,row)=>Math.max(best,Number(row.item.force)||0),0);
     const latestForce=allForceRows[0]||null;
     return {total:sessionList.filter(item=>!Number(item.force)).length,month:month.filter(row=>!Number(row.item.force)).length,minutes,bestForce,forceCount:forceRows.length,latestForce:latestForce?Number(latestForce.item.force):0,latestForceDate:latestForce?latestForce.date.toLocaleDateString('es-ES'):'',latestForceHand:latestForce?String(latestForce.item.hand||''):'',latestForceGrip:latestForce?String(latestForce.item.grip||''):''};
   }
   function buildLocalAdvice(sessionList,profile,preferences,personality){
     const now=Date.now(),weekAgo=now-7*24*60*60*1000;
-    const dated=sessionList.map(item=>({item,date:sessionDate(item)})).filter(x=>x.date&&Number.isFinite(x.date.getTime()));
+    const dated=sessionList.map(item=>({item,date:sessionDate(item)})).filter(x=>x.date&&Number.isFinite(x.date.getTime())&&x.date.getTime()<=now);
     const recent=dated.filter(x=>x.date.getTime()>=weekAgo&&x.date.getTime()<=now);
     const completed=recent.filter(x=>Number(x.item.mins||0)>0);
     const minutes=completed.reduce((sum,x)=>sum+Math.max(0,Number(x.item.mins)||0),0);
