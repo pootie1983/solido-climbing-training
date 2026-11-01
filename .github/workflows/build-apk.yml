@@ -27,13 +27,38 @@ jobs:
           mkdir -p app/libs app/src/main/assets
           curl -fL --retry 3 https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.21/sherpa-onnx-1.12.21.aar -o app/libs/sherpa-onnx-1.12.21.aar
           test -s app/libs/sherpa-onnx-1.12.21.aar
+      - name: Install video optimizer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
       - name: Download Spanish Piper voice
         run: |
           curl -fL --retry 3 https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-es_ES-davefx-medium.tar.bz2 -o /tmp/solido-coach-voice.tar.bz2
           tar -xjf /tmp/solido-coach-voice.tar.bz2 -C app/src/main/assets
-          test -s app/src/main/assets/vits-piper-es_ES-davefx-medium/es_ES-davefx-medium.onnx
-          test -s app/src/main/assets/vits-piper-es_ES-davefx-medium/tokens.txt
-          test -d app/src/main/assets/vits-piper-es_ES-davefx-medium/espeak-ng-data
+          VOICE_DIR=app/src/main/assets/vits-piper-es_ES-davefx-medium
+          test -s "$VOICE_DIR/es_ES-davefx-medium.onnx"
+          test -s "$VOICE_DIR/tokens.txt"
+          test -s "$VOICE_DIR/espeak-ng-data/es_dict"
+          test -s "$VOICE_DIR/espeak-ng-data/phondata"
+          test -s "$VOICE_DIR/espeak-ng-data/phonindex"
+          test -s "$VOICE_DIR/espeak-ng-data/phontab"
+          # SOLIDO Coach speaks Spanish only. Keep the shared phoneme tables and
+          # Spanish dictionary; remove dictionaries for every other language.
+          find "$VOICE_DIR/espeak-ng-data" -maxdepth 1 -type f -name '*_dict' ! -name 'es_dict' -delete
+          test -z "$(find "$VOICE_DIR/espeak-ng-data" -maxdepth 1 -type f -name '*_dict' ! -name 'es_dict' -print -quit)"
+      - name: Optimize Coach animation videos
+        run: |
+          # Keep the original 720x1280 assets in Git; only create smaller build copies.
+          find app/src/main/assets/coach -maxdepth 1 -type f -name '*.webm' -print0 | while IFS= read -r -d '' video; do
+            tmp="${video%.webm}.optimized.webm"
+            ffmpeg -hide_banner -loglevel error -y -i "$video" -an \
+              -vf "fps=18" -c:v libvpx-vp9 -pix_fmt yuva420p \
+              -deadline good -cpu-used 4 -crf 34 -b:v 0 -auto-alt-ref 0 "$tmp"
+            test -s "$tmp"
+            mv "$tmp" "$video"
+          done
+          echo "Optimized Coach videos:"
+          du -h app/src/main/assets/coach/*.webm
       - name: Validate JavaScript assets
         run: |
           node --check app/src/main/assets/solido-coach.js
