@@ -4736,9 +4736,9 @@ let customPlans=JSON.parse(localStorage.getItem('solidoCustomPlans')||'[]');
 window.solidoCoachEnsureInitialPlan=function(proposal){
   const profile=readPersonalProfile();
   if(!validPersonalProfile(profile))return false;
+  if(!proposal||!Array.isArray(proposal.items)||!proposal.items.length)return false;
   const existing=customPlans.find(plan=>plan&&['solido-coach-initial','solido-coach'].includes(plan.source));
   if(existing)return true;
-  if(!proposal||!Array.isArray(proposal.items)||!proposal.items.length)return false;
   const entry={id:Date.now(),category:proposal.category,name:proposal.name,items:proposal.items.map(item=>({...item})),seconds:estimatePlan(proposal.items),createdAt:new Date().toISOString(),source:'solido-coach-initial'};
   customPlans.unshift(entry);
   try{localStorage.setItem('solidoCustomPlans',JSON.stringify(customPlans));}
@@ -4799,7 +4799,8 @@ function formatPlanTime(seconds){
 function estimatePlanItem(item){
   const sets=Math.max(1,Number(item.sets)||1),reps=Math.max(1,Number(item.reps)||1);
   const work=Math.max(5,Number(item.work)||30),rest=Math.max(0,Number(item.rest)||0);
-  return sets*reps*work+(sets-1)*rest;
+  const restIntervals=Math.max(0,sets*reps-1);
+  return sets*reps*work+restIntervals*rest;
 }
 function estimatePlan(items){
   return (items||[]).reduce((sum,item)=>sum+estimatePlanItem(item),0)+Math.max(0,(items||[]).length-1)*30;
@@ -5368,9 +5369,14 @@ function togglePlanRun(){
   document.getElementById('planRunToggle').textContent=planRunState.running?'Ⅱ Pausar':'▶ Continuar';
   if(planRunState.running){
     const st=planRunState,item=st.plan.items[st.index],ex=exercises.find(e=>Number(e.id)===Number(item.id));
-    playWorkoutCue('start');
-    showWorkoutNotice('start',st.started?'CONTINUAMOS':'¡EMPEZAMOS!',st.started?'Retoma '+(ex?.name||'el ejercicio')+'.':'Comienza con '+(ex?.name||'el primer ejercicio')+'.');
-    st.started=true;
+    if(st.phase==='rest'){
+      playWorkoutCue('rest');
+      showWorkoutNotice('rest','DESCANSO EN CURSO','Sigue descansando '+formatPlanTime(st.exerciseRemaining)+' antes de volver a '+(ex?.name||'el ejercicio')+'.');
+    }else{
+      playWorkoutCue('start');
+      showWorkoutNotice('start',st.started?'CONTINUAMOS':'¡EMPEZAMOS!',st.started?'Retoma '+(ex?.name||'el ejercicio')+'.':'Comienza con '+(ex?.name||'el primer ejercicio')+'.');
+      st.started=true;
+    }
     if(!planRunInterval)planRunInterval=setInterval(tickPlanRun,1000);
   }
   if(!planRunState.running&&planRunInterval){clearInterval(planRunInterval);planRunInterval=null;}
@@ -5403,14 +5409,15 @@ function tickPlanRun(){
       else if(st.set<sets)startPlanRunRest(st,item,'set');
       else advancePlanRunExercise();
     }else{
+      const restReason=st.restReason;
       st.phase='work';
-      if(st.restReason==='rep')st.rep++;
-      else if(st.restReason==='set'){st.set++;st.rep=1;}
+      if(restReason==='rep')st.rep++;
+      else if(restReason==='set'){st.set++;st.rep=1;}
       st.restReason=null;
       st.exerciseRemaining=Math.max(5,Number(item.work)||30);
       const ex=exercises.find(e=>Number(e.id)===Number(item.id));
       playWorkoutCue('start');
-      showWorkoutNotice('start','¡A ENTRENAR!','Continúa con '+(ex?.name||'el ejercicio')+'.');
+      showWorkoutNotice('start',restReason==='set'?'SIGUIENTE SERIE':restReason==='rep'?'SIGUIENTE REPETICIÓN':'¡A ENTRENAR!','Descanso terminado. Continúa con '+(ex?.name||'el ejercicio')+'.');
     }
   }
   if(!planRunState||st.totalRemaining<=0){finishPlanRun();return;}
