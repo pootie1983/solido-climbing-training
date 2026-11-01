@@ -454,4 +454,55 @@ assert.match(planRunnerSource,/SIGUIENTE EJERCICIO/);
 assert.match(html,/function updateWorkoutSwitchOverlay\(\)/,'Existing force hand-switch overlay must remain present');
 assert.match(html,/id="workoutSwitchOverlay"/,'Existing force hand-switch UI must remain present');
 assert.match(html,/id="workoutNotice"/,'Plan cues must reuse the existing visual workout notice');
+
+ 
+// Exercise the plan runner state machine, not only the presence of cue strings.
+const runnerFunctions = {
+  startPlanRunRest: extractFunction(html, 'function startPlanRunRest(st,item,reason){'),
+  tickPlanRun: extractFunction(html, 'function tickPlanRun(){'),
+  advancePlanRunExercise: extractFunction(html, 'function advancePlanRunExercise(){')
+};
+const runnerEvents=[];
+const runnerContext={
+  planRunState:null,
+  planRunInterval:null,
+  exercises:[{id:1,name:'Agarre suave'},{id:2,name:'Movilidad'}],
+  playWorkoutCue:kind=>runnerEvents.push({type:'sound',kind}),
+  showWorkoutNotice:(kind,title,message)=>runnerEvents.push({type:'notice',kind,title,message}),
+  renderPlanRun:()=>runnerEvents.push({type:'render'}),
+  finishPlanRun:()=>{runnerContext.planRunState=null;runnerEvents.push({type:'finish'});},
+  formatPlanTime:n=>String(n),
+  Math,Number
+};
+for(const [name,source] of Object.entries(runnerFunctions)){
+  runnerContext[name]=vm.runInNewContext('('+source.replace(/^function\\s+\\w+\\s*\\(/,'function(')+')',runnerContext);
+}
+const runnerItem={id:1,sets:2,reps:2,work:5,rest:2};
+const runnerNextItem={id:2,sets:1,reps:1,work:5,rest:0};
+runnerContext.planRunState={plan:{name:'Prueba',items:[runnerItem,runnerNextItem]},index:0,set:1,rep:1,phase:'work',exerciseRemaining:1,totalRemaining:100,running:true,restReason:null,completed:false};
+runnerContext.tickPlanRun();
+assert.equal(runnerContext.planRunState.phase,'rest','Work completion should enter a rest interval');
+assert.equal(runnerContext.planRunState.restReason,'rep');
+assert.ok(runnerEvents.some(e=>e.type==='sound'&&e.kind==='rest'));
+assert.ok(runnerEvents.some(e=>e.type==='notice'&&e.kind==='rest'));
+runnerContext.planRunState.exerciseRemaining=1;
+runnerContext.tickPlanRun();
+assert.equal(runnerContext.planRunState.phase,'work');
+assert.equal(runnerContext.planRunState.rep,2);
+assert.ok(runnerEvents.some(e=>e.type==='notice'&&e.title==='SIGUIENTE REPETICIÓN'));
+runnerContext.planRunState.exerciseRemaining=1;
+runnerContext.tickPlanRun();
+assert.equal(runnerContext.planRunState.phase,'rest');
+assert.equal(runnerContext.planRunState.restReason,'set');
+runnerContext.planRunState.exerciseRemaining=1;
+runnerContext.tickPlanRun();
+assert.equal(runnerContext.planRunState.set,2);
+assert.equal(runnerContext.planRunState.rep,1);
+assert.ok(runnerEvents.some(e=>e.type==='notice'&&e.title==='SIGUIENTE SERIE'));
+runnerContext.planRunState.exerciseRemaining=1;
+runnerContext.tickPlanRun();
+assert.equal(runnerContext.planRunState.index,1,'Finishing all sets should advance to the next exercise');
+assert.ok(runnerEvents.some(e=>e.type==='notice'&&e.title==='SIGUIENTE EJERCICIO'));
+assert.ok(runnerEvents.filter(e=>e.type==='sound'&&e.kind==='start').length>=3,'Starting/resuming work intervals should play the start cue');
+
 console.log('SOLIDO plan automation and workout cue checks passed: first plan auto-created once, safety gates preserved, and session transitions announce start/rest/exercise changes.');
