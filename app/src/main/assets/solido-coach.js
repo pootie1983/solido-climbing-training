@@ -117,7 +117,7 @@
     return '';
   }
   const avatarStates={welcome:'coach_01_bienvenida.png',motivation:'coach_02_motivacion.png',advice:'coach_03_consejos.png',congrats:'coach_04_felicitacion.png',rest:'coach_05_descanso.png',close:'coach_06_cierre.png'};
-  const avatarClips={
+  const avatarSpeechSequence={
     explain:'Climber_gesticulating_2D_animation_7b6f30fd.webm',
     point:'Climber_pointing_finger_up_4706b9d7.webm',
     approve:'Climber_making_OK_gesture_fc829075.webm',
@@ -152,7 +152,7 @@
     if(!gesture){video.pause();video.style.display='none';image.style.display='block';return;}
     video.onended=playNextAvatarClip;
     video.onerror=()=>{video.style.display='none';image.style.display='block';};
-    video.src='coach/'+avatarClips[gesture];
+    video.src='coach/'+avatarSpeechSequence[gesture];
     video.style.display='block';image.style.display='none';video.load();
     const attempt=video.play();
     if(attempt&&typeof attempt.catch==='function')attempt.catch(()=>{video.style.display='none';image.style.display='block';});
