@@ -34,3 +34,5 @@
 .coach-note strong{color:#baff78}
 .coach-back{width:100%;margin-top:2px}
 @media(max-width:360px){.coach-personalities{gap:5px}.coach-personality{padding:10px 3px}.coach-personality small{font-size:8px}.coach-profile-grid{gap:6px}}
+
+/* Build validation branch for SOLIDO COACH foundation. */
