@@ -51,13 +51,15 @@ jobs:
           test -s "$COACH/Climber_celebrating_with_raised_…_72cb685e.webm"
           test -s "$COACH/Escalador_sonriente_extendiendo_…_6589c00e.webm"
           ffmpeg -y -i "$COACH/Climber_gesticulating_2D_animation_7b6f30fd.webm" -an -vf "scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,format=yuv420p" -r 24 -c:v libx264 -profile:v baseline -level 3.1 -preset medium -crf 22 -movflags +faststart "$COACH/coach_explain.mp4"
-          ffmpeg -y -i "$COACH/Climber_pointing_finger_up_4706b9d7.webm" -an -vf "scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(oh-ih)/2:(oh-ih)/2,format=yuv420p" -r 24 -c:v libx264 -profile:v baseline -level 3.1 -preset medium -crf 22 -movflags +faststart "$COACH/coach_point.mp4"
+          ffmpeg -y -i "$COACH/Climber_pointing_finger_up_4706b9d7.webm" -an -vf "scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,format=yuv420p" -r 24 -c:v libx264 -profile:v baseline -level 3.1 -preset medium -crf 22 -movflags +faststart "$COACH/coach_point.mp4"
           ffmpeg -y -i "$COACH/Climber_making_OK_gesture_fc829075.webm" -an -vf "scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(oh-ih)/2:(oh-ih)/2,format=yuv420p" -r 24 -c:v libx264 -profile:v baseline -level 3.1 -preset medium -crf 22 -movflags +faststart "$COACH/coach_approve.mp4"
           ffmpeg -y -i "$COACH/Climber_celebrating_with_raised_…_72cb685e.webm" -an -vf "scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(oh-ih)/2:(oh-ih)/2,format=yuv420p" -r 24 -c:v libx264 -profile:v baseline -level 3.1 -preset medium -crf 22 -movflags +faststart "$COACH/coach_celebrate.mp4"
           ffmpeg -y -i "$COACH/Escalador_sonriente_extendiendo_…_6589c00e.webm" -an -vf "scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(oh-ih)/2:(oh-ih)/2,format=yuv420p" -r 24 -c:v libx264 -profile:v baseline -level 3.1 -preset medium -crf 22 -movflags +faststart "$COACH/coach_smile.mp4"
           for video in "$COACH"/coach_*.mp4; do
             test -s "$video"
-            ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,profile,pix_fmt,width,height -of csv=p=0 "$video" | grep -q '^h264,Constrained Baseline,yuv420p,720,1280$'
+            ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=nw=1 "$video" | grep -qx 'codec_name=h264'
+            ffprobe -v error -select_streams v:0 -show_entries stream=pix_fmt -of default=nw=1 "$video" | grep -qx 'pix_fmt=yuv420p'
+            ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$video" | grep -qx '720x1280'
           done
           test "$(find "$COACH" -maxdepth 1 -type f -name 'coach_*.mp4' | wc -l)" -eq 5
           du -h "$COACH"/coach_*.mp4
