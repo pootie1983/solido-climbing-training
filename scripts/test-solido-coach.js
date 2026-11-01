@@ -572,6 +572,7 @@ const runnerContext={
   playPlanWorkoutCue:kind=>runnerEvents.push({type:'sound',kind}),
   showPlanWorkoutNotice:(kind,title,message)=>runnerEvents.push({type:'notice',kind,title,message}),
   renderPlanRun:()=>runnerEvents.push({type:'render'}),
+  updatePlanWorkoutNotice:()=>runnerEvents.push({type:'notice-refresh'}),
   finishPlanRun:()=>{runnerContext.planRunState=null;runnerEvents.push({type:'finish'});},
   formatPlanTime:n=>String(n),
   Math,Number
