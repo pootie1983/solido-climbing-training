@@ -5405,6 +5405,7 @@ function tickPlanRun(){
     }else{
       st.phase='work';
       if(st.restReason==='rep')st.rep++;
+      else if(st.restReason==='set'){st.set++;st.rep=1;}
       st.restReason=null;
       st.exerciseRemaining=Math.max(5,Number(item.work)||30);
       const ex=exercises.find(e=>Number(e.id)===Number(item.id));
