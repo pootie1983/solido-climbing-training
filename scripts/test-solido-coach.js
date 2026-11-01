@@ -275,3 +275,13 @@ assert.equal(weeklyAdvice.title, 'Buena constancia esta semana');
 assert.match(weeklyAdvice.body, /120 minutos/);
 console.log('SOLIDO COACH advice regression checks passed: recent recovery, stale activity, limitations and weekly consistency.');
 
+const shortSleepAdvice = buildAdvice([], emptyProfile, emptyPrefs, 'cercano', {sleepMinutes:330});
+assert.match(shortSleepAdvice.body, /último registro de sueño fue inferior a 6 horas/);
+assert.match(shortSleepAdvice.body, /no determina tu recuperación/);
+const adequateSleepAdvice = buildAdvice([], emptyProfile, emptyPrefs, 'cercano', {sleepMinutes:420});
+assert.doesNotMatch(adequateSleepAdvice.body, /último registro de sueño/);
+const noSleepPermissionAdvice = buildAdvice([], emptyProfile, emptyPrefs, 'cercano', {sleepMinutes:null});
+assert.doesNotMatch(noSleepPermissionAdvice.body, /último registro de sueño/);
+console.log('SOLIDO COACH Health Connect checks passed: optional sleep context is cautious and never blocks local advice.');
+
+
