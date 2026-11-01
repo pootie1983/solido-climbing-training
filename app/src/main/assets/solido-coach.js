@@ -22,12 +22,12 @@
     const equipment=$('coachEquipment')?.value||'gimnasio';
     const limitations=$('coachLimitations')?.value.trim()||'';
     const ok=write('solidoCoachDays',days)&&write('solidoCoachExperience',experience)&&write('solidoCoachEquipment',equipment)&&write('solidoCoachLimitations',limitations);
-    const status=$('coachSaveStatus');
+    render();\n    const status=$('coachSaveStatus');
     if(status)status.textContent=ok?'Preferencias guardadas en este dispositivo.':'No se pudieron guardar todos los datos.';
   };
   function buildLocalAdvice(sessionList,profile,preferences){
     const now=Date.now(),weekAgo=now-7*24*60*60*1000;
-    const dated=sessionList.map(item=>({item,date:new Date(item.ts||item.date||'')})).filter(x=>Number.isFinite(x.date.getTime()));
+    const dated=sessionList.map(item=>{let date=item.ts?new Date(item.ts):null;if((!date||!Number.isFinite(date.getTime()))&&item.date){const m=String(item.date).match(/^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{4})(?:,?\\s+(\\d{1,2}):(\\d{2})(?::(\\d{2}))?)?/);if(m)date=new Date(Number(m[3]),Number(m[2])-1,Number(m[1]),Number(m[4]||0),Number(m[5]||0),Number(m[6]||0));}return {item,date};}).filter(x=>x.date&&Number.isFinite(x.date.getTime()));
     const recent=dated.filter(x=>x.date.getTime()>=weekAgo&&x.date.getTime()<=now);
     const completed=recent.filter(x=>Number(x.item.mins||0)>0);
     const minutes=completed.reduce((sum,x)=>sum+Math.max(0,Number(x.item.mins)||0),0);
