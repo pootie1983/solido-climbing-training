@@ -25,7 +25,7 @@
     render();\n    const status=$('coachSaveStatus');
     if(status)status.textContent=ok?'Preferencias guardadas en este dispositivo.':'No se pudieron guardar todos los datos.';
   };
-  function buildLocalAdvice(sessionList,profile,preferences){
+  function buildLocalAdvice(sessionList,profile,preferences,personality){
     const now=Date.now(),weekAgo=now-7*24*60*60*1000;
     const dated=sessionList.map(item=>{let date=item.ts?new Date(item.ts):null;if((!date||!Number.isFinite(date.getTime()))&&item.date){const m=String(item.date).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:,?\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);if(m)date=new Date(Number(m[3]),Number(m[2])-1,Number(m[1]),Number(m[4]||0),Number(m[5]||0),Number(m[6]||0));}return {item,date};}).filter(x=>x.date&&Number.isFinite(x.date.getTime()));
     const recent=dated.filter(x=>x.date.getTime()>=weekAgo&&x.date.getTime()<=now);
@@ -41,7 +41,7 @@
     else{title='Siguiente paso: regularidad';body='Llevas '+completed.length+' sesiones y '+minutes+' minutos registrados en los últimos 7 días. Tu disponibilidad es de '+days+' días por semana. Intenta repartir las sesiones y evita encadenar trabajos intensos de dedos en días consecutivos.';}
     if(last&&now-last.date.getTime()<24*60*60*1000){body+=' Como has registrado actividad en las últimas 24 horas, valora hoy una jornada suave o de descanso antes de volver a cargar fuerte.';}
     if(preferences.limitations.trim()){body+=' Has indicado esta limitación: '+preferences.limitations+'. Ajusta cualquier ejercicio que la empeore y detén la actividad si aparece dolor.';}
-    return {title,body};
+    if(personality==='gracioso'){body='¡A por ello, que la roca no se escala sola! '+body;}else if(personality==='estricto'){body='Objetivo claro: '+body;}else{body='Vamos paso a paso: '+body;}\n    return {title,body};
   }
   function render(){
     const p=personalities.find(x=>x.id===read('solidoCoachPersonality','cercano'))||personalities[0];
@@ -56,7 +56,7 @@
     };
     const sessionList=(()=>{try{return JSON.parse(read('solidoSessions','[]'))||[];}catch(e){return [];}})();
     const preferences={days:read('solidoCoachDays','3'),experience:read('solidoCoachExperience','intermedio'),equipment:read('solidoCoachEquipment','gimnasio'),limitations:read('solidoCoachLimitations','')};
-    const advice=buildLocalAdvice(sessionList,profile,preferences);
+    const advice=buildLocalAdvice(sessionList,profile,preferences,p.id);
     const adviceTitle=$('coachAdviceTitle'),adviceBody=$('coachAdviceBody');
     if(adviceTitle)adviceTitle.textContent=advice.title;
     if(adviceBody)adviceBody.textContent=advice.body;
