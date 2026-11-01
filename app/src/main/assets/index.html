@@ -3320,12 +3320,18 @@ body.br-fullscreen-active .sg-close{display:flex}
         <small id="coachSaveStatus" class="coach-muted" aria-live="polite">Todavía no has guardado cambios.</small>
       </form>
     </div>
+    <div class="coach-panel coach-advice">
+      <h3>Tu consejo de entrenamiento</h3>
+      <p id="coachAdviceTitle" class="coach-advice-title">Preparando tu recomendación…</p>
+      <p id="coachAdviceBody" class="coach-muted" aria-live="polite">El consejo se calculará con tus entrenamientos guardados y las preferencias que hayas indicado.</p>
+      <small class="coach-muted">Consejos locales orientativos; no sustituyen la valoración de un profesional ni modifican tus planes automáticamente.</small>
+    </div>
     <div class="coach-panel">
       <h3>Actividad disponible para el entrenador</h3>
       <p class="coach-muted">Resumen de datos que SOLIDO ya puede consultar, si están disponibles y has concedido permisos.</p>
       <div id="coachHealthSummary" class="coach-profile-grid"></div>
     </div>
-    <div class="coach-note"><strong>Próxima fase:</strong> activar el entrenador local con recomendaciones básicas y preparar la conexión segura con la IA avanzada. Esta pantalla todavía no envía datos a ningún servicio externo.</div>
+    <div class="coach-note"><strong>Privacidad:</strong> estos consejos se calculan en el propio dispositivo con los datos guardados en SOLIDO. La conexión segura con IA avanzada se preparará en una fase posterior y requerirá consentimiento. Ningún plan se cambiará sin tu aprobación.</div>
     <button class="btn secondary coach-back" type="button" onclick="show('home')">← Volver al inicio</button>
   </div>
 </section>
@@ -6458,6 +6464,7 @@ window.onHealthConnectData=function(data){
    if(button)button.style.display='none';
   }
  }
+  if(typeof window.solidoCoachRender==='function')window.solidoCoachRender();
 };
 
 healthConnectRefresh();
