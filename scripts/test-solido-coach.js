@@ -419,7 +419,8 @@ for (const personality of ['cercano','gracioso','estricto']) {
   assert.ok(html.includes("solidoCoachSetPersonality('" + personality + "')"), 'Coach personality button must be connected: ' + personality);
 }
 assert.match(html, /onclick=["']solidoCoachAcceptPlanProposal\(\)["']/, 'Accept proposal button must be connected to the guarded acceptance handler');
-assert.match(coach, /const proposalBlockReason=getProposalBlockReason\(sessionList,preferences,window\.solidoCoachHealthData\|\|null\);/, 'Coach rendering must apply recovery checks');
+assert.match(coach, /const proposalBlockReason=getProposalBlockReason\(sessionList,preferences,healthData\);/, 'Coach rendering must calculate recovery cautions');
+assert.match(coach, /const proposal=preferences\.limitations\.trim\(\)\?null:buildProposal\(profile,preferences\);/, 'Coach must still prepare the first plan when recovery cautions are present');
 
 
 
