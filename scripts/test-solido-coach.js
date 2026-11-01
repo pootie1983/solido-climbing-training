@@ -531,7 +531,7 @@ assert.match(planRunnerSource,/showPlanWorkoutNotice\('start','¡A ENTRENAR!'/);
 assert.match(planRunnerSource,/playPlanWorkoutCue\('rest'\)/);
 assert.match(planRunnerSource,/showPlanWorkoutNotice\('rest','DESCANSO'/);
 assert.match(planRunnerSource,/if\(st\.phase==='rest'\)[\s\S]*?DESCANSO/,'Resuming during a rest period must keep the rest notice instead of telling the user to work');
-assert.match(planRunnerSource,/restReason==='set'\?'SERIE '\+st\.set:restReason==='rep'\?'SIGUIENTE REPETICIÓN'/,'The notice after rest must identify the correct next set or repetition');
+assert.match(planRunnerSource,/showPlanWorkoutNotice\('start','¡A ENTRENAR!','',null\)/,'After a rest interval, show only the start cue and timer without extra exercise text');
 assert.match(html,/const restIntervals=Math\.max\(0,sets\*reps-1\);[\s\S]*?return sets\*reps\*work\+restIntervals\*rest;/,'The plan duration must include every rest between work intervals');
 assert.match(html,/id="planWorkoutNotice"/,'Coach workouts must have their own full-screen visual notice');
 assert.match(html,/id="planWorkoutNoticeCountdown"/,'Rest notice must display a large countdown');
