@@ -286,6 +286,20 @@ assert.doesNotMatch(noSleepPermissionAdvice.body, /último registro de sueño/);
 assert.doesNotMatch(missingSleepAdvice.body, /último registro de sueño/);
 console.log('SOLIDO COACH Health Connect checks passed: optional sleep context is cautious and never blocks local advice.');
 
+const proposalBlockSource = extractFunction(coach, 'function getProposalBlockReason(sessionList,preferences,healthData){')
+  .replace('function getProposalBlockReason(sessionList,preferences,healthData){', 'function(sessionList,preferences,healthData){');
+const getProposalBlockReason = vm.runInNewContext('(' + proposalBlockSource + ')', {sessionDate, Date});
+const restedPreferences = {...emptyPrefs,limitations:''};
+assert.match(getProposalBlockReason([{date:daysAgo(1),mins:45}],restedPreferences,null), /últimas 24 horas/, 'A completed recent session should block another automatic proposal');
+assert.equal(getProposalBlockReason([{date:daysAgo(3),mins:45}],restedPreferences,null), '', 'Older training should not block a new proposal');
+assert.equal(getProposalBlockReason([{date:daysAgo(1),force:25}],restedPreferences,null), '', 'Force tests should not count as a training session for recovery blocking');
+assert.equal(getProposalBlockReason([{date:'01/01/2099, 10:30',mins:45}],restedPreferences,null), '', 'Future training entries must not trigger recovery blocking');
+assert.match(getProposalBlockReason([],restedPreferences,{sleepMinutes:330}), /menos de 6 horas/, 'Short sleep should block automatic loading proposals');
+assert.equal(getProposalBlockReason([],restedPreferences,{sleepMinutes:null}), '', 'Missing sleep data must not block proposals');
+assert.match(getProposalBlockReason([], {...restedPreferences,limitations:'molestia de hombro'},null), /lesión o limitación/, 'Declared limitations must block automatic proposals');
+console.log('SOLIDO COACH recovery gate checks passed: recent sessions, short sleep, limitations and invalid records.');
+
+
 const bridge = fs.readFileSync('app/src/main/java/com/solidoclimbing/training/HealthConnectBridge.kt', 'utf8');
 assert.match(bridge, /private val requiredPermissions = setOf\([\s\S]*?StepsRecord::class[\s\S]*?DistanceRecord::class[\s\S]*?TotalCaloriesBurnedRecord::class[\s\S]*?HeartRateRecord::class[\s\S]*?\)/, 'Required Health Connect permissions must include core activity metrics');
 assert.doesNotMatch(bridge.match(/private val requiredPermissions = setOf\([\s\S]*?\n    \)/)?.[0] || '', /SleepSessionRecord/, 'Sleep must remain optional');
