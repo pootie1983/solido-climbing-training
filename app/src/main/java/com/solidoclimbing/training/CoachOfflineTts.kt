@@ -127,13 +127,14 @@ class CoachOfflineTts(
                             onStatus("started")
                         }
 
+                        val activeTrack = track ?: throw IllegalStateException("AudioTrack no disponible")
                         val pcm = ShortArray(audio.samples.size) { index ->
                             (audio.samples[index].coerceIn(-1.0f, 1.0f) * Short.MAX_VALUE).toInt().toShort()
                         }
                         var offset = 0
                         while (offset < pcm.size && id == requestId.get()) {
                             val count = minOf(2048, pcm.size - offset)
-                            val written = track.write(pcm, offset, count, AudioTrack.WRITE_BLOCKING)
+                            val written = activeTrack.write(pcm, offset, count, AudioTrack.WRITE_BLOCKING)
                             if (written <= 0) throw IllegalStateException("AudioTrack no pudo escribir el audio: $written")
                             offset += written
                         }
@@ -141,7 +142,7 @@ class CoachOfflineTts(
                         // Keep only one short PCM chunk in memory at a time. This avoids large
                         // native/heap allocations on phones when a long coaching paragraph is read.
                         while (id == requestId.get() &&
-                            track.playbackHeadPosition.toLong() < totalSamplesPlayed) {
+                            activeTrack.playbackHeadPosition.toLong() < totalSamplesPlayed) {
                             Thread.sleep(30)
                         }
                     }
