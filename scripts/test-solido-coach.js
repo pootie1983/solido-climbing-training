@@ -538,7 +538,7 @@ assert.match(html,/id="planWorkoutNoticeCountdown"/,'Rest notice must display a 
 assert.ok(html.includes('#planWorkoutNotice{position:fixed;inset:0;z-index:100040;'),'Plan notices must render above the full-screen workout runner');
 assert.ok(html.includes('.plan-workout-notice-card.cue-start .plan-workout-image')&&html.includes('.plan-workout-notice-card.cue-rest .plan-workout-image'),'Start and rest notices must contain only their title and timer');
 assert.ok(html.includes('.plan-workout-notice-card.cue-next .plan-workout-countdown')&&html.includes("kicker.textContent=kind==='next'?'SIGUIENTE EJERCICIO'"),'Exercise-change notice must show only the next exercise image and name');
-assert.ok(html.includes('function playPlanWorkoutCue(kind)')&&html.includes('exponentialRampToValueAtTime(.95'),'Plan workout sounds must use a substantially higher output level');
+assert.ok(html.includes('function playPlanWorkoutCue(kind)')&&html.includes('level:.95')&&html.includes('exponentialRampToValueAtTime(partial.level'),'Plan workout bell cues must preserve the high output level');
 assert.ok(planRunnerSource.includes('renderPlanRun();\n  updatePlanWorkoutNotice();'),'The visible work timer must refresh on every workout tick');
 assert.ok(html.includes('id="planRunDescription"')&&html.includes('id="planRunTip"'),'The workout runner must show the exercise instructions and technical tip');
 assert.ok(planRunnerSource.includes('ex?.desc')&&planRunnerSource.includes('ex?.tip'),'Workout runner instructions must come from the exercise library record');
