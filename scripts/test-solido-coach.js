@@ -412,7 +412,7 @@ function makeInitialPlanContext(overrides={}) {
 }
 const autoPlanProposal={category:'Fuerza',name:'SOLIDO COACH · Plan inicial',items:[{id:19,sets:1,reps:1,work:300,rest:0}]};
 const autoPlanContext=makeInitialPlanContext();
-const ensureInitialPlan=vm.runInNewContext('('+ensureInitialPlanSource+')');
+const ensureInitialPlan=vm.runInNewContext('('+ensureInitialPlanSource+')',autoPlanContext);
 assert.equal(ensureInitialPlan.call(autoPlanContext,autoPlanProposal),true,'A valid first profile should automatically create a plan');
 assert.equal(autoPlanContext.customPlans.length,1);
 assert.equal(autoPlanContext.customPlans[0].source,'solido-coach-initial');
@@ -422,13 +422,16 @@ assert.equal(autoPlanContext.rendered,true);
 assert.equal(ensureInitialPlan.call(autoPlanContext,autoPlanProposal),true);
 assert.equal(autoPlanContext.customPlans.length,1,'Repeated Coach renders must not create duplicate initial plans');
 const blockedInitialPlanContext=makeInitialPlanContext();
-assert.equal(ensureInitialPlan.call(blockedInitialPlanContext,null),false,'Safety-blocked or unavailable proposals must not create a plan');
+const ensureBlockedPlan=vm.runInNewContext('('+ensureInitialPlanSource+')',blockedInitialPlanContext);
+assert.equal(ensureBlockedPlan(null),false,'Safety-blocked or unavailable proposals must not create a plan');
 assert.equal(blockedInitialPlanContext.customPlans.length,0);
 const invalidProfileContext=makeInitialPlanContext({validPersonalProfile:()=>false});
-assert.equal(ensureInitialPlan.call(invalidProfileContext,autoPlanProposal),false,'An incomplete profile must not create a plan');
+const ensureInvalidProfilePlan=vm.runInNewContext('('+ensureInitialPlanSource+')',invalidProfileContext);
+assert.equal(ensureInvalidProfilePlan(autoPlanProposal),false,'An incomplete profile must not create a plan');
 assert.equal(invalidProfileContext.customPlans.length,0);
 const failedInitialStorageContext=makeInitialPlanContext({localStorage:{setItem:()=>{throw new Error('storage full');}}});
-assert.equal(ensureInitialPlan.call(failedInitialStorageContext,autoPlanProposal),false);
+const ensureFailedStoragePlan=vm.runInNewContext('('+ensureInitialPlanSource+')',failedInitialStorageContext);
+assert.equal(ensureFailedStoragePlan(autoPlanProposal),false);
 assert.equal(failedInitialStorageContext.customPlans.length,0,'Storage failure must roll back the automatic plan');
 assert.match(coach,/window\.solidoCoachEnsureInitialPlan\(window\.solidoCoachCurrentProposal\)/,'Coach rendering must trigger automatic first-plan creation');
 assert.match(coach,/initialPlanReady\?'Tu primer plan ya está creado/,'Coach must tell the user when the first plan is ready');
