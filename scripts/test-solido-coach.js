@@ -143,3 +143,40 @@ assert.equal(context.customPlans[0].items[0].id, 19);
 assert.equal(context.customPlans[0].seconds, 300);
 assert.ok(saved.some(x=>x.key==='solidoCustomPlans'), 'New plan should be persisted');
 assert.equal(context.shown, 'plans', 'Accepted plan should navigate to plans');
+
+// Preference saving must attempt every field even if one storage write fails.
+const saveDetailsSource = extractFunction(coach, 'window.solidoCoachSaveDetails=function(event){')
+  .replace('window.solidoCoachSaveDetails=function(event){', 'function(event){');
+function runSaveDetailsTest(failingKey) {
+  const values = {
+    coachDays:{value:'4'},
+    coachExperience:{value:'avanzado'},
+    coachEquipment:{value:'basico'},
+    coachLimitations:{value:'Molestias en el hombro'},
+    coachSaveStatus:{textContent:''}
+  };
+  const attempted = [];
+  let prevented = false;
+  const context = {
+    $: id => values[id] || null,
+    write: (key, value) => {
+      attempted.push({key, value});
+      return key !== failingKey;
+    },
+    render: () => {},
+  };
+  vm.runInNewContext('(' + saveDetailsSource + ')({preventDefault(){}})', {
+    ...context,
+    event: {preventDefault(){prevented = true;}}
+  });
+  return {attempted, status:values.coachSaveStatus.textContent, prevented};
+}
+const failedPreferenceSave = runSaveDetailsTest('solidoCoachExperience');
+assert.deepEqual(failedPreferenceSave.attempted.map(x=>x.key), [
+  'solidoCoachDays','solidoCoachExperience','solidoCoachEquipment','solidoCoachLimitations'
+], 'Every preference must be attempted even when one write fails');
+assert.equal(failedPreferenceSave.status, 'No se pudieron guardar todos los datos.');
+const successfulPreferenceSave = runSaveDetailsTest(null);
+assert.equal(successfulPreferenceSave.attempted.length, 4);
+assert.equal(successfulPreferenceSave.status, 'Preferencias guardadas en este dispositivo.');
+console.log('SOLIDO COACH preference persistence checks passed: all fields attempted and partial failures reported.');
