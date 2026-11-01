@@ -28,9 +28,10 @@ class HealthConnectBridge(
     private val requiredPermissions = setOf(
         HealthPermission.getReadPermission(StepsRecord::class),
         HealthPermission.getReadPermission(DistanceRecord::class),
-        HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
-        HealthPermission.getReadPermission(HeartRateRecord::class)
+        HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class)
     )
+    private val optionalHeartRatePermission =
+        HealthPermission.getReadPermission(HeartRateRecord::class)
     private val optionalSleepPermission =
         HealthPermission.getReadPermission(SleepSessionRecord::class)
 
@@ -91,24 +92,28 @@ class HealthConnectBridge(
 
             // El pulso también es una métrica complementaria: si su consulta falla,
             // conservamos los pasos y las calorías ya calculados.
-            val averageBpm = try {
-                val lastDay = now.minus(Duration.ofHours(24))
-                val heartRecords = client.readRecords(
-                    ReadRecordsRequest(
-                        recordType = HeartRateRecord::class,
-                        timeRangeFilter = TimeRangeFilter.between(lastDay, now),
-                        ascendingOrder = false,
-                        pageSize = 50
-                    )
-                ).records
-                heartRecords.asSequence()
-                    .flatMap { it.samples.asSequence() }
-                    .map { it.beatsPerMinute }
-                    .toList()
-                    .takeIf { it.isNotEmpty() }
-                    ?.average()
-                    ?.toLong()
-            } catch (_: Exception) {
+            val averageBpm = if (granted.contains(optionalHeartRatePermission)) {
+                try {
+                    val lastDay = now.minus(Duration.ofHours(24))
+                    val heartRecords = client.readRecords(
+                        ReadRecordsRequest(
+                            recordType = HeartRateRecord::class,
+                            timeRangeFilter = TimeRangeFilter.between(lastDay, now),
+                            ascendingOrder = false,
+                            pageSize = 50
+                        )
+                    ).records
+                    heartRecords.asSequence()
+                        .flatMap { it.samples.asSequence() }
+                        .map { it.beatsPerMinute }
+                        .toList()
+                        .takeIf { it.isNotEmpty() }
+                        ?.average()
+                        ?.toLong()
+                } catch (_: Exception) {
+                    null
+                }
+            } else {
                 null
             }
             result.put("heartRate", averageBpm ?: JSONObject.NULL)
