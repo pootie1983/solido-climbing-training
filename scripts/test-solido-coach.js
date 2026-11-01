@@ -372,7 +372,8 @@ assert.match(getProposalBlockReason([],restedPreferences,{sleepMinutes:330}), /m
 assert.equal(getProposalBlockReason([],restedPreferences,{sleepMinutes:null}), '', 'Missing sleep data must not block proposals');
 assert.match(getProposalBlockReason([], {...restedPreferences,limitations:'molestia de hombro'},null), /lesión o limitación/, 'Declared limitations must block automatic proposals');
 
-assert.match(coach, /const proposalBlockReason=getProposalBlockReason\(sessionList,preferences,window\.solidoCoachHealthData\|\|null\);\s*const proposal=proposalBlockReason\?null:buildProposal\(profile,preferences\);/, 'The renderer must apply recovery gates before creating a proposal');
+assert.match(coach, /const proposalBlockReason=getProposalBlockReason\(sessionList,preferences,healthData\);\s*const proposal=preferences\.limitations\.trim\(\)\?null:buildProposal\(profile,preferences\);/, 'Recovery advice must not prevent saving the first plan; declared limitations still block automatic proposals');
+assert.match(coach, /const proposalSafetyNote=proposal\?proposalBlockReason:'';/, 'Recent training and short sleep must remain visible as recovery cautions');
 assert.match(coach, /window\.solidoCoachCurrentProposal=proposal\?\{[\s\S]*?:null;/, 'A blocked proposal must not remain available as a stale current proposal');
 assert.match(coach, /if\(proposalButton\)proposalButton\.style\.display=proposal&&!initialPlanReady\?'block':'none';/, 'The accept button must be hidden when a proposal is blocked or already saved automatically');
 
@@ -522,15 +523,18 @@ vm.runInNewContext('('+acceptProposalSource+')',emptyAcceptContext).call(emptyAc
 assert.equal(emptyAcceptContext.customPlans.length,1,'Accepting without a proposal must be a no-op');
 
 // Plan sessions must announce their start, rests, resumed work and exercise transitions.
-// These cues reuse the existing workout audio/notice helpers; the force hand-switch flow is untouched.
+// Plan cues use their own prominent visual overlay and preserve the separate interval workout UI.
 const planRunnerSource=html.slice(html.indexOf('let planRunState=null'),html.indexOf('/* =========================\n   ESTADÍSTICAS',html.indexOf('let planRunState=null')));
 assert.match(planRunnerSource,/playWorkoutCue\('start'\)/);
-assert.match(planRunnerSource,/showWorkoutNotice\('start'/);
+assert.match(planRunnerSource,/showPlanWorkoutNotice\('start'/);
 assert.match(planRunnerSource,/playWorkoutCue\('rest'\)/);
-assert.match(planRunnerSource,/showWorkoutNotice\('rest'/);
-assert.match(planRunnerSource,/if\(st\.phase==='rest'\)[\s\S]*?DESCANSO EN CURSO/,'Resuming during a rest period must keep the rest notice instead of telling the user to work');
-assert.match(planRunnerSource,/restReason==='set'\?'SIGUIENTE SERIE':restReason==='rep'\?'SIGUIENTE REPETICIÓN'/,'The notice after rest must identify the correct next set or repetition');
+assert.match(planRunnerSource,/showPlanWorkoutNotice\('rest'/);
+assert.match(planRunnerSource,/if\(st\.phase==='rest'\)[\s\S]*?DESCANSO/,'Resuming during a rest period must keep the rest notice instead of telling the user to work');
+assert.match(planRunnerSource,/restReason==='set'\?'SERIE '\+st\.set:restReason==='rep'\?'SIGUIENTE REPETICIÓN'/,'The notice after rest must identify the correct next set or repetition');
 assert.match(html,/const restIntervals=Math\.max\(0,sets\*reps-1\);[\s\S]*?return sets\*reps\*work\+restIntervals\*rest;/,'The plan duration must include every rest between work intervals');
+assert.match(html,/id="planWorkoutNotice"/,'Coach workouts must have their own full-screen visual notice');
+assert.match(html,/id="planWorkoutNoticeCountdown"/,'Rest notice must display a large countdown');
+assert.match(html,/function updatePlanWorkoutNotice\([\s\S]*?formatPlanTime\(planRunState\.exerciseRemaining\)/,'Rest countdown must update while the plan runs');
 const estimateItemSource=extractFunction(html,'function estimatePlanItem(item){');
 const estimatePlanSource=extractFunction(html,'function estimatePlan(items){');
 const estimateContext={Math,Number};
