@@ -50,7 +50,7 @@
     const allForceRows=dated.filter(row=>row.date.getTime()<=now&&Number(row.item.force)>0).sort((a,b)=>b.date-a.date);
     const bestForce=allForceRows.reduce((best,row)=>Math.max(best,Number(row.item.force)||0),0);
     const latestForce=allForceRows[0]||null;
-    return {total:sessionList.filter(item=>!Number(item.force)).length,month:month.filter(row=>!Number(row.item.force)).length,minutes,bestForce,forceCount:forceRows.length,latestForce:latestForce?Number(latestForce.item.force):0,latestForceDate:latestForce?latestForce.date.toLocaleDateString('es-ES'):'',latestForceHand:latestForce?String(latestForce.item.hand||''):'',latestForceGrip:latestForce?String(latestForce.item.grip||''):''};
+    return {total:sessionList.filter(item=>{if(Number(item.force))return false;const date=sessionDate(item);return !date||date.getTime()<=now;}).length,month:month.filter(row=>!Number(row.item.force)).length,minutes,bestForce,forceCount:forceRows.length,latestForce:latestForce?Number(latestForce.item.force):0,latestForceDate:latestForce?latestForce.date.toLocaleDateString('es-ES'):'',latestForceHand:latestForce?String(latestForce.item.hand||''):'',latestForceGrip:latestForce?String(latestForce.item.grip||''):''};
   }
   function buildLocalAdvice(sessionList,profile,preferences,personality){
     const now=Date.now(),weekAgo=now-7*24*60*60*1000;
