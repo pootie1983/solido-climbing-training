@@ -122,7 +122,7 @@ class MainActivity : ComponentActivity() {
                 pendingCoachSpeech = cleanText
                 // En Samsung Galaxy, usar explícitamente el motor Samsung TTS para
                 // respetar la voz española masculina elegida en los ajustes del teléfono.
-                coachTts = TextToSpeech(this, { status ->
+                coachTts = TextToSpeech(this).also { it.setEngineByPackageName("com.samsung.SMT") }.let { TextToSpeech(this, { status ->
                     runOnUiThread {
                         if (status == TextToSpeech.SUCCESS) {
                             coachTtsReady = true
@@ -158,7 +158,7 @@ class MainActivity : ComponentActivity() {
                             notifyCoachVoiceStatus("unavailable")
                         }
                     }
-                }, "com.samsung.SMT")
+                })
             } else if (coachTtsReady) {
                 speakCoachTextNow(cleanText)
             } else {
