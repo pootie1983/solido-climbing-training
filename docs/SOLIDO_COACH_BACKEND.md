@@ -4,6 +4,19 @@
 
 Este documento define la integración prevista. **No hay un backend desplegado ni una llamada de IA activa en la APK.** La aplicación debe seguir funcionando íntegramente con sus recomendaciones locales si el servicio no está configurado o no está disponible.
 
+## Versión local prioritaria (fase actual)
+
+La primera entrega de SOLIDO COACH funciona en el propio dispositivo y no requiere red ni backend. Incluye:
+- Consejos calculados a partir del historial local, objetivo, disponibilidad semanal y personalidad elegida.
+- Propuestas formadas exclusivamente con ejercicios del catálogo de SOLIDO.
+- Una limitación declarada impide generar una sesión automática.
+- Un entrenamiento completado en las últimas 24 horas bloquea otra propuesta de carga y muestra un consejo de recuperación.
+- Un registro opcional de sueño inferior a seis horas también bloquea la propuesta de carga; si el permiso o el dato no están disponibles, el Coach sigue funcionando con el resto del contexto.
+- Los tests de regresión cubren fechas inválidas/futuras, sesiones recientes, mediciones de fuerza, sueño opcional y límites de las propuestas.
+- Aceptar una propuesta crea un plan nuevo sin modificar los planes existentes.
+
+La orientación local es conservadora y no equivale a una evaluación médica. El usuario conserva el control de aceptar o no una propuesta.
+
 ## Arquitectura obligatoria
 
 1. La APK se comunica únicamente con un endpoint HTTPS propio de SOLIDO.
