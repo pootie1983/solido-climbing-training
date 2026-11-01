@@ -633,6 +633,6 @@ assert.match(mainActivity, /setOnUtteranceProgressListener\(/, 'Coach speech mus
 assert.match(mainActivity, /LANG_MISSING_DATA|LANG_NOT_SUPPORTED/, 'Coach must handle missing Spanish voice data');
 assert.match(coach, /state==='done'/, 'Coach UI must report when speech finishes');
 assert.match(coach, /state==='error'/, 'Coach UI must report playback errors');
-assert.match(html, /coach-avatar-panel\\.is-speaking/, 'Coach avatar must react while native speech is playing');
+assert.match(html, /coach-avatar-panel\.is-speaking/, 'Coach avatar must react while native speech is playing');
 const manifest = fs.readFileSync('app/src/main/AndroidManifest.xml', 'utf8');
 assert.match(manifest, /android\.intent\.action\.TTS_SERVICE/, 'Android must be able to discover installed TTS engines');
