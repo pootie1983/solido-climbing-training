@@ -133,7 +133,7 @@
     if(hc){
       const values=[
         ['Pasos',$('hcSteps')?.textContent||'—'],['Calorías',$('hcCalories')?.textContent||'—'],
-        ['Pulso',$('hcHeart')?.textContent||'—'],['Sueño',$('hcSleep')?.textContent||'—']
+        ['Pulso medio (24 h)',$('hcHeart')?.textContent||'—'],['Sueño',$('hcSleep')?.textContent||'—']
       ];
       hc.innerHTML=values.map(([label,value])=>'<div class="coach-data"><span>'+safe(label)+'</span><strong>'+safe(value)+'</strong></div>').join('');
     }
