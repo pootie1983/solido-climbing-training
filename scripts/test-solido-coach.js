@@ -501,7 +501,13 @@ assert.equal(runnerContext.planRunState.rep,1);
 assert.ok(runnerEvents.some(e=>e.type==='notice'&&e.title==='SIGUIENTE SERIE'));
 runnerContext.planRunState.exerciseRemaining=1;
 runnerContext.tickPlanRun();
-assert.equal(runnerContext.planRunState.index,1,'Finishing all sets should advance to the next exercise');
+assert.equal(runnerContext.planRunState.phase,'rest','The second set must still complete its second repetition');
+runnerContext.planRunState.exerciseRemaining=1;
+runnerContext.tickPlanRun();
+assert.equal(runnerContext.planRunState.rep,2);
+runnerContext.planRunState.exerciseRemaining=1;
+runnerContext.tickPlanRun();
+assert.equal(runnerContext.planRunState.index,1,'Finishing all sets and repetitions should advance to the next exercise');
 assert.ok(runnerEvents.some(e=>e.type==='notice'&&e.title==='SIGUIENTE EJERCICIO'));
 assert.ok(runnerEvents.filter(e=>e.type==='sound'&&e.kind==='start').length>=3,'Starting/resuming work intervals should play the start cue');
 
