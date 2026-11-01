@@ -286,4 +286,15 @@ assert.doesNotMatch(noSleepPermissionAdvice.body, /último registro de sueño/);
 assert.doesNotMatch(missingSleepAdvice.body, /último registro de sueño/);
 console.log('SOLIDO COACH Health Connect checks passed: optional sleep context is cautious and never blocks local advice.');
 
+const bridge = fs.readFileSync('app/src/main/java/com/solidoclimbing/training/HealthConnectBridge.kt', 'utf8');
+assert.match(bridge, /private val requiredPermissions = setOf\([\s\S]*?StepsRecord::class[\s\S]*?DistanceRecord::class[\s\S]*?TotalCaloriesBurnedRecord::class[\s\S]*?HeartRateRecord::class[\s\S]*?\)/, 'Required Health Connect permissions must include core activity metrics');
+assert.doesNotMatch(bridge.match(/private val requiredPermissions = setOf\([\s\S]*?\n    \)/)?.[0] || '', /SleepSessionRecord/, 'Sleep must remain optional');
+assert.match(bridge, /private val optionalSleepPermission =\s*HealthPermission\.getReadPermission\(SleepSessionRecord::class\)/);
+assert.match(bridge, /if \(granted\.contains\(optionalSleepPermission\)\)/);
+assert.match(bridge, /result\.put\("sleepMinutes", sleepMinutes \?: JSONObject\.NULL\)/);
+assert.match(bridge, /result\.put\("sleepMinutes", JSONObject\.NULL\)/, 'Missing sleep permission must return a null metric, not fail the whole response');
+assert.match(html, /window\.solidoCoachHealthData=data&&data\.status==='ok'\?[\s\S]*?sleepMinutes:data\.sleepMinutes==null\?null:Number\(data\.sleepMinutes\)/, 'The WebView callback must pass optional sleep data into local advice');
+console.log('SOLIDO COACH Health Connect integration contract passed: required metrics, optional sleep permission and WebView mapping.');
+
+
 
