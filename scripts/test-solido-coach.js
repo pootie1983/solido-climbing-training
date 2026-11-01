@@ -295,12 +295,12 @@ assert.ok(parseSessionDate({date:new Date(Date.now()-60*60*1000).toLocaleString(
 
 console.log('SOLIDO COACH activity history checks passed: date filtering, monthly totals and force measurements.');
 
-const recentAdvice = buildAdvice([{date:daysAgo(1),mins:50}], emptyProfile, emptyPrefs, 'cercano');
+const recentAdvice = buildAdvice([{ts:new Date(Date.now()-60*60*1000).toISOString(),mins:50}], emptyProfile, emptyPrefs, 'cercano');
 assert.match(recentAdvice.title, /Siguiente paso|Buena constancia/);
 assert.match(recentAdvice.body, /últimas 24 horas/, 'Recent activity should trigger a recovery reminder');
 const staleAdvice = buildAdvice([{date:daysAgo(10),mins:40}], emptyProfile, emptyPrefs, 'cercano');
 assert.equal(staleAdvice.title, 'Vamos a crear una rutina', 'Old activity should not be treated as recent training');
-const limitationAdvice = buildAdvice([{date:daysAgo(1),mins:50}], emptyProfile, {...emptyPrefs,limitations:'molestia de hombro'}, 'estricto');
+const limitationAdvice = buildAdvice([{ts:new Date(Date.now()-60*60*1000).toISOString(),mins:50}], emptyProfile, {...emptyPrefs,limitations:'molestia de hombro'}, 'estricto');
 assert.match(limitationAdvice.body, /molestia de hombro/);
 assert.match(limitationAdvice.body, /detén la actividad si aparece dolor/);
 const weeklyAdvice = buildAdvice([
