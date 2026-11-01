@@ -643,3 +643,11 @@ assert.match(coach, /masculina española integrada/, 'Coach should report the bu
 
 const manifest = fs.readFileSync('app/src/main/AndroidManifest.xml', 'utf8');
 assert.match(manifest, /android\.intent\.action\.TTS_SERVICE/, 'Android must be able to discover installed TTS engines');
+
+// Media playback regression checks: one avatar video element, explicit MP4 clips and WebView autoplay.
+assert.equal((html.match(/id="coachAvatarVideo"/g)||[]).length,1,'Coach must contain exactly one video element with the coachAvatarVideo ID');
+assert.match(mainActivity,/mediaPlaybackRequiresUserGesture\s*=\s*false/,'Coach avatar videos must be allowed to play after native TTS starts');
+for (const clip of ['coach_explain.mp4','coach_point.mp4','coach_approve.mp4','coach_celebrate.mp4','coach_smile.mp4']) {
+  assert.ok(coach.includes(clip),'Coach avatar sequence must reference the packaged compatible clip: '+clip);
+}
+assert.doesNotMatch(coach,/\.webm|…_72cb685e|…_6589c00e/,'Coach playback must not reference the original WebM clips directly');
