@@ -159,7 +159,7 @@ class MainActivity : ComponentActivity() {
                             notifyCoachVoiceStatus("unavailable")
                         }
                     }
-                })
+                }, "com.samsung.SMT")
             } else if (coachTtsReady) {
                 speakCoachTextNow(cleanText)
             } else {
