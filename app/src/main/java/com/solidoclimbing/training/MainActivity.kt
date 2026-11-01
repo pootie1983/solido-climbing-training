@@ -19,6 +19,8 @@ import android.view.WindowManager
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.webkit.JavascriptInterface
+import android.speech.tts.TextToSpeech
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     private lateinit var healthConnectBridge: HealthConnectBridge
@@ -32,6 +34,9 @@ class MainActivity : ComponentActivity() {
     )
 
     private lateinit var web: WebView
+    private var coachTts: TextToSpeech? = null
+    private var coachTtsReady = false
+    private var pendingCoachSpeech: String? = null
     private lateinit var whc06Bridge: WHC06Bridge
     private var gameFullscreenRequested = false
     private var previousRequestedOrientation: Int? = null
@@ -79,6 +84,7 @@ class MainActivity : ComponentActivity() {
         whc06Bridge = WHC06Bridge(this, web)
         web.addJavascriptInterface(whc06Bridge, "WHC06")
         web.addJavascriptInterface(this, "AndroidUi")
+        web.addJavascriptInterface(this, "AndroidCoach")
         setContentView(web)
         web.loadUrl("file:///android_asset/index.html")
     }
@@ -101,6 +107,48 @@ class MainActivity : ComponentActivity() {
                 web.evaluateJavascript("densityReceiveCameraPhoto('data:image/jpeg;base64,$encoded')", null)
             }
         }
+    }
+
+    @JavascriptInterface
+    fun speakCoachText(text: String) {
+        runOnUiThread {
+            val cleanText = text.trim().take(1800)
+            if (cleanText.isEmpty()) return@runOnUiThread
+            if (coachTts == null) {
+                pendingCoachSpeech = cleanText
+                coachTts = TextToSpeech(this) { status ->
+                    if (status == TextToSpeech.SUCCESS) {
+                        coachTtsReady = true
+                        val language = coachTts?.setLanguage(Locale("es", "ES")) ?: TextToSpeech.LANG_NOT_SUPPORTED
+                        if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
+                            coachTts?.setLanguage(Locale("es"))
+                        }
+                        pendingCoachSpeech?.let { pending ->
+                            coachTts?.setSpeechRate(0.94f)
+                            coachTts?.setPitch(0.88f)
+                            coachTts?.speak(pending, TextToSpeech.QUEUE_FLUSH, null, "solido-coach")
+                            pendingCoachSpeech = null
+                        }
+                        web.evaluateJavascript("window.onSolidoCoachVoiceStatus && window.onSolidoCoachVoiceStatus('started')", null)
+                    } else {
+                        web.evaluateJavascript("window.onSolidoCoachVoiceStatus && window.onSolidoCoachVoiceStatus('unavailable')", null)
+                    }
+                }
+            } else if (coachTtsReady) {
+                coachTts?.setLanguage(Locale("es", "ES"))
+                coachTts?.setSpeechRate(0.94f)
+                coachTts?.setPitch(0.88f)
+                coachTts?.speak(cleanText, TextToSpeech.QUEUE_FLUSH, null, "solido-coach")
+                web.evaluateJavascript("window.onSolidoCoachVoiceStatus && window.onSolidoCoachVoiceStatus('started')", null)
+            } else {
+                pendingCoachSpeech = cleanText
+            }
+        }
+    }
+
+    @JavascriptInterface
+    fun stopCoachSpeech() {
+        runOnUiThread { coachTts?.stop(); pendingCoachSpeech = null }
     }
 
     @JavascriptInterface
@@ -192,6 +240,9 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         if (::healthConnectBridge.isInitialized) healthConnectBridge.release()
         if (::whc06Bridge.isInitialized) whc06Bridge.release()
+        coachTts?.stop()
+        coachTts?.shutdown()
+        coachTts = null
         if (::web.isInitialized) web.destroy()
         super.onDestroy()
     }
