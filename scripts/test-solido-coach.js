@@ -52,6 +52,8 @@ for (const [profile, preferences, expectedCategory, expectedDays] of cases) {
   const proposal = buildProposal(profile, preferences);
   assert.equal(proposal.category, expectedCategory);
   assert.equal(proposal.daysAvailable, expectedDays || 3, 'Weekly availability must be reflected in the proposal');
+  assert.match(proposal.note, /propuesta de una sesión, no un calendario semanal automático/);
+  assert.match(proposal.note, new RegExp('Disponibilidad semanal: ' + (expectedDays || 3)));
   assert.ok(proposal.items.length >= 4, 'Proposal should include warm-up and main exercises');
   for (const item of proposal.items) {
     assert.ok(exerciseIds.has(item.id), 'Unknown exercise ID in proposal: ' + item.id);
@@ -59,6 +61,7 @@ for (const [profile, preferences, expectedCategory, expectedDays] of cases) {
     assert.ok(Number.isInteger(item.reps) && item.reps >= 1 && item.reps <= 100, 'Invalid reps');
     assert.ok(Number.isInteger(item.work) && item.work >= 5 && item.work <= 600, 'Invalid work duration');
     assert.ok(Number.isInteger(item.rest) && item.rest >= 0 && item.rest <= 600, 'Invalid rest duration');
+    if (preferences.experience === 'avanzado' && profile.goal !== 'Fuerza de dedos' && item.label !== 'Calentamiento general' && item.label !== 'Movilidad de hombros' && item.label !== 'Movilidad de muñecas') assert.ok(item.sets <= 3, 'Advanced volume must remain capped');
   }
 }
 assert.equal(buildProposal({goal:'Fuerza general',age:30,level:'Intermedio'}, {equipment:'gimnasio',experience:'intermedio',limitations:'dolor'}), null, 'Limitations must suppress automatic proposals');
