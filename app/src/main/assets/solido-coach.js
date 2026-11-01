@@ -71,7 +71,7 @@
     const rawSleepMinutes=healthData?healthData.sleepMinutes:null;
     const sleepMinutes=rawSleepMinutes==null?NaN:Number(rawSleepMinutes);
     if(Number.isFinite(sleepMinutes)&&sleepMinutes>=0&&sleepMinutes<360){body+=' Health Connect muestra que el último registro de sueño fue inferior a 6 horas. Si corresponde a tu descanso principal, considera bajar la intensidad o descansar hoy; este dato por sí solo no determina tu recuperación.';}
-    if(personality==='gracioso'){body='¡A por ello, que la roca no se escala sola! '+body;}else if(personality==='estricto'){body='Objetivo claro: '+body;}else{body='Vamos paso a paso: '+body;}
+    if(personality==='gracioso'){body='¡A por ello, que la roca no se escala sola! '+body+' La roca no se va a mover: no hace falta correr. Descansar también forma parte del entrenamiento.';}else if(personality==='estricto'){body='Objetivo claro: '+body+' Cumple los descansos, cuida la técnica y no fuerces cuando aparezca dolor.';}else{body='Vamos paso a paso: '+body+' Escucha tu cuerpo; la constancia y una buena recuperación construyen el progreso.';}
     return {title,body};
   }
   function buildProposal(profile,preferences){
