@@ -289,6 +289,13 @@ assert.equal(stats.latestForceGrip, '20');
 assert.ok(parseSessionDate({ts:Date.now()}) instanceof Date, 'Valid timestamp should be parsed');
 assert.equal(parseSessionDate({date:'not a date'}), null, 'Invalid date should be ignored');
 assert.equal(parseSessionDate({date:'31/02/2026, 10:30'}), null, 'Impossible calendar dates should be rejected');
+
+assert.ok(parseSessionDate({ts:new Date(Date.now()-60*60*1000).toISOString()}) instanceof Date, 'ISO timestamps from completed sessions should be parsed');
+assert.ok(parseSessionDate({date:new Date(Date.now()-60*60*1000).toLocaleString('es-ES')}) instanceof Date, 'Legacy localized session dates should remain readable');
+assert.equal(getProposalBlockReason([{date:new Date(Date.now()-2*60*60*1000).toLocaleString('es-ES'),mins:35}],restedPreferences,null).includes('últimas 24 horas'), true, 'Recent legacy sessions without ISO timestamps must still trigger recovery');
+assert.equal(getProposalBlockReason([{ts:new Date(Date.now()-2*60*60*1000).toISOString(),mins:0}],restedPreferences,null), '', 'Zero-duration records must not be treated as completed training sessions');
+assert.equal(getProposalBlockReason([{ts:new Date(Date.now()-2*60*60*1000).toISOString(),mins:35,force:24}],restedPreferences,null), '', 'Force measurements must not be treated as training sessions even when they have duration metadata');
+
 console.log('SOLIDO COACH activity history checks passed: date filtering, monthly totals and force measurements.');
 
 const recentAdvice = buildAdvice([{date:daysAgo(1),mins:50}], emptyProfile, emptyPrefs, 'cercano');
