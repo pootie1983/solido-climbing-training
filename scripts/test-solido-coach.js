@@ -308,6 +308,8 @@ assert.match(bridge, /if \(granted\.contains\(optionalSleepPermission\)\)/);
 assert.match(bridge, /val sleepMinutes = if \(granted\.contains\(optionalSleepPermission\)\) \{\s*try \{/);
 assert.match(bridge, /catch \(_:\s*Exception\)\s*\{\s*null\s*\}/, 'A sleep read failure must be isolated and treated as missing optional data');
 assert.match(bridge, /result\.put\("status", "ok"\)[\s\S]*?val sleepMinutes = if[\s\S]*?result\.put\("sleepMinutes", sleepMinutes \?: JSONObject\.NULL\)/, 'Core metrics must remain successful when optional sleep data is unavailable');
+assert.match(bridge, /val averageBpm = try \{[\s\S]*?HeartRateRecord::class[\s\S]*?catch \(_:\s*Exception\)\s*\{\s*null\s*\}[\s\S]*?result\.put\("heartRate", averageBpm \?: JSONObject\.NULL\)/, 'A heart-rate read failure must not invalidate steps and calories');
+
 
 assert.match(bridge, /result\.put\("sleepMinutes", sleepMinutes \?: JSONObject\.NULL\)/);
 assert.match(bridge, /\}\s*else\s*\{\s*null\s*\}\s*result\.put\("sleepMinutes", sleepMinutes \?: JSONObject\.NULL\)/, 'Missing sleep permission must return a null metric without failing core Health Connect data');
