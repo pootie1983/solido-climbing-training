@@ -526,16 +526,20 @@ assert.equal(emptyAcceptContext.customPlans.length,1,'Accepting without a propos
 // Plan sessions must announce their start, rests, resumed work and exercise transitions.
 // Plan cues use their own prominent visual overlay and preserve the separate interval workout UI.
 const planRunnerSource=html.slice(html.indexOf('let planRunState=null'),html.indexOf('/* =========================\n   ESTADÍSTICAS',html.indexOf('let planRunState=null')));
-assert.match(planRunnerSource,/playWorkoutCue\('start'\)/);
-assert.match(planRunnerSource,/showPlanWorkoutNotice\('start'/);
-assert.match(planRunnerSource,/playWorkoutCue\('rest'\)/);
-assert.match(planRunnerSource,/showPlanWorkoutNotice\('rest'/);
+assert.match(planRunnerSource,/playPlanWorkoutCue\('start'\)/);
+assert.match(planRunnerSource,/showPlanWorkoutNotice\('start','¡A ENTRENAR!'/);
+assert.match(planRunnerSource,/playPlanWorkoutCue\('rest'\)/);
+assert.match(planRunnerSource,/showPlanWorkoutNotice\('rest','DESCANSO'/);
 assert.match(planRunnerSource,/if\(st\.phase==='rest'\)[\s\S]*?DESCANSO/,'Resuming during a rest period must keep the rest notice instead of telling the user to work');
 assert.match(planRunnerSource,/restReason==='set'\?'SERIE '\+st\.set:restReason==='rep'\?'SIGUIENTE REPETICIÓN'/,'The notice after rest must identify the correct next set or repetition');
 assert.match(html,/const restIntervals=Math\.max\(0,sets\*reps-1\);[\s\S]*?return sets\*reps\*work\+restIntervals\*rest;/,'The plan duration must include every rest between work intervals');
 assert.match(html,/id="planWorkoutNotice"/,'Coach workouts must have their own full-screen visual notice');
 assert.match(html,/id="planWorkoutNoticeCountdown"/,'Rest notice must display a large countdown');
 assert.ok(html.includes('#planWorkoutNotice{position:fixed;inset:0;z-index:100040;'),'Plan notices must render above the full-screen workout runner');
+assert.ok(html.includes('.plan-workout-notice-card.cue-start .plan-workout-image')&&html.includes('.plan-workout-notice-card.cue-rest .plan-workout-image'),'Start and rest notices must contain only their title and timer');
+assert.ok(html.includes('.plan-workout-notice-card.cue-next .plan-workout-countdown')&&html.includes("kicker.textContent=kind==='next'?'SIGUIENTE EJERCICIO'"),'Exercise-change notice must show only the next exercise image and name');
+assert.match(html,/function playPlanWorkoutCue([\\s\\S]*?exponentialRampToValueAtTime\\(\\.95/,'Plan workout sounds must use a substantially higher output level');
+assert.match(planRunnerSource,/renderPlanRun\\(\\);\\s*updatePlanWorkoutNotice\\(\\);/,'The visible work timer must refresh on every workout tick');
 assert.ok(html.includes('id="planRunDescription"')&&html.includes('id="planRunTip"'),'The workout runner must show the exercise instructions and technical tip');
 assert.ok(planRunnerSource.includes('ex?.desc')&&planRunnerSource.includes('ex?.tip'),'Workout runner instructions must come from the exercise library record');
 assert.ok(planRunnerSource.includes("restReason==='exercise'")&&planRunnerSource.includes('advancePlanRunExercise()'),'The configured inter-exercise rest must finish before the next exercise starts');
@@ -547,7 +551,7 @@ estimateContext.estimatePlanItem=vm.runInNewContext('('+estimateItemSource.repla
 const estimatePlan=vm.runInNewContext('('+estimatePlanSource.replace('function estimatePlan(items){','function(items){')+')',estimateContext);
 assert.equal(estimatePlan([{sets:2,reps:2,work:5,rest:2},{sets:1,reps:1,work:5,rest:0}]),33,'Displayed duration must include intra-exercise rests and the configured pause before the next exercise');
 assert.equal(estimatePlan([]),0,'An empty plan must have zero duration');
-assert.match(planRunnerSource,/SIGUIENTE EJERCICIO/);
+assert.match(planRunnerSource,/showPlanWorkoutNotice\('next','SIGUIENTE EJERCICIO'/);
 assert.match(html,/function updateWorkoutSwitchOverlay\(\)/,'Existing force hand-switch overlay must remain present');
 assert.match(html,/id="workoutSwitchOverlay"/,'Existing force hand-switch UI must remain present');
 assert.match(html,/id="workoutNotice"/,'Existing interval workout notice must remain present');
@@ -565,7 +569,7 @@ const runnerContext={
   planRunState:null,
   planRunInterval:null,
   exercises:[{id:1,name:'Agarre suave'},{id:2,name:'Movilidad'}],
-  playWorkoutCue:kind=>runnerEvents.push({type:'sound',kind}),
+  playPlanWorkoutCue:kind=>runnerEvents.push({type:'sound',kind}),
   showPlanWorkoutNotice:(kind,title,message)=>runnerEvents.push({type:'notice',kind,title,message}),
   renderPlanRun:()=>runnerEvents.push({type:'render'}),
   finishPlanRun:()=>{runnerContext.planRunState=null;runnerEvents.push({type:'finish'});},
