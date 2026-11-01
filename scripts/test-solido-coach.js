@@ -546,7 +546,8 @@ assert.equal(estimatePlan([]),0,'An empty plan must have zero duration');
 assert.match(planRunnerSource,/SIGUIENTE EJERCICIO/);
 assert.match(html,/function updateWorkoutSwitchOverlay\(\)/,'Existing force hand-switch overlay must remain present');
 assert.match(html,/id="workoutSwitchOverlay"/,'Existing force hand-switch UI must remain present');
-assert.match(html,/id="workoutNotice"/,'Plan cues must reuse the existing visual workout notice');
+assert.match(html,/id="workoutNotice"/,'Existing interval workout notice must remain present');
+assert.match(html,/id="planWorkoutNotice"/,'Coach plans must use their dedicated visual notice');
 
  
 // Exercise the plan runner state machine, not only the presence of cue strings.
@@ -561,7 +562,7 @@ const runnerContext={
   planRunInterval:null,
   exercises:[{id:1,name:'Agarre suave'},{id:2,name:'Movilidad'}],
   playWorkoutCue:kind=>runnerEvents.push({type:'sound',kind}),
-  showWorkoutNotice:(kind,title,message)=>runnerEvents.push({type:'notice',kind,title,message}),
+  showPlanWorkoutNotice:(kind,title,message)=>runnerEvents.push({type:'notice',kind,title,message}),
   renderPlanRun:()=>runnerEvents.push({type:'render'}),
   finishPlanRun:()=>{runnerContext.planRunState=null;runnerEvents.push({type:'finish'});},
   formatPlanTime:n=>String(n),
@@ -591,7 +592,7 @@ runnerContext.planRunState.exerciseRemaining=1;
 runnerContext.tickPlanRun();
 assert.equal(runnerContext.planRunState.set,2);
 assert.equal(runnerContext.planRunState.rep,1);
-assert.ok(runnerEvents.some(e=>e.type==='notice'&&e.title==='SIGUIENTE SERIE'));
+assert.ok(runnerEvents.some(e=>e.type==='notice'&&e.title==='SERIE 2'));
 runnerContext.planRunState.exerciseRemaining=1;
 runnerContext.tickPlanRun();
 assert.equal(runnerContext.planRunState.phase,'rest','The second set must still complete its second repetition');
