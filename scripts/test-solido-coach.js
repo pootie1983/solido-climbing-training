@@ -40,6 +40,8 @@ const cases = [
   [{goal:'Fuerza general',age:30,level:'Intermedio'}, {equipment:'gimnasio',experience:'intermedio',days:'1'}, 'Fuerza', 1],
   [{goal:'Fuerza general',age:30,level:'Principiante'}, {equipment:'gimnasio',experience:'intermedio',days:'5'}, 'Fuerza', 5],
   [{goal:'Fuerza de dedos',age:30,level:'Intermedio'}, {equipment:'gimnasio',experience:'intermedio'}, 'Fuerza'],
+  [{goal:'Fuerza general',age:28,level:'Intermedio'}, {equipment:'basico',experience:'avanzado',days:'4'}, 'Fuerza', 4],
+  [{goal:'Fuerza general',age:28,level:'Intermedio'}, {equipment:'casa',experience:'intermedio',days:'7'}, 'Fuerza', 7],
   [{goal:'Fuerza de dedos',age:16,level:'Principiante'}, {equipment:'casa',experience:'principiante'}, 'Fuerza'],
   [{goal:'Resistencia',age:30,level:'Intermedio'}, {equipment:'gimnasio',experience:'intermedio'}, 'Resistencia'],
   [{goal:'Preparación para vías ferratas',age:30,level:'Intermedio'}, {equipment:'casa',experience:'intermedio'}, 'Escalada']
@@ -60,4 +62,4 @@ for (const [profile, preferences, expectedCategory, expectedDays] of cases) {
 }
 assert.equal(buildProposal({goal:'Fuerza general',age:30,level:'Intermedio'}, {equipment:'gimnasio',experience:'intermedio',limitations:'dolor'}), null, 'Limitations must suppress automatic proposals');
 
-console.log('SOLIDO COACH checks passed: catalogue IDs, six goal/level scenarios, item bounds and limitation safety.');
+console.log('SOLIDO COACH checks passed: catalogue IDs, eight goal/level/equipment scenarios, item bounds and limitation safety.');
