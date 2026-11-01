@@ -99,7 +99,7 @@ class CoachOfflineTts(
                                 AudioFormat.ENCODING_PCM_16BIT
                             )
                             if (minBytes <= 0) throw IllegalStateException("AudioTrack no admite PCM16")
-                            track = AudioTrack.Builder()
+                            val createdTrack = AudioTrack.Builder()
                                 .setAudioAttributes(
                                     AudioAttributes.Builder()
                                         .setUsage(AudioAttributes.USAGE_MEDIA)
@@ -116,12 +116,13 @@ class CoachOfflineTts(
                                 .setBufferSizeInBytes(maxOf(minBytes * 2, 16 * 1024))
                                 .setTransferMode(AudioTrack.MODE_STREAM)
                                 .build()
-                            if (track.state != AudioTrack.STATE_INITIALIZED) {
+                            track = createdTrack
+                            if (createdTrack.state != AudioTrack.STATE_INITIALIZED) {
                                 throw IllegalStateException("No se pudo inicializar la salida de audio")
                             }
-                            currentTrack = track
-                            track.play()
-                            if (track.playState != AudioTrack.PLAYSTATE_PLAYING) {
+                            currentTrack = createdTrack
+                            createdTrack.play()
+                            if (createdTrack.playState != AudioTrack.PLAYSTATE_PLAYING) {
                                 throw IllegalStateException("AudioTrack no ha iniciado la reproducción")
                             }
                             onStatus("started")
