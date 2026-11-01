@@ -127,8 +127,8 @@ class MainActivity : ComponentActivity() {
             pendingCoachSpeech = text
             return
         }
-        engine.setSpeechRate(0.94f)
-        engine.setPitch(0.92f)
+        engine.setSpeechRate(0.90f)
+        engine.setPitch(0.86f)
         val result = engine.speak(text, TextToSpeech.QUEUE_FLUSH, null, "solido-coach")
         if (result != TextToSpeech.SUCCESS) notifyCoachVoiceStatus("error")
     }
@@ -169,6 +169,24 @@ class MainActivity : ComponentActivity() {
                             notifyCoachVoiceStatus("unavailable")
                             return@runOnUiThread
                         }
+
+                        // Android no expone un campo de género para las voces TTS.
+                        // Solo seleccionamos una voz española si el propio nombre declara
+                        // explícitamente que es masculina; así evitamos volver a elegir
+                        // silenciosamente la voz femenina que el usuario ha rechazado.
+                        val maleSpanishVoice = engine.voices
+                            ?.filter { it.locale.language == "es" }
+                            ?.filter { Regex("(^|[-_ ])(male|masculino|hombre)([-_ ]|$)", RegexOption.IGNORE_CASE).containsMatchIn(it.name) }
+                            ?.maxByOrNull { it.quality }
+                        if (maleSpanishVoice == null) {
+                            pendingCoachSpeech = null
+                            coachTtsReady = false
+                            notifyCoachVoiceStatus("male_voice_unavailable")
+                            return@runOnUiThread
+                        }
+                        engine.voice = maleSpanishVoice
+                        engine.setLanguage(maleSpanishVoice.locale)
+
                         engine.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                             override fun onStart(utteranceId: String?) {
                                 notifyCoachVoiceStatus("started")
