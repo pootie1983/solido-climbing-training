@@ -118,7 +118,7 @@
   }
   const avatarStates={welcome:'coach_01_bienvenida.png',motivation:'coach_02_motivacion.png',advice:'coach_03_consejos.png',congrats:'coach_04_felicitacion.png',rest:'coach_05_descanso.png',close:'coach_06_cierre.png'};
   const avatarVideos={welcome:'coach/Escalador_sonriente_extendiendo_…_6589c00e.mp4',motivation:'coach/Climber_gesticulating_2D_animation_7b6f30fd.mp4',advice:'coach/Climber_pointing_finger_up_4706b9d7.mp4',congrats:'coach/Climber_celebrating_with_raised_…_72cb685e.mp4',rest:'coach/Climber_making_OK_gesture_fc829075.mp4',close:'coach/Escalador_sonriente_extendiendo_…_6589c00e.mp4'};
-  const avatarVideoOrder=['welcome','motivation','advice','congrats','rest'].map(key=>avatarVideos[key]);
+  function getAvatarVideoOrder(){const preferred=avatarVideos[currentAvatarState]||avatarVideos.welcome;return [preferred,...Object.keys(avatarVideos).map(key=>avatarVideos[key])].filter((source,index,all)=>all.indexOf(source)===index);}
   let currentAvatarState='welcome';
   let coachSpeaking=false;
   let coachSpeechText='';
@@ -132,7 +132,7 @@
   function startAvatarSpeechVisual(){coachSpeaking=true;if(coachLastVideoChunk<0)playAvatarVideo(avatarVideos[currentAvatarState]||avatarVideos.welcome);else selectAvatarVideoForChunk(coachLastVideoChunk);}
   function stopAvatarSpeechVisual(){coachSpeaking=false;hideAvatarVideo();coachLastVideoChunk=-1;}
   function buildCoachSpeechChunks(text){const sentences=[];const re=/[^.!?]+[.!?]*/g;let match;while((match=re.exec(text))!==null){const value=match[0].trim();if(value)sentences.push({start:match.index,end:match.index+match[0].length});}if(sentences.length>1)return sentences.slice(0,5);if(text.length<110)return [{start:0,end:text.length}];const count=Math.min(5,Math.max(2,Math.ceil(text.length/105))),chunks=[];let start=0;for(let i=0;i<count;i++){let end=i===count-1?text.length:Math.floor((i+1)*text.length/count);if(end<text.length){const space=text.indexOf(' ',end);if(space>0&&space<end+28)end=space;}chunks.push({start,end});start=end;}return chunks;}
-  function selectAvatarVideoForChunk(chunkIndex){const videoIndex=chunkIndex%avatarVideoOrder.length;const source=avatarVideoOrder[videoIndex];playAvatarVideo(source);}
+  function selectAvatarVideoForChunk(chunkIndex){const order=getAvatarVideoOrder();const videoIndex=chunkIndex%order.length;playAvatarVideo(order[videoIndex]);}
   window.onSolidoCoachSpeechRange=function(start,end){if(!coachSpeaking||!coachSpeechChunks.length)return;let index=coachSpeechChunks.findIndex(chunk=>start>=chunk.start&&start<chunk.end);if(index<0)index=coachSpeechChunks.length-1;if(index!==coachLastVideoChunk){coachLastVideoChunk=index;selectAvatarVideoForChunk(index);}};
   function setAvatar(state,message){currentAvatarState=avatarStates[state]?state:'welcome';const image=$('coachAvatarImage'),copy=$('coachAvatarMessage');if(image)image.src='coach/'+(avatarStates[currentAvatarState]||avatarStates.welcome);if(copy&&message)copy.textContent=message;if(coachSpeaking)showAvatarVideo();else hideAvatarVideo();}
   function updateVoiceButton(){const button=$('coachVoiceToggle');if(button){button.textContent=voiceEnabled()?'🔊 VOZ ACTIVADA':'🔇 VOZ SILENCIADA';button.setAttribute('aria-pressed',voiceEnabled()?'true':'false');}}
