@@ -56,69 +56,80 @@ class CoachOfflineTts(
         stopTrack()
         try {
             worker.execute {
-            var track: AudioTrack? = null
-            try {
-                val audio = createEngine().generate(clean, sid = 0, speed = 0.96f)
-                if (id != requestId.get() || audio.samples.isEmpty()) return@execute
-
-                val minBytes = AudioTrack.getMinBufferSize(
-                    audio.sampleRate,
-                    AudioFormat.CHANNEL_OUT_MONO,
-                    AudioFormat.ENCODING_PCM_FLOAT
-                )
-                if (minBytes <= 0) throw IllegalStateException("AudioTrack no admite el formato de voz")
-
-                track = AudioTrack.Builder()
-                    .setAudioAttributes(
-                        AudioAttributes.Builder()
-                            .setUsage(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY)
-                            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                            .build()
-                    )
-                    .setAudioFormat(
-                        AudioFormat.Builder()
-                            .setEncoding(AudioFormat.ENCODING_PCM_FLOAT)
-                            .setSampleRate(audio.sampleRate)
-                            .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
-                            .build()
-                    )
-                    .setBufferSizeInBytes(maxOf(minBytes, audio.samples.size * 4))
-                    .setTransferMode(AudioTrack.MODE_STATIC)
-                    .build()
-                currentTrack = track
-
-                val written = track.write(audio.samples, 0, audio.samples.size, AudioTrack.WRITE_BLOCKING)
-                if (written < 0) throw IllegalStateException("No se pudo preparar el audio")
-                if (id != requestId.get()) return@execute
-
-                onStatus("started")
-                track.play()
-                while (id == requestId.get() && track.playbackHeadPosition < audio.samples.size) {
-                    Thread.sleep(40)
-                }
-                if (id == requestId.get()) onStatus("done")
-            } catch (_: InterruptedException) {
-                Thread.currentThread().interrupt()
-                if (id == requestId.get()) onStatus("error")
-            } catch (_: Throwable) {
-                if (id == requestId.get()) onStatus("error")
-            } finally {
-                // The worker is the sole owner that releases AudioTrack. stop() only
-                // interrupts playback, avoiding a double-release race with this block.
+                var track: AudioTrack? = null
                 try {
-                    track?.let {
-                        if (it.state == AudioTrack.STATE_INITIALIZED) {
-                            if (it.playState == AudioTrack.PLAYSTATE_PLAYING) it.pause()
-                            it.flush()
-                            it.stop()
-                        }
-                        it.release()
+                    val audio = createEngine().generate(clean, sid = 0, speed = 0.96f)
+                    if (id != requestId.get() || audio.samples.isEmpty()) return@execute
+
+                    // Convert Sherpa's float samples to the broadly supported PCM16 format.
+                    val pcm = ShortArray(audio.samples.size) { index ->
+                        (audio.samples[index].coerceIn(-1.0f, 1.0f) * Short.MAX_VALUE).toInt().toShort()
                     }
+                    val minBytes = AudioTrack.getMinBufferSize(
+                        audio.sampleRate,
+                        AudioFormat.CHANNEL_OUT_MONO,
+                        AudioFormat.ENCODING_PCM_16BIT
+                    )
+                    if (minBytes <= 0) throw IllegalStateException("AudioTrack no admite PCM16")
+
+                    track = AudioTrack.Builder()
+                        .setAudioAttributes(
+                            AudioAttributes.Builder()
+                                .setUsage(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY)
+                                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                                .build()
+                        )
+                        .setAudioFormat(
+                            AudioFormat.Builder()
+                                .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                                .setSampleRate(audio.sampleRate)
+                                .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+                                .build()
+                        )
+                        // STREAM avoids allocating a potentially oversized static AudioTrack buffer.
+                        .setBufferSizeInBytes(maxOf(minBytes * 2, 16 * 1024))
+                        .setTransferMode(AudioTrack.MODE_STREAM)
+                        .build()
+                    if (track.state != AudioTrack.STATE_INITIALIZED) {
+                        throw IllegalStateException("No se pudo inicializar la salida de audio")
+                    }
+                    currentTrack = track
+                    if (id != requestId.get()) return@execute
+
+                    onStatus("started")
+                    track.play()
+                    var offset = 0
+                    while (offset < pcm.size && id == requestId.get()) {
+                        val count = minOf(4096, pcm.size - offset)
+                        val written = track.write(pcm, offset, count, AudioTrack.WRITE_BLOCKING)
+                        if (written <= 0) throw IllegalStateException("AudioTrack no pudo escribir el audio: $written")
+                        offset += written
+                    }
+                    while (id == requestId.get() && track.playbackHeadPosition < pcm.size) {
+                        Thread.sleep(40)
+                    }
+                    if (id == requestId.get()) onStatus("done")
+                } catch (_: InterruptedException) {
+                    Thread.currentThread().interrupt()
+                    if (id == requestId.get()) onStatus("error")
                 } catch (_: Throwable) {
-                    // AudioTrack can already be stopped by a concurrent stop request.
+                    if (id == requestId.get()) onStatus("error")
+                } finally {
+                    // The worker is the sole owner that releases AudioTrack.
+                    try {
+                        track?.let {
+                            if (it.state == AudioTrack.STATE_INITIALIZED) {
+                                if (it.playState == AudioTrack.PLAYSTATE_PLAYING) it.pause()
+                                it.flush()
+                                it.stop()
+                            }
+                            it.release()
+                        }
+                    } catch (_: Throwable) {
+                        // AudioTrack can already be stopped by a concurrent stop request.
+                    }
+                    if (currentTrack === track) currentTrack = null
                 }
-                if (currentTrack === track) currentTrack = null
-            }
             }
         } catch (_: RejectedExecutionException) {
             // Activity may be closing while WebView finishes a queued JS call.
