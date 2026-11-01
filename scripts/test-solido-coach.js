@@ -180,3 +180,43 @@ const successfulPreferenceSave = runSaveDetailsTest(null);
 assert.equal(successfulPreferenceSave.attempted.length, 4);
 assert.equal(successfulPreferenceSave.status, 'Preferencias guardadas en este dispositivo.');
 console.log('SOLIDO COACH preference persistence checks passed: all fields attempted and partial failures reported.');
+
+// Exhaustive safety matrix for supported goals, age bands, equipment and experience.
+const matrixGoals = ['Fuerza general','Fuerza de dedos','Resistencia','Preparación para vías ferratas'];
+const matrixAges = [0,15,17,18,30,70];
+const matrixEquipment = ['casa','basico','gimnasio','completo'];
+const matrixExperience = ['principiante','intermedio','avanzado'];
+const matrixDays = ['0','1','3','7','9'];
+let matrixCases = 0;
+for (const goal of matrixGoals) {
+  for (const age of matrixAges) {
+    for (const equipment of matrixEquipment) {
+      for (const experience of matrixExperience) {
+        for (const days of matrixDays) {
+          const proposal = buildProposal(
+            {goal,age,level:experience},
+            {equipment,experience,days}
+          );
+          assert.ok(proposal, 'A valid profile should receive a local proposal');
+          assert.equal(proposal.daysAvailable, Math.max(1,Math.min(7,Number(days)||3)));
+          assert.ok(proposal.items.length >= 4);
+          for (const item of proposal.items) {
+            assert.ok(exerciseIds.has(item.id), 'Matrix produced an unknown exercise ID: ' + item.id);
+            assert.ok(item.sets >= 1 && item.sets <= 3, 'Matrix produced an unsafe set count');
+            assert.ok(item.reps >= 1 && item.reps <= 100, 'Matrix produced an invalid repetition count');
+            assert.ok(item.work >= 5 && item.work <= 600, 'Matrix produced an invalid work duration');
+            assert.ok(item.rest >= 0 && item.rest <= 600, 'Matrix produced an invalid rest duration');
+          }
+          if (goal === 'Fuerza de dedos' && age < 18) {
+            assert.ok(proposal.items.every(item => item.id !== 2), 'Under-18 finger plan must not prescribe grip-strength loading');
+          }
+          if ((equipment === 'casa' || equipment === 'basico') && ['Resistencia','Preparación para vías ferratas'].includes(goal)) {
+            assert.ok(proposal.items.every(item => ![11,29].includes(item.id)), 'Home plan must not require a climbing wall');
+          }
+          matrixCases++;
+        }
+      }
+    }
+  }
+}
+console.log('SOLIDO COACH exhaustive safety matrix passed: ' + matrixCases + ' combinations.');
