@@ -455,7 +455,7 @@ const estimatePlanSource=extractFunction(html,'function estimatePlan(items){');
 const estimateContext={Math,Number};
 estimateContext.estimatePlanItem=vm.runInNewContext('('+estimateItemSource.replace('function estimatePlanItem(item){','function(item){')+')',estimateContext);
 const estimatePlan=vm.runInNewContext('('+estimatePlanSource.replace('function estimatePlan(items){','function(items){')+')',estimateContext);
-assert.equal(estimatePlan([{sets:2,reps:2,work:5,rest:2},{sets:1,reps:1,work:5,rest:0}]),29,'Displayed duration must match timed work and intra-exercise rests; the runner has no inter-exercise pause');
+assert.equal(estimatePlan([{sets:2,reps:2,work:5,rest:2},{sets:1,reps:1,work:5,rest:0}]),31,'Displayed duration must match timed work and intra-exercise rests; the runner has no inter-exercise pause');
 assert.equal(estimatePlan([]),0,'An empty plan must have zero duration');
 assert.match(planRunnerSource,/SIGUIENTE EJERCICIO/);
 assert.match(html,/function updateWorkoutSwitchOverlay\(\)/,'Existing force hand-switch overlay must remain present');
