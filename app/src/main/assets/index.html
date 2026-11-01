@@ -3777,7 +3777,22 @@ function playPlanWorkoutCue(kind){
  try{
   const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
   if(!planCueAudio)planCueAudio=new AC();
-  const play=()=>{const now=planCueAudio.currentTime,tones=kind==='rest'?[660,880]:[880,1175];tones.forEach((hz,i)=>{const osc=planCueAudio.createOscillator(),gain=planCueAudio.createGain(),start=now+i*.16;osc.type='triangle';osc.frequency.setValueAtTime(hz,start);gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(.95,start+.015);gain.gain.setValueAtTime(.95,start+.22);gain.gain.exponentialRampToValueAtTime(.0001,start+.34);osc.connect(gain);gain.connect(planCueAudio.destination);osc.start(start);osc.stop(start+.36);});};
+  const play=()=>{
+   const now=planCueAudio.currentTime;
+   const tones=kind==='rest'?[784]:kind==='next'?[1046,784]:[784,1046];
+   tones.forEach((hz,i)=>{
+    const start=now+i*(kind==='next'?.13:.19),partials=[{ratio:1,level:.95},{ratio:2.01,level:.24},{ratio:2.76,level:.11}];
+    partials.forEach(partial=>{
+     const osc=planCueAudio.createOscillator(),gain=planCueAudio.createGain();
+     osc.type='sine';osc.frequency.setValueAtTime(hz*partial.ratio,start);
+     gain.gain.setValueAtTime(.0001,start);
+     gain.gain.exponentialRampToValueAtTime(partial.level,start+.012);
+     gain.gain.exponentialRampToValueAtTime(.0001,start+.48);
+     osc.connect(gain);gain.connect(planCueAudio.destination);
+     osc.start(start);osc.stop(start+.5);
+    });
+   });
+  };
   if(planCueAudio.state==='suspended')planCueAudio.resume().then(play).catch(()=>{});else play();
  }catch(e){}
 }
