@@ -20,6 +20,8 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.webkit.JavascriptInterface
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
+import android.media.AudioAttributes
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
@@ -109,37 +111,90 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun notifyCoachVoiceStatus(state: String) {
+        if (::web.isInitialized) {
+            runOnUiThread {
+                if (::web.isInitialized) {
+                    web.evaluateJavascript("window.onSolidoCoachVoiceStatus && window.onSolidoCoachVoiceStatus('$state')", null)
+                }
+            }
+        }
+    }
+
+    private fun speakWithCoachTts(text: String) {
+        val engine = coachTts ?: return
+        if (!coachTtsReady) {
+            pendingCoachSpeech = text
+            return
+        }
+        engine.setSpeechRate(0.94f)
+        engine.setPitch(0.92f)
+        val result = engine.speak(text, TextToSpeech.QUEUE_FLUSH, null, "solido-coach")
+        if (result != TextToSpeech.SUCCESS) notifyCoachVoiceStatus("error")
+    }
+
     @JavascriptInterface
     fun speakCoachText(text: String) {
         runOnUiThread {
             val cleanText = text.trim().take(1800)
-            if (cleanText.isEmpty()) return@runOnUiThread
+            if (cleanText.isEmpty()) {
+                notifyCoachVoiceStatus("error")
+                return@runOnUiThread
+            }
             if (coachTts == null) {
                 pendingCoachSpeech = cleanText
                 coachTts = TextToSpeech(this) { status ->
-                    if (status == TextToSpeech.SUCCESS) {
-                        coachTtsReady = true
-                        val language = coachTts?.setLanguage(Locale("es", "ES")) ?: TextToSpeech.LANG_NOT_SUPPORTED
-                        if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
-                            coachTts?.setLanguage(Locale("es"))
-                        }
-                        pendingCoachSpeech?.let { pending ->
-                            coachTts?.setSpeechRate(0.94f)
-                            coachTts?.setPitch(0.88f)
-                            coachTts?.speak(pending, TextToSpeech.QUEUE_FLUSH, null, "solido-coach")
+                    runOnUiThread {
+                        val engine = coachTts
+                        if (status != TextToSpeech.SUCCESS || engine == null || isFinishing || isDestroyed) {
                             pendingCoachSpeech = null
+                            notifyCoachVoiceStatus("unavailable")
+                            return@runOnUiThread
                         }
-                        web.evaluateJavascript("window.onSolidoCoachVoiceStatus && window.onSolidoCoachVoiceStatus('started')", null)
-                    } else {
-                        web.evaluateJavascript("window.onSolidoCoachVoiceStatus && window.onSolidoCoachVoiceStatus('unavailable')", null)
+                        engine.setAudioAttributes(
+                            AudioAttributes.Builder()
+                                .setUsage(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY)
+                                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                                .build()
+                        )
+                        var language = engine.setLanguage(Locale("es", "ES"))
+                        if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
+                            language = engine.setLanguage(Locale("es"))
+                        }
+                        if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
+                            language = engine.setLanguage(Locale.getDefault())
+                        }
+                        if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
+                            pendingCoachSpeech = null
+                            notifyCoachVoiceStatus("unavailable")
+                            return@runOnUiThread
+                        }
+                        engine.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                            override fun onStart(utteranceId: String?) {
+                                notifyCoachVoiceStatus("started")
+                            }
+
+                            override fun onDone(utteranceId: String?) {
+                                notifyCoachVoiceStatus("done")
+                            }
+
+                            @Deprecated("Deprecated in Android")
+                            override fun onError(utteranceId: String?) {
+                                notifyCoachVoiceStatus("error")
+                            }
+
+                            override fun onError(utteranceId: String?, errorCode: Int) {
+                                notifyCoachVoiceStatus("error")
+                            }
+                        })
+                        coachTtsReady = true
+                        val pending = pendingCoachSpeech
+                        pendingCoachSpeech = null
+                        if (pending != null) speakWithCoachTts(pending)
                     }
                 }
             } else if (coachTtsReady) {
-                coachTts?.setLanguage(Locale("es", "ES"))
-                coachTts?.setSpeechRate(0.94f)
-                coachTts?.setPitch(0.88f)
-                coachTts?.speak(cleanText, TextToSpeech.QUEUE_FLUSH, null, "solido-coach")
-                web.evaluateJavascript("window.onSolidoCoachVoiceStatus && window.onSolidoCoachVoiceStatus('started')", null)
+                speakWithCoachTts(cleanText)
             } else {
                 pendingCoachSpeech = cleanText
             }
@@ -148,7 +203,10 @@ class MainActivity : ComponentActivity() {
 
     @JavascriptInterface
     fun stopCoachSpeech() {
-        runOnUiThread { coachTts?.stop(); pendingCoachSpeech = null }
+        runOnUiThread {
+            pendingCoachSpeech = null
+            coachTts?.stop()
+        }
     }
 
     @JavascriptInterface
