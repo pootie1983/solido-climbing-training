@@ -48,6 +48,8 @@ class MainActivity : ComponentActivity() {
         web = WebView(this)
         web.settings.javaScriptEnabled = true
         web.settings.domStorageEnabled = true
+        // Coach clips start from the native speech callback, not a direct WebView tap.
+        web.settings.mediaPlaybackRequiresUserGesture = false
         web.settings.allowFileAccess = true
         web.settings.allowContentAccess = true
         web.webViewClient = object : WebViewClient() {
