@@ -25,6 +25,24 @@
     const status=$('coachSaveStatus');
     if(status)status.textContent=ok?'Preferencias guardadas en este dispositivo.':'No se pudieron guardar todos los datos.';
   };
+  function buildLocalAdvice(sessionList,profile,preferences){
+    const now=Date.now(),weekAgo=now-7*24*60*60*1000;
+    const dated=sessionList.map(item=>({item,date:new Date(item.ts||item.date||'')})).filter(x=>Number.isFinite(x.date.getTime()));
+    const recent=dated.filter(x=>x.date.getTime()>=weekAgo&&x.date.getTime()<=now);
+    const completed=recent.filter(x=>Number(x.item.mins||0)>0);
+    const minutes=completed.reduce((sum,x)=>sum+Math.max(0,Number(x.item.mins)||0),0);
+    const last=dated.length?dated.sort((a,b)=>b.date-a.date)[0]:null;
+    const days=Math.max(1,Math.min(7,Number(preferences.days)||3));
+    const goal=profile.goal||'Fuerza general';
+    let title,body;
+    if(!sessionList.length){title='Tu punto de partida';body='Aún no hay entrenamientos guardados. Completa una primera sesión en SOLIDO y podré empezar a valorar tu constancia y evolución. Objetivo actual: '+goal+'.';}
+    else if(!completed.length){title='Vamos a crear una rutina';body='Ya hay registros de actividad, pero todavía no encuentro sesiones completas con duración en los últimos 7 días. Empieza con una sesión adaptada a tu nivel y deja que el historial vaya marcando el progreso.';}
+    else if(recent.length>=days){title='Buena constancia esta semana';body='Has registrado '+completed.length+' sesiones de entrenamiento y '+minutes+' minutos en los últimos 7 días. Con '+days+' días disponibles por semana, prioriza la calidad de cada sesión y reserva tiempo para recuperar.';}
+    else{title='Siguiente paso: regularidad';body='Llevas '+completed.length+' sesiones y '+minutes+' minutos registrados en los últimos 7 días. Tu disponibilidad es de '+days+' días por semana. Intenta repartir las sesiones y evita encadenar trabajos intensos de dedos en días consecutivos.';}
+    if(last&&now-last.date.getTime()<24*60*60*1000){body+=' Como has registrado actividad en las últimas 24 horas, valora hoy una jornada suave o de descanso antes de volver a cargar fuerte.';}
+    if(preferences.limitations.trim()){body+=' Has indicado esta limitación: '+preferences.limitations+'. Ajusta cualquier ejercicio que la empeore y detén la actividad si aparece dolor.';}
+    return {title,body};
+  }
   function render(){
     const p=personalities.find(x=>x.id===read('solidoCoachPersonality','cercano'))||personalities[0];
     const profile={
@@ -37,6 +55,11 @@
       goal:read('solidoGoal','Fuerza general')
     };
     const sessionList=(()=>{try{return JSON.parse(read('solidoSessions','[]'))||[];}catch(e){return [];}})();
+    const preferences={days:read('solidoCoachDays','3'),experience:read('solidoCoachExperience','intermedio'),equipment:read('solidoCoachEquipment','gimnasio'),limitations:read('solidoCoachLimitations','')};
+    const advice=buildLocalAdvice(sessionList,profile,preferences);
+    const adviceTitle=$('coachAdviceTitle'),adviceBody=$('coachAdviceBody');
+    if(adviceTitle)adviceTitle.textContent=advice.title;
+    if(adviceBody)adviceBody.textContent=advice.body;
     const target=$('coachProfileSummary');
     if(target){
       target.innerHTML=[
@@ -48,7 +71,7 @@
     document.querySelectorAll('.coach-personality').forEach(button=>button.classList.toggle('active',button.dataset.personality===p.id));
     const selected=$('coachPersonalitySummary');
     if(selected)selected.textContent='Estilo seleccionado: '+p.label;
-    const defaults={days:read('solidoCoachDays','3'),experience:read('solidoCoachExperience','intermedio'),equipment:read('solidoCoachEquipment','gimnasio'),limitations:read('solidoCoachLimitations','')};
+    const defaults=preferences;
     if($('coachDays'))$('coachDays').value=defaults.days;
     if($('coachExperience'))$('coachExperience').value=defaults.experience;
     if($('coachEquipment'))$('coachEquipment').value=defaults.equipment;
