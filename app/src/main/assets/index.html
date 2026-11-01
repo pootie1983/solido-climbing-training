@@ -6455,6 +6455,7 @@ window.onHealthConnectRequestError=function(message){
  if(button){button.disabled=false;button.textContent='Conectar con Health Connect';}
 };
 window.onHealthConnectData=function(data){
+ window.solidoCoachHealthData=data&&data.status==='ok'?{steps:Number(data.steps||0),totalCalories:Number(data.totalCalories||0),heartRate:data.heartRate==null?null:Number(data.heartRate),sleepMinutes:data.sleepMinutes==null?null:Number(data.sleepMinutes)}:null;
  const status=document.getElementById('healthConnectStatus');
  const button=document.getElementById('hcPermissionButton');
  const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
