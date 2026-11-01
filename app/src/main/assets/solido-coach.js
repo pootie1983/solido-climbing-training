@@ -127,7 +127,7 @@
       level:read('solidoLevel','Intermedio'),
       goal:read('solidoGoal','Fuerza general')
     };
-    const sessionList=(()=>{try{return JSON.parse(read('solidoSessions','[]'))||[];}catch(e){return [];}})();
+    const sessionList=(()=>{try{const parsed=JSON.parse(read('solidoSessions','[]'));return Array.isArray(parsed)?parsed.filter(item=>item&&typeof item==='object'&&!Array.isArray(item)):[];}catch(e){return [];}})();
     const preferences={days:read('solidoCoachDays','3'),experience:read('solidoCoachExperience','intermedio'),equipment:read('solidoCoachEquipment','gimnasio'),limitations:read('solidoCoachLimitations','')};
     const activityStats=getActivityStats(sessionList);
     const proposalBlockReason=getProposalBlockReason(sessionList,preferences,window.solidoCoachHealthData||null);
