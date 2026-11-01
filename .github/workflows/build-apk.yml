@@ -51,9 +51,10 @@ jobs:
           # Keep the original 720x1280 assets in Git; only create smaller build copies.
           find app/src/main/assets/coach -maxdepth 1 -type f -name '*.webm' -print0 | while IFS= read -r -d '' video; do
             tmp="${video%.webm}.optimized.webm"
-            ffmpeg -hide_banner -loglevel error -y -i "$video" -an \
+            timeout 5m ffmpeg -hide_banner -loglevel error -y -i "$video" -an \
               -vf "fps=18" -c:v libvpx-vp9 -pix_fmt yuva420p \
-              -deadline good -cpu-used 4 -crf 34 -b:v 0 -auto-alt-ref 0 "$tmp"
+              -deadline realtime -cpu-used 8 -row-mt 1 -threads 2 \
+              -crf 34 -b:v 0 -auto-alt-ref 0 "$tmp"
             test -s "$tmp"
             mv "$tmp" "$video"
           done
