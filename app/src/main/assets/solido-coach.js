@@ -130,11 +130,11 @@
   function stopAvatarPerformance(){avatarSpeechActive=false;avatarSpeechPlan=[];if(avatarSpeechTimer!==null){clearInterval(avatarSpeechTimer);avatarSpeechTimer=null;}if(avatarSpeechFadeTimer!==null){clearTimeout(avatarSpeechFadeTimer);avatarSpeechFadeTimer=null;}const image=$('coachAvatarImage'),video=$('coachAvatarVideo');if(video){video.onended=null;video.onerror=null;video.pause();video.style.display='none';video.removeAttribute('src');video.load();}if(image){image.style.display='block';image.style.opacity='1';}}
   function avatarGestureForSentence(sentence){
     const t=String(sentence||'').toLowerCase();
-    if(/\\b(hola|bienvenid[oa]s?|buenos días|buenas tardes|buenas noches|encantad[oa])\\b/.test(t))return 'smile';
-    if(/\\b(enhorabuena|felicidades|felicitaciones|lo has conseguido|has conseguido|récord|nuevo máximo|gran logro|objetivo cumplido|excelente progreso)\\b/.test(t))return 'celebrate';
-    if(/\\b(correcto|exacto|perfecto|de acuerdo|así es|muy bien|confirmado|buena elección|aprobado)\\b/.test(t))return 'approve';
-    if(/\\b(recuerda|importante|debes|deberías|haz|mantén|evita|no hagas|primero|siguiente paso|consejo|recomendación|atención|cuidado)\\b/.test(t))return 'point';
-    if(/\\b(vamos|ánimo|a por ello|confía|puedes hacerlo|sigue así)\\b/.test(t))return 'smile';
+    if(/\b(hola|bienvenid[oa]s?|buenos días|buenas tardes|buenas noches|encantad[oa])\b/.test(t))return 'smile';
+    if(/\b(enhorabuena|felicidades|felicitaciones|lo has conseguido|has conseguido|récord|nuevo máximo|gran logro|objetivo cumplido|excelente progreso)\b/.test(t))return 'celebrate';
+    if(/\b(correcto|exacto|perfecto|de acuerdo|así es|muy bien|confirmado|buena elección|aprobado)\b/.test(t))return 'approve';
+    if(/\b(recuerda|importante|debes|deberías|haz|mantén|evita|no hagas|primero|siguiente paso|consejo|recomendación|atención|cuidado)\b/.test(t))return 'point';
+    if(/\b(vamos|ánimo|a por ello|confía|puedes hacerlo|sigue así)\b/.test(t))return 'smile';
     return 'explain';
   }
   function buildAvatarPlan(text){
