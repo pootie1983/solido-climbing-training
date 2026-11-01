@@ -17,7 +17,7 @@ jobs:
       - name: Install FFmpeg
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg
+          sudo apt-get install -y ffmpeg python3-pil
       - name: Inspect, fully decode and sample transparency
         run: |
           set -euo pipefail
