@@ -2518,6 +2518,14 @@ body.br-fullscreen-active .sg-close{display:flex}
 @media(prefers-reduced-motion:reduce){.coach-avatar-panel.is-speaking .coach-avatar-art{animation:none}}
 @media(max-width:390px){.coach-avatar-panel{grid-template-columns:118px minmax(0,1fr);gap:9px;padding:10px;min-height:194px;border-radius:19px}.coach-avatar-art{height:196px}.coach-avatar-copy strong{font-size:15px}.coach-avatar-copy p{font-size:11px;padding:9px;margin:8px 0 10px}.coach-voice-btn{font-size:9px;padding:7px 9px}}
 @media(prefers-reduced-motion:reduce){.coach-avatar-art{animation:none}}
+
+/* SOLIDO COACH · secuencia de poses durante el habla */
+.coach-avatar-art{transition:opacity .18s ease,transform .22s ease;will-change:opacity,transform}
+.coach-avatar-panel.is-speaking .coach-avatar-art{animation:coachAvatarAct .82s ease-in-out infinite alternate;filter:drop-shadow(0 0 13px #8fe8c8aa) drop-shadow(0 12px 12px #0008)}
+.coach-avatar-panel.is-speaking .coach-avatar-copy p{animation:coachSpeechBubble 1.4s ease-in-out infinite}
+@keyframes coachAvatarAct{0%{transform:translateY(1px) rotate(-1.5deg) scale(.985)}45%{transform:translateY(-5px) rotate(1deg) scale(1.015)}100%{transform:translateY(-2px) rotate(-.5deg) scale(1.025)}}
+@keyframes coachSpeechBubble{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@media(prefers-reduced-motion:reduce){.coach-avatar-panel.is-speaking .coach-avatar-art,.coach-avatar-panel.is-speaking .coach-avatar-copy p{animation:none}.coach-avatar-art{transition:none}}
 </style>
 
 <script>
