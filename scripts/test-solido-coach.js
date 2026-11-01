@@ -7,10 +7,10 @@ const html = fs.readFileSync('app/src/main/assets/index.html', 'utf8');
 const coach = fs.readFileSync('app/src/main/assets/solido-coach.js', 'utf8');
 
 const catalogStart = html.indexOf('const exercises = [');
-const catalogEnd = html.indexOf('\\n];', catalogStart);
+const catalogEnd = html.indexOf('\n];', catalogStart);
 assert.ok(catalogStart >= 0 && catalogEnd > catalogStart, 'Exercise catalogue must exist');
 const catalog = html.slice(catalogStart, catalogEnd);
-const exerciseIds = new Set([...catalog.matchAll(/\\{id:(\\d+),name:/g)].map(match => Number(match[1])));
+const exerciseIds = new Set([...catalog.matchAll(/\{id:(\d+),name:/g)].map(match => Number(match[1])));
 assert.ok(exerciseIds.size >= 30, 'Expected the existing exercise catalogue to be present');
 
 const functionStart = coach.indexOf('function buildProposal(profile,preferences){');
@@ -21,13 +21,16 @@ for (let i = openBrace; i < coach.length; i++) {
   const ch = coach[i];
   if (quote) {
     if (escaped) escaped = false;
-    else if (ch === '\\\\') escaped = true;
+    else if (ch === '\\') escaped = true;
     else if (ch === quote) quote = null;
     continue;
   }
-  if (ch === "'" || ch === '"' || ch === '`') { quote = ch; continue; }
+  if (ch === "'" || ch === '"' || ch === '\`') { quote = ch; continue; }
   if (ch === '{') depth++;
-  if (ch === '}' && --depth === 0) { functionEnd = i + 1; break; }
+  else if (ch === '}') {
+    depth--;
+    if (depth === 0) { functionEnd = i + 1; break; }
+  }
 }
 assert.ok(functionEnd > functionStart, 'Proposal builder must be a complete function');
 const buildProposal = vm.runInNewContext('(' + coach.slice(functionStart, functionEnd) + ')');
