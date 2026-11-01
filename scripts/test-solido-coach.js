@@ -305,6 +305,10 @@ assert.match(bridge, /private val requiredPermissions = setOf\([\s\S]*?StepsReco
 assert.doesNotMatch(bridge.match(/private val requiredPermissions = setOf\([\s\S]*?\n    \)/)?.[0] || '', /SleepSessionRecord/, 'Sleep must remain optional');
 assert.match(bridge, /private val optionalSleepPermission =\s*HealthPermission\.getReadPermission\(SleepSessionRecord::class\)/);
 assert.match(bridge, /if \(granted\.contains\(optionalSleepPermission\)\)/);
+assert.match(bridge, /val sleepMinutes = if \(granted\.contains\(optionalSleepPermission\)\) \{\s*try \{/);
+assert.match(bridge, /catch \(_:\s*Exception\)\s*\{\s*null\s*\}/, 'A sleep read failure must be isolated and treated as missing optional data');
+assert.match(bridge, /result\.put\("status", "ok"\)[\s\S]*?val sleepMinutes = if[\s\S]*?result\.put\("sleepMinutes", sleepMinutes \?: JSONObject\.NULL\)/, 'Core metrics must remain successful when optional sleep data is unavailable');
+
 assert.match(bridge, /result\.put\("sleepMinutes", sleepMinutes \?: JSONObject\.NULL\)/);
 assert.match(bridge, /result\.put\("sleepMinutes", JSONObject\.NULL\)/, 'Missing sleep permission must return a null metric, not fail the whole response');
 assert.match(html, /window\.solidoCoachHealthData=data&&data\.status==='ok'\?[\s\S]*?sleepMinutes:data\.sleepMinutes==null\?null:Number\(data\.sleepMinutes\)/, 'The WebView callback must pass optional sleep data into local advice');
