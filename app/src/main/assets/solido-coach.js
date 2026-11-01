@@ -117,7 +117,7 @@
     return '';
   }
   const avatarStates={welcome:'coach_01_bienvenida.png',motivation:'coach_02_motivacion.png',advice:'coach_03_consejos.png',congrats:'coach_04_felicitacion.png',rest:'coach_05_descanso.png',close:'coach_06_cierre.png'};
-  const avatarVideos={welcome:'coach/coach_avatar_welcome.mp4',motivation:'coach/coach_avatar_speaking.mp4',advice:'coach/coach_avatar_advice.mp4',congrats:'coach/coach_avatar_celebrate.mp4',rest:'coach/coach_avatar_rest.mp4',close:'coach/coach_avatar_welcome.mp4'};
+  const avatarVideos={welcome:'coach/Escalador_sonriente_extendiendo_…_6589c00e.webm',motivation:'coach/Climber_gesticulating_2D_animation_7b6f30fd.webm',advice:'coach/Climber_pointing_finger_up_4706b9d7.webm',congrats:'coach/Climber_celebrating_with_raised_…_72cb685e.webm',rest:'coach/Climber_making_OK_gesture_fc829075.webm',close:'coach/Escalador_sonriente_extendiendo_…_6589c00e.webm'};
   let currentAvatarState='welcome';
   let coachSpeaking=false;
   function voiceEnabled(){return read('solidoCoachVoiceEnabled','1')!=='0';}

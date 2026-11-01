@@ -629,7 +629,8 @@ assert.match(mainActivity, /web\.addJavascriptInterface\(this, "AndroidCoach"\)/
 assert.match(mainActivity, /fun speakCoachText\(text: String\)/, 'Native Android speech method must exist');
 assert.match(mainActivity, /TextToSpeech\(this\)/, 'Coach must use Android TextToSpeech');
 assert.match(html, /id="coachAvatarVideo"[\s\S]*?playsinline/, 'Coach avatar must include an inline muted video element');
-assert.match(coach, /const avatarVideos=\{[\s\S]*?coach_avatar_speaking\.mp4[\s\S]*?coach_avatar_advice\.mp4[\s\S]*?coach_avatar_celebrate\.mp4[\s\S]*?coach_avatar_rest\.mp4/, 'All five coach video clips must be mapped to avatar moods');
+assert.match(coach, /const avatarVideos=\{[\s\S]*?Climber_gesticulating_2D_animation_7b6f30fd\.webm[\s\S]*?Climber_pointing_finger_up_4706b9d7\.webm[\s\S]*?Climber_celebrating_with_raised_[\s\S]*?72cb685e\.webm[\s\S]*?Climber_making_OK_gesture_fc829075\.webm/, 'The original five WebM clips must be mapped to avatar moods');
+assert.doesNotMatch(coach.match(/const avatarVideos=\{[^}]+\}/)?.[0]||'', /\.mp4/, 'The coach must use original WebM clips without MP4 conversion');
 assert.match(coach, /startAvatarSpeechVisual\(\)/, 'The avatar video must start when native speech actually begins');
 assert.match(coach, /state==='done'/, 'The avatar video must stop when native speech finishes');
 assert.match(mainActivity, /setOnUtteranceProgressListener/, 'Native TTS must report real speech start and completion events');
