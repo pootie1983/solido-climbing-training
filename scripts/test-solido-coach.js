@@ -625,7 +625,6 @@ console.log('SOLIDO plan automation and workout cue checks passed: first plan au
 assert.match(html, /id="coachAvatarImage"/, 'Coach must show the SOLIDO avatar');
 assert.match(coach, /window\.AndroidCoach&&typeof window\.AndroidCoach\.speakCoachText==='function'/, 'Coach speech must use the Android native bridge');
 assert.match(coach, /window\.AndroidCoach\.stopCoachSpeech/, 'Muting Coach must stop native speech');
-const mainActivity = fs.readFileSync('app/src/main/java/com/solidoclimbing/training/MainActivity.kt', 'utf8');
 assert.match(mainActivity, /web\.addJavascriptInterface\(this, "AndroidCoach"\)/, 'AndroidCoach bridge must be exposed to the WebView');
 assert.match(mainActivity, /fun speakCoachText\(text: String\)/, 'Native Android speech method must exist');
 assert.match(mainActivity, /TextToSpeech\(this\)/, 'Coach must use Android TextToSpeech');
