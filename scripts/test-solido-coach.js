@@ -257,3 +257,21 @@ assert.ok(parseSessionDate({ts:Date.now()}) instanceof Date, 'Valid timestamp sh
 assert.equal(parseSessionDate({date:'not a date'}), null, 'Invalid date should be ignored');
 assert.equal(parseSessionDate({date:'31/02/2026, 10:30'}), null, 'Impossible calendar dates should be rejected');
 console.log('SOLIDO COACH activity history checks passed: date filtering, monthly totals and force measurements.');
+
+const recentAdvice = buildAdvice([{date:daysAgo(1),mins:50}], emptyProfile, emptyPrefs, 'cercano');
+assert.match(recentAdvice.title, /Siguiente paso|Buena constancia/);
+assert.match(recentAdvice.body, /últimas 24 horas/, 'Recent activity should trigger a recovery reminder');
+const staleAdvice = buildAdvice([{date:daysAgo(10),mins:40}], emptyProfile, emptyPrefs, 'cercano');
+assert.equal(staleAdvice.title, 'Vamos a crear una rutina', 'Old activity should not be treated as recent training');
+const limitationAdvice = buildAdvice([{date:daysAgo(1),mins:50}], emptyProfile, {...emptyPrefs,limitations:'molestia de hombro'}, 'estricto');
+assert.match(limitationAdvice.body, /molestia de hombro/);
+assert.match(limitationAdvice.body, /detén la actividad si aparece dolor/);
+const weeklyAdvice = buildAdvice([
+  {date:daysAgo(1),mins:40},
+  {date:daysAgo(2),mins:45},
+  {date:daysAgo(3),mins:35}
+], emptyProfile, {...emptyPrefs,days:'3'}, 'cercano');
+assert.equal(weeklyAdvice.title, 'Buena constancia esta semana');
+assert.match(weeklyAdvice.body, /120 minutos/);
+console.log('SOLIDO COACH advice regression checks passed: recent recovery, stale activity, limitations and weekly consistency.');
+
