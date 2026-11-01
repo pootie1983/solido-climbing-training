@@ -12,7 +12,7 @@ Archivos previstos:
 
 ## Vídeos originales del avatar
 
-Se conservan los cinco archivos WebM originales, sin convertirlos a MP4. Son clips VP9 verticales de 720×1280 a 24 fps, con la marca `alpha_mode=1` y sin pista de audio. Se reproducen silenciados mientras Android Text-to-Speech está hablando; los eventos reales de inicio y fin de la locución controlan su reproducción. Las imágenes PNG originales permanecen como alternativa si el WebView del dispositivo no reproduce WebM con transparencia.
+Se conservan los cinco archivos WebM originales, sin convertirlos a MP4 ni generar versiones recodificadas. Son clips VP9 verticales de 720×1280 a 24 fps, con la marca `alpha_mode=1` y sin pista de audio. Se reproducen silenciados mientras Android Text-to-Speech está hablando; los eventos reales de inicio y fin de la locución controlan su reproducción. Las imágenes PNG originales permanecen como alternativa si el WebView del dispositivo no reproduce WebM con transparencia.
 
 Archivos originales:
 - `Climber_celebrating_with_raised_…_72cb685e.webm`
