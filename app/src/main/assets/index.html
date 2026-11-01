@@ -2497,6 +2497,9 @@ body.br-fullscreen-active .sg-close{display:flex}
 #gameHub .game-hub-footer{text-align:center;margin:18px 0 0;color:#e1f2d2b0;font-size:9px;font-weight:900;letter-spacing:2px;text-shadow:0 2px 6px #000}
 @media(min-width:560px){#gameHub .game-hub-grid{grid-template-columns:1fr 1fr;max-width:680px;align-items:stretch}#gameHub .game-hub-card{grid-template-columns:1fr;align-content:start;min-height:245px}#gameHub .game-hub-art{width:100%;height:116px}#gameHub .game-hub-card-copy{height:100%}#gameHub .game-hub-card-copy b{margin-top:auto}}
 @media(max-width:370px){#gameHub .game-hub-card{grid-template-columns:82px minmax(0,1fr);gap:10px;padding:10px;min-height:132px}#gameHub .game-hub-art{width:82px;height:102px}#gameHub .game-hub-art>span{font-size:44px}#gameHub .game-hub-art img{padding:3px}#gameHub .game-hub-card-copy small{font-size:10px}}
+
+/* SOLIDO COACH · avatar y voz */
+.coach-avatar-panel{display:flex;align-items:center;gap:16px;padding:16px;border:1px solid #36515d;border-radius:20px;background:linear-gradient(135deg,#193443,#101e29 72%);margin-bottom:14px;box-shadow:0 12px 28px #0004}.coach-avatar-art{width:clamp(112px,34vw,158px);height:164px;flex:0 0 auto;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 8px 12px #0006)}.coach-avatar-copy{min-width:0;flex:1}.coach-avatar-copy strong{display:block;color:var(--green);font-size:17px;letter-spacing:.5px}.coach-avatar-copy p{font-size:13px;line-height:1.45;color:#d4e2e8;margin:7px 0 12px}.coach-voice-actions{display:flex;gap:8px;flex-wrap:wrap}.coach-voice-btn{border:1px solid #6a8995;border-radius:999px;padding:9px 12px;background:#203b49;color:#fff;font-weight:800;font-size:12px}.coach-voice-btn.primary{background:var(--green);border-color:var(--green);color:#102018}.coach-voice-status{display:block;margin-top:8px;color:#a9c0c9;font-size:11px}@media(max-width:380px){.coach-avatar-panel{gap:9px;padding:11px}.coach-avatar-art{width:104px;height:142px}.coach-avatar-copy strong{font-size:15px}.coach-avatar-copy p{font-size:12px}}
 </style>
 
 <script>
@@ -3307,6 +3310,14 @@ body.br-fullscreen-active .sg-close{display:flex}
 <section id="solidoCoach" class="hide">
   <div class="sectionhead"><h2>SOLIDO COACH</h2><span class="tag">ENTRENADOR PERSONAL</span></div>
   <div class="coach-shell">
+    <div class="coach-avatar-panel" aria-label="Entrenador SOLIDO">
+      <img id="coachAvatarImage" class="coach-avatar-art" src="coach/coach_01_bienvenida.png" alt="Personaje entrenador SOLIDO en estilo cómic">
+      <div class="coach-avatar-copy"><strong>¡AQUÍ ESTOY, ESCALADOR!</strong><p id="coachAvatarMessage">Vamos a trabajar para que sigas progresando. Yo te acompaño en cada sesión.</p>
+        <div class="coach-voice-actions"><button id="coachSpeakButton" class="coach-voice-btn primary" type="button" onclick="solidoCoachSpeak()">▶ ESCUCHAR</button><button id="coachVoiceToggle" class="coach-voice-btn" type="button" onclick="solidoCoachToggleVoice()">🔊 VOZ ACTIVADA</button></div>
+        <small id="coachVoiceStatus" class="coach-voice-status" aria-live="polite">Voz del dispositivo · gratuita</small>
+      </div>
+    </div>
+
     <div class="coach-hero">
       <div class="coach-kicker">SOLIDO CLIMBING · COACHING</div>
       <h2>Tu próximo nivel,<br>con un plan propio.</h2>
