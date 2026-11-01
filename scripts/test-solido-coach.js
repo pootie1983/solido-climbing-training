@@ -470,6 +470,54 @@ assert.match(coach,/window\.solidoCoachEnsureInitialPlan\(window\.solidoCoachCur
 assert.match(coach,/initialPlanReady\?'Tu primer plan ya está creado/,'Coach must tell the user when the first plan is ready');
 assert.match(html,/function completeFirstProfile\(event\)[\s\S]*?window\.solidoCoachRender\(\)/,'Saving the first profile must refresh Coach immediately');
 
+// Accepting a Coach proposal must be safe, idempotent after success, and rollback on storage failure.
+const acceptProposalSource = extractFunction(html, 'window.solidoCoachAcceptPlanProposal=function(){')
+  .replace('window.solidoCoachAcceptPlanProposal=function(){', 'function(){');
+function makeAcceptProposalContext(storageFails=false) {
+  const previous={id:7,name:'Mi plan anterior',source:'manual'};
+  const elements={
+    coachProposalAccept:{style:{}},
+    coachProposalBody:{textContent:''},
+    coachProposalItems:{innerHTML:'contenido'}
+  };
+  const context={
+    window:{solidoCoachCurrentProposal:{category:'Fuerza',name:'SOLIDO COACH · Prueba',items:[{id:19,sets:1,reps:1,work:300,rest:0}]}},
+    customPlans:[previous],
+    Date,
+    estimatePlan:items=>items.reduce((sum,item)=>sum+item.work,0),
+    localStorage:{setItem:(key,value)=>{if(storageFails)throw new Error('storage full');context.saved={key,value};}},
+    alert:message=>{context.alerted=message;},
+    document:{getElementById:id=>elements[id]||null},
+    renderPlan:()=>{context.rendered=true;},
+    show:screen=>{context.shown=screen;},
+    elements,
+    previous
+  };
+  return context;
+}
+const acceptProposal = vm.runInNewContext('('+acceptProposalSource+')');
+const acceptedContext=makeAcceptProposalContext();
+acceptProposal.call(acceptedContext);
+assert.equal(acceptedContext.customPlans.length,2,'Accepting a proposal should append a new plan without deleting existing plans');
+assert.equal(acceptedContext.customPlans[1],acceptedContext.previous);
+assert.equal(acceptedContext.customPlans[0].source,'solido-coach');
+assert.equal(acceptedContext.window.solidoCoachCurrentProposal,null,'Successful acceptance should clear the pending proposal');
+assert.equal(acceptedContext.shown,'plans');
+assert.equal(acceptedContext.rendered,true);
+acceptProposal.call(acceptedContext);
+assert.equal(acceptedContext.customPlans.length,2,'A repeated click after acceptance must not create duplicate plans');
+const failedAcceptContext=makeAcceptProposalContext(true);
+const failedAcceptProposal=vm.runInNewContext('('+acceptProposalSource+')');
+failedAcceptProposal.call(failedAcceptContext);
+assert.equal(failedAcceptContext.customPlans.length,1,'Storage failure must roll back the new plan');
+assert.equal(failedAcceptContext.customPlans[0],failedAcceptContext.previous,'Storage failure must preserve every existing plan');
+assert.match(failedAcceptContext.alerted,/no se han modificado/i);
+assert.ok(failedAcceptContext.window.solidoCoachCurrentProposal,'A failed save should keep the proposal available for retry');
+const emptyAcceptContext=makeAcceptProposalContext();
+emptyAcceptContext.window.solidoCoachCurrentProposal=null;
+vm.runInNewContext('('+acceptProposalSource+')').call(emptyAcceptContext);
+assert.equal(emptyAcceptContext.customPlans.length,1,'Accepting without a proposal must be a no-op');
+
 // Plan sessions must announce their start, rests, resumed work and exercise transitions.
 // These cues reuse the existing workout audio/notice helpers; the force hand-switch flow is untouched.
 const planRunnerSource=html.slice(html.indexOf('let planRunState=null'),html.indexOf('/* =========================\n   ESTADÍSTICAS',html.indexOf('let planRunState=null')));
