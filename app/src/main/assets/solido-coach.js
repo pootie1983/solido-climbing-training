@@ -37,8 +37,11 @@
     const dated=sessionList.map(item=>({item,date:sessionDate(item)})).filter(row=>row.date&&Number.isFinite(row.date.getTime()));
     const month=dated.filter(row=>row.date.getTime()>=monthAgo&&row.date.getTime()<=now);
     const minutes=month.reduce((sum,row)=>sum+Math.max(0,Number(row.item.mins)||0),0);
-    const bestForce=dated.reduce((best,row)=>Math.max(best,Number(row.item.force)||0),0);
-    return {total:sessionList.length,month:month.length,minutes,bestForce};
+    const forceRows=month.filter(row=>Number(row.item.force)>0);
+    const allForceRows=dated.filter(row=>Number(row.item.force)>0).sort((a,b)=>b.date-a.date);
+    const bestForce=allForceRows.reduce((best,row)=>Math.max(best,Number(row.item.force)||0),0);
+    const latestForce=allForceRows[0]||null;
+    return {total:sessionList.filter(item=>!Number(item.force)).length,month:month.filter(row=>!Number(row.item.force)).length,minutes,bestForce,forceCount:forceRows.length,latestForce:latestForce?Number(latestForce.item.force):0,latestForceDate:latestForce?latestForce.date.toLocaleDateString('es-ES'):'',latestForceHand:latestForce?String(latestForce.item.hand||''):'',latestForceGrip:latestForce?String(latestForce.item.grip||''):''};
   }
   function buildLocalAdvice(sessionList,profile,preferences,personality){
     const now=Date.now(),weekAgo=now-7*24*60*60*1000;
@@ -110,7 +113,7 @@
       target.innerHTML=[
         ['Escalador',profile.nickname],['Edad',profile.age==='—'?'Sin indicar':profile.age+' años'],
         ['Altura',profile.height==='—'?'Sin indicar':profile.height+' cm'],['Peso',profile.weight==='—'?'Sin indicar':profile.weight+' kg'],
-        ['Grado',profile.grade],['Nivel',profile.level],['Objetivo',profile.goal],['Sesiones guardadas',String(activityStats.total)],['Sesiones últimos 30 días',String(activityStats.month)],['Minutos últimos 30 días',String(activityStats.minutes)],['Mejor fuerza registrada',activityStats.bestForce?activityStats.bestForce.toFixed(2)+' kg':'Sin registros']
+        ['Grado',profile.grade],['Nivel',profile.level],['Objetivo',profile.goal],['Sesiones guardadas',String(activityStats.total)],['Sesiones últimos 30 días',String(activityStats.month)],['Minutos últimos 30 días',String(activityStats.minutes)],['Mediciones de fuerza últimos 30 días',String(activityStats.forceCount)],['Mejor fuerza registrada',activityStats.bestForce?activityStats.bestForce.toFixed(2)+' kg':'Sin registros'],['Última medición',activityStats.latestForce?activityStats.latestForce.toFixed(2)+' kg · '+activityStats.latestForceDate:'Sin registros'],['Configuración última medición',activityStats.latestForce?activityStats.latestForceHand+' · '+activityStats.latestForceGrip+' mm':'—']
       ].map(([label,value])=>'<div class="coach-data"><span>'+safe(label)+'</span><strong>'+safe(value)+'</strong></div>').join('');
     }
     document.querySelectorAll('.coach-personality').forEach(button=>button.classList.toggle('active',button.dataset.personality===p.id));
