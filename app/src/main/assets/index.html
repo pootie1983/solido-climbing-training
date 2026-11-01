@@ -1852,6 +1852,16 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
 #workoutSwitchOverlay.show{display:flex}
 #workoutNotice{position:fixed;inset:0;z-index:100011;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(0,0,0,.92);backdrop-filter:blur(7px)}
 #workoutNotice.show{display:flex}
+#planWorkoutNotice{position:fixed;inset:0;z-index:100012;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(2,8,12,.96);backdrop-filter:blur(9px)}
+#planWorkoutNotice.show{display:flex}
+.plan-workout-notice-card{width:min(100%,390px);max-height:92dvh;overflow:auto;border:2px solid var(--green);border-radius:26px;background:linear-gradient(155deg,#142b35,#071119 72%);padding:25px 20px;text-align:center;box-shadow:0 0 42px #7cff4538;color:#fff;animation:workoutSwitchPop .24s ease-out}
+.plan-workout-kicker{font-size:11px;font-weight:900;letter-spacing:2.5px;color:var(--green)}
+.plan-workout-image{width:min(62vw,220px);height:min(30vh,190px);min-height:110px;margin:14px auto 10px;border-radius:17px;overflow:hidden;display:grid;place-items:center;background:#0a1820;border:1px solid #426052;color:var(--green);font-size:58px}
+.plan-workout-image img{width:100%;height:100%;object-fit:contain;display:block}
+.plan-workout-notice-card h2{margin:12px 0 8px;color:var(--green);font-size:clamp(25px,7vw,34px);font-weight:1000;line-height:1.08}
+.plan-workout-notice-card p{margin:8px 0 15px;color:#e0e8e1;line-height:1.5;font-size:14px}
+.plan-workout-countdown{font-size:clamp(58px,16vw,82px);line-height:1;font-weight:1000;font-variant-numeric:tabular-nums;color:#fff;margin:18px 0;text-shadow:0 0 22px #7cff4540}
+.plan-workout-notice-card .btn{width:100%;margin-top:7px}
 .workout-notice-card{width:min(100%,360px);border:2px solid var(--green);border-radius:24px;background:#08121b;padding:26px 20px;text-align:center;box-shadow:0 0 32px #7cff4530;color:#fff;animation:workoutSwitchPop .22s ease-out}
 .workout-notice-icon{font-size:64px;line-height:1.2;color:var(--green);margin:4px 0 12px;text-shadow:0 0 18px #7cff4540}
 .workout-notice-card h2{margin:8px 0;color:var(--green);font-size:25px}
@@ -2425,6 +2435,16 @@ body.br-fullscreen-active .sg-close{display:flex}
   </div>
 </div>
 <div id="workoutNotice" role="alertdialog" aria-live="assertive" aria-modal="true"><div class="workout-notice-card"><div style="font-size:11px;font-weight:800;letter-spacing:2px;color:var(--green)">SOLIDO CLIMBING</div><div id="workoutNoticeIcon" class="workout-notice-icon" aria-hidden="true">Ⅱ</div><h2 id="workoutNoticeTitle">DESCANSO</h2><p id="workoutNoticeMessage">Empieza el descanso.</p></div></div>
+<div id="planWorkoutNotice" role="alertdialog" aria-live="assertive" aria-modal="true">
+ <div class="plan-workout-notice-card">
+  <div class="plan-workout-kicker">SOLIDO CLIMBING · COACH</div>
+  <div id="planWorkoutNoticeImage" class="plan-workout-image" aria-hidden="true">⛰</div>
+  <div id="planWorkoutNoticeCountdown" class="plan-workout-countdown" style="display:none">00:30</div>
+  <h2 id="planWorkoutNoticeTitle">¡A ENTRENAR!</h2>
+  <p id="planWorkoutNoticeMessage">Prepara el siguiente ejercicio.</p>
+  <button class="btn secondary" type="button" onclick="dismissPlanWorkoutNotice()">VER ENTRENAMIENTO</button>
+ </div>
+</div>
 <div id="solidoSplash" aria-label="Bienvenida SOLIDO CLIMBING">
   <img id="welcomeComic" src="./P%C3%B3ster%20c%C3%B3mic%20de%20escalada%20SOLIDO.png" alt="Bienvenida cómic SOLIDO CLIMBING" loading="eager" decoding="sync" fetchpriority="high">
   <div class="splash-fallback-brand" aria-hidden="true"><strong>SOLIDO</strong><span>CLIMBING</span><small>ENTRENAR TAMBIÉN ES ESCALAR</small></div>
@@ -5342,6 +5362,41 @@ function logSession(
 
 
 let planRunState=null,planRunInterval=null;
+let planWorkoutNoticeTimer=null;
+function hidePlanWorkoutNotice(){
+ const overlay=document.getElementById('planWorkoutNotice');
+ if(planWorkoutNoticeTimer!==null){clearTimeout(planWorkoutNoticeTimer);planWorkoutNoticeTimer=null;}
+ if(overlay)overlay.classList.remove('show');
+}
+function dismissPlanWorkoutNotice(){
+ if(planRunState)planRunState.noticeDismissed=true;
+ hidePlanWorkoutNotice();
+}
+function updatePlanWorkoutNotice(){
+ if(!planRunState||planRunState.phase!=='rest')return;
+ const overlay=document.getElementById('planWorkoutNotice');
+ if(!overlay||!overlay.classList.contains('show'))return;
+ const countdown=document.getElementById('planWorkoutNoticeCountdown');
+ const title=document.getElementById('planWorkoutNoticeTitle');
+ const message=document.getElementById('planWorkoutNoticeMessage');
+ if(countdown)countdown.textContent=formatPlanTime(planRunState.exerciseRemaining);
+ if(title)title.textContent=planRunState.running?'DESCANSO':'DESCANSO PAUSADO';
+ if(message)message.textContent=planRunState.running?'Tiempo para recuperar antes de continuar.':'El cronómetro está pausado. Pulsa Continuar para reanudar.';
+}
+function showPlanWorkoutNotice(kind,titleText,messageText,exercise){
+ const overlay=document.getElementById('planWorkoutNotice');if(!overlay)return;
+ const title=document.getElementById('planWorkoutNoticeTitle'),message=document.getElementById('planWorkoutNoticeMessage');
+ const image=document.getElementById('planWorkoutNoticeImage'),countdown=document.getElementById('planWorkoutNoticeCountdown');
+ if(title)title.textContent=titleText;
+ if(message)message.textContent=messageText;
+ if(image)image.innerHTML=exercise&&exercise.image?'<img src="'+exercise.image+'" alt="'+(exercise.name||'Ejercicio')+'">':(exercise?.emoji||'⛰');
+ if(countdown){countdown.style.display=kind==='rest'?'block':'none';countdown.textContent=formatPlanTime(planRunState?planRunState.exerciseRemaining:0);}
+ if(planRunState)planRunState.noticeDismissed=false;
+ overlay.classList.add('show');
+ if(planWorkoutNoticeTimer!==null){clearTimeout(planWorkoutNoticeTimer);planWorkoutNoticeTimer=null;}
+ if(kind!=='rest')planWorkoutNoticeTimer=setTimeout(()=>{overlay.classList.remove('show');planWorkoutNoticeTimer=null;},4200);
+ else updatePlanWorkoutNotice();
+}
 function startPlan(planId){
   const selected=customPlans.find(p=>p.id===Number(planId));
   if(!selected){alert('Elige uno de tus planes guardados.');return;}
@@ -5349,7 +5404,8 @@ function startPlan(planId){
   if(!items.length){alert('Añade ejercicios a este plan antes de iniciarlo.');return;}
   const total=estimatePlan(items);
   // El plan solo cuenta como entrenamiento cuando se completa, no al pulsar Iniciar.
-  planRunState={plan:selected,index:0,set:1,rep:1,phase:'work',exerciseRemaining:Math.max(5,Number(items[0].work)||30),totalRemaining:total,running:false,started:false,restReason:null,completed:false};
+  hidePlanWorkoutNotice();
+  planRunState={plan:selected,index:0,set:1,rep:1,phase:'work',exerciseRemaining:Math.max(5,Number(items[0].work)||30),totalRemaining:total,running:false,started:false,restReason:null,completed:false,noticeDismissed:false};
   show('planRunPage');renderPlanRun();document.getElementById('planRunToggle').textContent='▶ Iniciar';
 }
 function renderPlanRun(){
@@ -5361,6 +5417,8 @@ function renderPlanRun(){
   document.getElementById('planExerciseClock').textContent=formatPlanTime(st.exerciseRemaining);
   document.getElementById('planTotalClock').textContent=formatPlanTime(st.totalRemaining);
   document.getElementById('planRunProgress').textContent='Ejercicio '+(st.index+1)+' de '+st.plan.items.length+' · Serie '+st.set+' · Repetición '+st.rep+(st.phase==='rest'?' · Descanso':' · Trabajo');
+
+  updatePlanWorkoutNotice();
 }
 function togglePlanRun(){
   if(!planRunState)return;
@@ -5370,31 +5428,33 @@ function togglePlanRun(){
     const st=planRunState,item=st.plan.items[st.index],ex=exercises.find(e=>Number(e.id)===Number(item.id));
     if(st.phase==='rest'){
       playWorkoutCue('rest');
-      showWorkoutNotice('rest','DESCANSO EN CURSO','Sigue descansando '+formatPlanTime(st.exerciseRemaining)+' antes de volver a '+(ex?.name||'el ejercicio')+'.');
+      if(!st.noticeDismissed)showPlanWorkoutNotice('rest','DESCANSO','Recupera antes de volver a '+(ex?.name||'el ejercicio')+'.',ex);
     }else{
       playWorkoutCue('start');
-      showWorkoutNotice('start',st.started?'CONTINUAMOS':'¡EMPEZAMOS!',st.started?'Retoma '+(ex?.name||'el ejercicio')+'.':'Comienza con '+(ex?.name||'el primer ejercicio')+'.');
+      showPlanWorkoutNotice('start',st.started?'¡SEGUIMOS!':'¡A ENTRENAR!',st.started?'Retoma '+(ex?.name||'el ejercicio')+'.':'Comienza con '+(ex?.name||'el primer ejercicio')+'.',ex);
       st.started=true;
     }
     if(!planRunInterval)planRunInterval=setInterval(tickPlanRun,1000);
+  }else{
+    updatePlanWorkoutNotice();
+    if(planRunInterval){clearInterval(planRunInterval);planRunInterval=null;}
   }
-  if(!planRunState.running&&planRunInterval){clearInterval(planRunInterval);planRunInterval=null;}
 }
 function startPlanRunRest(st,item,reason){
   const restSeconds=Math.max(0,Number(item.rest)||0);
+  const ex=exercises.find(e=>Number(e.id)===Number(item.id));
   if(restSeconds>0){
-    st.phase='rest';st.exerciseRemaining=restSeconds;st.restReason=reason;
+    st.phase='rest';st.exerciseRemaining=restSeconds;st.restReason=reason;st.noticeDismissed=false;
     playWorkoutCue('rest');
-    showWorkoutNotice('rest','DESCANSO','Descansa '+formatPlanTime(restSeconds)+' antes de continuar.');
+    showPlanWorkoutNotice('rest','DESCANSO','Recupera antes de continuar.',ex);
     return;
   }
   st.phase='work';st.restReason=null;
   if(reason==='rep')st.rep++;
   else if(reason==='set'){st.set++;st.rep=1;}
   st.exerciseRemaining=Math.max(5,Number(item.work)||30);
-  const ex=exercises.find(e=>Number(e.id)===Number(item.id));
   playWorkoutCue('start');
-  showWorkoutNotice('start',reason==='set'?'SIGUIENTE SERIE':'SIGUIENTE REPETICIÓN','Continúa con '+(ex?.name||'el ejercicio')+'.');
+  showPlanWorkoutNotice('start',reason==='set'?'SERIE '+st.set:'SIGUIENTE REPETICIÓN','Continúa con '+(ex?.name||'el ejercicio')+'.',ex);
 }
 function tickPlanRun(){
   const st=planRunState;if(!st||!st.running)return;
@@ -5416,7 +5476,7 @@ function tickPlanRun(){
       st.exerciseRemaining=Math.max(5,Number(item.work)||30);
       const ex=exercises.find(e=>Number(e.id)===Number(item.id));
       playWorkoutCue('start');
-      showWorkoutNotice('start',restReason==='set'?'SIGUIENTE SERIE':restReason==='rep'?'SIGUIENTE REPETICIÓN':'¡A ENTRENAR!','Descanso terminado. Continúa con '+(ex?.name||'el ejercicio')+'.');
+      showPlanWorkoutNotice('start',restReason==='set'?'SERIE '+st.set:restReason==='rep'?'SIGUIENTE REPETICIÓN':'¡A ENTRENAR!','Descanso terminado. Continúa con '+(ex?.name||'el ejercicio')+'.',ex);
     }
   }
   if(!planRunState||st.totalRemaining<=0){finishPlanRun();return;}
@@ -5437,12 +5497,13 @@ function advancePlanRunExercise(){
   st.exerciseRemaining=Math.max(5,Number(st.plan.items[st.index].work)||30);
   const next=st.plan.items[st.index],ex=exercises.find(e=>Number(e.id)===Number(next.id));
   playWorkoutCue('start');
-  showWorkoutNotice('start','SIGUIENTE EJERCICIO','Ahora toca '+(ex?.name||'el siguiente ejercicio')+'.');
+  showPlanWorkoutNotice('start','SIGUIENTE EJERCICIO','Ahora toca '+(ex?.name||'el siguiente ejercicio')+'.',ex);
   renderPlanRun();
 }
 function skipPlanRunExercise(){advancePlanRunExercise();}
 function finishPlanRun(){
   if(planRunInterval){clearInterval(planRunInterval);planRunInterval=null;}
+  hidePlanWorkoutNotice();
   planRunState=null;show('plans');if(activePlanCategory)openPlanEditor();
 }
 function closePlanRun(){finishPlanRun();}
