@@ -36,3 +36,8 @@
 @media(max-width:360px){.coach-personalities{gap:5px}.coach-personality{padding:10px 3px}.coach-personality small{font-size:8px}.coach-profile-grid{gap:6px}}
 
 /* Build validation branch for SOLIDO COACH foundation. */
+
+.coach-advice{border-color:#668d50;background:linear-gradient(145deg,#172f29,#10232b)}
+.coach-advice-title{margin:8px 0;color:#c7ff8b;font-size:16px;font-weight:900}
+.coach-advice #coachAdviceBody{margin:0 0 10px;line-height:1.6}
+.coach-advice>small{display:block;line-height:1.5}
