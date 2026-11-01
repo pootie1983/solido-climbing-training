@@ -495,8 +495,8 @@ function makeAcceptProposalContext(storageFails=false) {
   };
   return context;
 }
-const acceptProposal = vm.runInNewContext('('+acceptProposalSource+')');
 const acceptedContext=makeAcceptProposalContext();
+const acceptProposal = vm.runInNewContext('('+acceptProposalSource+')',acceptedContext);
 acceptProposal.call(acceptedContext);
 assert.equal(acceptedContext.customPlans.length,2,'Accepting a proposal should append a new plan without deleting existing plans');
 assert.equal(acceptedContext.customPlans[1],acceptedContext.previous);
@@ -507,7 +507,7 @@ assert.equal(acceptedContext.rendered,true);
 acceptProposal.call(acceptedContext);
 assert.equal(acceptedContext.customPlans.length,2,'A repeated click after acceptance must not create duplicate plans');
 const failedAcceptContext=makeAcceptProposalContext(true);
-const failedAcceptProposal=vm.runInNewContext('('+acceptProposalSource+')');
+const failedAcceptProposal=vm.runInNewContext('('+acceptProposalSource+')',failedAcceptContext);
 failedAcceptProposal.call(failedAcceptContext);
 assert.equal(failedAcceptContext.customPlans.length,1,'Storage failure must roll back the new plan');
 assert.equal(failedAcceptContext.customPlans[0],failedAcceptContext.previous,'Storage failure must preserve every existing plan');
@@ -515,7 +515,7 @@ assert.match(failedAcceptContext.alerted,/no se han modificado/i);
 assert.ok(failedAcceptContext.window.solidoCoachCurrentProposal,'A failed save should keep the proposal available for retry');
 const emptyAcceptContext=makeAcceptProposalContext();
 emptyAcceptContext.window.solidoCoachCurrentProposal=null;
-vm.runInNewContext('('+acceptProposalSource+')').call(emptyAcceptContext);
+vm.runInNewContext('('+acceptProposalSource+')',emptyAcceptContext).call(emptyAcceptContext);
 assert.equal(emptyAcceptContext.customPlans.length,1,'Accepting without a proposal must be a no-op');
 
 // Plan sessions must announce their start, rests, resumed work and exercise transitions.
