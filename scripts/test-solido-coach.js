@@ -290,9 +290,9 @@ const proposalBlockSource = extractFunction(coach, 'function getProposalBlockRea
   .replace('function getProposalBlockReason(sessionList,preferences,healthData){', 'function(sessionList,preferences,healthData){');
 const getProposalBlockReason = vm.runInNewContext('(' + proposalBlockSource + ')', {sessionDate, Date});
 const restedPreferences = {...emptyPrefs,limitations:''};
-assert.match(getProposalBlockReason([{date:daysAgo(1),mins:45}],restedPreferences,null), /últimas 24 horas/, 'A completed recent session should block another automatic proposal');
-assert.equal(getProposalBlockReason([{date:daysAgo(3),mins:45}],restedPreferences,null), '', 'Older training should not block a new proposal');
-assert.equal(getProposalBlockReason([{date:daysAgo(1),force:25}],restedPreferences,null), '', 'Force tests should not count as a training session for recovery blocking');
+assert.match(getProposalBlockReason([{ts:Date.now()-2*60*60*1000,mins:45}],restedPreferences,null), /últimas 24 horas/, 'A completed session from two hours ago should block another automatic proposal');
+assert.equal(getProposalBlockReason([{ts:Date.now()-26*60*60*1000,mins:45}],restedPreferences,null), '', 'Training older than 24 hours should not block a new proposal');
+assert.equal(getProposalBlockReason([{ts:Date.now()-2*60*60*1000,force:25}],restedPreferences,null), '', 'Force tests should not count as a training session for recovery blocking');
 assert.equal(getProposalBlockReason([{date:'01/01/2099, 10:30',mins:45}],restedPreferences,null), '', 'Future training entries must not trigger recovery blocking');
 assert.match(getProposalBlockReason([],restedPreferences,{sleepMinutes:330}), /menos de 6 horas/, 'Short sleep should block automatic loading proposals');
 assert.equal(getProposalBlockReason([],restedPreferences,{sleepMinutes:null}), '', 'Missing sleep data must not block proposals');
