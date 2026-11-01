@@ -47,8 +47,8 @@
   }
   function buildProposal(profile,preferences){
     if(preferences.limitations.trim())return null;
-    const goal=profile.goal||'Fuerza general',age=Number(profile.age)||0,equipment=preferences.equipment||'casa',beginner=preferences.experience==='principiante';
-    const warmup=[{id:19,sets:1,reps:1,work:300,rest:0,label:'Calentamiento general',detail:'5 minutos a intensidad suave'},{id:21,sets:1,reps:10,work:2,rest:10,label:'Movilidad de hombros',detail:'Movimientos controlados'},{id:23,sets:1,reps:10,work:2,rest:10,label:'Movilidad de muñecas',detail:'Activación suave antes de entrenar'}];
+    const goal=profile.goal||'Fuerza general',age=Number(profile.age)||0,equipment=preferences.equipment||'casa',level=String(profile.level||'').toLowerCase(),beginner=level==='principiante'||preferences.experience==='principiante';
+    const warmup=[{id:19,sets:1,reps:1,work:300,rest:0,label:'Calentamiento general',detail:'5 minutos a intensidad suave'},{id:21,sets:1,reps:1,work:30,rest:0,label:'Movilidad de hombros',detail:'30 segundos de movimientos controlados'},{id:23,sets:1,reps:1,work:30,rest:0,label:'Movilidad de muñecas',detail:'30 segundos de activación suave'}];
     let main=[],category='Fuerza',name='SOLIDO COACH · Fuerza general',note='Mantén una intensidad cómoda y deja varias repeticiones en reserva.';
     if(goal==='Fuerza de dedos'){
       category='Fuerza';name='SOLIDO COACH · Cuidado y fuerza de manos';
