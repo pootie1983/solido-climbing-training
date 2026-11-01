@@ -82,7 +82,11 @@
       else if(equipment==='basico'){main=[{id:31,sets:2,reps:beginner?8:10,work:5,rest:60,label:'Pájaro / remo invertido',detail:'Carga ligera y espalda estable'},{id:9,sets:2,reps:1,work:25,rest:45,label:'Plancha abdominal',detail:'2 series de 25 segundos'},{id:32,sets:2,reps:12,work:5,rest:45,label:'Puente de glúteos',detail:'Movimiento controlado'}];}
       else{main=[{id:9,sets:2,reps:1,work:20,rest:45,label:'Plancha abdominal',detail:'2 series de 20 segundos'},{id:32,sets:2,reps:12,work:5,rest:45,label:'Puente de glúteos',detail:'2 series de 12 repeticiones'},{id:13,sets:2,reps:6,work:5,rest:30,label:'Movilidad de cadera',detail:'6 movimientos cómodos por lado'}];}
     }
-    note+=' Disponibilidad semanal: '+days+' '+(days===1?'día':'días')+'. Reparte el esfuerzo y reserva recuperación entre sesiones intensas.';
+    if(preferences.experience==='avanzado'&&!beginner&&goal!=='Fuerza de dedos'){
+      main=main.map(item=>({...item,sets:Math.min(3,item.sets+1)}));
+      note+=' Ajuste para experiencia avanzada: volumen moderadamente superior, sin aumentar la carga específica de dedos.';
+    }
+    note+=' Disponibilidad semanal: '+days+' '+(days===1?'día':'días')+'. Esta es una propuesta de una sesión, no un calendario semanal automático; distribuye las sesiones intensas y reserva recuperación.';
     return {category,name,items:warmup.concat(main),note,daysAvailable:days};
   }
   function render(){
