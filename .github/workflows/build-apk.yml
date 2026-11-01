@@ -18,6 +18,14 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+      - name: Set up Node.js for asset validation
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate JavaScript assets
+        run: |
+          node --check app/src/main/assets/solido-coach.js
+          node --check app/src/main/assets/strength-game.js
       - name: Build debug APK
         uses: gradle/gradle-build-action@v3
         with:
