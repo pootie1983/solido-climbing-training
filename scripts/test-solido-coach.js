@@ -33,7 +33,8 @@ for (let i = openBrace; i < coach.length; i++) {
   }
 }
 assert.ok(functionEnd > functionStart, 'Proposal builder must be a complete function');
-const buildProposal = vm.runInNewContext('(' + coach.slice(functionStart, functionEnd) + ')');
+const rawBuildProposal = vm.runInNewContext('(' + coach.slice(functionStart, functionEnd) + ')');
+const buildProposal = (profile, preferences) => rawBuildProposal(profile, {limitations:'', ...preferences});
 
 const cases = [
   [{goal:'Fuerza general',age:30,level:'Intermedio'}, {equipment:'gimnasio',experience:'intermedio'}, 'Fuerza'],
