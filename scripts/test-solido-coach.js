@@ -475,7 +475,7 @@ const runnerContext={
   Math,Number
 };
 for(const [name,source] of Object.entries(runnerFunctions)){
-  runnerContext[name]=vm.runInNewContext('('+source.replace(/^function\\s+\\w+\\s*\\(/,'function(')+')',runnerContext);
+runnerContext[name]=vm.runInNewContext('('+source.replace('function '+name+'(','function(')+')',runnerContext);
 }
 const runnerItem={id:1,sets:2,reps:2,work:5,rest:2};
 const runnerNextItem={id:2,sets:1,reps:1,work:5,rest:0};
