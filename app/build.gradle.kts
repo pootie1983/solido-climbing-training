@@ -5,6 +5,7 @@ plugins {
 
 android {
     namespace = "com.solidoclimbing.training"
+
     compileSdk = 36
 
     defaultConfig {
@@ -26,6 +27,7 @@ android {
 }
 
 dependencies {
+    implementation(files("libs/sherpa-onnx-1.12.21.aar"))
     implementation("androidx.health.connect:connect-client:1.1.0")
     implementation("androidx.activity:activity-ktx:1.10.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
