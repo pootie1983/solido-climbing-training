@@ -2139,6 +2139,12 @@ body.plan-selection-active #library{padding-bottom:calc(125px + env(safe-area-in
 #sgScene.sg-victory-camera #sgCurrentClimber{opacity:0}
 .sg-victory-banner{z-index:12}
 .sg-victory-banner.active{background:linear-gradient(180deg,#08130c08 0%,#07110b28 40%,#07110b52 100%)}
+
+/* SOLIDO COACH · vídeo sincronizado con la voz */
+.coach-avatar-media{position:relative;width:100%;height:230px;max-height:250px;min-width:0}
+.coach-avatar-media .coach-avatar-art,.coach-avatar-media .coach-avatar-video{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 12px 12px #0008)}
+.coach-avatar-media .coach-avatar-video{display:none;background:transparent}
+@media(max-width:390px){.coach-avatar-media{height:190px}}
 </style>
 
 <style>
@@ -3325,7 +3331,7 @@ body.br-fullscreen-active .sg-close{display:flex}
   <div class="sectionhead"><h2>SOLIDO COACH</h2><span class="tag">ENTRENADOR PERSONAL</span></div>
   <div class="coach-shell">
     <div class="coach-avatar-panel" aria-label="Entrenador SOLIDO">
-      <img id="coachAvatarImage" class="coach-avatar-art" src="coach/coach_01_bienvenida.png" alt="Personaje entrenador SOLIDO en estilo cómic">
+      <div class="coach-avatar-media"><img id="coachAvatarImage" class="coach-avatar-art" src="coach/coach_01_bienvenida.png" alt="Personaje entrenador SOLIDO en estilo cómic"><video id="coachAvatarVideo" class="coach-avatar-video" muted loop playsinline webkit-playsinline preload="metadata" aria-hidden="true"></video></div>
       <div class="coach-avatar-copy"><strong>¡AQUÍ ESTOY, ESCALADOR!</strong><p id="coachAvatarMessage">Vamos a trabajar para que sigas progresando. Yo te acompaño en cada sesión.</p>
         <div class="coach-voice-actions"><button id="coachSpeakButton" class="coach-voice-btn primary" type="button" onclick="solidoCoachSpeak()">▶ ESCUCHAR</button><button id="coachVoiceToggle" class="coach-voice-btn" type="button" onclick="solidoCoachToggleVoice()">🔊 VOZ ACTIVADA</button></div>
         <small id="coachVoiceStatus" class="coach-voice-status" aria-live="polite">Voz del dispositivo · gratuita</small>
