@@ -47,7 +47,7 @@
   }
   function buildProposal(profile,preferences){
     if(preferences.limitations.trim())return null;
-    const goal=profile.goal||'Fuerza general',age=Number(profile.age)||0,equipment=preferences.equipment||'casa';
+    const goal=profile.goal||'Fuerza general',age=Number(profile.age)||0,equipment=preferences.equipment||'casa',beginner=preferences.experience==='principiante';
     const warmup=[{id:19,sets:1,reps:1,work:300,rest:0,label:'Calentamiento general',detail:'5 minutos a intensidad suave'},{id:21,sets:1,reps:10,work:2,rest:10,label:'Movilidad de hombros',detail:'Movimientos controlados'},{id:23,sets:1,reps:10,work:2,rest:10,label:'Movilidad de muñecas',detail:'Activación suave antes de entrenar'}];
     let main=[],category='Fuerza',name='SOLIDO COACH · Fuerza general',note='Mantén una intensidad cómoda y deja varias repeticiones en reserva.';
     if(goal==='Fuerza de dedos'){
@@ -61,8 +61,8 @@
       category='Escalada';name='SOLIDO COACH · Preparación para vías ferratas';
       main=[{id:11,sets:1,reps:1,work:600,rest:60,label:'Trabajo de pies en muro',detail:'10 minutos de precisión y equilibrio'},{id:9,sets:2,reps:1,work:20,rest:45,label:'Plancha abdominal',detail:'2 series de 20 segundos'},{id:32,sets:2,reps:12,work:3,rest:45,label:'Puente de glúteos',detail:'2 series de 12 repeticiones controladas'}];
     }else{
-      if(equipment==='gimnasio'||equipment==='completo'){main=[{id:5,sets:2,reps:5,work:5,rest:120,label:'Dominadas adaptadas',detail:'Usa asistencia si la necesitas; sin llegar al fallo'},{id:9,sets:2,reps:1,work:25,rest:45,label:'Plancha abdominal',detail:'2 series de 25 segundos'},{id:17,sets:2,reps:12,work:5,rest:45,label:'Rotadores de hombro con banda',detail:'Resistencia ligera'}];}
-      else if(equipment==='basico'){main=[{id:31,sets:2,reps:10,work:3,rest:60,label:'Pájaro / remo invertido',detail:'Carga ligera y espalda estable'},{id:9,sets:2,reps:1,work:25,rest:45,label:'Plancha abdominal',detail:'2 series de 25 segundos'},{id:32,sets:2,reps:12,work:3,rest:45,label:'Puente de glúteos',detail:'Movimiento controlado'}];}
+      if(equipment==='gimnasio'||equipment==='completo'){main=[{id:5,sets:2,reps:beginner?3:5,work:5,rest:120,label:'Dominadas adaptadas',detail:'Usa asistencia si la necesitas; sin llegar al fallo'},{id:9,sets:2,reps:1,work:beginner?20:25,rest:45,label:'Plancha abdominal',detail:'2 series de 25 segundos'},{id:17,sets:2,reps:12,work:5,rest:45,label:'Rotadores de hombro con banda',detail:'Resistencia ligera'}];}
+      else if(equipment==='basico'){main=[{id:31,sets:2,reps:beginner?8:10,work:3,rest:60,label:'Pájaro / remo invertido',detail:'Carga ligera y espalda estable'},{id:9,sets:2,reps:1,work:25,rest:45,label:'Plancha abdominal',detail:'2 series de 25 segundos'},{id:32,sets:2,reps:12,work:3,rest:45,label:'Puente de glúteos',detail:'Movimiento controlado'}];}
       else{main=[{id:9,sets:2,reps:1,work:20,rest:45,label:'Plancha abdominal',detail:'2 series de 20 segundos'},{id:32,sets:2,reps:12,work:3,rest:45,label:'Puente de glúteos',detail:'2 series de 12 repeticiones'},{id:13,sets:2,reps:6,work:3,rest:30,label:'Movilidad de cadera',detail:'6 movimientos cómodos por lado'}];}
     }
     return {category,name,items:warmup.concat(main),note};
