@@ -41,3 +41,5 @@
 .coach-advice-title{margin:8px 0;color:#c7ff8b;font-size:16px;font-weight:900}
 .coach-advice #coachAdviceBody{margin:0 0 10px;line-height:1.6}
 .coach-advice>small{display:block;line-height:1.5}
+
+.coach-proposal-items{display:grid;gap:8px;margin-top:12px}.coach-proposal-item{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08)}.coach-proposal-item strong{font-size:13px;color:var(--text,#fff)}.coach-proposal-item span{font-size:12px;line-height:1.45;color:var(--muted,#aebdc7)}.coach-proposal>small{display:block;margin-top:10px;line-height:1.5}
