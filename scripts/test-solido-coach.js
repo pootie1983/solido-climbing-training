@@ -628,5 +628,11 @@ assert.match(coach, /window\.AndroidCoach\.stopCoachSpeech/, 'Muting Coach must 
 assert.match(mainActivity, /web\.addJavascriptInterface\(this, "AndroidCoach"\)/, 'AndroidCoach bridge must be exposed to the WebView');
 assert.match(mainActivity, /fun speakCoachText\(text: String\)/, 'Native Android speech method must exist');
 assert.match(mainActivity, /TextToSpeech\(this\)/, 'Coach must use Android TextToSpeech');
+assert.match(html, /id="coachAvatarVideo"[\s\S]*?playsinline/, 'Coach avatar must include an inline muted video element');
+assert.match(coach, /const avatarVideos=\{[\s\S]*?coach_avatar_speaking\.mp4[\s\S]*?coach_avatar_advice\.mp4[\s\S]*?coach_avatar_celebrate\.mp4[\s\S]*?coach_avatar_rest\.mp4/, 'All five coach video clips must be mapped to avatar moods');
+assert.match(coach, /startAvatarSpeechVisual\(\)/, 'The avatar video must start when native speech actually begins');
+assert.match(coach, /state==='done'/, 'The avatar video must stop when native speech finishes');
+assert.match(mainActivity, /setOnUtteranceProgressListener/, 'Native TTS must report real speech start and completion events');
+assert.match(mainActivity, /notifyCoachVoiceStatus\("done"\)/, 'Native TTS completion must be forwarded to the WebView');
 const manifest = fs.readFileSync('app/src/main/AndroidManifest.xml', 'utf8');
 assert.match(manifest, /android\.intent\.action\.TTS_SERVICE/, 'Android must be able to discover installed TTS engines');
