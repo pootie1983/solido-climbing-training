@@ -1,4 +1,3 @@
-assert.match(html, /let customPlans=\(\(\)=>\{try\{const parsed=JSON\.parse\(localStorage\.getItem\('solidoCustomPlans'\)\|\|'\[\]'\);return Array\.isArray\(parsed\)\?parsed\.filter\(plan=>plan&&typeof plan==='object'&&!Array\.isArray\(plan\)\):\[\];\}catch\(e\)\{return \[\];\}\}\)\(\);/, 'Corrupt or malformed saved plans must not crash app startup');
 'use strict';
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -6,6 +5,7 @@ const vm = require('node:vm');
 
 const html = fs.readFileSync('app/src/main/assets/index.html', 'utf8');
 const coach = fs.readFileSync('app/src/main/assets/solido-coach.js', 'utf8');
+assert.match(html, /let customPlans=\(\(\)=>\{try\{const parsed=JSON\.parse\(localStorage\.getItem\('solidoCustomPlans'\)\|\|'\[\]'\);return Array\.isArray\(parsed\)\?parsed\.filter\(plan=>plan&&typeof plan==='object'&&!Array\.isArray\(plan\)\):\[\];\}catch\(e\)\{return \[\];\}\}\)\(\);/, 'Corrupt or malformed saved plans must not crash app startup');
 assert.match(coach, /let coachFormInitialized=false;/, 'Coach preferences form should track its first initialization');
 assert.match(coach, /if\(!coachFormInitialized\)\{[\s\S]*?coachFormInitialized=true;/, 'Changing Coach personality must not overwrite unsaved preference edits');
 assert.match(coach, /const parsed=JSON\.parse\(read\('solidoSessions','\[\]'\)\);return Array\.isArray\(parsed\)\?parsed\.filter\(item=>item&&typeof item==='object'&&!Array\.isArray\(item\)\):\[\];/, 'Coach must ignore malformed session history entries safely');
