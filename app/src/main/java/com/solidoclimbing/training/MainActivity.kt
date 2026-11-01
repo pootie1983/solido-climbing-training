@@ -20,6 +20,7 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.webkit.JavascriptInterface
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
@@ -37,6 +38,8 @@ class MainActivity : ComponentActivity() {
     private var coachTts: TextToSpeech? = null
     private var coachTtsReady = false
     private var pendingCoachSpeech: String? = null
+    private var coachUtteranceSequence = 0L
+    private var currentCoachUtteranceId: String? = null
     private lateinit var whc06Bridge: WHC06Bridge
     private var gameFullscreenRequested = false
     private var previousRequestedOrientation: Int? = null
@@ -117,38 +120,75 @@ class MainActivity : ComponentActivity() {
             if (coachTts == null) {
                 pendingCoachSpeech = cleanText
                 coachTts = TextToSpeech(this) { status ->
-                    if (status == TextToSpeech.SUCCESS) {
-                        coachTtsReady = true
-                        val language = coachTts?.setLanguage(Locale("es", "ES")) ?: TextToSpeech.LANG_NOT_SUPPORTED
-                        if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
-                            coachTts?.setLanguage(Locale("es"))
-                        }
-                        pendingCoachSpeech?.let { pending ->
-                            coachTts?.setSpeechRate(0.94f)
-                            coachTts?.setPitch(0.88f)
-                            coachTts?.speak(pending, TextToSpeech.QUEUE_FLUSH, null, "solido-coach")
+                    runOnUiThread {
+                        if (status == TextToSpeech.SUCCESS) {
+                            coachTtsReady = true
+                            val language = coachTts?.setLanguage(Locale("es", "ES")) ?: TextToSpeech.LANG_NOT_SUPPORTED
+                            if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
+                                coachTts?.setLanguage(Locale("es"))
+                            }
+                            coachTts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                                override fun onStart(utteranceId: String?) {
+                                    if (utteranceId == currentCoachUtteranceId) notifyCoachVoiceStatus("started")
+                                }
+
+                                override fun onDone(utteranceId: String?) {
+                                    if (utteranceId == currentCoachUtteranceId) notifyCoachVoiceStatus("done")
+                                }
+
+                                override fun onError(utteranceId: String?) {
+                                    if (utteranceId == currentCoachUtteranceId) notifyCoachVoiceStatus("error")
+                                }
+                            })
+                            pendingCoachSpeech?.let { pending ->
+                                pendingCoachSpeech = null
+                                speakCoachTextNow(pending)
+                            }
+                        } else {
                             pendingCoachSpeech = null
+                            notifyCoachVoiceStatus("unavailable")
                         }
-                        web.evaluateJavascript("window.onSolidoCoachVoiceStatus && window.onSolidoCoachVoiceStatus('started')", null)
-                    } else {
-                        web.evaluateJavascript("window.onSolidoCoachVoiceStatus && window.onSolidoCoachVoiceStatus('unavailable')", null)
                     }
                 }
             } else if (coachTtsReady) {
-                coachTts?.setLanguage(Locale("es", "ES"))
-                coachTts?.setSpeechRate(0.94f)
-                coachTts?.setPitch(0.88f)
-                coachTts?.speak(cleanText, TextToSpeech.QUEUE_FLUSH, null, "solido-coach")
-                web.evaluateJavascript("window.onSolidoCoachVoiceStatus && window.onSolidoCoachVoiceStatus('started')", null)
+                speakCoachTextNow(cleanText)
             } else {
                 pendingCoachSpeech = cleanText
             }
         }
     }
 
+    private fun speakCoachTextNow(text: String) {
+        try {
+            coachTts?.setLanguage(Locale("es", "ES"))
+            coachTts?.setSpeechRate(0.94f)
+            coachTts?.setPitch(0.88f)
+            coachUtteranceSequence += 1
+            val utteranceId = "solido-coach-$coachUtteranceSequence"
+            currentCoachUtteranceId = utteranceId
+            val result = coachTts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId) ?: TextToSpeech.ERROR
+            if (result == TextToSpeech.ERROR) notifyCoachVoiceStatus("unavailable")
+        } catch (error: Exception) {
+            notifyCoachVoiceStatus("unavailable")
+        }
+    }
+
+    private fun notifyCoachVoiceStatus(state: String) {
+        runOnUiThread {
+            if (::web.isInitialized) {
+                web.evaluateJavascript("window.onSolidoCoachVoiceStatus && window.onSolidoCoachVoiceStatus('$state')", null)
+            }
+        }
+    }
+
     @JavascriptInterface
     fun stopCoachSpeech() {
-        runOnUiThread { coachTts?.stop(); pendingCoachSpeech = null }
+        runOnUiThread {
+            pendingCoachSpeech = null
+            currentCoachUtteranceId = null
+            coachTts?.stop()
+            notifyCoachVoiceStatus("stopped")
+        }
     }
 
     @JavascriptInterface

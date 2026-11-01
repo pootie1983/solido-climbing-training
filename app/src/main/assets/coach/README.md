@@ -9,3 +9,7 @@ Archivos previstos:
 - coach_04_felicitacion.png
 - coach_05_descanso.png
 - coach_06_cierre.png
+
+## Vídeos del avatar
+
+Los cinco clips MP4 se reproducen silenciados mientras Android Text-to-Speech está hablando. La reproducción comienza y termina con los eventos reales de la locución; las imágenes PNG originales quedan como alternativa cuando el vídeo no puede reproducirse. La voz, idioma y ajustes TTS existentes se mantienen.
