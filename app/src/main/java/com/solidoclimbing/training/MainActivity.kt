@@ -55,6 +55,7 @@ class MainActivity : ComponentActivity() {
         web = WebView(this)
         web.settings.javaScriptEnabled = true
         web.settings.domStorageEnabled = true
+        web.settings.mediaPlaybackRequiresUserGesture = false
         web.settings.allowFileAccess = true
         web.settings.allowContentAccess = true
         web.webViewClient = object : WebViewClient() {

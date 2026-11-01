@@ -155,7 +155,8 @@
     if(proposalItems)proposalItems.innerHTML=proposal?proposal.items.map(item=>'<div class="coach-proposal-item"><strong>'+safe(item.label)+'</strong><span>'+safe(item.detail)+'</span></div>').join(''):'';
     if(proposalButton)proposalButton.style.display=proposal&&!initialPlanReady?'block':'none';
     const advice=buildLocalAdvice(sessionList,profile,preferences,p.id,window.solidoCoachHealthData||null);
-    setAvatar(proposalBlockReason?'rest':(sessionList.length?'motivation':'welcome'),proposalBlockReason||'Vamos a trabajar para que sigas progresando. Yo te acompaño en cada sesión.');
+    const avatarState=proposalBlockReason?'rest':(!sessionList.length?'welcome':(advice.title==='Buena constancia esta semana'?'congrats':(advice.title==='Siguiente paso: regularidad'?'advice':'motivation')));
+    setAvatar(avatarState,proposalBlockReason||'Vamos a trabajar para que sigas progresando. Yo te acompaño en cada sesión.');
     updateVoiceButton();
     const adviceTitle=$('coachAdviceTitle'),adviceBody=$('coachAdviceBody');
     if(adviceTitle)adviceTitle.textContent=advice.title;

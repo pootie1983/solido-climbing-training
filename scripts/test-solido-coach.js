@@ -628,6 +628,8 @@ assert.match(coach, /window\.AndroidCoach\.stopCoachSpeech/, 'Muting Coach must 
 assert.match(mainActivity, /web\.addJavascriptInterface\(this, "AndroidCoach"\)/, 'AndroidCoach bridge must be exposed to the WebView');
 assert.match(mainActivity, /fun speakCoachText\(text: String\)/, 'Native Android speech method must exist');
 assert.match(mainActivity, /TextToSpeech\(this\)/, 'Coach must use Android TextToSpeech');
+assert.match(mainActivity, /mediaPlaybackRequiresUserGesture\s*=\s*false/, 'Muted coach videos must be allowed to start from native TTS callbacks in WebView');
+assert.match(coach, /const avatarState=proposalBlockReason\?'rest':\(!sessionList\.length\?'welcome':\(advice\.title==='Buena constancia esta semana'\?'congrats':\(advice\.title==='Siguiente paso: regularidad'\?'advice':'motivation'\)\)\);/, 'All five avatar videos must be selected according to the coach advice state');
 assert.match(html, /id="coachAvatarVideo"[\s\S]*?playsinline/, 'Coach avatar must include an inline muted video element');
 assert.match(coach, /const avatarVideos=\{[\s\S]*?Climber_gesticulating_2D_animation_7b6f30fd\.webm[\s\S]*?Climber_pointing_finger_up_4706b9d7\.webm[\s\S]*?Climber_celebrating_with_raised_[\s\S]*?72cb685e\.webm[\s\S]*?Climber_making_OK_gesture_fc829075\.webm/, 'The original five WebM clips must be mapped to avatar moods');
 assert.doesNotMatch(coach.match(/const avatarVideos=\{[^}]+\}/)?.[0]||'', /\.mp4/, 'The coach must use original WebM clips without MP4 conversion');
