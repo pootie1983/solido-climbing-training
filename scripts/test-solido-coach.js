@@ -113,6 +113,9 @@ assert.notEqual(friendly, strict, 'Strict personality should change the advice')
 assert.ok(friendly.startsWith('Vamos paso a paso:'));
 assert.ok(funny.startsWith('¡A por ello'));
 assert.ok(strict.startsWith('Objetivo claro:'));
+assert.match(friendly, /Escucha tu cuerpo; la constancia y una buena recuperación/,'Friendly personality should reinforce listening to the body and recovery');
+assert.match(funny, /no hace falta correr\. Descansar también forma parte del entrenamiento/,'Funny personality should keep a safe recovery reminder');
+assert.match(strict, /Cumple los descansos, cuida la técnica y no fuerces cuando aparezca dolor/,'Strict personality should remain safety-first rather than encouraging overtraining');
 assert.match(buildAdvice([], emptyProfile, {...emptyPrefs,days:'5'}, 'cercano').body, /Objetivo actual/);
 
 // Acceptance must append a new plan and leave existing plans intact.
