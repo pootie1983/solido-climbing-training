@@ -79,6 +79,30 @@ assert.ok(adultFingerPlan.items.some(item => item.id === 2), 'Adult gym finger p
 assert.ok(adultFingerPlan.items.every(item => item.id !== 11), 'Finger plan should not add unrelated wall exercises');
 
 
+// Exhaustively verify every supported goal, equipment option and experience level.
+for (const goal of ['Fuerza general','Fuerza de dedos','Resistencia','Preparación para vías ferratas']) {
+  for (const equipment of ['casa','basico','gimnasio','completo']) {
+    for (const level of ['Principiante','Intermedio','Avanzado']) {
+      for (const age of [16,30,65]) {
+        const proposal = buildProposal({goal,age,level},{equipment,experience:level.toLowerCase(),days:'3'});
+        assert.ok(proposal && proposal.items.length >= 4, 'Every supported profile should return a non-empty safe proposal: ' + [goal,equipment,level,age].join('/'));
+        for (const item of proposal.items) {
+          assert.ok(exerciseIds.has(item.id), 'Proposal references an exercise missing from the catalogue: ' + item.id);
+          assert.ok(item.sets >= 1 && item.sets <= 3, 'Proposal set count must remain conservative and bounded');
+          assert.ok(item.reps >= 1 && item.reps <= 100, 'Proposal repetitions must remain bounded');
+          assert.ok(item.work >= 5 && item.work <= 600, 'Proposal work duration must remain bounded');
+          assert.ok(item.rest >= 0 && item.rest <= 600, 'Proposal rest duration must remain bounded');
+        }
+        if (goal === 'Fuerza de dedos' && age < 18) {
+          assert.ok(proposal.items.every(item => ![2,28,11,29].includes(item.id)), 'Under-18 finger-strength proposals must avoid loaded finger-specific or wall exercises');
+        }
+        if (['casa','basico'].includes(equipment) && ['Resistencia','Preparación para vías ferratas'].includes(goal)) {
+          assert.ok(proposal.items.every(item => ![11,29].includes(item.id)), 'Home proposals must not require a climbing wall');
+        }
+      }
+    }
+  }
+}
 console.log('SOLIDO COACH checks passed: catalogue IDs, eleven goal/level/equipment scenarios, item bounds and limitation safety.');
 
 
