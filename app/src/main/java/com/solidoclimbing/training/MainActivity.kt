@@ -19,10 +19,6 @@ import android.view.WindowManager
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.webkit.JavascriptInterface
-import android.speech.tts.TextToSpeech
-import android.speech.tts.UtteranceProgressListener
-import android.media.AudioAttributes
-import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     private lateinit var healthConnectBridge: HealthConnectBridge
@@ -111,10 +107,13 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun notifyCoachVoiceStatus(state: String) {
-        if (::web.isInitialized) {
-            runOnUiThread {
-                if (::web.isInitialized) {
+        if (isFinishing || isDestroyed || !::web.isInitialized) return
+        runOnUiThread {
+            if (!isFinishing && !isDestroyed && ::web.isInitialized) {
+                try {
                     web.evaluateJavascript("window.onSolidoCoachVoiceStatus && window.onSolidoCoachVoiceStatus('$state')", null)
+                } catch (_: IllegalStateException) {
+                    // WebView may already be shutting down with the Activity.
                 }
             }
         }
