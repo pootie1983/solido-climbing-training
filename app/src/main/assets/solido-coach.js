@@ -26,9 +26,23 @@
     const status=$('coachSaveStatus');
     if(status)status.textContent=ok?'Preferencias guardadas en este dispositivo.':'No se pudieron guardar todos los datos.';
   };
+  function sessionDate(item){
+    if(item&&item.ts){const parsed=new Date(item.ts);if(Number.isFinite(parsed.getTime()))return parsed;}
+    const value=String(item&&item.date||'');
+    const match=value.match(/^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{4})(?:,?\\s+(\\d{1,2}):(\\d{2})(?::(\\d{2}))?)?/);
+    return match?new Date(Number(match[3]),Number(match[2])-1,Number(match[1]),Number(match[4]||0),Number(match[5]||0),Number(match[6]||0)):null;
+  }
+  function getActivityStats(sessionList){
+    const now=Date.now(),monthAgo=now-30*24*60*60*1000;
+    const dated=sessionList.map(item=>({item,date:sessionDate(item)})).filter(row=>row.date&&Number.isFinite(row.date.getTime()));
+    const month=dated.filter(row=>row.date.getTime()>=monthAgo&&row.date.getTime()<=now);
+    const minutes=month.reduce((sum,row)=>sum+Math.max(0,Number(row.item.mins)||0),0);
+    const bestForce=dated.reduce((best,row)=>Math.max(best,Number(row.item.force)||0),0);
+    return {total:sessionList.length,month:month.length,minutes,bestForce};
+  }
   function buildLocalAdvice(sessionList,profile,preferences,personality){
     const now=Date.now(),weekAgo=now-7*24*60*60*1000;
-    const dated=sessionList.map(item=>{let date=item.ts?new Date(item.ts):null;if((!date||!Number.isFinite(date.getTime()))&&item.date){const m=String(item.date).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:,?\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);if(m)date=new Date(Number(m[3]),Number(m[2])-1,Number(m[1]),Number(m[4]||0),Number(m[5]||0),Number(m[6]||0));}return {item,date};}).filter(x=>x.date&&Number.isFinite(x.date.getTime()));
+    const dated=sessionList.map(item=>({item,date:sessionDate(item)})).filter(x=>x.date&&Number.isFinite(x.date.getTime()));
     const recent=dated.filter(x=>x.date.getTime()>=weekAgo&&x.date.getTime()<=now);
     const completed=recent.filter(x=>Number(x.item.mins||0)>0);
     const minutes=completed.reduce((sum,x)=>sum+Math.max(0,Number(x.item.mins)||0),0);
@@ -80,6 +94,7 @@
     };
     const sessionList=(()=>{try{return JSON.parse(read('solidoSessions','[]'))||[];}catch(e){return [];}})();
     const preferences={days:read('solidoCoachDays','3'),experience:read('solidoCoachExperience','intermedio'),equipment:read('solidoCoachEquipment','gimnasio'),limitations:read('solidoCoachLimitations','')};
+    const activityStats=getActivityStats(sessionList);
     const proposal=buildProposal(profile,preferences);
     window.solidoCoachCurrentProposal=proposal?{category:proposal.category,name:proposal.name,items:proposal.items.map(({id,sets,reps,work,rest})=>({id,sets,reps,work,rest}))}:null;
     const proposalBody=$('coachProposalBody'),proposalItems=$('coachProposalItems'),proposalButton=$('coachProposalAccept');
@@ -95,7 +110,7 @@
       target.innerHTML=[
         ['Escalador',profile.nickname],['Edad',profile.age==='—'?'Sin indicar':profile.age+' años'],
         ['Altura',profile.height==='—'?'Sin indicar':profile.height+' cm'],['Peso',profile.weight==='—'?'Sin indicar':profile.weight+' kg'],
-        ['Grado',profile.grade],['Nivel',profile.level],['Objetivo',profile.goal],['Sesiones guardadas',String(sessionList.length)]
+        ['Grado',profile.grade],['Nivel',profile.level],['Objetivo',profile.goal],['Sesiones guardadas',String(activityStats.total)],['Sesiones últimos 30 días',String(activityStats.month)],['Minutos últimos 30 días',String(activityStats.minutes)],['Mejor fuerza registrada',activityStats.bestForce?activityStats.bestForce.toFixed(2)+' kg':'Sin registros']
       ].map(([label,value])=>'<div class="coach-data"><span>'+safe(label)+'</span><strong>'+safe(value)+'</strong></div>').join('');
     }
     document.querySelectorAll('.coach-personality').forEach(button=>button.classList.toggle('active',button.dataset.personality===p.id));
