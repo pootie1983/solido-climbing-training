@@ -1,3 +1,4 @@
+assert.match(html, /let customPlans=\(\(\)=>\{try\{const parsed=JSON\.parse\(localStorage\.getItem\('solidoCustomPlans'\)\|\|'\[\]'\);return Array\.isArray\(parsed\)\?parsed\.filter\(plan=>plan&&typeof plan==='object'&&!Array\.isArray\(plan\)\):\[\];\}catch\(e\)\{return \[\];\}\}\)\(\);/, 'Corrupt or malformed saved plans must not crash app startup');
 'use strict';
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
