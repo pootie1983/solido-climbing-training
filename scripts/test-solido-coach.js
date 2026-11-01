@@ -5,6 +5,8 @@ const vm = require('node:vm');
 
 const html = fs.readFileSync('app/src/main/assets/index.html', 'utf8');
 const coach = fs.readFileSync('app/src/main/assets/solido-coach.js', 'utf8');
+assert.match(coach, /let coachFormInitialized=false;/, 'Coach preferences form should track its first initialization');
+assert.match(coach, /if\(!coachFormInitialized\)\{[\s\S]*?coachFormInitialized=true;/, 'Changing Coach personality must not overwrite unsaved preference edits');
 
 const catalogStart = html.indexOf('const exercises = [');
 const catalogEnd = html.indexOf('\n];', catalogStart);
