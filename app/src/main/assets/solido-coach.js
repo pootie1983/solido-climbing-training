@@ -52,7 +52,7 @@
     const latestForce=allForceRows[0]||null;
     return {total:sessionList.filter(item=>{if(Number(item.force))return false;const date=sessionDate(item);if(date)return date.getTime()<=now;return !item.ts&&!item.date;}).length,month:month.filter(row=>!Number(row.item.force)).length,minutes,bestForce,forceCount:forceRows.length,latestForce:latestForce?Number(latestForce.item.force):0,latestForceDate:latestForce?latestForce.date.toLocaleDateString('es-ES'):'',latestForceHand:latestForce?String(latestForce.item.hand||''):'',latestForceGrip:latestForce?String(latestForce.item.grip||''):''};
   }
-  function buildLocalAdvice(sessionList,profile,preferences,personality){
+  function buildLocalAdvice(sessionList,profile,preferences,personality,healthData){
     const now=Date.now(),weekAgo=now-7*24*60*60*1000;
     const dated=sessionList.map(item=>({item,date:sessionDate(item)})).filter(x=>x.date&&Number.isFinite(x.date.getTime())&&x.date.getTime()<=now);
     const recent=dated.filter(x=>x.date.getTime()>=weekAgo&&x.date.getTime()<=now);
@@ -68,6 +68,8 @@
     else{title='Siguiente paso: regularidad';body='Llevas '+completed.length+' sesiones y '+minutes+' minutos registrados en los últimos 7 días. Tu disponibilidad es de '+days+' días por semana. Intenta repartir las sesiones y evita encadenar trabajos intensos de dedos en días consecutivos.';}
     if(last&&now-last.date.getTime()<24*60*60*1000){body+=' Como has registrado actividad en las últimas 24 horas, valora hoy una jornada suave o de descanso antes de volver a cargar fuerte.';}
     if(preferences.limitations.trim()){body+=' Has indicado esta limitación: '+preferences.limitations+'. Ajusta cualquier ejercicio que la empeore y detén la actividad si aparece dolor.';}
+    const sleepMinutes=healthData&&Number(healthData.sleepMinutes);
+    if(Number.isFinite(sleepMinutes)&&sleepMinutes>=0&&sleepMinutes<360){body+=' Health Connect muestra que el último registro de sueño fue inferior a 6 horas. Si corresponde a tu descanso principal, considera bajar la intensidad o descansar hoy; este dato por sí solo no determina tu recuperación.';}
     if(personality==='gracioso'){body='¡A por ello, que la roca no se escala sola! '+body;}else if(personality==='estricto'){body='Objetivo claro: '+body;}else{body='Vamos paso a paso: '+body;}
     return {title,body};
   }
@@ -118,7 +120,7 @@
     if(proposalBody)proposalBody.textContent=proposal?proposal.note:'Has indicado una lesión o limitación. No voy a generar una sesión automática: conviene adaptar los ejercicios con un profesional que conozca tu situación.';
     if(proposalItems)proposalItems.innerHTML=proposal?proposal.items.map(item=>'<div class="coach-proposal-item"><strong>'+safe(item.label)+'</strong><span>'+safe(item.detail)+'</span></div>').join(''):'';
     if(proposalButton)proposalButton.style.display=proposal?'block':'none';
-    const advice=buildLocalAdvice(sessionList,profile,preferences,p.id);
+    const advice=buildLocalAdvice(sessionList,profile,preferences,p.id,window.solidoCoachHealthData||null);
     const adviceTitle=$('coachAdviceTitle'),adviceBody=$('coachAdviceBody');
     if(adviceTitle)adviceTitle.textContent=advice.title;
     if(adviceBody)adviceBody.textContent=advice.body;
