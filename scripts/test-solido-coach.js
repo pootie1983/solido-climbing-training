@@ -374,5 +374,18 @@ assert.match(html, /set\('hcSteps',Number\(data\.steps\|\|0\)\.toLocaleString\('
 
 console.log('SOLIDO COACH Health Connect integration contract passed: required metrics, optional sleep permission and WebView mapping.');
 
+const coachUiIds = ['coachProposalBody','coachProposalItems','coachProposalAccept','coachAdviceTitle','coachAdviceBody','coachProfileSummary','coachHealthSummary','coachDays','coachExperience','coachEquipment','coachLimitations','coachSaveStatus','coachPersonalitySummary'];
+for (const id of coachUiIds) {
+  const occurrences = [...html.matchAll(new RegExp('id=["\\\\\\']' + id + '["\\\\\\']', 'g'))].length;
+  assert.equal(occurrences, 1, 'Coach UI element must exist exactly once: ' + id);
+}
+assert.match(html, /onsubmit=["']solidoCoachSaveDetails\(event\)["']/, 'Coach preferences form must be connected to its save handler');
+for (const personality of ['cercano','gracioso','estricto']) {
+  assert.match(html, new RegExp('solidoCoachSetPersonality\\([\\\\\\']' + personality + '[\\\\\\']\\)'), 'Coach personality button must be connected: ' + personality);
+}
+assert.match(html, /onclick=["']solidoCoachAcceptPlanProposal\(\)["']/, 'Accept proposal button must be connected to the guarded acceptance handler');
+assert.match(coach, /const proposalBlockReason=getProposalBlockReason\(sessionList,preferences,window\.solidoCoachHealthData\|\|null\);/, 'Coach rendering must apply recovery checks');
+
+
 
 
