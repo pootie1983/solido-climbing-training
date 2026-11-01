@@ -14,6 +14,10 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "0.1.0"
+        ndk {
+            // SOLIDO is distributed as a phone APK; package only the modern 64-bit Android ABI.
+            abiFilters += listOf("arm64-v8a")
+        }
     }
 
     compileOptions {
