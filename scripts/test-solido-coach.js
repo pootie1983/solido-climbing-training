@@ -390,3 +390,59 @@ assert.match(coach, /const proposalBlockReason=getProposalBlockReason\(sessionLi
 
 
 
+
+
+// The first valid profile must receive a plan automatically, without waiting for training history.
+const ensureInitialPlanSource = extractFunction(html, 'window.solidoCoachEnsureInitialPlan=function(proposal){')
+  .replace('window.solidoCoachEnsureInitialPlan=function(proposal){', 'function(proposal){');
+function makeInitialPlanContext(overrides={}) {
+  const stored=[];
+  const context={
+    customPlans:[],
+    readPersonalProfile:()=>({nickname:'Escalador',grade:'6a',height:'175',age:'30',weight:'70'}),
+    validPersonalProfile:()=>true,
+    estimatePlan:items=>items.reduce((sum,item)=>sum+item.work,0),
+    localStorage:{setItem:(key,value)=>stored.push({key,value})},
+    renderPlan:()=>{context.rendered=true;},
+    Date,
+    stored,
+    ...overrides
+  };
+  return context;
+}
+const autoPlanProposal={category:'Fuerza',name:'SOLIDO COACH · Plan inicial',items:[{id:19,sets:1,reps:1,work:300,rest:0}]};
+const autoPlanContext=makeInitialPlanContext();
+const ensureInitialPlan=vm.runInNewContext('('+ensureInitialPlanSource+')');
+assert.equal(ensureInitialPlan.call(autoPlanContext,autoPlanProposal),true,'A valid first profile should automatically create a plan');
+assert.equal(autoPlanContext.customPlans.length,1);
+assert.equal(autoPlanContext.customPlans[0].source,'solido-coach-initial');
+assert.equal(autoPlanContext.customPlans[0].items[0].id,19);
+assert.ok(autoPlanContext.stored.some(item=>item.key==='solidoCustomPlans'));
+assert.equal(autoPlanContext.rendered,true);
+assert.equal(ensureInitialPlan.call(autoPlanContext,autoPlanProposal),true);
+assert.equal(autoPlanContext.customPlans.length,1,'Repeated Coach renders must not create duplicate initial plans');
+const blockedInitialPlanContext=makeInitialPlanContext();
+assert.equal(ensureInitialPlan.call(blockedInitialPlanContext,null),false,'Safety-blocked or unavailable proposals must not create a plan');
+assert.equal(blockedInitialPlanContext.customPlans.length,0);
+const invalidProfileContext=makeInitialPlanContext({validPersonalProfile:()=>false});
+assert.equal(ensureInitialPlan.call(invalidProfileContext,autoPlanProposal),false,'An incomplete profile must not create a plan');
+assert.equal(invalidProfileContext.customPlans.length,0);
+const failedInitialStorageContext=makeInitialPlanContext({localStorage:{setItem:()=>{throw new Error('storage full');}}});
+assert.equal(ensureInitialPlan.call(failedInitialStorageContext,autoPlanProposal),false);
+assert.equal(failedInitialStorageContext.customPlans.length,0,'Storage failure must roll back the automatic plan');
+assert.match(coach,/window\.solidoCoachEnsureInitialPlan\(window\.solidoCoachCurrentProposal\)/,'Coach rendering must trigger automatic first-plan creation');
+assert.match(coach,/initialPlanReady\?'Tu primer plan ya está creado/,'Coach must tell the user when the first plan is ready');
+assert.match(html,/function completeFirstProfile\(event\)[\s\S]*?window\.solidoCoachRender\(\)/,'Saving the first profile must refresh Coach immediately');
+
+// Plan sessions must announce their start, rests, resumed work and exercise transitions.
+// These cues reuse the existing workout audio/notice helpers; the force hand-switch flow is untouched.
+const planRunnerSource=html.slice(html.indexOf('let planRunState=null'),html.indexOf('/* =========================\n   ESTADÍSTICAS',html.indexOf('let planRunState=null')));
+assert.match(planRunnerSource,/playWorkoutCue\('start'\)/);
+assert.match(planRunnerSource,/showWorkoutNotice\('start'/);
+assert.match(planRunnerSource,/playWorkoutCue\('rest'\)/);
+assert.match(planRunnerSource,/showWorkoutNotice\('rest'/);
+assert.match(planRunnerSource,/SIGUIENTE EJERCICIO/);
+assert.match(html,/function updateWorkoutSwitchOverlay\(\)/,'Existing force hand-switch overlay must remain present');
+assert.match(html,/id="workoutSwitchOverlay"/,'Existing force hand-switch UI must remain present');
+assert.match(html,/id="workoutNotice"/,'Plan cues must reuse the existing visual workout notice');
+console.log('SOLIDO plan automation and workout cue checks passed: first plan auto-created once, safety gates preserved, and session transitions announce start/rest/exercise changes.');

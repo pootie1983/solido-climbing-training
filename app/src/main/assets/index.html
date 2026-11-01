@@ -4733,6 +4733,19 @@ function show(page,btn){
 ========================= */
 
 let customPlans=JSON.parse(localStorage.getItem('solidoCustomPlans')||'[]');
+window.solidoCoachEnsureInitialPlan=function(proposal){
+  const profile=readPersonalProfile();
+  if(!validPersonalProfile(profile))return false;
+  const existing=customPlans.find(plan=>plan&&['solido-coach-initial','solido-coach'].includes(plan.source));
+  if(existing)return true;
+  if(!proposal||!Array.isArray(proposal.items)||!proposal.items.length)return false;
+  const entry={id:Date.now(),category:proposal.category,name:proposal.name,items:proposal.items.map(item=>({...item})),seconds:estimatePlan(proposal.items),createdAt:new Date().toISOString(),source:'solido-coach-initial'};
+  customPlans.unshift(entry);
+  try{localStorage.setItem('solidoCustomPlans',JSON.stringify(customPlans));}
+  catch(e){customPlans.shift();return false;}
+  renderPlan();
+  return true;
+};
 let planSelectionMode=false;
 let planSelectedIds=[];
 let planDraftItems=[];
@@ -5336,7 +5349,7 @@ function startPlan(planId){
   if(!items.length){alert('Añade ejercicios a este plan antes de iniciarlo.');return;}
   const total=estimatePlan(items);
   // El plan solo cuenta como entrenamiento cuando se completa, no al pulsar Iniciar.
-  planRunState={plan:selected,index:0,set:1,rep:1,phase:'work',exerciseRemaining:Math.max(5,Number(items[0].work)||30),totalRemaining:total,running:false,completed:false};
+  planRunState={plan:selected,index:0,set:1,rep:1,phase:'work',exerciseRemaining:Math.max(5,Number(items[0].work)||30),totalRemaining:total,running:false,started:false,restReason:null,completed:false};
   show('planRunPage');renderPlanRun();document.getElementById('planRunToggle').textContent='▶ Iniciar';
 }
 function renderPlanRun(){
@@ -5353,8 +5366,30 @@ function togglePlanRun(){
   if(!planRunState)return;
   planRunState.running=!planRunState.running;
   document.getElementById('planRunToggle').textContent=planRunState.running?'Ⅱ Pausar':'▶ Continuar';
-  if(planRunState.running&&!planRunInterval)planRunInterval=setInterval(tickPlanRun,1000);
+  if(planRunState.running){
+    const st=planRunState,item=st.plan.items[st.index],ex=exercises.find(e=>Number(e.id)===Number(item.id));
+    playWorkoutCue('start');
+    showWorkoutNotice('start',st.started?'CONTINUAMOS':'¡EMPEZAMOS!',st.started?'Retoma '+(ex?.name||'el ejercicio')+'.':'Comienza con '+(ex?.name||'el primer ejercicio')+'.');
+    st.started=true;
+    if(!planRunInterval)planRunInterval=setInterval(tickPlanRun,1000);
+  }
   if(!planRunState.running&&planRunInterval){clearInterval(planRunInterval);planRunInterval=null;}
+}
+function startPlanRunRest(st,item,reason){
+  const restSeconds=Math.max(0,Number(item.rest)||0);
+  if(restSeconds>0){
+    st.phase='rest';st.exerciseRemaining=restSeconds;st.restReason=reason;
+    playWorkoutCue('rest');
+    showWorkoutNotice('rest','DESCANSO','Descansa '+formatPlanTime(restSeconds)+' antes de continuar.');
+    return;
+  }
+  st.phase='work';st.restReason=null;
+  if(reason==='rep')st.rep++;
+  else if(reason==='set'){st.set++;st.rep=1;}
+  st.exerciseRemaining=Math.max(5,Number(item.work)||30);
+  const ex=exercises.find(e=>Number(e.id)===Number(item.id));
+  playWorkoutCue('start');
+  showWorkoutNotice('start',reason==='set'?'SIGUIENTE SERIE':'SIGUIENTE REPETICIÓN','Continúa con '+(ex?.name||'el ejercicio')+'.');
 }
 function tickPlanRun(){
   const st=planRunState;if(!st||!st.running)return;
@@ -5363,12 +5398,18 @@ function tickPlanRun(){
   if(st.exerciseRemaining===0){
     const item=st.plan.items[st.index];
     if(st.phase==='work'){
-      if(st.rep<Math.max(1,Number(item.reps)||1)){st.phase='rest';st.exerciseRemaining=Math.max(0,Number(item.rest)||0);}
-      else if(st.set<Math.max(1,Number(item.sets)||1)){st.phase='rest';st.exerciseRemaining=Math.max(0,Number(item.rest)||0);st.rep=1;st.set++;}
+      const reps=Math.max(1,Number(item.reps)||1),sets=Math.max(1,Number(item.sets)||1);
+      if(st.rep<reps)startPlanRunRest(st,item,'rep');
+      else if(st.set<sets)startPlanRunRest(st,item,'set');
       else advancePlanRunExercise();
     }else{
-      st.phase='work';if(st.rep<Math.max(1,Number(item.reps)||1))st.rep++;
+      st.phase='work';
+      if(st.restReason==='rep')st.rep++;
+      st.restReason=null;
       st.exerciseRemaining=Math.max(5,Number(item.work)||30);
+      const ex=exercises.find(e=>Number(e.id)===Number(item.id));
+      playWorkoutCue('start');
+      showWorkoutNotice('start','¡A ENTRENAR!','Continúa con '+(ex?.name||'el ejercicio')+'.');
     }
   }
   if(!planRunState||st.totalRemaining<=0){finishPlanRun();return;}
@@ -5376,7 +5417,7 @@ function tickPlanRun(){
 }
 function advancePlanRunExercise(){
   const st=planRunState;if(!st)return;
-  st.index++;st.set=1;st.rep=1;st.phase='work';
+  st.index++;st.set=1;st.rep=1;st.phase='work';st.restReason=null;
   if(st.index>=st.plan.items.length){
     if(!st.completed){
       st.completed=true;
@@ -5387,6 +5428,9 @@ function advancePlanRunExercise(){
     finishPlanRun();return;
   }
   st.exerciseRemaining=Math.max(5,Number(st.plan.items[st.index].work)||30);
+  const next=st.plan.items[st.index],ex=exercises.find(e=>Number(e.id)===Number(next.id));
+  playWorkoutCue('start');
+  showWorkoutNotice('start','SIGUIENTE EJERCICIO','Ahora toca '+(ex?.name||'el siguiente ejercicio')+'.');
   renderPlanRun();
 }
 function skipPlanRunExercise(){advancePlanRunExercise();}
@@ -5669,6 +5713,7 @@ function savePersonalProfile(event){
     return;
   }
   fillPersonalProfileFields(p);
+  if(typeof window.solidoCoachRender==='function')window.solidoCoachRender();
   alert('Datos personales guardados.');
 }
 
@@ -5702,6 +5747,7 @@ function completeFirstProfile(event){
   document.getElementById('profileGate').setAttribute('aria-hidden','true');
   document.getElementById('home').classList.remove('hide');
   document.getElementById('firstNickname').blur();
+  if(typeof window.solidoCoachRender==='function')window.solidoCoachRender();
 }
 
 function saveProfile(){
@@ -5725,6 +5771,7 @@ function saveProfile(){
   alert(
     'Preferencias de entrenamiento guardadas en este dispositivo.'
   );
+  if(typeof window.solidoCoachRender==='function')window.solidoCoachRender();
 
 }
 
