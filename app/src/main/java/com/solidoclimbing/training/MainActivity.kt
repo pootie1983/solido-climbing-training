@@ -113,6 +113,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // Android TextToSpeech(this) se inicializa con listener para gestionar el estado de voz.
     @JavascriptInterface
     fun speakCoachText(text: String) {
         runOnUiThread {
