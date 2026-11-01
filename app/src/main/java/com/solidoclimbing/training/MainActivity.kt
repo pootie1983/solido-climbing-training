@@ -128,9 +128,17 @@ class MainActivity : ComponentActivity() {
                             if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
                                 coachTts?.setLanguage(Locale("es"))
                             }
+                            configureCoachSpanishMaleVoice()
                             coachTts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                                 override fun onStart(utteranceId: String?) {
                                     if (utteranceId == currentCoachUtteranceId) notifyCoachVoiceStatus("started")
+                                }
+                                override fun onRangeStart(utteranceId: String?, start: Int, end: Int, frame: Int) {
+                                    if (utteranceId == currentCoachUtteranceId) {
+                                        runOnUiThread {
+                                            if (::web.isInitialized) web.evaluateJavascript("window.onSolidoCoachSpeechRange && window.onSolidoCoachSpeechRange($start,$end)", null)
+                                        }
+                                    }
                                 }
                                 override fun onDone(utteranceId: String?) {
                                     if (utteranceId == currentCoachUtteranceId) notifyCoachVoiceStatus("done")
@@ -157,11 +165,28 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun configureCoachSpanishMaleVoice() {
+        val tts = coachTts ?: return
+        val spanishVoices = tts.voices?.filter { it.locale.language == "es" }.orEmpty()
+        val maleVoice = spanishVoices.firstOrNull { voice ->
+            val name = voice.name.lowercase(Locale.ROOT)
+            name.contains("male") || name.contains("mascul") ||
+                voice.features.any { feature -> feature.equals("gender=male", true) || feature.equals("male", true) }
+        }
+        if (maleVoice != null) {
+            tts.voice = maleVoice
+            tts.setPitch(0.95f)
+        } else {
+            // Algunos motores Android no publican el género de sus voces; bajar el tono
+            // evita mantener la entonación aguda de la voz anterior.
+            tts.setPitch(0.78f)
+        }
+    }
+
     private fun speakCoachTextNow(text: String) {
         try {
-            coachTts?.setLanguage(Locale("es", "ES"))
             coachTts?.setSpeechRate(0.94f)
-            coachTts?.setPitch(0.88f)
+            configureCoachSpanishMaleVoice()
             coachUtteranceSequence += 1
             val utteranceId = "solido-coach-$coachUtteranceSequence"
             currentCoachUtteranceId = utteranceId
