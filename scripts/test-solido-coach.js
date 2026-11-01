@@ -68,6 +68,13 @@ for (const [profile, preferences, expectedCategory, expectedDays] of cases) {
   }
 }
 assert.equal(buildProposal({goal:'Fuerza general',age:30,level:'Intermedio'}, {equipment:'gimnasio',experience:'intermedio',limitations:'dolor'}), null, 'Limitations must suppress automatic proposals');
+const conservativeFingerPlan = buildProposal({goal:'Fuerza de dedos',age:16,level:'Principiante'}, {equipment:'casa',experience:'principiante'});
+assert.ok(conservativeFingerPlan.items.every(item => ![11,29].includes(item.id)), 'Conservative finger plan must not prescribe wall climbing without a gym');
+assert.ok(conservativeFingerPlan.items.some(item => item.id === 9 || item.id === 32), 'Conservative finger plan should use safe general conditioning alternatives');
+const adultFingerPlan = buildProposal({goal:'Fuerza de dedos',age:30,level:'Intermedio'}, {equipment:'gimnasio',experience:'intermedio'});
+assert.ok(adultFingerPlan.items.some(item => item.id === 2), 'Adult gym finger plan should include gentle grip work');
+assert.ok(adultFingerPlan.items.every(item => item.id !== 11), 'Finger plan should not add unrelated wall exercises');
+
 
 console.log('SOLIDO COACH checks passed: catalogue IDs, eleven goal/level/equipment scenarios, item bounds and limitation safety.');
 
