@@ -5,6 +5,7 @@
   const read=(key,fallback='')=>{try{return localStorage.getItem(key)||fallback;}catch(e){return fallback;}};
   const write=(key,value)=>{try{localStorage.setItem(key,value);return true;}catch(e){return false;}};
   const safe=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  let coachFormInitialized=false;
   const personalities=[
     {id:'cercano',label:'Cercano',face:'🤝',hint:'Cercano y motivador'},
     {id:'gracioso',label:'Gracioso',face:'😄',hint:'Divertido y desenfadado'},
@@ -153,10 +154,14 @@
     const selected=$('coachPersonalitySummary');
     if(selected)selected.textContent='Estilo seleccionado: '+p.label;
     const defaults=preferences;
-    if($('coachDays'))$('coachDays').value=defaults.days;
-    if($('coachExperience'))$('coachExperience').value=defaults.experience;
-    if($('coachEquipment'))$('coachEquipment').value=defaults.equipment;
-    if($('coachLimitations'))$('coachLimitations').value=defaults.limitations;
+    // Initialize the form once; changing personality must not erase unsaved edits.
+    if(!coachFormInitialized){
+      if($('coachDays'))$('coachDays').value=defaults.days;
+      if($('coachExperience'))$('coachExperience').value=defaults.experience;
+      if($('coachEquipment'))$('coachEquipment').value=defaults.equipment;
+      if($('coachLimitations'))$('coachLimitations').value=defaults.limitations;
+      coachFormInitialized=true;
+    }
     const hc=$('coachHealthSummary');
     if(hc){
       const values=[
