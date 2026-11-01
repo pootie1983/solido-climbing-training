@@ -124,10 +124,10 @@
     celebrate:'coach_celebrate.mp4',
     smile:'coach_smile.mp4'
   };
-  let avatarSpeechTimer=null,avatarSpeechFadeTimer=null,avatarSpeechPlan=[],avatarSpeechActive=false;
+  let avatarSpeechTimer=null,avatarSpeechFadeTimer=null,avatarSpeechPlan=[],avatarSpeechLoopPlan=[],avatarSpeechActive=false;
   function voiceEnabled(){return read('solidoCoachVoiceEnabled','1')!=='0';}
-  function setAvatar(state,message){const image=$('coachAvatarImage'),video=$('coachAvatarVideo'),copy=$('coachAvatarMessage');if(video){video.pause();video.style.display='none';}if(image){image.style.display='block';image.src='coach/'+(avatarStates[state]||avatarStates.welcome);}if(copy&&message)copy.textContent=message;}
-  function stopAvatarPerformance(){avatarSpeechActive=false;avatarSpeechPlan=[];if(avatarSpeechTimer!==null){clearInterval(avatarSpeechTimer);avatarSpeechTimer=null;}if(avatarSpeechFadeTimer!==null){clearTimeout(avatarSpeechFadeTimer);avatarSpeechFadeTimer=null;}const image=$('coachAvatarImage'),video=$('coachAvatarVideo');if(video){video.onended=null;video.onerror=null;video.pause();video.style.display='none';video.removeAttribute('src');video.load();}if(image){image.style.display='block';image.style.opacity='1';}}
+  function setAvatar(state,message){const image=$('coachAvatarImage'),video=$('coachAvatarVideo'),copy=$('coachAvatarMessage');if(copy&&message)copy.textContent=message;if(avatarSpeechActive)return;if(video){video.pause();video.style.display='none';video.removeAttribute('src');}if(image){image.style.display='block';image.src='coach/'+(avatarStates[state]||avatarStates.welcome);}}
+  function stopAvatarPerformance(){avatarSpeechActive=false;avatarSpeechPlan=[];avatarSpeechLoopPlan=[];if(avatarSpeechTimer!==null){clearInterval(avatarSpeechTimer);avatarSpeechTimer=null;}if(avatarSpeechFadeTimer!==null){clearTimeout(avatarSpeechFadeTimer);avatarSpeechFadeTimer=null;}const image=$('coachAvatarImage'),video=$('coachAvatarVideo');if(video){video.onended=null;video.onerror=null;video.pause();video.style.display='none';video.removeAttribute('src');video.load();}if(image){image.style.display='block';image.style.opacity='1';}}
   function avatarGestureForSentence(sentence){
     const t=String(sentence||'').toLowerCase();
     if(/\b(hola|bienvenid[oa]s?|buenos días|buenas tardes|buenas noches|encantad[oa])\b/.test(t))return 'smile';
@@ -148,20 +148,44 @@
   function playNextAvatarClip(){
     const video=$('coachAvatarVideo'),image=$('coachAvatarImage');
     if(!video||!image||!avatarSpeechActive)return;
+    if(!avatarSpeechPlan.length)avatarSpeechPlan=avatarSpeechLoopPlan.slice();
     const gesture=avatarSpeechPlan.shift();
-    if(!gesture){video.pause();video.style.display='none';image.style.display='block';return;}
+    if(!gesture)return;
     video.onended=playNextAvatarClip;
-    video.onerror=()=>{video.style.display='none';image.style.display='block';};
+    video.onerror=()=>{
+      const status=$('coachVoiceStatus');
+      if(status)status.textContent='No se pudo cargar el vídeo del entrenador ('+gesture+').';
+      video.style.display='none';image.style.display='block';
+    };
+    video.pause();
     video.src='coach/'+avatarSpeechSequence[gesture];
-    video.style.display='block';image.style.display='none';video.load();
+    video.muted=true;
+    video.playsInline=true;
+    video.preload='auto';
+    video.currentTime=0;
+    video.style.display='block';
+    video.style.visibility='visible';
+    image.style.display='none';
+    video.load();
     const attempt=video.play();
-    if(attempt&&typeof attempt.catch==='function')attempt.catch(()=>{video.style.display='none';image.style.display='block';});
+    if(attempt&&typeof attempt.catch==='function')attempt.catch(error=>{
+      const status=$('coachVoiceStatus');
+      if(status)status.textContent='El vídeo no pudo iniciarse: '+(error&&error.name?error.name:'error de reproducción')+'.';
+      video.style.display='none';image.style.display='block';
+    });
   }
-  function startAvatarPerformance(){const selectedPlan=avatarSpeechPlan.slice();stopAvatarPerformance();avatarSpeechPlan=selectedPlan;avatarSpeechActive=true;playNextAvatarClip();}
+  function startAvatarPerformance(){
+    const selectedPlan=avatarSpeechPlan.slice();
+    stopAvatarPerformance();
+    avatarSpeechLoopPlan=selectedPlan.length?selectedPlan:['explain'];
+    avatarSpeechPlan=avatarSpeechLoopPlan.slice();
+    avatarSpeechActive=true;
+    playNextAvatarClip();
+  }
   function updateVoiceButton(){const button=$('coachVoiceToggle');if(button){button.textContent=voiceEnabled()?'🔊 VOZ ACTIVADA':'🔇 VOZ SILENCIADA';button.setAttribute('aria-pressed',voiceEnabled()?'true':'false');}}
   window.solidoCoachToggleVoice=function(){const enabled=!voiceEnabled();write('solidoCoachVoiceEnabled',enabled?'1':'0');if(!enabled){stopAvatarPerformance();const panel=document.querySelector('.coach-avatar-panel');if(panel)panel.classList.remove('is-speaking');if(window.AndroidCoach&&window.AndroidCoach.stopCoachSpeech)window.AndroidCoach.stopCoachSpeech();}updateVoiceButton();const status=$('coachVoiceStatus');if(status)status.textContent=enabled?'Voz activada · masculina española sin conexión':'Voz silenciada';};
-  window.onSolidoCoachVoiceStatus=function(state){const status=$('coachVoiceStatus'),panel=document.querySelector('.coach-avatar-panel');if(panel)panel.classList.toggle('is-speaking',state==='started');if(state==='started'){if(status)status.textContent='Entrenador en acción · voz masculina';setAvatar('motivation','¡Vamos! Escucha el consejo y aplícalo a tu ritmo.');startAvatarPerformance();}else if(state==='done'){stopAvatarPerformance();if(status)status.textContent='Consejo terminado. ¡A por el siguiente reto!';}else if(state==='error'){stopAvatarPerformance();if(status)status.textContent='La voz no ha podido reproducirse. Comprueba el volumen multimedia y el motor de voz de Android.';}else if(state==='unavailable'){stopAvatarPerformance();if(status)status.textContent='No se ha podido iniciar la voz integrada. Comprueba que el modelo esté instalado correctamente.';}else if(state==='male_voice_unavailable'){stopAvatarPerformance();if(status)status.textContent='La voz masculina española integrada no está disponible en este dispositivo.';}};
-  window.solidoCoachSpeak=function(){const status=$('coachVoiceStatus');if(!voiceEnabled()){if(status)status.textContent='Activa la voz para escuchar al entrenador.';return;}const text=[$('coachAdviceTitle')?.textContent,$('coachAdviceBody')?.textContent].filter(Boolean).join('. ').trim();avatarSpeechPlan=buildAvatarPlan(text);if(!text){if(status)status.textContent='Todavía no hay ningún consejo para leer.';return;}if(window.AndroidCoach&&typeof window.AndroidCoach.speakCoachText==='function'){try{window.AndroidCoach.speakCoachText(text);if(status)status.textContent='Preparando la voz masculina española…';return;}catch(error){if(status)status.textContent='No se pudo iniciar la voz de Android.';return;}}if(status)status.textContent='La voz nativa solo está disponible dentro de la aplicación Android.';};
+  window.onSolidoCoachVoiceStatus=function(state){const status=$('coachVoiceStatus'),panel=document.querySelector('.coach-avatar-panel');if(panel)panel.classList.toggle('is-speaking',state==='started');if(state==='started'){if(status)status.textContent='Entrenador en acción · voz masculina';setAvatar('motivation','¡Vamos! Escucha el consejo y aplícalo a tu ritmo.');if(!avatarSpeechActive)startAvatarPerformance();}else if(state==='done'){stopAvatarPerformance();if(status)status.textContent='Consejo terminado. ¡A por el siguiente reto!';}else if(state==='error'){stopAvatarPerformance();if(status)status.textContent='La voz no ha podido reproducirse. Comprueba el volumen multimedia y el motor de voz de Android.';}else if(state==='unavailable'){stopAvatarPerformance();if(status)status.textContent='No se ha podido iniciar la voz integrada. Comprueba que el modelo esté instalado correctamente.';}else if(state==='male_voice_unavailable'){stopAvatarPerformance();if(status)status.textContent='La voz masculina española integrada no está disponible en este dispositivo.';}};
+  window.solidoCoachSpeak=function(){const status=$('coachVoiceStatus');if(!voiceEnabled()){if(status)status.textContent='Activa la voz para escuchar al entrenador.';return;}const text=[$('coachAdviceTitle')?.textContent,$('coachAdviceBody')?.textContent].filter(Boolean).join('. ').trim();avatarSpeechPlan=buildAvatarPlan(text);if(!text){if(status)status.textContent='Todavía no hay ningún consejo para leer.';return;}if(window.AndroidCoach&&typeof window.AndroidCoach.speakCoachText==='function'){try{startAvatarPerformance();window.AndroidCoach.speakCoachText(text);if(status)status.textContent='Preparando la voz masculina española…';return;}catch(error){stopAvatarPerformance();if(status)status.textContent='No se pudo iniciar la voz de Android.';return;}}if(status)status.textContent='La voz nativa solo está disponible dentro de la aplicación Android.';};
   function render(){
     const p=personalities.find(x=>x.id===read('solidoCoachPersonality','cercano'))||personalities[0];
     const profile={
