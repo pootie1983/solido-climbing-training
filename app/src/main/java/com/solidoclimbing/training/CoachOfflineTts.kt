@@ -9,6 +9,8 @@ import com.k2fsa.sherpa.onnx.OfflineTtsConfig
 import com.k2fsa.sherpa.onnx.OfflineTtsModelConfig
 import com.k2fsa.sherpa.onnx.OfflineTtsVitsModelConfig
 import java.util.concurrent.Executors
+import java.util.concurrent.RejectedExecutionException
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 
 /**
@@ -23,6 +25,7 @@ class CoachOfflineTts(
     private val requestId = AtomicLong(0)
     @Volatile private var engine: OfflineTts? = null
     @Volatile private var currentTrack: AudioTrack? = null
+    private val released = AtomicBoolean(false)
 
     private fun createEngine(): OfflineTts {
         engine?.let { return it }
@@ -43,6 +46,7 @@ class CoachOfflineTts(
     }
 
     fun speak(text: String) {
+        if (released.get()) return
         val clean = text.trim().take(1800)
         if (clean.isEmpty()) {
             onStatus("error")
@@ -50,7 +54,8 @@ class CoachOfflineTts(
         }
         val id = requestId.incrementAndGet()
         stopTrack()
-        worker.execute {
+        try {
+            worker.execute {
             var track: AudioTrack? = null
             try {
                 val audio = createEngine().generate(clean, sid = 0, speed = 0.96f)
@@ -114,6 +119,9 @@ class CoachOfflineTts(
                 }
                 if (currentTrack === track) currentTrack = null
             }
+            }
+        } catch (_: RejectedExecutionException) {
+            // Activity may be closing while WebView finishes a queued JS call.
         }
     }
 
@@ -136,10 +144,15 @@ class CoachOfflineTts(
     }
 
     fun release() {
+        if (!released.compareAndSet(false, true)) return
         stop()
-        worker.execute {
-            try { engine?.release() } catch (_: Throwable) {}
-            engine = null
+        try {
+            worker.execute {
+                try { engine?.release() } catch (_: Throwable) {}
+                engine = null
+            }
+        } catch (_: RejectedExecutionException) {
+            // The worker has already shut down; there is no active request to retain.
         }
         worker.shutdown()
     }
