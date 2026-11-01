@@ -292,9 +292,6 @@ assert.equal(parseSessionDate({date:'31/02/2026, 10:30'}), null, 'Impossible cal
 
 assert.ok(parseSessionDate({ts:new Date(Date.now()-60*60*1000).toISOString()}) instanceof Date, 'ISO timestamps from completed sessions should be parsed');
 assert.ok(parseSessionDate({date:new Date(Date.now()-60*60*1000).toLocaleString('es-ES')}) instanceof Date, 'Legacy localized session dates should remain readable');
-assert.equal(getProposalBlockReason([{date:new Date(Date.now()-2*60*60*1000).toLocaleString('es-ES'),mins:35}],restedPreferences,null).includes('últimas 24 horas'), true, 'Recent legacy sessions without ISO timestamps must still trigger recovery');
-assert.equal(getProposalBlockReason([{ts:new Date(Date.now()-2*60*60*1000).toISOString(),mins:0}],restedPreferences,null), '', 'Zero-duration records must not be treated as completed training sessions');
-assert.equal(getProposalBlockReason([{ts:new Date(Date.now()-2*60*60*1000).toISOString(),mins:35,force:24}],restedPreferences,null), '', 'Force measurements must not be treated as training sessions even when they have duration metadata');
 
 console.log('SOLIDO COACH activity history checks passed: date filtering, monthly totals and force measurements.');
 
@@ -330,6 +327,10 @@ const proposalBlockSource = extractFunction(coach, 'function getProposalBlockRea
   .replace('function getProposalBlockReason(sessionList,preferences,healthData){', 'function(sessionList,preferences,healthData){');
 const getProposalBlockReason = vm.runInNewContext('(' + proposalBlockSource + ')', {sessionDate, Date});
 const restedPreferences = {...emptyPrefs,limitations:''};
+assert.equal(getProposalBlockReason([{date:new Date(Date.now()-2*60*60*1000).toLocaleString('es-ES'),mins:35}],restedPreferences,null).includes('últimas 24 horas'), true, 'Recent legacy sessions without ISO timestamps must still trigger recovery');
+assert.equal(getProposalBlockReason([{ts:new Date(Date.now()-2*60*60*1000).toISOString(),mins:0}],restedPreferences,null), '', 'Zero-duration records must not be treated as completed training sessions');
+assert.equal(getProposalBlockReason([{ts:new Date(Date.now()-2*60*60*1000).toISOString(),mins:35,force:24}],restedPreferences,null), '', 'Force measurements must not be treated as training sessions even when they have duration metadata');
+
 assert.match(getProposalBlockReason([{ts:Date.now()-2*60*60*1000,mins:45}],restedPreferences,null), /últimas 24 horas/, 'A completed session from two hours ago should block another automatic proposal');
 assert.equal(getProposalBlockReason([{ts:Date.now()-26*60*60*1000,mins:45}],restedPreferences,null), '', 'Training older than 24 hours should not block a new proposal');
 assert.equal(getProposalBlockReason([{ts:Date.now()-2*60*60*1000,force:25}],restedPreferences,null), '', 'Force tests should not count as a training session for recovery blocking');
