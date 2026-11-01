@@ -1,0 +1,81 @@
+name: Validate SOLIDO Coach videos
+
+on:
+  push:
+    branches: [ 'work/**' ]
+    paths:
+      - 'app/src/main/assets/coach/**'
+      - '.github/workflows/validate-coach-videos.yml'
+  workflow_dispatch:
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Inspect, fully decode and sample transparency
+        run: |
+          set -euo pipefail
+          mkdir -p coach-video-report/thumbnails
+          shopt -s nullglob
+          videos=(app/src/main/assets/coach/*.webm)
+          if [ "${#videos[@]}" -ne 5 ]; then
+            echo "ERROR: Expected exactly 5 WEBM videos, found ${#videos[@]}"
+            printf '%s\n' "${videos[@]}"
+            exit 1
+          fi
+          printf 'FILE\tBYTES\tCODEC\tWIDTHxHEIGHT\tFPS\tDURATION_S\tPIX_FMT\tAUDIO\tALPHA_SAMPLE\tDECODE\n' | tee coach-video-report/report.tsv
+          for f in "${videos[@]}"; do
+            name=$(basename "$f")
+            bytes=$(stat -c '%s' "$f")
+            meta=$(ffprobe -v error -show_entries format=duration:stream=codec_type,codec_name,width,height,r_frame_rate,pix_fmt:stream_tags=alpha_mode -of json "$f")
+            echo "$meta" > "coach-video-report/${name}.json"
+            codec=$(jq -r '[.streams[] | select(.codec_type=="video")][0].codec_name // "UNKNOWN"' <<< "$meta")
+            width=$(jq -r '[.streams[] | select(.codec_type=="video")][0].width // 0' <<< "$meta")
+            height=$(jq -r '[.streams[] | select(.codec_type=="video")][0].height // 0' <<< "$meta")
+            fps=$(jq -r '[.streams[] | select(.codec_type=="video")][0].r_frame_rate // "UNKNOWN"' <<< "$meta")
+            pix=$(jq -r '[.streams[] | select(.codec_type=="video")][0].pix_fmt // "UNKNOWN"' <<< "$meta")
+            duration=$(jq -r '.format.duration // "0"' <<< "$meta")
+            audio=$(jq -r 'if any(.streams[]; .codec_type=="audio") then "YES" else "NO" end' <<< "$meta")
+            alpha_tag=$(jq -r '[.streams[] | select(.codec_type=="video")][0].tags.alpha_mode // "not-declared"' <<< "$meta")
+            if ! ffmpeg -v error -i "$f" -f null - 2> "coach-video-report/${name}.decode.log"; then
+              echo "ERROR: Full decode failed: $name"
+              cat "coach-video-report/${name}.decode.log"
+              exit 1
+            fi
+            mid=$(awk -v d="$duration" 'BEGIN { printf "%.3f", d/2 }')
+            thumb="coach-video-report/thumbnails/${name%.webm}.png"
+            ffmpeg -v error -y -ss "$mid" -i "$f" -frames:v 1 "$thumb"
+            alpha=$(python3 - "$thumb" <<'PY'
+          from PIL import Image
+          import sys
+          im=Image.open(sys.argv[1]).convert("RGBA")
+          a=im.getchannel("A")
+          h=a.histogram()
+          total=im.width*im.height
+          transparent=sum(h[:255])
+          opaque=h[255]
+          print(f"transparent={transparent/total:.1%},opaque={opaque/total:.1%},alpha_min={a.getextrema()[0]}")
+          PY
+          )
+            printf '%s\t%s\t%s\t%sx%s\t%s\t%s\t%s\t%s\t%s (tag=%s)\tOK\n' "$name" "$bytes" "$codec" "$width" "$height" "$fps" "$duration" "$pix" "$audio" "$alpha" "$alpha_tag" | tee -a coach-video-report/report.tsv
+            if [ "$audio" = "YES" ]; then
+              echo "ERROR: Audio stream found in $name"
+              exit 1
+            fi
+          done
+          echo
+          echo "All five WEBM files decoded completely and contain no audio stream."
+          echo "Alpha values above are measured on a decoded midpoint frame; inspect thumbnails before claiming full-clip transparency."
+          cat coach-video-report/report.tsv
+      - name: Upload inspection report and full-frame samples
+        uses: actions/upload-artifact@v4
+        with:
+          name: solido-coach-video-inspection
+          path: coach-video-report/
+          if-no-files-found: error
