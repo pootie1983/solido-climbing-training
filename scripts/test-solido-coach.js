@@ -241,17 +241,19 @@ const history = [
   {date:daysAgo(45),mins:90},
   {date:'fecha no válida',mins:120},
   {date:daysAgo(1),force:22.5,hand:'izquierda',grip:'20'},
-  {date:daysAgo(40),force:25,hand:'derecha',grip:'18'}
+  {date:daysAgo(40),force:25,hand:'derecha',grip:'18'},
+  {date:'01/01/2099, 10:30',mins:500,force:99,hand:'futura',grip:'99'}
 ];
 const stats = getStats(history);
 assert.equal(stats.total, 4, 'Total saved training sessions should exclude force tests but include undated history entries');
 assert.equal(stats.month, 2, 'Monthly session count should exclude old and invalid dates');
 assert.equal(stats.minutes, 75, 'Monthly training minutes should sum only valid recent sessions');
 assert.equal(stats.forceCount, 1, 'Monthly force count should include only recent valid measurements');
-assert.equal(stats.bestForce, 25, 'Best force should consider all valid dated measurements');
+assert.equal(stats.bestForce, 25, 'Best force should ignore future-dated measurements');
 assert.equal(stats.latestForce, 22.5, 'Latest force should use the newest measurement');
 assert.equal(stats.latestForceHand, 'izquierda');
 assert.equal(stats.latestForceGrip, '20');
 assert.ok(parseSessionDate({ts:Date.now()}) instanceof Date, 'Valid timestamp should be parsed');
 assert.equal(parseSessionDate({date:'not a date'}), null, 'Invalid date should be ignored');
+assert.equal(parseSessionDate({date:'31/02/2026, 10:30'}), null, 'Impossible calendar dates should be rejected');
 console.log('SOLIDO COACH activity history checks passed: date filtering, monthly totals and force measurements.');
