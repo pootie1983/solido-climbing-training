@@ -2409,6 +2409,7 @@ body.br-fullscreen-active .sg-close{display:flex}
 .sg-climber{z-index:6}
 .sg-record-climber{z-index:5}
 </style>
+<link rel="stylesheet" href="solido-coach.css">
 </head>
 
 <body>
@@ -2603,6 +2604,12 @@ body.br-fullscreen-active .sg-close{display:flex}
       <button class="btn" onclick="show('plans')">Ver mi plan →</button>
     </div>
   </div>
+
+  <button class="coach-home-card" type="button" onclick="show('solidoCoach');if(window.solidoCoachRender)solidoCoachRender()">
+    <span class="coach-home-icon" aria-hidden="true">🧗</span>
+    <span class="coach-home-copy"><strong>SOLIDO COACH</strong><small>Tu entrenador personal · planes y consejos adaptados a ti</small></span>
+    <span class="coach-home-arrow" aria-hidden="true">→</span>
+  </button>
 
   <button class="home-meditation-launch" onclick="show('meditation')">
     <span class="home-meditation-symbol"><svg class="home-icon" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="medGlow" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e6ffd1"/><stop offset="1" stop-color="#68c982"/></linearGradient></defs><path d="M13 39q-8-1-8-9 0-8 9-9 3-13 17-13 13 0 17 13 11 0 11 10 0 8-9 9H13Z" fill="url(#medGlow)" opacity=".9" stroke="#d6ffdf" stroke-width="2"/><path d="M18 32q5-5 10 0t10 0 10 0" fill="none" stroke="#276b43" stroke-width="3" stroke-linecap="round"/><path d="M24 48q8 5 16 0M29 55q3 2 6 0" fill="none" stroke="#8fe9a1" stroke-width="2" stroke-linecap="round"/></svg></span>
@@ -3267,6 +3274,61 @@ body.br-fullscreen-active .sg-close{display:flex}
 </section>
 
 
+
+<section id="solidoCoach" class="hide">
+  <div class="sectionhead"><h2>SOLIDO COACH</h2><span class="tag">ENTRENADOR PERSONAL</span></div>
+  <div class="coach-shell">
+    <div class="coach-hero">
+      <div class="coach-kicker">SOLIDO CLIMBING · COACHING</div>
+      <h2>Tu próximo nivel,<br>con un plan propio.</h2>
+      <p>Un entrenador que tendrá en cuenta tu perfil, tus objetivos y tu evolución. La base local se está preparando; la conexión con la IA avanzada llegará en la siguiente fase.</p>
+      <span class="coach-status">PERFIL LOCAL PREPARADO</span>
+    </div>
+    <div class="coach-panel">
+      <h3>Elige cómo quieres que te entrene</h3>
+      <p class="coach-muted">Puedes cambiar de personalidad cuando quieras. El estilo cambia la forma de hablar, nunca las recomendaciones de seguridad.</p>
+      <div class="coach-personalities">
+        <button type="button" class="coach-personality" data-personality="cercano" onclick="solidoCoachSetPersonality('cercano')"><span class="coach-face">🤝</span><strong>CERCANO</strong><small>Motivador y comprensivo</small></button>
+        <button type="button" class="coach-personality" data-personality="gracioso" onclick="solidoCoachSetPersonality('gracioso')"><span class="coach-face">😄</span><strong>GRACIOSO</strong><small>Humor y buen ambiente</small></button>
+        <button type="button" class="coach-personality" data-personality="estricto" onclick="solidoCoachSetPersonality('estricto')"><span class="coach-face">🎯</span><strong>ESTRICTO</strong><small>Exigente y disciplinado</small></button>
+      </div>
+      <p id="coachPersonalitySummary" class="coach-muted" style="margin:12px 0 0">Estilo seleccionado: Cercano</p>
+    </div>
+    <div class="coach-panel">
+      <h3>Tu perfil de escalador</h3>
+      <p class="coach-muted">Estos datos ya existen en tu perfil de SOLIDO. El entrenador los reutilizará, sin crear una ficha duplicada.</p>
+      <div id="coachProfileSummary" class="coach-profile-grid"></div>
+      <button class="btn secondary" type="button" style="width:100%;margin-top:12px" onclick="show('profile')">Editar mis datos personales</button>
+    </div>
+    <div class="coach-panel">
+      <h3>Preferencias para entrenar</h3>
+      <p class="coach-muted">Completa estos datos opcionales para ajustar los futuros planes. Se guardan únicamente en este dispositivo.</p>
+      <form class="coach-form" onsubmit="solidoCoachSaveDetails(event)">
+        <label>Días disponibles por semana
+          <select id="coachDays"><option value="1">1 día</option><option value="2">2 días</option><option value="3">3 días</option><option value="4">4 días</option><option value="5">5 días</option><option value="6">6 días</option><option value="7">Todos los días</option></select>
+        </label>
+        <label>Experiencia entrenando
+          <select id="coachExperience"><option value="principiante">Estoy empezando</option><option value="intermedio">Tengo experiencia</option><option value="avanzado">Entreno desde hace años</option></select>
+        </label>
+        <label>Material disponible
+          <select id="coachEquipment"><option value="casa">Entreno en casa, sin material</option><option value="basico">Material básico (gomas, mancuernas)</option><option value="gimnasio">Gimnasio o rocódromo</option><option value="completo">Hangboard y material específico</option></select>
+        </label>
+        <label>Lesiones o limitaciones que quieras indicar (opcional)
+          <textarea id="coachLimitations" maxlength="500" placeholder="Por ejemplo: molestias que deba tener en cuenta. No hace falta indicar diagnósticos."></textarea>
+        </label>
+        <button class="btn" type="submit">Guardar preferencias de entrenamiento</button>
+        <small id="coachSaveStatus" class="coach-muted" aria-live="polite">Todavía no has guardado cambios.</small>
+      </form>
+    </div>
+    <div class="coach-panel">
+      <h3>Actividad disponible para el entrenador</h3>
+      <p class="coach-muted">Resumen de datos que SOLIDO ya puede consultar, si están disponibles y has concedido permisos.</p>
+      <div id="coachHealthSummary" class="coach-profile-grid"></div>
+    </div>
+    <div class="coach-note"><strong>Próxima fase:</strong> activar el entrenador local con recomendaciones básicas y preparar la conexión segura con la IA avanzada. Esta pantalla todavía no envía datos a ningún servicio externo.</div>
+    <button class="btn secondary coach-back" type="button" onclick="show('home')">← Volver al inicio</button>
+  </div>
+</section>
 
 <section id="gameHub" class="hide game-hub-screen">
   <div class="game-hub-shade" aria-hidden="true"></div>
@@ -6402,6 +6464,7 @@ healthConnectRefresh();
 
 </script>
 
+<script src="solido-coach.js"></script>
 <script src="strength-game.js"></script>
 
 </body>
