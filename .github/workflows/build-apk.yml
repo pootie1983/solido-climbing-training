@@ -42,11 +42,45 @@ jobs:
           # Spanish dictionary; remove dictionaries for every other language.
           find "$VOICE_DIR/espeak-ng-data" -maxdepth 1 -type f -name '*_dict' ! -name 'es_dict' -delete
           test -z "$(find "$VOICE_DIR/espeak-ng-data" -maxdepth 1 -type f -name '*_dict' ! -name 'es_dict' -print -quit)"
-      - name: Verify Coach animation videos
+      - name: Convert Coach animations to Android WebView-compatible MP4
         run: |
-          test "$(find app/src/main/assets/coach -maxdepth 1 -type f -name '*.webm' | wc -l)" -eq 5
-          echo "Keeping all five original Coach videos at full quality:"
-          du -h app/src/main/assets/coach/*.webm
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          COACH=app/src/main/assets/coach
+          test -s "$COACH/Climber_gesticulating_2D_animation_7b6f30fd.webm"
+          test -s "$COACH/Climber_pointing_finger_up_4706b9d7.webm"
+          test -s "$COACH/Climber_making_OK_gesture_fc829075.webm"
+          test -s "$COACH/Climber_celebrating_with_raised_…_72cb685e.webm"
+          test -s "$COACH/Escalador_sonriente_extendiendo_…_6589c00e.webm"
+          # H.264 Baseline in MP4 is the safest broadly supported WebView playback path.
+          ffmpeg -y -i "$COACH/Climber_gesticulating_2D_animation_7b6f30fd.webm" -an -vf "scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,format=yuv420p" -r 24 -c:v libx264 -profile:v baseline -level 3.1 -preset medium -crf 22 -movflags +faststart "$COACH/coach_explain.mp4"
+          ffmpeg -y -i "$COACH/Climber_pointing_finger_up_4706b9d7.webm" -an -vf "scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,format=yuv420p" -r 24 -c:v libx264 -profile:v baseline -level 3.1 -preset medium -crf 22 -movflags +faststart "$COACH/coach_point.mp4"
+          ffmpeg -y -i "$COACH/Climber_making_OK_gesture_fc829075.webm" -an -vf "scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,format=yuv420p" -r 24 -c:v libx264 -profile:v baseline -level 3.1 -preset medium -crf 22 -movflags +faststart "$COACH/coach_approve.mp4"
+          ffmpeg -y -i "$COACH/Climber_celebrating_with_raised_…_72cb685e.webm" -an -vf "scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,format=yuv420p" -r 24 -c:v libx264 -profile:v baseline -level 3.1 -preset medium -crf 22 -movflags +faststart "$COACH/coach_celebrate.mp4"
+          ffmpeg -y -i "$COACH/Escalador_sonriente_extendiendo_…_6589c00e.webm" -an -vf "scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,format=yuv420p" -r 24 -c:v libx264 -profile:v baseline -level 3.1 -preset medium -crf 22 -movflags +faststart "$COACH/coach_smile.mp4"
+          for video in "$COACH"/coach_*.mp4; do
+            test -s "$video"
+            ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,profile,pix_fmt,width,height -of csv=p=0 "$video" | grep -q '^h264,Constrained Baseline,yuv420p,720,1280
+      - name: Validate JavaScript assets
+        run: |
+          node --check app/src/main/assets/solido-coach.js
+          node --check app/src/main/assets/strength-game.js
+          node scripts/test-solido-coach.js
+      - name: Build debug APK
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: '8.11.1'
+          arguments: assembleDebug
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SOLIDO-CLIMBING-TRAINING-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+
+          done
+          test "$(find "$COACH" -maxdepth 1 -type f -name 'coach_*.mp4' | wc -l)" -eq 5
+          du -h "$COACH"/coach_*.mp4
       - name: Validate JavaScript assets
         run: |
           node --check app/src/main/assets/solido-coach.js
