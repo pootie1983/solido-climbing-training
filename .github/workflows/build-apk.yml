@@ -27,10 +27,6 @@ jobs:
           mkdir -p app/libs app/src/main/assets
           curl -fL --retry 3 https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.21/sherpa-onnx-1.12.21.aar -o app/libs/sherpa-onnx-1.12.21.aar
           test -s app/libs/sherpa-onnx-1.12.21.aar
-      - name: Install video optimizer
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg
       - name: Download Spanish Piper voice
         run: |
           curl -fL --retry 3 https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-es_ES-davefx-medium.tar.bz2 -o /tmp/solido-coach-voice.tar.bz2
@@ -46,19 +42,10 @@ jobs:
           # Spanish dictionary; remove dictionaries for every other language.
           find "$VOICE_DIR/espeak-ng-data" -maxdepth 1 -type f -name '*_dict' ! -name 'es_dict' -delete
           test -z "$(find "$VOICE_DIR/espeak-ng-data" -maxdepth 1 -type f -name '*_dict' ! -name 'es_dict' -print -quit)"
-      - name: Optimize Coach animation videos
+      - name: Verify Coach animation videos
         run: |
-          # Keep the original 720x1280 assets in Git; only create smaller build copies.
-          find app/src/main/assets/coach -maxdepth 1 -type f -name '*.webm' -print0 | while IFS= read -r -d '' video; do
-            tmp="${video%.webm}.optimized.webm"
-            timeout 5m ffmpeg -hide_banner -loglevel error -y -i "$video" -an \
-              -vf "fps=18" -c:v libvpx-vp9 -pix_fmt yuva420p \
-              -deadline realtime -cpu-used 8 -row-mt 1 -threads 2 \
-              -crf 34 -b:v 0 -auto-alt-ref 0 "$tmp"
-            test -s "$tmp"
-            mv "$tmp" "$video"
-          done
-          echo "Optimized Coach videos:"
+          test "$(find app/src/main/assets/coach -maxdepth 1 -type f -name '*.webm' | wc -l)" -eq 5
+          echo "Keeping all five original Coach videos at full quality:"
           du -h app/src/main/assets/coach/*.webm
       - name: Validate JavaScript assets
         run: |
