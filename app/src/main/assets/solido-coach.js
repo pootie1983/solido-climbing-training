@@ -69,7 +69,7 @@
     let main=[],category='Fuerza',name='SOLIDO COACH · Fuerza general',note='Mantén una intensidad cómoda y deja varias repeticiones en reserva.';
     if(goal==='Fuerza de dedos'){
       category='Fuerza';name='SOLIDO COACH · Cuidado y fuerza de manos';
-      if(age>=18&&equipment!=='casa'){main=[{id:2,sets:2,reps:12,work:5,rest:45,label:'Trabajo de agarre con pelota',detail:'Apretón suave, sin llegar al fallo'},{id:28,sets:2,reps:15,work:5,rest:45,label:'Fuerza de dedos antagonistas',detail:'Aperturas suaves con goma ligera'},{id:17,sets:2,reps:12,work:5,rest:45,label:'Rotadores de hombro con banda',detail:'Resistencia ligera y controlada'}];note='Sesión conservadora: no incluye suspensiones máximas ni trabajo al fallo.';}
+      if(age>=18&&(equipment==='gimnasio'||equipment==='completo')){main=[{id:2,sets:2,reps:12,work:5,rest:45,label:'Trabajo de agarre con pelota',detail:'Apretón suave, sin llegar al fallo'},{id:28,sets:2,reps:15,work:5,rest:45,label:'Fuerza de dedos antagonistas',detail:'Aperturas suaves con goma ligera'},{id:17,sets:2,reps:12,work:5,rest:45,label:'Rotadores de hombro con banda',detail:'Resistencia ligera y controlada'}];note='Sesión conservadora: no incluye suspensiones máximas ni trabajo al fallo.';}
       else{main=[{id:24,sets:2,reps:10,work:5,rest:20,label:'Movilidad de dedos',detail:'Aperturas y cierres suaves'},{id:11,sets:1,reps:1,work:600,rest:30,label:'Trabajo de pies en muro',detail:'10 minutos en pared fácil, sin cargar fuerte los dedos'}];note='Por edad o material disponible, la propuesta evita cargas específicas de dedos.';}
     }else if(goal==='Resistencia'){
       category='Resistencia';name='SOLIDO COACH · Resistencia técnica';
