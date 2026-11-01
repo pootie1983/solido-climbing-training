@@ -310,7 +310,7 @@ assert.match(bridge, /catch \(_:\s*Exception\)\s*\{\s*null\s*\}/, 'A sleep read 
 assert.match(bridge, /result\.put\("status", "ok"\)[\s\S]*?val sleepMinutes = if[\s\S]*?result\.put\("sleepMinutes", sleepMinutes \?: JSONObject\.NULL\)/, 'Core metrics must remain successful when optional sleep data is unavailable');
 
 assert.match(bridge, /result\.put\("sleepMinutes", sleepMinutes \?: JSONObject\.NULL\)/);
-assert.match(bridge, /result\.put\("sleepMinutes", JSONObject\.NULL\)/, 'Missing sleep permission must return a null metric, not fail the whole response');
+assert.match(bridge, /\}\s*else\s*\{\s*null\s*\}\s*result\.put\("sleepMinutes", sleepMinutes \?: JSONObject\.NULL\)/, 'Missing sleep permission must return a null metric without failing core Health Connect data');
 assert.match(html, /window\.solidoCoachHealthData=data&&data\.status==='ok'\?[\s\S]*?sleepMinutes:data\.sleepMinutes==null\?null:Number\(data\.sleepMinutes\)/, 'The WebView callback must pass optional sleep data into local advice');
 console.log('SOLIDO COACH Health Connect integration contract passed: required metrics, optional sleep permission and WebView mapping.');
 
