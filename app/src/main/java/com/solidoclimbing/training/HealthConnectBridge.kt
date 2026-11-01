@@ -97,11 +97,12 @@ class HealthConnectBridge(
                     pageSize = 50
                 )
             ).records
-            val bpm = heartRecords.asSequence()
+            val heartSamples = heartRecords.asSequence()
                 .flatMap { it.samples.asSequence() }
-                .maxByOrNull { it.time }
-                ?.beatsPerMinute
-            result.put("heartRate", bpm ?: JSONObject.NULL)
+                .map { it.beatsPerMinute }
+                .toList()
+            val averageBpm = heartSamples.takeIf { it.isNotEmpty() }?.average()?.toLong()
+            result.put("heartRate", averageBpm ?: JSONObject.NULL)
 
             val sleepRecords = client.readRecords(
                 ReadRecordsRequest(
