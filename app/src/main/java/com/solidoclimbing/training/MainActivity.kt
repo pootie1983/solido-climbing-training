@@ -179,7 +179,9 @@ class MainActivity : ComponentActivity() {
         } else {
             // Algunos motores Android no publican el género de sus voces; bajar el tono
             // evita mantener la entonación aguda de la voz anterior.
-            tts.setPitch(0.78f)
+            // Tono más grave cuando el motor no informa del género de sus voces.
+            // Una voz masculina real requiere que el motor tenga una voz masculina instalada.
+            tts.setPitch(0.64f)
         }
     }
 
