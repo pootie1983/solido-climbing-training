@@ -100,8 +100,8 @@ function extractFunction(source, signature) {
   throw new Error('Unclosed function: ' + signature);
 }
 const sessionDate = vm.runInNewContext('(' + extractFunction(coach, 'function sessionDate(item){').replace('function sessionDate(item){', 'function(item){') + ')');
-const adviceSource = extractFunction(coach, 'function buildLocalAdvice(sessionList,profile,preferences,personality){')
-  .replace('function buildLocalAdvice(sessionList,profile,preferences,personality){', 'function(sessionList,profile,preferences,personality){');
+const adviceSource = extractFunction(coach, 'function buildLocalAdvice(sessionList,profile,preferences,personality,healthData){')
+  .replace('function buildLocalAdvice(sessionList,profile,preferences,personality,healthData){', 'function(sessionList,profile,preferences,personality){');
 const buildAdvice = vm.runInNewContext('(' + adviceSource + ')', {sessionDate, Date});
 const emptyProfile = {goal:'Escalada'};
 const emptyPrefs = {days:'3',limitations:''};
