@@ -7,6 +7,7 @@ const html = fs.readFileSync('app/src/main/assets/index.html', 'utf8');
 const coach = fs.readFileSync('app/src/main/assets/solido-coach.js', 'utf8');
 assert.match(coach, /let coachFormInitialized=false;/, 'Coach preferences form should track its first initialization');
 assert.match(coach, /if\(!coachFormInitialized\)\{[\s\S]*?coachFormInitialized=true;/, 'Changing Coach personality must not overwrite unsaved preference edits');
+assert.match(coach, /const parsed=JSON\.parse\(read\('solidoSessions','\[\]'\)\);return Array\.isArray\(parsed\)\?parsed\.filter\(item=>item&&typeof item==='object'&&!Array\.isArray\(item\)\):\[\];/, 'Coach must ignore malformed session history entries safely');
 
 const catalogStart = html.indexOf('const exercises = [');
 const catalogEnd = html.indexOf('\n];', catalogStart);
