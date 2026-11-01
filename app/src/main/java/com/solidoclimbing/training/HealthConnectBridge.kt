@@ -89,20 +89,28 @@ class HealthConnectBridge(
             result.put("distanceMeters", totals[DistanceRecord.DISTANCE_TOTAL]?.inMeters ?: 0.0)
             result.put("totalCalories", totals[TotalCaloriesBurnedRecord.ENERGY_TOTAL]?.inKilocalories ?: 0.0)
 
-            val lastDay = now.minus(Duration.ofHours(24))
-            val heartRecords = client.readRecords(
-                ReadRecordsRequest(
-                    recordType = HeartRateRecord::class,
-                    timeRangeFilter = TimeRangeFilter.between(lastDay, now),
-                    ascendingOrder = false,
-                    pageSize = 50
-                )
-            ).records
-            val heartSamples = heartRecords.asSequence()
-                .flatMap { it.samples.asSequence() }
-                .map { it.beatsPerMinute }
-                .toList()
-            val averageBpm = heartSamples.takeIf { it.isNotEmpty() }?.average()?.toLong()
+            // El pulso también es una métrica complementaria: si su consulta falla,
+            // conservamos los pasos y las calorías ya calculados.
+            val averageBpm = try {
+                val lastDay = now.minus(Duration.ofHours(24))
+                val heartRecords = client.readRecords(
+                    ReadRecordsRequest(
+                        recordType = HeartRateRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(lastDay, now),
+                        ascendingOrder = false,
+                        pageSize = 50
+                    )
+                ).records
+                heartRecords.asSequence()
+                    .flatMap { it.samples.asSequence() }
+                    .map { it.beatsPerMinute }
+                    .toList()
+                    .takeIf { it.isNotEmpty() }
+                    ?.average()
+                    ?.toLong()
+            } catch (_: Exception) {
+                null
+            }
             result.put("heartRate", averageBpm ?: JSONObject.NULL)
 
             // El sueño es opcional: ni la falta de permiso ni un fallo al leerlo deben
