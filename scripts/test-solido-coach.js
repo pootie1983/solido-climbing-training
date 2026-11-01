@@ -45,6 +45,7 @@ const cases = [
   [{goal:'Fuerza de dedos',age:16,level:'Principiante'}, {equipment:'casa',experience:'principiante'}, 'Fuerza'],
   [{goal:'Fuerza de dedos',age:32,level:'Intermedio'}, {equipment:'basico',experience:'intermedio'}, 'Fuerza'],
   [{goal:'Resistencia',age:30,level:'Intermedio'}, {equipment:'gimnasio',experience:'intermedio'}, 'Resistencia'],
+  [{goal:'Resistencia',age:30,level:'Intermedio'}, {equipment:'casa',experience:'intermedio'}, 'Resistencia'],
   [{goal:'Preparación para vías ferratas',age:30,level:'Intermedio'}, {equipment:'casa',experience:'intermedio'}, 'Escalada'],
   [{goal:'Fuerza general',age:35,level:'Avanzado'}, {equipment:'gimnasio',experience:'intermedio',days:'3'}, 'Fuerza', 3]
 ];
@@ -68,7 +69,7 @@ for (const [profile, preferences, expectedCategory, expectedDays] of cases) {
 }
 assert.equal(buildProposal({goal:'Fuerza general',age:30,level:'Intermedio'}, {equipment:'gimnasio',experience:'intermedio',limitations:'dolor'}), null, 'Limitations must suppress automatic proposals');
 
-console.log('SOLIDO COACH checks passed: catalogue IDs, ten goal/level/equipment scenarios, item bounds and limitation safety.');
+console.log('SOLIDO COACH checks passed: catalogue IDs, eleven goal/level/equipment scenarios, item bounds and limitation safety.');
 
 
 // The three coaching personalities must produce distinct, understandable advice.
