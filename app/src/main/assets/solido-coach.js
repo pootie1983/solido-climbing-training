@@ -116,6 +116,12 @@
     if(Number.isFinite(sleepMinutes)&&sleepMinutes>0&&sleepMinutes<360)return 'Health Connect registra menos de 6 horas de sueño. Por prudencia, hoy no generaré una sesión de carga. Valora descansar o hacer movilidad suave; el dato de sueño por sí solo no determina tu recuperación.';
     return '';
   }
+  const avatarStates={welcome:'coach_01_bienvenida.png',motivation:'coach_02_motivacion.png',advice:'coach_03_consejos.png',congrats:'coach_04_felicitacion.png',rest:'coach_05_descanso.png',close:'coach_06_cierre.png'};
+  function voiceEnabled(){return read('solidoCoachVoiceEnabled','1')!=='0';}
+  function setAvatar(state,message){const image=$('coachAvatarImage'),copy=$('coachAvatarMessage');if(image)image.src='coach/'+(avatarStates[state]||avatarStates.welcome);if(copy&&message)copy.textContent=message;}
+  function updateVoiceButton(){const button=$('coachVoiceToggle');if(button){button.textContent=voiceEnabled()?'🔊 VOZ ACTIVADA':'🔇 VOZ SILENCIADA';button.setAttribute('aria-pressed',voiceEnabled()?'true':'false');}}
+  window.solidoCoachToggleVoice=function(){const enabled=!voiceEnabled();write('solidoCoachVoiceEnabled',enabled?'1':'0');if(!enabled&&window.speechSynthesis)window.speechSynthesis.cancel();updateVoiceButton();const status=$('coachVoiceStatus');if(status)status.textContent=enabled?'Voz activada · usa la voz española instalada en Android':'Voz silenciada';};
+  window.solidoCoachSpeak=function(){const status=$('coachVoiceStatus');if(!voiceEnabled()){if(status)status.textContent='Activa la voz para escuchar al entrenador.';return;}if(!('speechSynthesis' in window)||!('SpeechSynthesisUtterance' in window)){if(status)status.textContent='La voz no está disponible. Comprueba el motor de texto a voz de Android.';return;}const text=[$('coachAdviceTitle')?.textContent,$('coachAdviceBody')?.textContent].filter(Boolean).join('. ');if(!text.trim())return;try{window.speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(text);utterance.lang='es-ES';utterance.rate=.94;utterance.pitch=.88;utterance.volume=1;const voices=window.speechSynthesis.getVoices();const spanish=voices.find(v=>/^es(-|_)/i.test(v.lang)&&/es-ES/i.test(v.lang))||voices.find(v=>/^es(-|_)/i.test(v.lang));if(spanish)utterance.voice=spanish;utterance.onstart=()=>{if(status)status.textContent='El entrenador está hablando…';setAvatar('motivation','¡Vamos! Escucha el consejo y aplícalo a tu ritmo.');};utterance.onend=()=>{if(status)status.textContent='Consejo terminado';};utterance.onerror=()=>{if(status)status.textContent='No se pudo reproducir la voz. Revisa el motor de voz de Android.';};window.speechSynthesis.speak(utterance);}catch(error){if(status)status.textContent='No se pudo iniciar la voz en este dispositivo.';}};
   function render(){
     const p=personalities.find(x=>x.id===read('solidoCoachPersonality','cercano'))||personalities[0];
     const profile={
@@ -141,6 +147,8 @@
     if(proposalItems)proposalItems.innerHTML=proposal?proposal.items.map(item=>'<div class="coach-proposal-item"><strong>'+safe(item.label)+'</strong><span>'+safe(item.detail)+'</span></div>').join(''):'';
     if(proposalButton)proposalButton.style.display=proposal&&!initialPlanReady?'block':'none';
     const advice=buildLocalAdvice(sessionList,profile,preferences,p.id,window.solidoCoachHealthData||null);
+    setAvatar(proposalBlockReason?'rest':(sessionList.length?'motivation':'welcome'),proposalBlockReason||'Vamos a trabajar para que sigas progresando. Yo te acompaño en cada sesión.');
+    updateVoiceButton();
     const adviceTitle=$('coachAdviceTitle'),adviceBody=$('coachAdviceBody');
     if(adviceTitle)adviceTitle.textContent=advice.title;
     if(adviceBody)adviceBody.textContent=advice.body;
