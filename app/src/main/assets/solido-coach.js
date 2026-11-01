@@ -68,7 +68,8 @@
     else{title='Siguiente paso: regularidad';body='Llevas '+completed.length+' sesiones y '+minutes+' minutos registrados en los últimos 7 días. Tu disponibilidad es de '+days+' días por semana. Intenta repartir las sesiones y evita encadenar trabajos intensos de dedos en días consecutivos.';}
     if(last&&now-last.date.getTime()<24*60*60*1000){body+=' Como has registrado actividad en las últimas 24 horas, valora hoy una jornada suave o de descanso antes de volver a cargar fuerte.';}
     if(preferences.limitations.trim()){body+=' Has indicado esta limitación: '+preferences.limitations+'. Ajusta cualquier ejercicio que la empeore y detén la actividad si aparece dolor.';}
-    const sleepMinutes=healthData&&Number(healthData.sleepMinutes);
+    const rawSleepMinutes=healthData?healthData.sleepMinutes:null;
+    const sleepMinutes=rawSleepMinutes==null?NaN:Number(rawSleepMinutes);
     if(Number.isFinite(sleepMinutes)&&sleepMinutes>=0&&sleepMinutes<360){body+=' Health Connect muestra que el último registro de sueño fue inferior a 6 horas. Si corresponde a tu descanso principal, considera bajar la intensidad o descansar hoy; este dato por sí solo no determina tu recuperación.';}
     if(personality==='gracioso'){body='¡A por ello, que la roca no se escala sola! '+body;}else if(personality==='estricto'){body='Objetivo claro: '+body;}else{body='Vamos paso a paso: '+body;}
     return {title,body};
