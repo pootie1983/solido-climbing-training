@@ -167,12 +167,18 @@
     video.style.visibility='visible';
     image.style.display='none';
     video.load();
-    const attempt=video.play();
-    if(attempt&&typeof attempt.catch==='function')attempt.catch(error=>{
+    try{
+      const attempt=video.play();
+      if(attempt&&typeof attempt.catch==='function')attempt.catch(error=>{
+        const status=$('coachVoiceStatus');
+        if(status)status.textContent='El vídeo no pudo iniciarse: '+(error&&error.name?error.name:'error de reproducción')+'.';
+        video.style.display='none';image.style.display='block';
+      });
+    }catch(error){
       const status=$('coachVoiceStatus');
       if(status)status.textContent='El vídeo no pudo iniciarse: '+(error&&error.name?error.name:'error de reproducción')+'.';
       video.style.display='none';image.style.display='block';
-    });
+    }
   }
   function startAvatarPerformance(){
     const selectedPlan=avatarSpeechPlan.slice();
