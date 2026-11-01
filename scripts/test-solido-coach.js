@@ -220,3 +220,38 @@ for (const goal of matrixGoals) {
   }
 }
 console.log('SOLIDO COACH exhaustive safety matrix passed: ' + matrixCases + ' combinations.');
+
+// Activity history regression tests: monthly totals, force measurements and date filtering.
+const sessionDateSource = extractFunction(coach, 'function sessionDate(item){')
+  .replace('function sessionDate(item){', 'function(item){');
+const statsSource = extractFunction(coach, 'function getActivityStats(sessionList){')
+  .replace('function getActivityStats(sessionList){', 'function(sessionList){');
+const dateContext = {Date};
+const parseSessionDate = vm.runInNewContext('(' + sessionDateSource + ')', dateContext);
+const getStats = vm.runInNewContext('(' + statsSource + ')', dateContext);
+const fixedNow = new Date();
+const daysAgo = days => {
+  const d = new Date(fixedNow);
+  d.setDate(d.getDate() - days);
+  return d.toLocaleDateString('es-ES') + ', 10:30';
+};
+const history = [
+  {date:daysAgo(2),mins:45},
+  {date:daysAgo(12),mins:30},
+  {date:daysAgo(45),mins:90},
+  {date:'fecha no válida',mins:120},
+  {date:daysAgo(1),force:22.5,hand:'izquierda',grip:'20'},
+  {date:daysAgo(40),force:25,hand:'derecha',grip:'18'}
+];
+const stats = getStats(history);
+assert.equal(stats.total, 3, 'Total training sessions should exclude force tests');
+assert.equal(stats.month, 2, 'Monthly session count should exclude old and invalid dates');
+assert.equal(stats.minutes, 75, 'Monthly training minutes should sum only valid recent sessions');
+assert.equal(stats.forceCount, 1, 'Monthly force count should include only recent valid measurements');
+assert.equal(stats.bestForce, 25, 'Best force should consider all valid dated measurements');
+assert.equal(stats.latestForce, 22.5, 'Latest force should use the newest measurement');
+assert.equal(stats.latestForceHand, 'izquierda');
+assert.equal(stats.latestForceGrip, '20');
+assert.ok(parseSessionDate({ts:Date.now()}) instanceof Date, 'Valid timestamp should be parsed');
+assert.equal(parseSessionDate({date:'not a date'}), null, 'Invalid date should be ignored');
+console.log('SOLIDO COACH activity history checks passed: date filtering, monthly totals and force measurements.');
