@@ -43,3 +43,10 @@
 .coach-advice>small{display:block;line-height:1.5}
 
 .coach-proposal-items{display:grid;gap:8px;margin-top:12px}.coach-proposal-item{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08)}.coach-proposal-item strong{font-size:13px;color:var(--text,#fff)}.coach-proposal-item span{font-size:12px;line-height:1.45;color:var(--muted,#aebdc7)}.coach-proposal>small{display:block;margin-top:10px;line-height:1.5}
+
+/* Animaciones WEBM del entrenador: conservar el encuadre vertical completo */
+#solidoCoach .coach-avatar-panel #coachAvatarImage,
+#solidoCoach .coach-avatar-panel #coachAvatarVideo{grid-column:1;grid-row:1;width:100%;height:230px;max-height:250px;min-width:0;object-fit:contain;object-position:center bottom;align-self:center;justify-self:stretch}
+#solidoCoach .coach-avatar-panel #coachAvatarVideo{display:none;background:transparent}
+#solidoCoach .coach-avatar-panel .coach-avatar-copy{grid-column:2;grid-row:1}
+@media(max-width:390px){#solidoCoach .coach-avatar-panel #coachAvatarImage,#solidoCoach .coach-avatar-panel #coachAvatarVideo{height:196px}}
