@@ -527,11 +527,11 @@ assert.equal(emptyAcceptContext.customPlans.length,1,'Accepting without a propos
 // Plan cues use their own prominent visual overlay and preserve the separate interval workout UI.
 const planRunnerSource=html.slice(html.indexOf('let planRunState=null'),html.indexOf('/* =========================\n   ESTADÍSTICAS',html.indexOf('let planRunState=null')));
 assert.match(planRunnerSource,/playPlanWorkoutCue\('start'\)/);
-assert.match(planRunnerSource,/showPlanWorkoutNotice\('start','¡A ENTRENAR!'/);
+assert.match(planRunnerSource,/showPlanWorkoutNotice\('start',st\.started\?'¡SEGUIMOS!':'¡A ENTRENAR!','',null\)/);
 assert.match(planRunnerSource,/playPlanWorkoutCue\('rest'\)/);
 assert.match(planRunnerSource,/showPlanWorkoutNotice\('rest','DESCANSO'/);
 assert.match(planRunnerSource,/if\(st\.phase==='rest'\)[\s\S]*?DESCANSO/,'Resuming during a rest period must keep the rest notice instead of telling the user to work');
-assert.match(planRunnerSource,/showPlanWorkoutNotice\('start','¡A ENTRENAR!','',null\)/,'After a rest interval, show only the start cue and timer without extra exercise text');
+assert.match(planRunnerSource,/showPlanWorkoutNotice\('start',restReason==='set'\?'SERIE '\+st\.set:restReason==='rep'\?'SIGUIENTE REPETICIÓN':'¡A ENTRENAR!','',null\)/,'After rest, keep the concise phase title and timer without extra text or image');
 assert.match(html,/const restIntervals=Math\.max\(0,sets\*reps-1\);[\s\S]*?return sets\*reps\*work\+restIntervals\*rest;/,'The plan duration must include every rest between work intervals');
 assert.match(html,/id="planWorkoutNotice"/,'Coach workouts must have their own full-screen visual notice');
 assert.match(html,/id="planWorkoutNoticeCountdown"/,'Rest notice must display a large countdown');
