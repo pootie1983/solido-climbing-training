@@ -1,0 +1,36 @@
+/* SOLIDO COACH · base visual */
+.coach-home-card{width:100%;display:flex;align-items:center;gap:14px;text-align:left;margin:14px 0;padding:16px;border:1px solid #567b45;border-radius:18px;background:linear-gradient(125deg,#1c3a35,#122632 70%,#25351f);color:var(--text);cursor:pointer;box-shadow:0 8px 24px #0003}
+.coach-home-icon{width:54px;height:54px;flex:0 0 54px;display:grid;place-items:center;border-radius:15px;background:linear-gradient(145deg,#b8ff65,#55b94b);color:#102016;font-size:29px}
+.coach-home-copy{display:grid;gap:5px;flex:1;min-width:0}
+.coach-home-copy strong{font-size:14px;letter-spacing:.7px;color:#c4ff82}
+.coach-home-copy small{font-size:12px;line-height:1.4;color:#d0dcda}
+.coach-home-arrow{font-size:25px;color:#c4ff82}
+.coach-shell{display:grid;gap:14px}
+.coach-hero{position:relative;overflow:hidden;padding:20px;border:1px solid #52734a;border-radius:20px;background:radial-gradient(circle at 88% 20%,#9ee75b30,transparent 36%),linear-gradient(135deg,#1a3b35,#102530 70%,#182b27)}
+.coach-kicker{font-size:10px;letter-spacing:2px;font-weight:900;color:#baff78}
+.coach-hero h2{font-size:27px;line-height:1.05;margin:9px 0}
+.coach-hero p{max-width:420px;color:#c3d5d2;font-size:13px;line-height:1.55;margin:0}
+.coach-status{display:inline-flex;align-items:center;gap:7px;margin-top:14px;padding:7px 10px;border-radius:30px;border:1px solid #5c8056;background:#0d241f;color:#c9f4b0;font-size:10px;font-weight:800;letter-spacing:.5px}
+.coach-status:before{content:"";width:7px;height:7px;border-radius:50%;background:#a7f45e;box-shadow:0 0 9px #a7f45e}
+.coach-panel{padding:16px;border:1px solid var(--line);border-radius:17px;background:linear-gradient(145deg,var(--panel2),var(--panel))}
+.coach-panel h3{margin:0 0 7px;font-size:16px}
+.coach-muted{margin:0 0 13px;color:var(--muted);font-size:12px;line-height:1.5}
+.coach-personalities{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.coach-personality{min-width:0;display:grid;gap:6px;justify-items:center;padding:12px 6px;border:1px solid #38505a;border-radius:13px;background:#0e202a;color:var(--text);cursor:pointer}
+.coach-personality .coach-face{font-size:25px}
+.coach-personality strong{font-size:11px}
+.coach-personality small{font-size:9px;line-height:1.35;color:var(--muted);text-align:center}
+.coach-personality.active{border:2px solid #9be85a;background:#1c382c;box-shadow:0 0 15px #9be85a20}
+.coach-profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.coach-data{min-width:0;padding:11px;border:1px solid #29434d;border-radius:12px;background:#0c1c25}
+.coach-data span{display:block;color:var(--muted);font-size:10px}
+.coach-data strong{display:block;margin-top:5px;color:#dff7d1;font-size:15px;overflow-wrap:anywhere}
+.coach-form{display:grid;gap:11px}
+.coach-form label{display:grid;gap:6px;color:#c4d1d4;font-size:11px}
+.coach-form input,.coach-form select,.coach-form textarea{width:100%;min-width:0;background:#0c1c25;color:white;border:1px solid #38515c;border-radius:10px;padding:11px;font:inherit}
+.coach-form textarea{min-height:72px;resize:vertical}
+.coach-form .btn{width:100%}
+.coach-note{padding:12px;border:1px solid #385345;border-radius:12px;background:#10271f;color:#c9ddcd;font-size:11px;line-height:1.55}
+.coach-note strong{color:#baff78}
+.coach-back{width:100%;margin-top:2px}
+@media(max-width:360px){.coach-personalities{gap:5px}.coach-personality{padding:10px 3px}.coach-personality small{font-size:8px}.coach-profile-grid{gap:6px}}
