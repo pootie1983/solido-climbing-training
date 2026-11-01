@@ -660,3 +660,7 @@ for (const clip of ['coach_explain.mp4','coach_point.mp4','coach_approve.mp4','c
   assert.ok(coach.includes(clip),'Coach avatar sequence must reference the packaged compatible clip: '+clip);
 }
 assert.doesNotMatch(coach,/\.webm|…_72cb685e|…_6589c00e/,'Coach playback must not reference the original WebM clips directly');
+
+assert.match(offlineVoice,/private fun splitText\(text: String, maxChars: Int = 220\)/,'Offline voice synthesis must split long advice into bounded chunks');
+assert.match(offlineVoice,/val chunks = splitText\(clean\)/,'Offline voice playback must synthesize short chunks instead of one large audio buffer');
+assert.match(offlineVoice,/totalSamplesPlayed/,'Audio playback must wait for each chunk before releasing its PCM buffer');
