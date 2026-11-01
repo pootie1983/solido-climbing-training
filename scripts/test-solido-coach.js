@@ -376,12 +376,13 @@ console.log('SOLIDO COACH Health Connect integration contract passed: required m
 
 const coachUiIds = ['coachProposalBody','coachProposalItems','coachProposalAccept','coachAdviceTitle','coachAdviceBody','coachProfileSummary','coachHealthSummary','coachDays','coachExperience','coachEquipment','coachLimitations','coachSaveStatus','coachPersonalitySummary'];
 for (const id of coachUiIds) {
-  const occurrences = [...html.matchAll(new RegExp('id=["\\\\\\']' + id + '["\\\\\\']', 'g'))].length;
-  assert.equal(occurrences, 1, 'Coach UI element must exist exactly once: ' + id);
+  const doubleQuoted = html.split('id="' + id + '"').length - 1;
+  const singleQuoted = html.split("id='" + id + "'").length - 1;
+  assert.equal(doubleQuoted + singleQuoted, 1, 'Coach UI element must exist exactly once: ' + id);
 }
-assert.match(html, /onsubmit=["']solidoCoachSaveDetails\(event\)["']/, 'Coach preferences form must be connected to its save handler');
+assert.ok(html.includes('onsubmit="solidoCoachSaveDetails(event)"'), 'Coach preferences form must be connected to its save handler');
 for (const personality of ['cercano','gracioso','estricto']) {
-  assert.match(html, new RegExp('solidoCoachSetPersonality\\([\\\\\\']' + personality + '[\\\\\\']\\)'), 'Coach personality button must be connected: ' + personality);
+  assert.ok(html.includes("solidoCoachSetPersonality('" + personality + "')"), 'Coach personality button must be connected: ' + personality);
 }
 assert.match(html, /onclick=["']solidoCoachAcceptPlanProposal\(\)["']/, 'Accept proposal button must be connected to the guarded acceptance handler');
 assert.match(coach, /const proposalBlockReason=getProposalBlockReason\(sessionList,preferences,window\.solidoCoachHealthData\|\|null\);/, 'Coach rendering must apply recovery checks');
