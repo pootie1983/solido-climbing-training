@@ -61,7 +61,6 @@ class CoachOfflineTts(
                     val audio = createEngine().generate(clean, sid = 0, speed = 0.96f)
                     if (id != requestId.get() || audio.samples.isEmpty()) return@execute
 
-                    // Convert Sherpa's float samples to the broadly supported PCM16 format.
                     val pcm = ShortArray(audio.samples.size) { index ->
                         (audio.samples[index].coerceIn(-1.0f, 1.0f) * Short.MAX_VALUE).toInt().toShort()
                     }
@@ -75,7 +74,9 @@ class CoachOfflineTts(
                     track = AudioTrack.Builder()
                         .setAudioAttributes(
                             AudioAttributes.Builder()
-                                .setUsage(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY)
+                                // Use the normal media stream so the phone's media-volume control
+                                // governs the coach voice consistently on Samsung devices.
+                                .setUsage(AudioAttributes.USAGE_MEDIA)
                                 .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
                                 .build()
                         )
@@ -86,7 +87,6 @@ class CoachOfflineTts(
                                 .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
                                 .build()
                         )
-                        // STREAM avoids allocating a potentially oversized static AudioTrack buffer.
                         .setBufferSizeInBytes(maxOf(minBytes * 2, 16 * 1024))
                         .setTransferMode(AudioTrack.MODE_STREAM)
                         .build()
@@ -96,8 +96,12 @@ class CoachOfflineTts(
                     currentTrack = track
                     if (id != requestId.get()) return@execute
 
-                    onStatus("started")
                     track.play()
+                    if (track.playState != AudioTrack.PLAYSTATE_PLAYING) {
+                        throw IllegalStateException("AudioTrack no ha iniciado la reproducción")
+                    }
+                    onStatus("started")
+
                     var offset = 0
                     while (offset < pcm.size && id == requestId.get()) {
                         val count = minOf(4096, pcm.size - offset)
@@ -115,7 +119,6 @@ class CoachOfflineTts(
                 } catch (_: Throwable) {
                     if (id == requestId.get()) onStatus("error")
                 } finally {
-                    // The worker is the sole owner that releases AudioTrack.
                     try {
                         track?.let {
                             if (it.state == AudioTrack.STATE_INITIALIZED) {
