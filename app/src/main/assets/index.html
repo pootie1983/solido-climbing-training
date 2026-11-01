@@ -3326,6 +3326,13 @@ body.br-fullscreen-active .sg-close{display:flex}
       <p id="coachAdviceBody" class="coach-muted" aria-live="polite">El consejo se calculará con tus entrenamientos guardados y las preferencias que hayas indicado.</p>
       <small class="coach-muted">Consejos locales orientativos; no sustituyen la valoración de un profesional ni modifican tus planes automáticamente.</small>
     </div>
+    <div class="coach-panel coach-proposal">
+      <h3>Propuesta de próxima sesión</h3>
+      <p id="coachProposalBody" class="coach-muted">Preparando una propuesta con los ejercicios que ya incluye SOLIDO…</p>
+      <div id="coachProposalItems" class="coach-proposal-items"></div>
+      <button id="coachProposalAccept" class="btn" type="button" style="width:100%;margin-top:12px;display:none" onclick="solidoCoachAcceptPlanProposal()">Añadir esta propuesta a mis planes</button>
+      <small class="coach-muted">Solo se añadirá si la aceptas. Se guardará como un plan nuevo; nunca sustituirá ni modificará tus planes actuales.</small>
+    </div>
     <div class="coach-panel">
       <h3>Actividad disponible para el entrenador</h3>
       <p class="coach-muted">Resumen de datos que SOLIDO ya puede consultar, si están disponibles y has concedido permisos.</p>
@@ -4732,6 +4739,20 @@ let planDraftItems=[];
 let activePlanCategory='';
 let editingPlanId=null;
 let planOrder=JSON.parse(localStorage.getItem('solidoPlanOrder')||'["Calentamiento","Fuerza","Resistencia","Técnica","Escalada","Recuperación"]');
+window.solidoCoachAcceptPlanProposal=function(){
+  const proposal=window.solidoCoachCurrentProposal;
+  if(!proposal||!Array.isArray(proposal.items)||!proposal.items.length)return;
+  const entry={id:Date.now(),category:proposal.category,name:proposal.name,items:proposal.items.map(item=>({...item})),seconds:estimatePlan(proposal.items),createdAt:new Date().toISOString(),source:'solido-coach'};
+  customPlans.unshift(entry);
+  try{localStorage.setItem('solidoCustomPlans',JSON.stringify(customPlans));}
+  catch(e){customPlans.shift();alert('No se pudo guardar la propuesta. Tus planes anteriores no se han modificado.');return;}
+  window.solidoCoachCurrentProposal=null;
+  const button=document.getElementById('coachProposalAccept');if(button)button.style.display='none';
+  const body=document.getElementById('coachProposalBody');if(body)body.textContent='Propuesta añadida como un plan nuevo. Tus planes anteriores siguen intactos.';
+  const list=document.getElementById('coachProposalItems');if(list)list.innerHTML='';
+  renderPlan();
+  show('plans');
+};
 const planCategories=[{name:'Calentamiento',icon:'<svg viewBox="0 0 40 40"><path d="M20 4c-2 7-9 9-9 18a9 9 0 0 0 18 0c0-4-2-7-5-10 0 5-3 6-4 7-1-5 2-9 0-15Z"/><path d="M20 23c-3 3-3 8 1 9 4-1 4-6 1-9"/></svg>'},{name:'Fuerza',icon:'<svg viewBox="0 0 40 40"><path d="M5 15v10m5-14v18m20-18v18m5-14v10M10 20h20"/><path d="M14 16v8m12-8v8"/></svg>'},{name:'Resistencia',icon:'<svg viewBox="0 0 40 40"><path d="M4 24h7l4-12 7 18 5-12 3 6h6"/></svg>'},{name:'Técnica',icon:'<svg viewBox="0 0 40 40"><path d="M7 32 15 8l7 14 5-9 6 19"/><circle cx="15" cy="8" r="2"/><circle cx="22" cy="22" r="2"/><circle cx="27" cy="13" r="2"/></svg>'},{name:'Escalada',icon:'<svg viewBox="0 0 40 40"><path d="M5 34 14 7l7 13 5-8 9 22"/><path d="M11 24c5-3 8-1 11 3m-3-13 5-2"/></svg>'},{name:'Recuperación',icon:'<svg viewBox="0 0 40 40"><path d="M31 13A13 13 0 1 0 33 24"/><path d="M25 8h7v7"/><path d="M20 13v8l6 3"/></svg>'}];
 function savePlanOrder(){try{localStorage.setItem('solidoPlanOrder',JSON.stringify(planOrder));}catch(e){}}
 function movePlanCategory(name,delta){const i=planOrder.indexOf(name),j=i+delta;if(i<0||j<0||j>=planOrder.length)return;[planOrder[i],planOrder[j]]=[planOrder[j],planOrder[i]];savePlanOrder();renderPlan();}
