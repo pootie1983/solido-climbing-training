@@ -36,9 +36,7 @@ class MainActivity : ComponentActivity() {
     )
 
     private lateinit var web: WebView
-    private var coachTts: TextToSpeech? = null
-    private var coachTtsReady = false
-    private var pendingCoachSpeech: String? = null
+    private lateinit var coachOfflineTts: CoachOfflineTts
     private lateinit var whc06Bridge: WHC06Bridge
     private var gameFullscreenRequested = false
     private var previousRequestedOrientation: Int? = null
@@ -87,6 +85,7 @@ class MainActivity : ComponentActivity() {
         web.addJavascriptInterface(whc06Bridge, "WHC06")
         web.addJavascriptInterface(this, "AndroidUi")
         web.addJavascriptInterface(this, "AndroidCoach")
+        coachOfflineTts = CoachOfflineTts(this) { state -> notifyCoachVoiceStatus(state) }
         setContentView(web)
         web.loadUrl("file:///android_asset/index.html")
     }
@@ -121,110 +120,23 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun speakWithCoachTts(text: String) {
-        val engine = coachTts ?: return
-        if (!coachTtsReady) {
-            pendingCoachSpeech = text
-            return
-        }
-        engine.setSpeechRate(0.90f)
-        engine.setPitch(0.86f)
-        val result = engine.speak(text, TextToSpeech.QUEUE_FLUSH, null, "solido-coach")
-        if (result != TextToSpeech.SUCCESS) notifyCoachVoiceStatus("error")
-    }
-
     @JavascriptInterface
     fun speakCoachText(text: String) {
-        runOnUiThread {
-            val cleanText = text.trim().take(1800)
-            if (cleanText.isEmpty()) {
-                notifyCoachVoiceStatus("error")
-                return@runOnUiThread
-            }
-            if (coachTts == null) {
-                pendingCoachSpeech = cleanText
-                coachTts = TextToSpeech(this) { status ->
-                    runOnUiThread {
-                        val engine = coachTts
-                        if (status != TextToSpeech.SUCCESS || engine == null || isFinishing || isDestroyed) {
-                            pendingCoachSpeech = null
-                            notifyCoachVoiceStatus("unavailable")
-                            return@runOnUiThread
-                        }
-                        engine.setAudioAttributes(
-                            AudioAttributes.Builder()
-                                .setUsage(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY)
-                                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                                .build()
-                        )
-                        var language = engine.setLanguage(Locale("es", "ES"))
-                        if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
-                            language = engine.setLanguage(Locale("es"))
-                        }
-                        if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
-                            language = engine.setLanguage(Locale.getDefault())
-                        }
-                        if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
-                            pendingCoachSpeech = null
-                            notifyCoachVoiceStatus("unavailable")
-                            return@runOnUiThread
-                        }
-
-                        // Android no expone un campo de género para las voces TTS.
-                        // Solo seleccionamos una voz española si el propio nombre declara
-                        // explícitamente que es masculina; así evitamos volver a elegir
-                        // silenciosamente la voz femenina que el usuario ha rechazado.
-                        val maleSpanishVoice = engine.voices
-                            ?.filter { it.locale.language == "es" }
-                            ?.filter { Regex("(^|[-_ ])(male|masculino|hombre)([-_ ]|$)", RegexOption.IGNORE_CASE).containsMatchIn(it.name) }
-                            ?.maxByOrNull { it.quality }
-                        if (maleSpanishVoice == null) {
-                            pendingCoachSpeech = null
-                            coachTtsReady = false
-                            notifyCoachVoiceStatus("male_voice_unavailable")
-                            return@runOnUiThread
-                        }
-                        engine.voice = maleSpanishVoice
-                        engine.setLanguage(maleSpanishVoice.locale)
-
-                        engine.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
-                            override fun onStart(utteranceId: String?) {
-                                notifyCoachVoiceStatus("started")
-                            }
-
-                            override fun onDone(utteranceId: String?) {
-                                notifyCoachVoiceStatus("done")
-                            }
-
-                            @Deprecated("Deprecated in Android")
-                            override fun onError(utteranceId: String?) {
-                                notifyCoachVoiceStatus("error")
-                            }
-
-                            override fun onError(utteranceId: String?, errorCode: Int) {
-                                notifyCoachVoiceStatus("error")
-                            }
-                        })
-                        coachTtsReady = true
-                        val pending = pendingCoachSpeech
-                        pendingCoachSpeech = null
-                        if (pending != null) speakWithCoachTts(pending)
-                    }
-                }
-            } else if (coachTtsReady) {
-                speakWithCoachTts(cleanText)
-            } else {
-                pendingCoachSpeech = cleanText
-            }
+        val cleanText = text.trim().take(1800)
+        if (cleanText.isEmpty()) {
+            notifyCoachVoiceStatus("error")
+            return
         }
+        if (!::coachOfflineTts.isInitialized) {
+            notifyCoachVoiceStatus("unavailable")
+            return
+        }
+        coachOfflineTts.speak(cleanText)
     }
 
     @JavascriptInterface
     fun stopCoachSpeech() {
-        runOnUiThread {
-            pendingCoachSpeech = null
-            coachTts?.stop()
-        }
+        if (::coachOfflineTts.isInitialized) coachOfflineTts.stop()
     }
 
     @JavascriptInterface
@@ -316,9 +228,7 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         if (::healthConnectBridge.isInitialized) healthConnectBridge.release()
         if (::whc06Bridge.isInitialized) whc06Bridge.release()
-        coachTts?.stop()
-        coachTts?.shutdown()
-        coachTts = null
+        if (::coachOfflineTts.isInitialized) coachOfflineTts.release()
         if (::web.isInitialized) web.destroy()
         super.onDestroy()
     }
