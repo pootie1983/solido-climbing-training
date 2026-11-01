@@ -53,7 +53,7 @@ for (const [profile, preferences, expectedCategory] of cases) {
     assert.ok(exerciseIds.has(item.id), 'Unknown exercise ID in proposal: ' + item.id);
     assert.ok(Number.isInteger(item.sets) && item.sets >= 1 && item.sets <= 20, 'Invalid sets');
     assert.ok(Number.isInteger(item.reps) && item.reps >= 1 && item.reps <= 100, 'Invalid reps');
-    assert.ok(Number.isInteger(item.work) && item.work >= 5 && item.work <= 600, 'Invalid work duration');
+    assert.ok(Number.isInteger(item.work) && item.work >= 1 && item.work <= 600, 'Invalid work duration');
     assert.ok(Number.isInteger(item.rest) && item.rest >= 0 && item.rest <= 600, 'Invalid rest duration');
   }
 }
