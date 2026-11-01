@@ -357,6 +357,13 @@ assert.match(bridge, /val averageBpm = if \(granted\.contains\(optionalHeartRate
 assert.match(bridge, /result\.put\("sleepMinutes", sleepMinutes \?: JSONObject\.NULL\)/);
 assert.match(bridge, /\}\s*else\s*\{\s*null\s*\}\s*result\.put\("sleepMinutes", sleepMinutes \?: JSONObject\.NULL\)/, 'Missing sleep permission must return a null metric without failing core Health Connect data');
 assert.match(html, /window\.solidoCoachHealthData=data&&data\.status==='ok'\?[\s\S]*?sleepMinutes:data\.sleepMinutes==null\?null:Number\(data\.sleepMinutes\)/, 'The WebView callback must pass optional sleep data into local advice');
+
+assert.match(html, /heartRate:data\.heartRate==null\?null:Number\(data\.heartRate\)/, 'Missing optional heart-rate data must be represented as null, not zero');
+assert.match(html, /sleepMinutes:data\.sleepMinutes==null\?null:Number\(data\.sleepMinutes\)/, 'Missing optional sleep data must be represented as null');
+assert.match(html, /set\('hcHeart',data\.heartRate==null\?'—':data\.heartRate\+' bpm'\)/, 'The UI must show unavailable heart rate clearly when permission or records are missing');
+assert.match(html, /set\('hcSleep',data\.sleepMinutes==null\?'Sin datos'/, 'The UI must show unavailable sleep clearly when permission or records are missing');
+assert.match(html, /set\('hcSteps',Number\(data\.steps\|\|0\)\.toLocaleString\('es-ES'\)\)[\s\S]*?set\('hcCalories',Math\.round\(data\.totalCalories\|\|0\)/, 'Core steps and calorie metrics must still be rendered when optional metrics are null');
+
 console.log('SOLIDO COACH Health Connect integration contract passed: required metrics, optional sleep permission and WebView mapping.');
 
 
