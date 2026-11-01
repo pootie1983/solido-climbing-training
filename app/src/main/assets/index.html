@@ -1852,7 +1852,7 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
 #workoutSwitchOverlay.show{display:flex}
 #workoutNotice{position:fixed;inset:0;z-index:100011;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(0,0,0,.92);backdrop-filter:blur(7px)}
 #workoutNotice.show{display:flex}
-#planWorkoutNotice{position:fixed;inset:0;z-index:100012;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(2,8,12,.96);backdrop-filter:blur(9px)}
+#planWorkoutNotice{position:fixed;inset:0;z-index:100040;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(2,8,12,.96);backdrop-filter:blur(9px)}
 #planWorkoutNotice.show{display:flex}
 .plan-workout-notice-card{width:min(100%,390px);max-height:92dvh;overflow:auto;border:2px solid var(--green);border-radius:26px;background:linear-gradient(155deg,#142b35,#071119 72%);padding:25px 20px;text-align:center;box-shadow:0 0 42px #7cff4538;color:#fff;animation:workoutSwitchPop .24s ease-out}
 .plan-workout-kicker{font-size:11px;font-weight:900;letter-spacing:2.5px;color:var(--green)}
@@ -1860,6 +1860,7 @@ html[data-theme="light"] .hand-icon{fill:#5b9d5722}
 .plan-workout-image img{width:100%;height:100%;object-fit:contain;display:block}
 .plan-workout-notice-card h2{margin:12px 0 8px;color:var(--green);font-size:clamp(25px,7vw,34px);font-weight:1000;line-height:1.08}
 .plan-workout-notice-card p{margin:8px 0 15px;color:#e0e8e1;line-height:1.5;font-size:14px}
+.plan-workout-instructions{text-align:left;margin:12px 0 16px;padding:12px;border:1px solid #345044;border-radius:13px;background:#07151b}.plan-workout-instructions strong{display:block;color:var(--green);font-size:12px;margin-top:5px}.plan-workout-instructions p{font-size:12px;line-height:1.5;margin:5px 0 10px;color:#e0e8e1}
 .plan-workout-countdown{font-size:clamp(58px,16vw,82px);line-height:1;font-weight:1000;font-variant-numeric:tabular-nums;color:#fff;margin:18px 0;text-shadow:0 0 22px #7cff4540}
 .plan-workout-notice-card .btn{width:100%;margin-top:7px}
 .workout-notice-card{width:min(100%,360px);border:2px solid var(--green);border-radius:24px;background:#08121b;padding:26px 20px;text-align:center;box-shadow:0 0 32px #7cff4530;color:#fff;animation:workoutSwitchPop .22s ease-out}
@@ -1909,6 +1910,7 @@ body.plan-editor-open{overflow:hidden}
 .plan-run-image{width:100%;height:min(34vh,270px);margin:18px 0 12px;border-radius:18px;overflow:hidden;background:#101a14;display:grid;place-items:center;color:#9bff70;font-size:58px}
 .plan-run-image img{width:100%;height:100%;object-fit:cover}
 .plan-run-name{text-align:center;font-size:22px;margin:10px 0 18px}
+.plan-run-instructions{display:grid;gap:10px;margin:14px 0;padding:14px;border:1px solid #294238;border-radius:15px;background:#0b1510}.plan-run-instructions strong{display:block;color:#9bff70;font-size:13px;margin-bottom:5px}.plan-run-instructions p{margin:0;color:#e0e8e1;font-size:13px;line-height:1.55}.plan-run-rest{color:#9bb4a4!important;font-size:11px!important}
 .plan-run-timers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .plan-run-timer{padding:16px 8px;border:1px solid #294238;border-radius:15px;background:#0b1510;text-align:center}
 .plan-run-timer span{display:block;color:#9bb4a4;font-size:11px;margin-bottom:7px}
@@ -2442,6 +2444,7 @@ body.br-fullscreen-active .sg-close{display:flex}
   <div id="planWorkoutNoticeCountdown" class="plan-workout-countdown" style="display:none">00:30</div>
   <h2 id="planWorkoutNoticeTitle">¡A ENTRENAR!</h2>
   <p id="planWorkoutNoticeMessage">Prepara el siguiente ejercicio.</p>
+  <div class="plan-workout-instructions"><strong>Cómo hacerlo</strong><p id="planWorkoutNoticeHow">Consulta la técnica del ejercicio.</p><strong>Consejo técnico</strong><p id="planWorkoutNoticeTip">Mantén el control del movimiento.</p></div>
   <button class="btn secondary" type="button" onclick="dismissPlanWorkoutNotice()">VER ENTRENAMIENTO</button>
  </div>
 </div>
@@ -2935,6 +2938,7 @@ body.br-fullscreen-active .sg-close{display:flex}
   <div class="plan-run-top"><h2 id="planRunTitle">Sesión</h2><button class="plan-run-close" type="button" onclick="closePlanRun()" aria-label="Volver">×</button></div>
   <div class="plan-run-image" id="planRunImage"></div>
   <h3 class="plan-run-name" id="planRunExercise">Ejercicio</h3>
+  <div class="plan-run-instructions" id="planRunInstructions"><div><strong>Cómo hacerlo</strong><p id="planRunDescription">Consulta la descripción del ejercicio.</p></div><div><strong>Consejo técnico</strong><p id="planRunTip">Mantén el control del movimiento.</p></div><p class="plan-run-rest" id="planRunSuggestedRest"></p></div>
   <div class="plan-run-timers">
     <div class="plan-run-timer"><span>TIEMPO DEL EJERCICIO</span><strong id="planExerciseClock">00:30</strong></div>
     <div class="plan-run-timer"><span>TIEMPO TOTAL</span><strong id="planTotalClock">00:00</strong></div>
@@ -4821,8 +4825,8 @@ function estimatePlanItem(item){
   return sets*reps*work+restIntervals*rest;
 }
 function estimatePlan(items){
-  // El cronómetro pasa al siguiente ejercicio inmediatamente; no sumar descansos ficticios.
-  return (items||[]).reduce((sum,item)=>sum+estimatePlanItem(item),0);
+  const list=items||[];
+  return list.reduce((sum,item,index)=>sum+estimatePlanItem(item)+(index<list.length-1?Math.max(0,Number(item.rest)||0):0),0);
 }
 function openPlanExerciseLibrary(){
   if(!activePlanCategory){alert('Primero elige una tarjeta de plan.');return;}
@@ -5389,6 +5393,9 @@ function showPlanWorkoutNotice(kind,titleText,messageText,exercise){
  const image=document.getElementById('planWorkoutNoticeImage'),countdown=document.getElementById('planWorkoutNoticeCountdown');
  if(title)title.textContent=titleText;
  if(message)message.textContent=messageText;
+ const how=document.getElementById('planWorkoutNoticeHow'),tip=document.getElementById('planWorkoutNoticeTip');
+ if(how)how.textContent=exercise?.desc||'Consulta la técnica y realiza el movimiento de forma controlada.';
+ if(tip)tip.textContent=exercise?.tip||'Mantén una postura estable y detén el ejercicio si aparece dolor.';
  if(image)image.innerHTML=exercise&&exercise.image?'<img src="'+exercise.image+'" alt="'+(exercise.name||'Ejercicio')+'">':(exercise?.emoji||'⛰');
  if(countdown){countdown.style.display=kind==='rest'?'block':'none';countdown.textContent=formatPlanTime(planRunState?planRunState.exerciseRemaining:0);}
  if(planRunState)planRunState.noticeDismissed=false;
@@ -5414,6 +5421,10 @@ function renderPlanRun(){
   document.getElementById('planRunTitle').textContent=st.plan.name;
   document.getElementById('planRunExercise').textContent=ex?.name||'Ejercicio';
   document.getElementById('planRunImage').innerHTML=ex?.image?'<img src="'+ex.image+'" alt="'+(ex.name||'Ejercicio')+'">':(ex?.emoji||'▰');
+  const description=document.getElementById('planRunDescription'),tip=document.getElementById('planRunTip'),suggestedRest=document.getElementById('planRunSuggestedRest');
+  if(description)description.textContent=ex?.desc||'Consulta la técnica y realiza el movimiento de forma controlada.';
+  if(tip)tip.textContent=ex?.tip||'Mantén una postura estable y detén el ejercicio si aparece dolor.';
+  if(suggestedRest)suggestedRest.textContent='Descanso configurado: '+(Number(item.rest)>0?Number(item.rest)+' segundos':'sin descanso adicional')+'.';
   document.getElementById('planExerciseClock').textContent=formatPlanTime(st.exerciseRemaining);
   document.getElementById('planTotalClock').textContent=formatPlanTime(st.totalRemaining);
   document.getElementById('planRunProgress').textContent='Ejercicio '+(st.index+1)+' de '+st.plan.items.length+' · Serie '+st.set+' · Repetición '+st.rep+(st.phase==='rest'?' · Descanso':' · Trabajo');
@@ -5443,6 +5454,7 @@ function togglePlanRun(){
 function startPlanRunRest(st,item,reason){
   const restSeconds=Math.max(0,Number(item.rest)||0);
   const ex=exercises.find(e=>Number(e.id)===Number(item.id));
+  if(reason==='exercise'&&restSeconds<=0){advancePlanRunExercise();return;}
   if(restSeconds>0){
     st.phase='rest';st.exerciseRemaining=restSeconds;st.restReason=reason;st.noticeDismissed=false;
     playWorkoutCue('rest');
@@ -5466,17 +5478,22 @@ function tickPlanRun(){
       const reps=Math.max(1,Number(item.reps)||1),sets=Math.max(1,Number(item.sets)||1);
       if(st.rep<reps)startPlanRunRest(st,item,'rep');
       else if(st.set<sets)startPlanRunRest(st,item,'set');
+      else if(st.index<st.plan.items.length-1)startPlanRunRest(st,item,'exercise');
       else advancePlanRunExercise();
     }else{
       const restReason=st.restReason;
-      st.phase='work';
-      if(restReason==='rep')st.rep++;
-      else if(restReason==='set'){st.set++;st.rep=1;}
-      st.restReason=null;
-      st.exerciseRemaining=Math.max(5,Number(item.work)||30);
-      const ex=exercises.find(e=>Number(e.id)===Number(item.id));
-      playWorkoutCue('start');
-      showPlanWorkoutNotice('start',restReason==='set'?'SERIE '+st.set:restReason==='rep'?'SIGUIENTE REPETICIÓN':'¡A ENTRENAR!','Descanso terminado. Continúa con '+(ex?.name||'el ejercicio')+'.',ex);
+      if(restReason==='exercise'){
+        advancePlanRunExercise();
+      }else{
+        st.phase='work';
+        if(restReason==='rep')st.rep++;
+        else if(restReason==='set'){st.set++;st.rep=1;}
+        st.restReason=null;
+        st.exerciseRemaining=Math.max(5,Number(item.work)||30);
+        const ex=exercises.find(e=>Number(e.id)===Number(item.id));
+        playWorkoutCue('start');
+        showPlanWorkoutNotice('start',restReason==='set'?'SERIE '+st.set:restReason==='rep'?'SIGUIENTE REPETICIÓN':'¡A ENTRENAR!','Descanso terminado. Continúa con '+(ex?.name||'el ejercicio')+'.',ex);
+      }
     }
   }
   if(!planRunState||st.totalRemaining<=0){finishPlanRun();return;}
