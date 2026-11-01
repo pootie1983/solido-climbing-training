@@ -120,7 +120,9 @@ class MainActivity : ComponentActivity() {
             if (cleanText.isEmpty()) return@runOnUiThread
             if (coachTts == null) {
                 pendingCoachSpeech = cleanText
-                coachTts = TextToSpeech(this) { status ->
+                // En Samsung Galaxy, usar explícitamente el motor Samsung TTS para
+                // respetar la voz española masculina elegida en los ajustes del teléfono.
+                coachTts = TextToSpeech(this, { status ->
                     runOnUiThread {
                         if (status == TextToSpeech.SUCCESS) {
                             coachTtsReady = true
@@ -156,7 +158,7 @@ class MainActivity : ComponentActivity() {
                             notifyCoachVoiceStatus("unavailable")
                         }
                     }
-                }
+                }, "com.samsung.SMT")
             } else if (coachTtsReady) {
                 speakCoachTextNow(cleanText)
             } else {
@@ -177,11 +179,9 @@ class MainActivity : ComponentActivity() {
             tts.voice = maleVoice
             tts.setPitch(0.95f)
         } else {
-            // Algunos motores Android no publican el género de sus voces; bajar el tono
-            // evita mantener la entonación aguda de la voz anterior.
-            // Tono más grave cuando el motor no informa del género de sus voces.
-            // Una voz masculina real requiere que el motor tenga una voz masculina instalada.
-            tts.setPitch(0.64f)
+            // Samsung TTS ya tiene seleccionada la voz masculina desde los ajustes del teléfono.
+            // No forzar un tono artificial: conservar el tono natural de esa voz.
+            tts.setPitch(1.0f)
         }
     }
 
