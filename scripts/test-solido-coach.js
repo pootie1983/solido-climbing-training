@@ -63,3 +63,69 @@ for (const [profile, preferences, expectedCategory, expectedDays] of cases) {
 assert.equal(buildProposal({goal:'Fuerza general',age:30,level:'Intermedio'}, {equipment:'gimnasio',experience:'intermedio',limitations:'dolor'}), null, 'Limitations must suppress automatic proposals');
 
 console.log('SOLIDO COACH checks passed: catalogue IDs, eight goal/level/equipment scenarios, item bounds and limitation safety.');
+
+
+// The three coaching personalities must produce distinct, understandable advice.
+function extractFunction(source, signature) {
+  const start = source.indexOf(signature);
+  assert.ok(start >= 0, 'Missing function: ' + signature);
+  const open = source.indexOf('{', start);
+  let depth = 0, quote = null, escaped = false;
+  for (let i = open; i < source.length; i++) {
+    const ch = source[i];
+    if (quote) {
+      if (escaped) escaped = false;
+      else if (ch === '\\') escaped = true;
+      else if (ch === quote) quote = null;
+      continue;
+    }
+    if (ch === "'" || ch === '"' || ch === '\`') { quote = ch; continue; }
+    if (ch === '{') depth++;
+    else if (ch === '}' && --depth === 0) return source.slice(start, i + 1);
+  }
+  throw new Error('Unclosed function: ' + signature);
+}
+const sessionDate = vm.runInNewContext('(' + extractFunction(coach, 'function sessionDate(item){').replace('function sessionDate(item){', 'function(item){') + ')');
+const adviceSource = extractFunction(coach, 'function buildLocalAdvice(sessionList,profile,preferences,personality){')
+  .replace('function buildLocalAdvice(sessionList,profile,preferences,personality){', 'function(sessionList,profile,preferences,personality){');
+const buildAdvice = vm.runInNewContext('(' + adviceSource + ')', {sessionDate, Date});
+const emptyProfile = {goal:'Escalada'};
+const emptyPrefs = {days:'3',limitations:''};
+const friendly = buildAdvice([], emptyProfile, emptyPrefs, 'cercano').body;
+const funny = buildAdvice([], emptyProfile, emptyPrefs, 'gracioso').body;
+const strict = buildAdvice([], emptyProfile, emptyPrefs, 'estricto').body;
+assert.notEqual(friendly, funny, 'Funny personality should change the advice');
+assert.notEqual(friendly, strict, 'Strict personality should change the advice');
+assert.ok(friendly.startsWith('Vamos paso a paso:'));
+assert.ok(funny.startsWith('¡A por ello'));
+assert.ok(strict.startsWith('Objetivo claro:'));
+assert.match(buildAdvice([], emptyProfile, {...emptyPrefs,days:'5'}, 'cercano').body, /Objetivo actual/);
+
+// Acceptance must append a new plan and leave existing plans intact.
+const acceptSource = extractFunction(html, 'window.solidoCoachAcceptPlanProposal=function(){')
+  .replace('window.solidoCoachAcceptPlanProposal=function(){', 'function(){').replace(/;\s*$/, '');
+const saved = [];
+const nodes = {
+  coachProposalAccept:{style:{}},
+  coachProposalBody:{textContent:''},
+  coachProposalItems:{innerHTML:'',}
+};
+const oldPlan = {id:123,category:'Fuerza',name:'Mi plan anterior',items:[]};
+const context = {
+  window:{solidoCoachCurrentProposal:{category:'Fuerza',name:'Propuesta test',items:[{id:19,sets:1,reps:1,work:300,rest:0}]}},
+  customPlans:[oldPlan],
+  estimatePlan:items=>items.reduce((sum,item)=>sum+item.work,0),
+  localStorage:{setItem:(key,value)=>saved.push({key,value})},
+  document:{getElementById:id=>nodes[id]||null},
+  renderPlan:()=>{context.rendered=true;},
+  show:page=>{context.shown=page;},
+  Date
+};
+vm.runInNewContext('(' + acceptSource + ')()', context);
+assert.equal(context.customPlans.length, 2, 'Accepting a proposal should add a new plan');
+assert.equal(context.customPlans[1].id, 123, 'Existing plan should remain unchanged');
+assert.equal(context.customPlans[0].source, 'solido-coach');
+assert.equal(context.customPlans[0].items[0].id, 19);
+assert.equal(context.customPlans[0].seconds, 300);
+assert.ok(saved.some(x=>x.key==='solidoCustomPlans'), 'New plan should be persisted');
+assert.equal(context.shown, 'plans', 'Accepted plan should navigate to plans');
