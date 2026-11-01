@@ -341,7 +341,7 @@ assert.match(getProposalBlockReason([], {...restedPreferences,limitations:'moles
 
 assert.match(coach, /const proposalBlockReason=getProposalBlockReason\(sessionList,preferences,window\.solidoCoachHealthData\|\|null\);\s*const proposal=proposalBlockReason\?null:buildProposal\(profile,preferences\);/, 'The renderer must apply recovery gates before creating a proposal');
 assert.match(coach, /window\.solidoCoachCurrentProposal=proposal\?\{[\s\S]*?:null;/, 'A blocked proposal must not remain available as a stale current proposal');
-assert.match(coach, /if\(proposalButton\)proposalButton\.style\.display=proposal\?'block':'none';/, 'The accept button must be hidden when a proposal is blocked');
+assert.match(coach, /if\(proposalButton\)proposalButton\.style\.display=proposal&&!initialPlanReady\?'block':'none';/, 'The accept button must be hidden when a proposal is blocked or already saved automatically');
 
 console.log('SOLIDO COACH recovery gate checks passed: recent sessions, short sleep, limitations and invalid records.');
 
