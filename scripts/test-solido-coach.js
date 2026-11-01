@@ -228,7 +228,7 @@ const statsSource = extractFunction(coach, 'function getActivityStats(sessionLis
   .replace('function getActivityStats(sessionList){', 'function(sessionList){');
 const dateContext = {Date};
 const parseSessionDate = vm.runInNewContext('(' + sessionDateSource + ')', dateContext);
-const getStats = vm.runInNewContext('(' + statsSource + ')', dateContext);
+const getStats = vm.runInNewContext('(' + statsSource + ')', {Date, sessionDate});
 const fixedNow = new Date();
 const daysAgo = days => {
   const d = new Date(fixedNow);
