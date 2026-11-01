@@ -4803,7 +4803,8 @@ function estimatePlanItem(item){
   return sets*reps*work+restIntervals*rest;
 }
 function estimatePlan(items){
-  return (items||[]).reduce((sum,item)=>sum+estimatePlanItem(item),0)+Math.max(0,(items||[]).length-1)*30;
+  // El cronómetro pasa al siguiente ejercicio inmediatamente; no sumar descansos ficticios.
+  return (items||[]).reduce((sum,item)=>sum+estimatePlanItem(item),0);
 }
 function openPlanExerciseLibrary(){
   if(!activePlanCategory){alert('Primero elige una tarjeta de plan.');return;}
