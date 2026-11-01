@@ -144,6 +144,39 @@ assert.equal(context.customPlans[0].seconds, 300);
 assert.ok(saved.some(x=>x.key==='solidoCustomPlans'), 'New plan should be persisted');
 assert.equal(context.shown, 'plans', 'Accepted plan should navigate to plans');
 
+const unchangedPlan = {id:456,category:'Resistencia',name:'Plan que ya existía',items:[]};
+let unexpectedSave = false;
+const noProposalContext = {
+  window:{solidoCoachCurrentProposal:null},
+  customPlans:[unchangedPlan],
+  localStorage:{setItem:()=>{unexpectedSave=true;}},
+  document:{getElementById:()=>null},
+  renderPlan:()=>{throw new Error('A missing proposal must not render a new plan');},
+  show:()=>{throw new Error('A missing proposal must not navigate');},
+  Date
+};
+vm.runInNewContext('(' + acceptSource + ')()', noProposalContext);
+assert.deepEqual(noProposalContext.customPlans, [unchangedPlan], 'A missing or blocked proposal must leave existing plans untouched');
+assert.equal(unexpectedSave, false, 'A missing proposal must not write to storage');
+
+const storageFailurePlan = {id:789,category:'Fuerza',name:'Plan protegido',items:[]};
+let storageFailureAlert = '';
+const storageFailureContext = {
+  window:{solidoCoachCurrentProposal:{category:'Fuerza',name:'Propuesta no guardable',items:[{id:19,sets:1,reps:1,work:300,rest:0}]}},
+  customPlans:[storageFailurePlan],
+  estimatePlan:items=>items.reduce((sum,item)=>sum+item.work,0),
+  localStorage:{setItem:()=>{throw new Error('storage full');}},
+  document:{getElementById:()=>null},
+  renderPlan:()=>{throw new Error('Failed persistence must not navigate to plans');},
+  show:()=>{throw new Error('Failed persistence must not navigate');},
+  alert:message=>{storageFailureAlert=message;},
+  Date
+};
+vm.runInNewContext('(' + acceptSource + ')()', storageFailureContext);
+assert.deepEqual(storageFailureContext.customPlans, [storageFailurePlan], 'A storage failure must roll back the new plan and preserve previous plans');
+assert.match(storageFailureAlert, /Tus planes anteriores no se han modificado/);
+
+
 // Preference saving must attempt every field even if one storage write fails.
 const saveDetailsSource = extractFunction(coach, 'window.solidoCoachSaveDetails=function(event){')
   .replace('window.solidoCoachSaveDetails=function(event){', 'function(event){');
