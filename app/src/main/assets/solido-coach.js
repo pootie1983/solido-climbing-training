@@ -104,17 +104,21 @@
   }
   function getProposalBlockReason(sessionList,preferences,healthData){
     if(preferences.limitations.trim())return 'Has indicado una lesión o limitación. No voy a generar una sesión automática: adapta la actividad con un profesional que conozca tu situación.';
+    return '';
+  }
+  function getProposalSafetyNote(sessionList,healthData){
     const now=Date.now(),recentCutoff=now-24*60*60*1000;
     const trainedRecently=sessionList.some(item=>{
       if(Number(item.force)>0||Number(item.mins||0)<=0)return false;
       const date=sessionDate(item);
       return date&&date.getTime()>=recentCutoff&&date.getTime()<=now;
     });
-    if(trainedRecently)return 'Has registrado un entrenamiento en las últimas 24 horas. Hoy te recomiendo recuperación, movilidad suave o descanso; no voy a proponerte otra sesión de carga.';
     const rawSleep=healthData?healthData.sleepMinutes:null;
     const sleepMinutes=rawSleep==null?NaN:Number(rawSleep);
-    if(Number.isFinite(sleepMinutes)&&sleepMinutes>=0&&sleepMinutes<360)return 'Health Connect registra menos de 6 horas de sueño. Por prudencia, hoy no generaré una sesión de carga. Valora descansar o hacer movilidad suave; el dato de sueño por sí solo no determina tu recuperación.';
-    return '';
+    const notes=[];
+    if(trainedRecently)notes.push('Has registrado un entrenamiento en las últimas 24 horas: guarda el plan y deja la siguiente sesión de carga para cuando hayas recuperado.');
+    if(Number.isFinite(sleepMinutes)&&sleepMinutes>0&&sleepMinutes<360)notes.push('Health Connect indica menos de 6 horas de sueño. Prioriza la recuperación antes de realizar una sesión intensa.');
+    return notes.join(' ');
   }
   function render(){
     const p=personalities.find(x=>x.id===read('solidoCoachPersonality','cercano'))||personalities[0];
@@ -130,12 +134,14 @@
     const sessionList=(()=>{try{const parsed=JSON.parse(read('solidoSessions','[]'));return Array.isArray(parsed)?parsed.filter(item=>item&&typeof item==='object'&&!Array.isArray(item)):[];}catch(e){return [];}})();
     const preferences={days:read('solidoCoachDays','3'),experience:read('solidoCoachExperience','intermedio'),equipment:read('solidoCoachEquipment','gimnasio'),limitations:read('solidoCoachLimitations','')};
     const activityStats=getActivityStats(sessionList);
-    const proposalBlockReason=getProposalBlockReason(sessionList,preferences,window.solidoCoachHealthData||null);
+    const healthData=window.solidoCoachHealthData||null;
+    const proposalBlockReason=getProposalBlockReason(sessionList,preferences,healthData);
     const proposal=proposalBlockReason?null:buildProposal(profile,preferences);
+    const proposalSafetyNote=proposal?getProposalSafetyNote(sessionList,healthData):'';
     window.solidoCoachCurrentProposal=proposal?{category:proposal.category,name:proposal.name,items:proposal.items.map(({id,sets,reps,work,rest})=>({id,sets,reps,work,rest}))}:null;
     const initialPlanReady=typeof window.solidoCoachEnsureInitialPlan==='function'&&window.solidoCoachEnsureInitialPlan(window.solidoCoachCurrentProposal);
     const proposalBody=$('coachProposalBody'),proposalItems=$('coachProposalItems'),proposalButton=$('coachProposalAccept');
-    if(proposalBody)proposalBody.textContent=initialPlanReady?'Tu primer plan ya está creado y guardado en Mis planes. Puedes empezar a entrenar cuando quieras.':proposal?proposal.note:proposalBlockReason;
+    if(proposalBody)proposalBody.textContent=initialPlanReady?'Tu primer plan ya está creado y guardado en Mis planes. '+(proposalSafetyNote||'Puedes empezar a entrenar cuando quieras.'):proposal?proposal.note+(proposalSafetyNote?' '+proposalSafetyNote:''):proposalBlockReason;
     if(proposalItems)proposalItems.innerHTML=proposal?proposal.items.map(item=>'<div class="coach-proposal-item"><strong>'+safe(item.label)+'</strong><span>'+safe(item.detail)+'</span></div>').join(''):'';
     if(proposalButton)proposalButton.style.display=proposal&&!initialPlanReady?'block':'none';
     const advice=buildLocalAdvice(sessionList,profile,preferences,p.id,window.solidoCoachHealthData||null);
