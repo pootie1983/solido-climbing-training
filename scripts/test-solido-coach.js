@@ -244,7 +244,7 @@ const history = [
   {date:daysAgo(40),force:25,hand:'derecha',grip:'18'}
 ];
 const stats = getStats(history);
-assert.equal(stats.total, 3, 'Total training sessions should exclude force tests');
+assert.equal(stats.total, 4, 'Total saved training sessions should exclude force tests but include undated history entries');
 assert.equal(stats.month, 2, 'Monthly session count should exclude old and invalid dates');
 assert.equal(stats.minutes, 75, 'Monthly training minutes should sum only valid recent sessions');
 assert.equal(stats.forceCount, 1, 'Monthly force count should include only recent valid measurements');
