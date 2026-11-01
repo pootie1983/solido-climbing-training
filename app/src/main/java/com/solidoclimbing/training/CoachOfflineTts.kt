@@ -51,16 +51,19 @@ class CoachOfflineTts(
         val id = requestId.incrementAndGet()
         stopTrack()
         worker.execute {
+            var track: AudioTrack? = null
             try {
                 val audio = createEngine().generate(clean, sid = 0, speed = 0.96f)
                 if (id != requestId.get() || audio.samples.isEmpty()) return@execute
+
                 val minBytes = AudioTrack.getMinBufferSize(
                     audio.sampleRate,
                     AudioFormat.CHANNEL_OUT_MONO,
                     AudioFormat.ENCODING_PCM_FLOAT
                 )
                 if (minBytes <= 0) throw IllegalStateException("AudioTrack no admite el formato de voz")
-                val track = AudioTrack.Builder()
+
+                track = AudioTrack.Builder()
                     .setAudioAttributes(
                         AudioAttributes.Builder()
                             .setUsage(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY)
@@ -78,27 +81,38 @@ class CoachOfflineTts(
                     .setTransferMode(AudioTrack.MODE_STATIC)
                     .build()
                 currentTrack = track
+
                 val written = track.write(audio.samples, 0, audio.samples.size, AudioTrack.WRITE_BLOCKING)
                 if (written < 0) throw IllegalStateException("No se pudo preparar el audio")
-                if (id != requestId.get()) {
-                    track.release()
-                    return@execute
-                }
+                if (id != requestId.get()) return@execute
+
                 onStatus("started")
                 track.play()
                 while (id == requestId.get() && track.playbackHeadPosition < audio.samples.size) {
                     Thread.sleep(40)
                 }
-                track.stop()
-                track.release()
-                if (currentTrack === track) currentTrack = null
                 if (id == requestId.get()) onStatus("done")
             } catch (_: InterruptedException) {
                 Thread.currentThread().interrupt()
                 if (id == requestId.get()) onStatus("error")
             } catch (_: Throwable) {
-                stopTrack()
                 if (id == requestId.get()) onStatus("error")
+            } finally {
+                // The worker is the sole owner that releases AudioTrack. stop() only
+                // interrupts playback, avoiding a double-release race with this block.
+                try {
+                    track?.let {
+                        if (it.state == AudioTrack.STATE_INITIALIZED) {
+                            if (it.playState == AudioTrack.PLAYSTATE_PLAYING) it.pause()
+                            it.flush()
+                            it.stop()
+                        }
+                        it.release()
+                    }
+                } catch (_: Throwable) {
+                    // AudioTrack can already be stopped by a concurrent stop request.
+                }
+                if (currentTrack === track) currentTrack = null
             }
         }
     }
@@ -109,17 +123,15 @@ class CoachOfflineTts(
     }
 
     private fun stopTrack() {
-        val track = currentTrack
-        currentTrack = null
+        val track = currentTrack ?: return
         try {
-            if (track != null) {
+            if (track.state == AudioTrack.STATE_INITIALIZED) {
                 if (track.playState == AudioTrack.PLAYSTATE_PLAYING) track.pause()
                 track.flush()
                 track.stop()
-                track.release()
             }
         } catch (_: Throwable) {
-            // The track may already have completed or been released by the worker.
+            // The worker will release the track in its finally block.
         }
     }
 
