@@ -37,23 +37,24 @@ const rawBuildProposal = vm.runInNewContext('(' + coach.slice(functionStart, fun
 const buildProposal = (profile, preferences) => rawBuildProposal(profile, {limitations:'', ...preferences});
 
 const cases = [
-  [{goal:'Fuerza general',age:30,level:'Intermedio'}, {equipment:'gimnasio',experience:'intermedio'}, 'Fuerza'],
-  [{goal:'Fuerza general',age:30,level:'Principiante'}, {equipment:'gimnasio',experience:'intermedio'}, 'Fuerza'],
+  [{goal:'Fuerza general',age:30,level:'Intermedio'}, {equipment:'gimnasio',experience:'intermedio',days:'1'}, 'Fuerza', 1],
+  [{goal:'Fuerza general',age:30,level:'Principiante'}, {equipment:'gimnasio',experience:'intermedio',days:'5'}, 'Fuerza', 5],
   [{goal:'Fuerza de dedos',age:30,level:'Intermedio'}, {equipment:'gimnasio',experience:'intermedio'}, 'Fuerza'],
   [{goal:'Fuerza de dedos',age:16,level:'Principiante'}, {equipment:'casa',experience:'principiante'}, 'Fuerza'],
   [{goal:'Resistencia',age:30,level:'Intermedio'}, {equipment:'gimnasio',experience:'intermedio'}, 'Resistencia'],
   [{goal:'Preparación para vías ferratas',age:30,level:'Intermedio'}, {equipment:'casa',experience:'intermedio'}, 'Escalada']
 ];
 
-for (const [profile, preferences, expectedCategory] of cases) {
+for (const [profile, preferences, expectedCategory, expectedDays] of cases) {
   const proposal = buildProposal(profile, preferences);
   assert.equal(proposal.category, expectedCategory);
+  assert.equal(proposal.daysAvailable, expectedDays || 3, 'Weekly availability must be reflected in the proposal');
   assert.ok(proposal.items.length >= 4, 'Proposal should include warm-up and main exercises');
   for (const item of proposal.items) {
     assert.ok(exerciseIds.has(item.id), 'Unknown exercise ID in proposal: ' + item.id);
     assert.ok(Number.isInteger(item.sets) && item.sets >= 1 && item.sets <= 20, 'Invalid sets');
     assert.ok(Number.isInteger(item.reps) && item.reps >= 1 && item.reps <= 100, 'Invalid reps');
-    assert.ok(Number.isInteger(item.work) && item.work >= 1 && item.work <= 600, 'Invalid work duration');
+    assert.ok(Number.isInteger(item.work) && item.work >= 5 && item.work <= 600, 'Invalid work duration');
     assert.ok(Number.isInteger(item.rest) && item.rest >= 0 && item.rest <= 600, 'Invalid rest duration');
   }
 }
