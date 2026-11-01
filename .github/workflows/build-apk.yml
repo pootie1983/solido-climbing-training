@@ -22,6 +22,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Download Sherpa-ONNX Android engine
+        run: |
+          mkdir -p app/libs app/src/main/assets
+          curl -fL --retry 3 https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.21/sherpa-onnx-1.12.21.aar -o app/libs/sherpa-onnx-1.12.21.aar
+          test -s app/libs/sherpa-onnx-1.12.21.aar
+      - name: Download Spanish Piper voice
+        run: |
+          curl -fL --retry 3 https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-es_ES-davefx-medium.tar.bz2 -o /tmp/solido-coach-voice.tar.bz2
+          tar -xjf /tmp/solido-coach-voice.tar.bz2 -C app/src/main/assets
+          test -s app/src/main/assets/vits-piper-es_ES-davefx-medium/es_ES-davefx-medium.onnx
+          test -s app/src/main/assets/vits-piper-es_ES-davefx-medium/tokens.txt
+          test -d app/src/main/assets/vits-piper-es_ES-davefx-medium/espeak-ng-data
       - name: Validate JavaScript assets
         run: |
           node --check app/src/main/assets/solido-coach.js
