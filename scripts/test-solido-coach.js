@@ -106,6 +106,15 @@ for (const goal of ['Fuerza general','Fuerza de dedos','Resistencia','Preparaci√
     }
   }
 }
+
+// Regression checks for the Coach avatar video and speech lifecycle.
+assert.match(coach, /if\(avatarSpeechActive\)return;/, 'A normal Coach render must not replace an animation while the coach is speaking');
+assert.match(coach, /avatarSpeechPlan=avatarSpeechLoopPlan\.slice\(\)/, 'Coach gesture clips must continue looping for the full spoken advice');
+assert.match(coach, /video\.playsInline=true/, 'Coach clips must use inline playback in Android WebView');
+assert.match(coach, /startAvatarPerformance\(\);window\.AndroidCoach\.speakCoachText\(text\)/, 'The Coach animation must start with the native voice request');
+assert.match(coach, /if\(!avatarSpeechActive\)startAvatarPerformance\(\)/, 'The native started callback must not restart an already playing clip');
+assert.match(html, /<video id="coachAvatarVideo"[^>]*muted playsinline/, 'Coach video element must be muted and inline for WebView playback');
+
 console.log('SOLIDO COACH checks passed: catalogue IDs, eleven goal/level/equipment scenarios, item bounds and limitation safety.');
 
 
