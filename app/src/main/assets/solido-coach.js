@@ -21,7 +21,13 @@
     const experience=$('coachExperience')?.value||'intermedio';
     const equipment=$('coachEquipment')?.value||'gimnasio';
     const limitations=$('coachLimitations')?.value.trim()||'';
-    const ok=write('solidoCoachDays',days)&&write('solidoCoachExperience',experience)&&write('solidoCoachEquipment',equipment)&&write('solidoCoachLimitations',limitations);
+    const saveResults=[
+      write('solidoCoachDays',days),
+      write('solidoCoachExperience',experience),
+      write('solidoCoachEquipment',equipment),
+      write('solidoCoachLimitations',limitations)
+    ];
+    const ok=saveResults.every(Boolean);
     render();
     const status=$('coachSaveStatus');
     if(status)status.textContent=ok?'Preferencias guardadas en este dispositivo.':'No se pudieron guardar todos los datos.';
