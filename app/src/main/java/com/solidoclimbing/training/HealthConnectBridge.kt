@@ -105,23 +105,28 @@ class HealthConnectBridge(
             val averageBpm = heartSamples.takeIf { it.isNotEmpty() }?.average()?.toLong()
             result.put("heartRate", averageBpm ?: JSONObject.NULL)
 
-            // El sueño es opcional: no debe bloquear pasos, calorías o pulso si el usuario
-            // decide no conceder ese permiso.
-            if (granted.contains(optionalSleepPermission)) {
-                val sleepRecords = client.readRecords(
-                    ReadRecordsRequest(
-                        recordType = SleepSessionRecord::class,
-                        timeRangeFilter = TimeRangeFilter.between(now.minus(Duration.ofHours(36)), now),
-                        ascendingOrder = false,
-                        pageSize = 10
-                    )
-                ).records
-                val lastSleep = sleepRecords.maxByOrNull { it.endTime }
-                val sleepMinutes = lastSleep?.let { Duration.between(it.startTime, it.endTime).toMinutes() }
-                result.put("sleepMinutes", sleepMinutes ?: JSONObject.NULL)
+            // El sueño es opcional: ni la falta de permiso ni un fallo al leerlo deben
+            // invalidar los pasos, calorías o pulso que ya se han obtenido correctamente.
+            val sleepMinutes = if (granted.contains(optionalSleepPermission)) {
+                try {
+                    val sleepRecords = client.readRecords(
+                        ReadRecordsRequest(
+                            recordType = SleepSessionRecord::class,
+                            timeRangeFilter = TimeRangeFilter.between(now.minus(Duration.ofHours(36)), now),
+                            ascendingOrder = false,
+                            pageSize = 10
+                        )
+                    ).records
+                    sleepRecords.maxByOrNull { it.endTime }?.let {
+                        Duration.between(it.startTime, it.endTime).toMinutes()
+                    }
+                } catch (_: Exception) {
+                    null
+                }
             } else {
-                result.put("sleepMinutes", JSONObject.NULL)
+                null
             }
+            result.put("sleepMinutes", sleepMinutes ?: JSONObject.NULL)
         } catch (error: Exception) {
             result.put("status", "error")
             result.put("message", error.message ?: "No se pudieron leer los datos")
