@@ -150,7 +150,7 @@ class MainActivity : ComponentActivity() {
             gravity = Gravity.CENTER
         }
         val message = TextView(this).apply {
-            text = "El periodo de prueba de BETA SOLIDO CLIMBING ha finalizado.\\n\\nDesinstala esta versión para instalar la versión completa."
+            text = "El periodo de prueba de BETA SOLIDO CLIMBING ha finalizado.\n\nDesinstala esta versión para instalar la versión completa."
             setTextColor(Color.rgb(218, 228, 236))
             textSize = 17f
             gravity = Gravity.CENTER
@@ -173,6 +173,7 @@ class MainActivity : ComponentActivity() {
             web.pauseTimers()
             web.visibility = View.GONE
             expiredOverlay?.visibility = View.VISIBLE
+            applyTrialExpiredFullscreen()
             trialHandler.removeCallbacks(trialCheckRunnable)
         }
     }
@@ -374,7 +375,25 @@ class MainActivity : ComponentActivity() {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (hasFocus && gameFullscreenRequested) applyGameFullscreen()
+        if (hasFocus && trialExpired) applyTrialExpiredFullscreen()
+        else if (hasFocus && gameFullscreenRequested) applyGameFullscreen()
+    }
+
+    private fun applyTrialExpiredFullscreen() {
+        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            window.setDecorFitsSystemWindows(false)
+            window.insetsController?.let { controller ->
+                controller.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
+                controller.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        } else {
+            window.decorView.systemUiVisibility = (
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            )
+        }
     }
 
     private fun applyGameFullscreen() {
