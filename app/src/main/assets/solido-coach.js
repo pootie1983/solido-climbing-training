@@ -247,7 +247,7 @@
   function selectAvatarVideoForChunk(chunkIndex){const order=getAvatarVideoOrder();playAvatarVideo(order[0]);}
   function renderKaraoke(text){
     const target=$('coachKaraoke');if(!target)return;
-    const value=String(text||'');let html='',last=0;const re=/\\S+/g;let match;
+    const value=String(text||'');let html='',last=0;const re=/\S+/g;let match;
     while((match=re.exec(value))!==null){html+=safe(value.slice(last,match.index));html+='<span class="coach-karaoke-word" data-start="'+match.index+'" data-end="'+(match.index+match[0].length)+'">'+safe(match[0])+'</span>';last=match.index+match[0].length;}
     html+=safe(value.slice(last));target.innerHTML=html;target.scrollTop=0;
   }
@@ -311,7 +311,7 @@
       if(status)status.textContent='No se pudo iniciar la voz de Android. Comprueba el motor de texto a voz.';
     }
   };
-  window.solidoCoachSpeak=function(){const status=$('coachVoiceStatus');if(!voiceEnabled()){if(status)status.textContent='Activa la voz para escuchar al entrenador.';return;}const text=[$('coachAdviceTitle')?.textContent,$('coachAdviceBody')?.textContent].filter(Boolean).join('. ').trim().replace(/\\bSOLIDO(?:\\s+CLIMBING)?\\b/gi,'Sólido Climbing');if(!text){if(status)status.textContent='Todavía no hay ningún consejo para leer.';return;}coachSpeechText=text;coachSpeechChunks=buildCoachSpeechChunks(text);coachLastVideoChunk=-1;renderKaraoke(text);if(window.AndroidCoach&&typeof window.AndroidCoach.speakCoachText==='function'){try{window.AndroidCoach.speakCoachText(text);if(status)status.textContent='Preparando la voz en español…';return;}catch(error){if(status)status.textContent='No se pudo iniciar la voz de Android.';return;}}if(status)status.textContent='La voz nativa solo está disponible dentro de la aplicación Android.';};
+  window.solidoCoachSpeak=function(){const status=$('coachVoiceStatus');if(!voiceEnabled()){if(status)status.textContent='Activa la voz para escuchar al entrenador.';return;}const text=[$('coachAdviceTitle')?.textContent,$('coachAdviceBody')?.textContent].filter(Boolean).join('. ').trim().replace(/\bSOLIDO(?:\s+CLIMBING)?\b/gi,'Sólido Climbing');if(!text){if(status)status.textContent='Todavía no hay ningún consejo para leer.';return;}coachSpeechText=text;coachSpeechChunks=buildCoachSpeechChunks(text);coachLastVideoChunk=-1;renderKaraoke(text);if(window.AndroidCoach&&typeof window.AndroidCoach.speakCoachText==='function'){try{window.AndroidCoach.speakCoachText(text);if(status)status.textContent='Preparando la voz en español…';return;}catch(error){if(status)status.textContent='No se pudo iniciar la voz de Android.';return;}}if(status)status.textContent='La voz nativa solo está disponible dentro de la aplicación Android.';};
   function render(){
     const p=personalities.find(x=>x.id===read('solidoCoachPersonality','cercano'))||personalities[0];
     const profile={
