@@ -619,6 +619,14 @@ assert.equal(runnerContext.planRunState.index,1,'The next exercise should start 
 assert.ok(runnerEvents.some(e=>e.type==='notice'&&e.title==='SIGUIENTE EJERCICIO'));
 assert.ok(runnerEvents.filter(e=>e.type==='sound'&&e.kind==='start').length>=3,'Starting/resuming work intervals should play the start cue');
 
+
+// SOLIDO COACH presentation and configuration navigation must stay visible and organized.
+assert.match(html, /<section id="coachConfig" class="hide">[\s\S]*?class="coach-config-shell"/, 'Coach settings must live on their own screen');
+assert.match(html, /class="tile coach-config-launch" onclick="show\('coachConfig'\)"/, 'Personal must contain a single entry card for Coach settings');
+assert.match(html, /onclick="show\('profile'\)">← Volver a Personal/, 'Coach settings must provide a route back to Personal');
+assert.match(html, /\.coach-intro-overlay \.coach-avatar-media \.coach-avatar-video\{z-index:2;background:transparent\}/, 'The intro video must occupy a visible, layered media area');
+assert.match(html, /\.coach-intro-overlay \.coach-avatar-copy\{position:relative;z-index:4;display:block!important;visibility:visible!important;[\s\S]*?background:#fff!important/, 'The welcome text must remain visible in its white card while the video plays');
+
 console.log('SOLIDO plan automation and workout cue checks passed: first plan auto-created once, safety gates preserved, and session transitions announce start/rest/exercise changes.');
 
 // Coach avatar and native Android speech bridge regression checks.
