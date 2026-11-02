@@ -4,7 +4,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.health.connect.client.PermissionController
 import android.os.Bundle
-import android.app.AlertDialog
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.webkit.WebChromeClient
@@ -174,17 +173,20 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // Android no publica el género de cada Voice. Por eso dejamos probar las voces
-    // españolas realmente instaladas y guardar la elegida, en vez de adivinar por orden.
+    // Conserva la voz 7 que el usuario eligió en el selector.
+    // Si se instala de nuevo y no hay preferencia guardada, usa esa misma posición.
     private fun configureCoachSpanishVoice() {
         val tts = coachTts ?: return
         val spanishVoices = tts.voices
             ?.filter { it.locale.language == "es" && it.locale.country.equals("ES", ignoreCase = true) }
+            ?.sortedBy { it.name.lowercase(Locale.ROOT) }
             .orEmpty()
         val savedVoiceName = coachVoicePreferences.getString("voice", null)
-        val savedVoice = spanishVoices.firstOrNull { it.name == savedVoiceName }
-        if (savedVoice != null) {
-            tts.voice = savedVoice
+        val selectedVoice = spanishVoices.firstOrNull { it.name == savedVoiceName }
+            ?: spanishVoices.getOrNull(6)
+        if (selectedVoice != null) {
+            tts.voice = selectedVoice
+            coachVoicePreferences.edit().putString("voice", selectedVoice.name).apply()
         } else {
             val language = tts.setLanguage(Locale("es", "ES"))
             if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
@@ -192,48 +194,6 @@ class MainActivity : ComponentActivity() {
             }
         }
         tts.setPitch(1.0f)
-    }
-
-    @JavascriptInterface
-    fun showCoachVoicePicker() {
-        runOnUiThread {
-            initializeCoachTts { showCoachVoiceOptions() }
-        }
-    }
-
-    private fun showCoachVoiceOptions() {
-        val tts = coachTts ?: return
-        val voices = tts.voices
-            ?.filter { it.locale.language == "es" && it.locale.country.equals("ES", ignoreCase = true) }
-            ?.sortedBy { it.name.lowercase(Locale.ROOT) }
-            .orEmpty()
-        if (voices.isEmpty()) {
-            AlertDialog.Builder(this)
-                .setTitle("Voces en español")
-                .setMessage("Este motor no ofrece voces de español de España instaladas. Revisa las voces disponibles en los ajustes de texto a voz del móvil.")
-                .setPositiveButton("Aceptar", null)
-                .show()
-            return
-        }
-        val selectedName = coachVoicePreferences.getString("voice", tts.voice?.name)
-        val selectedIndex = voices.indexOfFirst { it.name == selectedName }
-        val labels = voices.mapIndexed { index, voice ->
-            val connection = if (voice.isNetworkConnectionRequired) " · requiere internet" else " · sin conexión"
-            "Voz ${index + 1} · ${voice.name}$connection"
-        }.toTypedArray()
-        AlertDialog.Builder(this)
-            .setTitle("Elige y escucha una voz")
-            .setSingleChoiceItems(labels, selectedIndex) { dialog, which ->
-                val voice = voices[which]
-                tts.voice = voice
-                tts.setPitch(1.0f)
-                coachVoicePreferences.edit().putString("voice", voice.name).apply()
-                speakCoachTextNow("Hola, soy tu entrenador de SOLIDO. Vamos a entrenar juntos para seguir progresando.")
-                notifyCoachVoiceStatus("voice_selected")
-                dialog.dismiss()
-            }
-            .setNegativeButton("Cerrar", null)
-            .show()
     }
 
     private fun speakCoachTextNow(text: String) {
