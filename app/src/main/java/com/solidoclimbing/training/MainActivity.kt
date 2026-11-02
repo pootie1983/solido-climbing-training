@@ -134,6 +134,7 @@ class MainActivity : ComponentActivity() {
 
     private fun createTrialExpiredOverlay(): View {
         val container = LinearLayout(this).apply {
+            visibility = View.GONE
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
             setPadding(36, 36, 36, 36)
