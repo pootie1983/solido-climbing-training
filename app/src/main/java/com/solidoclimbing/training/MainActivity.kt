@@ -121,7 +121,7 @@ class MainActivity : ComponentActivity() {
             if (coachTtsReady) onReady?.invoke()
             return
         }
-        val engine = coachVoicePreferences.getString("engine", "com.samsung.SMT") ?: "com.samsung.SMT"
+        // Respeta el motor TTS predeterminado elegido en los ajustes de Android.
         coachTts = TextToSpeech(this, { status ->
             runOnUiThread {
                 if (status == TextToSpeech.SUCCESS) {
@@ -155,7 +155,7 @@ class MainActivity : ComponentActivity() {
                     notifyCoachVoiceStatus("unavailable")
                 }
             }
-        }, engine)
+        })
     }
 
     @JavascriptInterface
