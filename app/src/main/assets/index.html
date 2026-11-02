@@ -2656,10 +2656,9 @@ body.br-fullscreen-active .sg-close{display:flex}
     </div>
   </div>
 
-  <button class="coach-home-card" type="button" onclick="show('solidoCoach');if(window.solidoCoachRender)solidoCoachRender()">
-    <span class="coach-home-icon" aria-hidden="true">🧗</span>
-    <span class="coach-home-copy"><strong>SOLIDO COACH</strong><small>Tu entrenador personal · planes y consejos adaptados a ti</small></span>
-    <span class="coach-home-arrow" aria-hidden="true">→</span>
+  <button class="coach-home-launch" type="button" aria-label="Abrir SOLIDO COACH" onclick="show('solidoCoach');if(window.solidoCoachRender)solidoCoachRender()">
+    <img src="./coach/coach_01_bienvenida.png" alt="Avatar de bienvenida de SOLIDO COACH">
+    <span class="coach-home-launch-copy"><strong>SOLIDO COACH</strong><small>Tu entrenador personal</small><span>ENTRAR <b aria-hidden="true">→</b></span></span>
   </button>
 
   <button class="home-meditation-launch" onclick="show('meditation')">
