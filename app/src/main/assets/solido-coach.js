@@ -170,6 +170,7 @@
       const height=Math.max(1,Math.round(video.videoHeight*scale));
       if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
       const context=canvas.getContext('2d',{alpha:true,willReadFrequently:true});
+      if(!context){canvas.style.display='none';video.style.display='block';video.style.opacity='1';if(image)image.style.display='none';return;}
       const drawFrame=()=>{
         if(!coachSpeaking||video.paused||!video.videoWidth){coachVideoFrame=0;return;}
         try{
