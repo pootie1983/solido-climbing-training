@@ -160,7 +160,7 @@ class MainActivity : ComponentActivity() {
     @JavascriptInterface
     fun speakCoachText(text: String) {
         runOnUiThread {
-            val cleanText = text.trim().take(1800)
+            val cleanText = text.trim().replace(Regex("\\bcoach\\b", RegexOption.IGNORE_CASE), "Kóuch").take(1800)
             if (cleanText.isEmpty()) return@runOnUiThread
             if (coachTts == null) {
                 pendingCoachSpeech = cleanText
