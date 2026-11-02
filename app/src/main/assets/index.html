@@ -2479,7 +2479,41 @@ body.coach-intro-active{overflow:hidden!important}
 .coach-config-launch-arrow{font-size:22px!important}
 @media(max-width:380px){.coach-karaoke{font-size:18px;padding:11px 12px}.coach-intro-overlay .coach-avatar-copy{left:9px!important;right:9px!important}}
 
-</style></head>
+</style>
+<style>
+/* SOLIDO COACH · vídeos originales transparentes y encuadre ajustado */
+.coach-intro-overlay .coach-avatar-media{
+  position:absolute!important;
+  inset:0 0 28vh 0!important;
+  width:100%!important;
+  height:auto!important;
+  overflow:visible!important;
+  background:transparent!important;
+}
+.coach-intro-overlay .coach-avatar-media .coach-avatar-video,
+.coach-intro-overlay .coach-avatar-media .coach-avatar-art,
+.coach-intro-overlay .coach-avatar-media .coach-avatar-canvas{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center 42%!important;
+  background:transparent!important;
+  mix-blend-mode:normal!important;
+  transform:scale(1.12) translateY(-2%)!important;
+  transform-origin:center 45%!important;
+}
+.coach-intro-overlay .coach-avatar-media .coach-avatar-video{z-index:2!important}
+.coach-intro-overlay .coach-avatar-media .coach-avatar-canvas{z-index:3!important}
+.coach-intro-overlay .coach-avatar-copy{bottom:max(12px,env(safe-area-inset-bottom))!important}
+@media(max-height:620px){
+ .coach-intro-overlay .coach-avatar-media{inset:0 0 30vh 0!important}
+ .coach-intro-overlay .coach-avatar-media .coach-avatar-video{transform:scale(1.06) translateY(-1%)!important}
+}
+</style>
+
+</head>
 
 <body>
 <div id="workoutSwitchOverlay" role="alertdialog" aria-live="assertive" aria-label="Aviso para cambiar de mano">
