@@ -4,6 +4,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.health.connect.client.PermissionController
 import android.os.Bundle
+import android.app.AlertDialog
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.webkit.WebChromeClient
@@ -40,6 +41,7 @@ class MainActivity : ComponentActivity() {
     private var pendingCoachSpeech: String? = null
     private var coachUtteranceSequence = 0L
     private var currentCoachUtteranceId: String? = null
+    private val coachVoicePreferences by lazy { getSharedPreferences("solido_coach_voice", MODE_PRIVATE) }
     private lateinit var whc06Bridge: WHC06Bridge
     private var gameFullscreenRequested = false
     private var previousRequestedOrientation: Int? = null
@@ -113,7 +115,49 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // Android TextToSpeech(this) se inicializa con listener para gestionar el estado de voz.
+    // Inicializa el motor instalado en el móvil. No incorpora voces ni archivos al APK.
+    private fun initializeCoachTts(onReady: (() -> Unit)? = null) {
+        if (coachTts != null) {
+            if (coachTtsReady) onReady?.invoke()
+            return
+        }
+        val engine = coachVoicePreferences.getString("engine", "com.samsung.SMT") ?: "com.samsung.SMT"
+        coachTts = TextToSpeech(this, { status ->
+            runOnUiThread {
+                if (status == TextToSpeech.SUCCESS) {
+                    coachTtsReady = true
+                    configureCoachSpanishVoice()
+                    coachTts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                        override fun onStart(utteranceId: String?) {
+                            if (utteranceId == currentCoachUtteranceId) notifyCoachVoiceStatus("started")
+                        }
+                        override fun onRangeStart(utteranceId: String?, start: Int, end: Int, frame: Int) {
+                            if (utteranceId == currentCoachUtteranceId) {
+                                runOnUiThread {
+                                    if (::web.isInitialized) web.evaluateJavascript("window.onSolidoCoachSpeechRange && window.onSolidoCoachSpeechRange($start,$end)", null)
+                                }
+                            }
+                        }
+                        override fun onDone(utteranceId: String?) {
+                            if (utteranceId == currentCoachUtteranceId) notifyCoachVoiceStatus("done")
+                        }
+                        override fun onError(utteranceId: String?) {
+                            if (utteranceId == currentCoachUtteranceId) notifyCoachVoiceStatus("error")
+                        }
+                    })
+                    pendingCoachSpeech?.let { pending ->
+                        pendingCoachSpeech = null
+                        speakCoachTextNow(pending)
+                    }
+                    onReady?.invoke()
+                } else {
+                    pendingCoachSpeech = null
+                    notifyCoachVoiceStatus("unavailable")
+                }
+            }
+        }, engine)
+    }
+
     @JavascriptInterface
     fun speakCoachText(text: String) {
         runOnUiThread {
@@ -121,41 +165,7 @@ class MainActivity : ComponentActivity() {
             if (cleanText.isEmpty()) return@runOnUiThread
             if (coachTts == null) {
                 pendingCoachSpeech = cleanText
-                // En Samsung Galaxy, usar explícitamente el motor Samsung TTS para
-                // respetar la voz española masculina elegida en los ajustes del teléfono.
-                coachTts = TextToSpeech(this, { status ->
-                    runOnUiThread {
-                        if (status == TextToSpeech.SUCCESS) {
-                            coachTtsReady = true
-                            configureCoachSpanishVoiceTwo()
-                            coachTts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
-                                override fun onStart(utteranceId: String?) {
-                                    if (utteranceId == currentCoachUtteranceId) notifyCoachVoiceStatus("started")
-                                }
-                                override fun onRangeStart(utteranceId: String?, start: Int, end: Int, frame: Int) {
-                                    if (utteranceId == currentCoachUtteranceId) {
-                                        runOnUiThread {
-                                            if (::web.isInitialized) web.evaluateJavascript("window.onSolidoCoachSpeechRange && window.onSolidoCoachSpeechRange($start,$end)", null)
-                                        }
-                                    }
-                                }
-                                override fun onDone(utteranceId: String?) {
-                                    if (utteranceId == currentCoachUtteranceId) notifyCoachVoiceStatus("done")
-                                }
-                                override fun onError(utteranceId: String?) {
-                                    if (utteranceId == currentCoachUtteranceId) notifyCoachVoiceStatus("error")
-                                }
-                            })
-                            pendingCoachSpeech?.let { pending ->
-                                pendingCoachSpeech = null
-                                speakCoachTextNow(pending)
-                            }
-                        } else {
-                            pendingCoachSpeech = null
-                            notifyCoachVoiceStatus("unavailable")
-                        }
-                    }
-                }, "com.samsung.SMT")
+                initializeCoachTts()
             } else if (coachTtsReady) {
                 speakCoachTextNow(cleanText)
             } else {
@@ -164,24 +174,66 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // Selecciona explícitamente la segunda voz disponible para español de España.
-    // Así no dependemos de la voz femenina que el motor haya elegido como predeterminada.
-    private fun configureCoachSpanishVoiceTwo() {
+    // Android no publica el género de cada Voice. Por eso dejamos probar las voces
+    // españolas realmente instaladas y guardar la elegida, en vez de adivinar por orden.
+    private fun configureCoachSpanishVoice() {
         val tts = coachTts ?: return
         val spanishVoices = tts.voices
             ?.filter { it.locale.language == "es" && it.locale.country.equals("ES", ignoreCase = true) }
-            ?.sortedBy { it.name.lowercase(Locale.ROOT) }
             .orEmpty()
-        val selectedVoice = spanishVoices.getOrNull(1) ?: spanishVoices.firstOrNull()
-        if (selectedVoice != null) {
-            tts.voice = selectedVoice
-            tts.setPitch(1.0f)
+        val savedVoiceName = coachVoicePreferences.getString("voice", null)
+        val savedVoice = spanishVoices.firstOrNull { it.name == savedVoiceName }
+        if (savedVoice != null) {
+            tts.voice = savedVoice
         } else {
             val language = tts.setLanguage(Locale("es", "ES"))
             if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
                 tts.setLanguage(Locale("es"))
             }
         }
+        tts.setPitch(1.0f)
+    }
+
+    @JavascriptInterface
+    fun showCoachVoicePicker() {
+        runOnUiThread {
+            initializeCoachTts { showCoachVoiceOptions() }
+        }
+    }
+
+    private fun showCoachVoiceOptions() {
+        val tts = coachTts ?: return
+        val voices = tts.voices
+            ?.filter { it.locale.language == "es" && it.locale.country.equals("ES", ignoreCase = true) }
+            ?.sortedBy { it.name.lowercase(Locale.ROOT) }
+            .orEmpty()
+        if (voices.isEmpty()) {
+            AlertDialog.Builder(this)
+                .setTitle("Voces en español")
+                .setMessage("Este motor no ofrece voces de español de España instaladas. Revisa las voces disponibles en los ajustes de texto a voz del móvil.")
+                .setPositiveButton("Aceptar", null)
+                .show()
+            return
+        }
+        val selectedName = coachVoicePreferences.getString("voice", tts.voice?.name)
+        val selectedIndex = voices.indexOfFirst { it.name == selectedName }
+        val labels = voices.mapIndexed { index, voice ->
+            val connection = if (voice.isNetworkConnectionRequired) " · requiere internet" else " · sin conexión"
+            "Voz ${index + 1} · ${voice.name}$connection"
+        }.toTypedArray()
+        AlertDialog.Builder(this)
+            .setTitle("Elige y escucha una voz")
+            .setSingleChoiceItems(labels, selectedIndex) { dialog, which ->
+                val voice = voices[which]
+                tts.voice = voice
+                tts.setPitch(1.0f)
+                coachVoicePreferences.edit().putString("voice", voice.name).apply()
+                speakCoachTextNow("Hola, soy tu entrenador de SOLIDO. Vamos a entrenar juntos para seguir progresando.")
+                notifyCoachVoiceStatus("voice_selected")
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cerrar", null)
+            .show()
     }
 
     private fun speakCoachTextNow(text: String) {
