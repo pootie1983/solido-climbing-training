@@ -1,10 +1,14 @@
 /* SOLIDO COACH · base visual */
-.coach-home-card{width:100%;display:flex;align-items:center;gap:14px;text-align:left;margin:14px 0;padding:16px;border:1px solid #567b45;border-radius:18px;background:linear-gradient(125deg,#1c3a35,#122632 70%,#25351f);color:var(--text);cursor:pointer;box-shadow:0 8px 24px #0003}
-.coach-home-icon{width:54px;height:54px;flex:0 0 54px;display:grid;place-items:center;border-radius:15px;background:linear-gradient(145deg,#b8ff65,#55b94b);color:#102016;font-size:29px}
-.coach-home-copy{display:grid;gap:5px;flex:1;min-width:0}
-.coach-home-copy strong{font-size:14px;letter-spacing:.7px;color:#c4ff82}
-.coach-home-copy small{font-size:12px;line-height:1.4;color:#d0dcda}
-.coach-home-arrow{font-size:25px;color:#c4ff82}
+.coach-home-launch{position:relative;isolation:isolate;overflow:hidden;width:100%;min-height:158px;display:flex;align-items:center;gap:12px;text-align:left;margin:14px 0;padding:8px 18px 8px 4px;border:1px solid #5e8d72;border-radius:22px;background:radial-gradient(ellipse at 22% 45%,#416e604d,transparent 55%),linear-gradient(120deg,#173d35,#10242d 72%,#1d342c);color:var(--text);cursor:pointer;box-shadow:0 10px 26px #0005;transition:transform .16s ease,border-color .16s ease}
+.coach-home-launch:active{transform:scale(.985);border-color:#b8f0d3}
+.coach-home-launch:after{content:"";position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,transparent 34%,#07151a55 58%,transparent)}
+.coach-home-launch>img{align-self:stretch;width:42%;max-width:166px;min-width:118px;height:146px;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 8px 10px #0008)}
+.coach-home-launch-copy{display:grid;justify-items:start;gap:7px;flex:1;min-width:0}
+.coach-home-launch-copy strong{font-size:clamp(16px,4.5vw,21px);letter-spacing:.6px;color:#c9ff9a;font-weight:1000}
+.coach-home-launch-copy small{font-size:12px;line-height:1.35;color:#e0ece5}
+.coach-home-launch-copy>span{display:inline-flex;align-items:center;gap:10px;margin-top:5px;padding:8px 13px;border:1px solid #a5d9b6;border-radius:999px;background:linear-gradient(135deg,#b8f0d3,#63c995);color:#102d24;font-size:10px;font-weight:1000;letter-spacing:1px}
+.coach-home-launch-copy>span b{font-size:16px;line-height:10px}
+@media(max-width:360px){.coach-home-launch{min-height:138px;padding-right:10px;gap:6px}.coach-home-launch>img{min-width:105px;height:128px}.coach-home-launch-copy strong{font-size:15px}.coach-home-launch-copy small{font-size:11px}}
 .coach-shell{display:grid;gap:14px}
 .coach-hero{position:relative;overflow:hidden;padding:20px;border:1px solid #52734a;border-radius:20px;background:radial-gradient(circle at 88% 20%,#9ee75b30,transparent 36%),linear-gradient(135deg,#1a3b35,#102530 70%,#182b27)}
 .coach-kicker{font-size:10px;letter-spacing:2px;font-weight:900;color:#baff78}
