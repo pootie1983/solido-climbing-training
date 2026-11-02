@@ -625,6 +625,11 @@ assert.match(html, /<section id="coachConfig" class="hide">[\s\S]*?class="coach-
 assert.match(html, /class="tile coach-config-launch" onclick="show\('coachConfig'\)"/, 'Personal must contain a single entry card for Coach settings');
 assert.match(html, /onclick="show\('profile'\)">← Volver a Personal/, 'Coach settings must provide a route back to Personal');
 assert.match(html, /\.coach-intro-overlay \.coach-avatar-media \.coach-avatar-video\{z-index:2;background:transparent\}/, 'The intro video must occupy a visible, layered media area');
+assert.match(html, /grid-template-columns:minmax\(0,\.82fr\) minmax\(0,1\.18fr\)/, 'The Coach welcome must place the video on the left and its dialogue on the right');
+assert.match(html, /PERSONALIZAR COACH/, 'The Personal launcher must use the improved, elongated label');
+assert.match(coach, /read\('solidoCoachPersonality','gracioso'\)/, 'Funny must be the default Coach personality');
+assert.match(coach, /const brightest=Math\.max\(red,green,blue\)[\s\S]*?pixels\[i\+3\]=0/, 'Near-black pixels in the Coach video must be made transparent on the canvas');
+assert.match(coach, /canvas\.getContext\('2d',\{alpha:true,willReadFrequently:true\}\)/, 'The Coach video background key must render through an alpha canvas');
 assert.match(html, /\.coach-intro-overlay \.coach-avatar-copy\{position:relative;z-index:4;display:block!important;visibility:visible!important;[\s\S]*?background:#fff!important/, 'The welcome text must remain visible in its white card while the video plays');
 assert.match(coach, /next\.onloadeddata=\(\)=>\{[\s\S]*?revealAvatarVideo\(next\);[\s\S]*?next\.style\.opacity='1';/, 'The welcome video must become visible as soon as its first frame is decoded');
 
