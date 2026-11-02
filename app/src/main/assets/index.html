@@ -2448,8 +2448,7 @@ body.coach-intro-active{overflow:hidden!important}
 .coach-config-shell{display:grid;gap:12px;margin-bottom:18px}
 .coach-voice-settings button{width:100%;margin-top:4px}
 @media(max-width:380px){.coach-intro-panel{padding:6px 0 12px}.coach-intro-overlay .coach-avatar-copy{padding:10px 8px 6px}}
-</style>
-</head>
+</style></head>
 
 <body>
 <div id="workoutSwitchOverlay" role="alertdialog" aria-live="assertive" aria-label="Aviso para cambiar de mano">
@@ -3339,39 +3338,19 @@ body.coach-intro-active{overflow:hidden!important}
   </div>
 
 
-  <div class=<section id="solidoCoach" class="hide">
-  <div id="coachIntroOverlay" class="coach-intro-overlay" aria-hidden="true">
-    <div class="coach-avatar-panel coach-intro-panel" aria-label="Presentación de SOLIDO COACH">
-      <div class="coach-avatar-media">
-        <img id="coachAvatarImage" class="coach-avatar-art" src="coach/coach_01_bienvenida.png" alt="Entrenador SOLIDO CLIMBING">
-        <video id="coachAvatarVideo" class="coach-avatar-video" muted loop playsinline webkit-playsinline preload="auto" aria-hidden="true"></video>
-        <canvas id="coachAvatarCanvas" class="coach-avatar-canvas" aria-hidden="true"></canvas>
-      </div>
-      <div class="coach-avatar-copy">
-        <strong>¡HOLA, ESCALADOR!</strong>
-        <p id="coachAvatarMessage">Soy tu entrenador personal. Vamos a trabajar para que sigas progresando.</p>
-        <small id="coachVoiceStatus" class="coach-voice-status" aria-live="polite">Preparando tu entrenador…</small>
-      </div>
+  <div class="sectionhead"><h2>Config. Coach</h2><span class="tag">PERSONALIZA TU ENTRENADOR</span></div>
+  <div class="coach-config-shell">
+    <div class="coach-hero">
+      <div class="coach-kicker">SOLIDO CLIMBING · COACHING</div>
+      <h2>Tu próximo nivel,<br>con un plan propio.</h2>
+      <p>Un entrenador que tendrá en cuenta tu perfil, tus objetivos y tu evolución. La base local se está preparando; la conexión con la IA avanzada llegará en la siguiente fase.</p>
+      <span class="coach-status">PERFIL LOCAL PREPARADO</span>
     </div>
-  </div>
-  <div class="sectionhead"><h2>SOLIDO COACH</h2><span class="tag">TU ENTRENADOR PERSONAL</span></div>
-  <div class="coach-shell">
-    <div class="coach-panel coach-advice">
-      <h3>Tu consejo de entrenamiento</h3>
-      <p id="coachAdviceTitle" class="coach-advice-title">Preparando tu recomendación…</p>
-      <p id="coachAdviceBody" class="coach-muted" aria-live="polite">El consejo se calculará con tus entrenamientos guardados y las preferencias que hayas indicado.</p>
-      <small class="coach-muted">Consejos locales orientativos; no sustituyen la valoración de un profesional ni modifican tus planes automáticamente.</small>
-    </div>
-    <div class="coach-panel coach-proposal">
-      <h3>Propuesta de próxima sesión</h3>
-      <p id="coachProposalBody" class="coach-muted">Preparando una propuesta con los ejercicios que ya incluye SOLIDO…</p>
-      <div id="coachProposalItems" class="coach-proposal-items"></div>
-      <button id="coachProposalAccept" class="btn" type="button" style="width:100%;margin-top:12px;display:none" onclick="solidoCoachAcceptPlanProposal()">ACEPTAR Y PREPARAR SESIÓN →</button>
-      <small class="coach-muted">Al aceptarla, se guardará como un plan nuevo y se abrirá directamente para que puedas iniciarlo. Tus planes actuales no se modificarán.</small>
-    </div>
-    <button class="btn secondary coach-back" type="button" onclick="show('home')">← Volver al inicio</button>
-  </div>
-</section><span class="coach-face">🤝</span><strong>CERCANO</strong><small>Motivador y comprensivo</small></button>
+    <div class="coach-panel">
+      <h3>Elige cómo quieres que te entrene</h3>
+      <p class="coach-muted">Puedes cambiar de personalidad cuando quieras. El estilo cambia la forma de hablar, nunca las recomendaciones de seguridad.</p>
+      <div class="coach-personalities">
+        <button type="button" class="coach-personality" data-personality="cercano" onclick="solidoCoachSetPersonality('cercano')"><span class="coach-face">🤝</span><strong>CERCANO</strong><small>Motivador y comprensivo</small></button>
         <button type="button" class="coach-personality" data-personality="gracioso" onclick="solidoCoachSetPersonality('gracioso')"><span class="coach-face">😄</span><strong>GRACIOSO</strong><small>Humor y buen ambiente</small></button>
         <button type="button" class="coach-personality" data-personality="estricto" onclick="solidoCoachSetPersonality('estricto')"><span class="coach-face">🎯</span><strong>ESTRICTO</strong><small>Exigente y disciplinado</small></button>
       </div>
@@ -3403,6 +3382,40 @@ body.coach-intro-active{overflow:hidden!important}
         <small id="coachSaveStatus" class="coach-muted" aria-live="polite">Todavía no has guardado cambios.</small>
       </form>
     </div>
+    <div class="coach-panel coach-voice-settings">
+      <h3>Voz del entrenador</h3>
+      <p class="coach-muted">Activa o silencia la voz que acompaña los vídeos de SOLIDO COACH.</p>
+      <button id="coachVoiceToggle" class="btn secondary" type="button" onclick="solidoCoachToggleVoice()">🔊 VOZ ACTIVADA</button>
+    </div>
+    <div class="coach-panel">
+      <h3>Actividad disponible para el entrenador</h3>
+      <p class="coach-muted">Resumen de datos que SOLIDO ya puede consultar, si están disponibles y has concedido permisos.</p>
+      <div id="coachHealthSummary" class="coach-profile-grid"></div>
+    </div>
+    <div class="coach-note"><strong>Privacidad:</strong> estos consejos se calculan en el propio dispositivo con los datos guardados en SOLIDO. La conexión segura con IA avanzada se preparará en una fase posterior y requerirá consentimiento. Ningún plan se cambiará sin tu aprobación.</div>
+  </div>
+
+</section>
+
+
+
+<section id="solidoCoach" class="hide">
+  <div id="coachIntroOverlay" class="coach-intro-overlay" aria-hidden="true">
+    <div class="coach-avatar-panel coach-intro-panel" aria-label="Presentación de SOLIDO COACH">
+      <div class="coach-avatar-media">
+        <img id="coachAvatarImage" class="coach-avatar-art" src="coach/coach_01_bienvenida.png" alt="Entrenador SOLIDO CLIMBING">
+        <video id="coachAvatarVideo" class="coach-avatar-video" muted loop playsinline webkit-playsinline preload="auto" aria-hidden="true"></video>
+        <canvas id="coachAvatarCanvas" class="coach-avatar-canvas" aria-hidden="true"></canvas>
+      </div>
+      <div class="coach-avatar-copy">
+        <strong>¡HOLA, ESCALADOR!</strong>
+        <p id="coachAvatarMessage">Soy tu entrenador personal. Vamos a trabajar para que sigas progresando.</p>
+        <small id="coachVoiceStatus" class="coach-voice-status" aria-live="polite">Preparando tu entrenador…</small>
+      </div>
+    </div>
+  </div>
+  <div class="sectionhead"><h2>SOLIDO COACH</h2><span class="tag">TU ENTRENADOR PERSONAL</span></div>
+  <div class="coach-shell">
     <div class="coach-panel coach-advice">
       <h3>Tu consejo de entrenamiento</h3>
       <p id="coachAdviceTitle" class="coach-advice-title">Preparando tu recomendación…</p>
@@ -3413,15 +3426,9 @@ body.coach-intro-active{overflow:hidden!important}
       <h3>Propuesta de próxima sesión</h3>
       <p id="coachProposalBody" class="coach-muted">Preparando una propuesta con los ejercicios que ya incluye SOLIDO…</p>
       <div id="coachProposalItems" class="coach-proposal-items"></div>
-      <button id="coachProposalAccept" class="btn" type="button" style="width:100%;margin-top:12px;display:none" onclick="solidoCoachAcceptPlanProposal()">Añadir esta propuesta a mis planes</button>
-      <small class="coach-muted">Solo se añadirá si la aceptas. Se guardará como un plan nuevo; nunca sustituirá ni modificará tus planes actuales.</small>
+      <button id="coachProposalAccept" class="btn" type="button" style="width:100%;margin-top:12px;display:none" onclick="solidoCoachAcceptPlanProposal()">ACEPTAR Y PREPARAR SESIÓN →</button>
+      <small class="coach-muted">Al aceptarla, se guardará como un plan nuevo y se abrirá directamente para que puedas iniciarlo. Tus planes actuales no se modificarán.</small>
     </div>
-    <div class="coach-panel">
-      <h3>Actividad disponible para el entrenador</h3>
-      <p class="coach-muted">Resumen de datos que SOLIDO ya puede consultar, si están disponibles y has concedido permisos.</p>
-      <div id="coachHealthSummary" class="coach-profile-grid"></div>
-    </div>
-    <div class="coach-note"><strong>Privacidad:</strong> estos consejos se calculan en el propio dispositivo con los datos guardados en SOLIDO. La conexión segura con IA avanzada se preparará en una fase posterior y requerirá consentimiento. Ningún plan se cambiará sin tu aprobación.</div>
     <button class="btn secondary coach-back" type="button" onclick="show('home')">← Volver al inicio</button>
   </div>
 </section>
