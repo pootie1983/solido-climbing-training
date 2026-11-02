@@ -3333,7 +3333,7 @@ body.br-fullscreen-active .sg-close{display:flex}
     <div class="coach-avatar-panel" aria-label="Entrenador SOLIDO">
       <div class="coach-avatar-media"><img id="coachAvatarImage" class="coach-avatar-art" src="coach/coach_01_bienvenida.png" alt="Personaje entrenador SOLIDO en estilo cómic"><video id="coachAvatarVideo" class="coach-avatar-video" muted loop playsinline webkit-playsinline preload="auto" aria-hidden="true"></video><canvas id="coachAvatarCanvas" class="coach-avatar-canvas" aria-hidden="true"></canvas></div>
       <div class="coach-avatar-copy"><strong>¡AQUÍ ESTOY, ESCALADOR!</strong><p id="coachAvatarMessage">Vamos a trabajar para que sigas progresando. Yo te acompaño en cada sesión.</p>
-        <div class="coach-voice-actions"><button id="coachSpeakButton" class="coach-voice-btn primary" type="button" onclick="solidoCoachSpeak()">▶ ESCUCHAR</button><button id="coachVoiceToggle" class="coach-voice-btn" type="button" onclick="solidoCoachToggleVoice()">🔊 VOZ ACTIVADA</button></div>
+        <div class="coach-voice-actions"><button id="coachSpeakButton" class="coach-voice-btn primary" type="button" onclick="solidoCoachSpeak()">▶ ESCUCHAR</button><button id="coachVoiceToggle" class="coach-voice-btn" type="button" onclick="solidoCoachToggleVoice()">🔊 VOZ ACTIVADA</button><button id="coachVoiceChoose" class="coach-voice-btn" type="button" onclick="window.AndroidCoach&&AndroidCoach.showCoachVoicePicker&&AndroidCoach.showCoachVoicePicker()">🎙 ELEGIR VOZ</button></div>
         <small id="coachVoiceStatus" class="coach-voice-status" aria-live="polite">Voz del dispositivo · gratuita</small>
       </div>
     </div>
