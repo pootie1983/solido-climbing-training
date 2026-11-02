@@ -627,6 +627,6 @@ assert.match(coach, /window\.AndroidCoach&&typeof window\.AndroidCoach\.speakCoa
 assert.match(coach, /window\.AndroidCoach\.stopCoachSpeech/, 'Muting Coach must stop native speech');
 assert.match(mainActivity, /web\.addJavascriptInterface\(this, "AndroidCoach"\)/, 'AndroidCoach bridge must be exposed to the WebView');
 assert.match(mainActivity, /fun speakCoachText\(text: String\)/, 'Native Android speech method must exist');
-assert.match(mainActivity, /TextToSpeech\(this\)/, 'Coach must use Android TextToSpeech');
+assert.match(mainActivity, /TextToSpeech\(this(?:,|\))/, 'Coach must use Android TextToSpeech');
 const manifest = fs.readFileSync('app/src/main/AndroidManifest.xml', 'utf8');
 assert.match(manifest, /android\.intent\.action\.TTS_SERVICE/, 'Android must be able to discover installed TTS engines');
