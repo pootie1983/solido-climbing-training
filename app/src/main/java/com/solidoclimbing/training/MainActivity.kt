@@ -4,6 +4,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.health.connect.client.PermissionController
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.webkit.WebChromeClient
@@ -15,6 +17,13 @@ import android.graphics.Bitmap
 import android.util.Base64
 import java.io.ByteArrayOutputStream
 import android.view.View
+import android.view.Gravity
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.graphics.Color
+import android.graphics.Typeface
 import android.view.WindowManager
 import android.view.WindowInsets
 import android.view.WindowInsetsController
@@ -47,9 +56,22 @@ class MainActivity : ComponentActivity() {
     private var fileChooserCallback: ValueCallback<Array<android.net.Uri>>? = null
     private val fileChooserRequestCode = 2001
     private val densityCameraRequestCode = 2002
+    private val trialPreferences by lazy { getSharedPreferences("solido_beta_trial", MODE_PRIVATE) }
+    private val trialHandler = Handler(Looper.getMainLooper())
+    private var trialRoot: FrameLayout? = null
+    private var expiredOverlay: View? = null
+    private var trialExpired = false
+    private val trialCheckRunnable = object : Runnable {
+        override fun run() {
+            enforceTrialLimit()
+            if (!trialExpired) trialHandler.postDelayed(this, 60_000L)
+        }
+    }
+    private val trialDurationMs = 10L * 24L * 60L * 60L * 1000L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initializeTrialPeriod()
         healthPermissionLauncher = registerForActivityResult(PermissionController.createRequestPermissionResultContract()) { if (::healthConnectBridge.isInitialized) healthConnectBridge.refresh() }
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -90,8 +112,76 @@ class MainActivity : ComponentActivity() {
         web.addJavascriptInterface(whc06Bridge, "WHC06")
         web.addJavascriptInterface(this, "AndroidUi")
         web.addJavascriptInterface(this, "AndroidCoach")
-        setContentView(web)
+        val root = FrameLayout(this)
+        root.addView(web, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        trialRoot = root
+        expiredOverlay = createTrialExpiredOverlay()
+        root.addView(expiredOverlay, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        setContentView(root)
         web.loadUrl("file:///android_asset/index.html")
+        enforceTrialLimit()
+        trialHandler.postDelayed(trialCheckRunnable, 60_000L)
+    }
+
+
+    // La prueba comienza en la primera apertura y queda guardada aunque se cierre la app.
+    private fun initializeTrialPeriod() {
+        val firstOpen = trialPreferences.getLong("first_open_at", 0L)
+        if (firstOpen == 0L) {
+            trialPreferences.edit().putLong("first_open_at", System.currentTimeMillis()).commit()
+        }
+    }
+
+    private fun createTrialExpiredOverlay(): View {
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setPadding(36, 36, 36, 36)
+            setBackgroundColor(Color.rgb(7, 17, 27))
+            isClickable = true
+            isFocusable = true
+        }
+        val title = TextView(this).apply {
+            text = "TIEMPO EXPIRADO"
+            setTextColor(Color.WHITE)
+            textSize = 30f
+            typeface = Typeface.create("sans-serif", Typeface.BOLD)
+            gravity = Gravity.CENTER
+        }
+        val message = TextView(this).apply {
+            text = "El periodo de prueba de BETA SOLIDO CLIMBING ha finalizado.\\n\\nDesinstala esta versión para instalar la versión completa."
+            setTextColor(Color.rgb(218, 228, 236))
+            textSize = 17f
+            gravity = Gravity.CENTER
+            setPadding(12, 24, 12, 0)
+        }
+        container.addView(title, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+        container.addView(message, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+        return container
+    }
+
+    private fun enforceTrialLimit() {
+        if (trialExpired) return
+        val firstOpen = trialPreferences.getLong("first_open_at", 0L)
+        val now = System.currentTimeMillis()
+        val expired = firstOpen <= 0L || now < firstOpen || now - firstOpen >= trialDurationMs
+        if (expired) {
+            trialExpired = true
+            web.stopLoading()
+            web.onPause()
+            web.pauseTimers()
+            web.visibility = View.GONE
+            expiredOverlay?.visibility = View.VISIBLE
+            trialHandler.removeCallbacks(trialCheckRunnable)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (trialRoot != null) {
+            enforceTrialLimit()
+            if (!trialExpired) trialHandler.postDelayed(trialCheckRunnable, 1_000L)
+        }
     }
 
     @Deprecated("Deprecated in Android")
@@ -310,10 +400,12 @@ class MainActivity : ComponentActivity() {
 
     @Deprecated("Deprecated in Android")
     override fun onBackPressed() {
+        if (trialExpired) return
         if (::web.isInitialized && web.canGoBack()) web.goBack() else super.onBackPressed()
     }
 
     override fun onDestroy() {
+        trialHandler.removeCallbacks(trialCheckRunnable)
         if (::healthConnectBridge.isInitialized) healthConnectBridge.release()
         if (::whc06Bridge.isInitialized) whc06Bridge.release()
         coachTts?.stop()
