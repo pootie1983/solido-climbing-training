@@ -292,8 +292,9 @@
     const proposal=preferences.limitations.trim()?null:buildProposal(profile,preferences);
     const proposalSafetyNote=proposal?proposalBlockReason:'';
     window.solidoCoachCurrentProposal=proposal?{category:proposal.category,name:proposal.name,items:proposal.items.map(({id,sets,reps,work,rest})=>({id,sets,reps,work,rest}))}:null;
+    const initialPlanReady=typeof window.solidoCoachEnsureInitialPlan==='function'&&window.solidoCoachEnsureInitialPlan(window.solidoCoachCurrentProposal);
     const proposalBody=$('coachProposalBody'),proposalItems=$('coachProposalItems'),proposalButton=$('coachProposalAccept');
-    if(proposalBody)proposalBody.textContent=proposal?proposal.note+(proposalSafetyNote?' '+proposalSafetyNote:''):proposalBlockReason;
+    if(proposalBody)proposalBody.textContent=initialPlanReady?'Tu primer plan ya está creado y guardado en Mis planes. '+(proposalSafetyNote||'Puedes empezar a entrenar cuando quieras.'):proposal?proposal.note+(proposalSafetyNote?' '+proposalSafetyNote:''):proposalBlockReason;
     if(proposalItems)proposalItems.innerHTML=proposal?proposal.items.map(item=>'<div class="coach-proposal-item"><strong>'+safe(item.label)+'</strong><span>'+safe(item.detail)+'</span></div>').join(''):'';
     if(proposalButton)proposalButton.style.display=proposal?'block':'none';
     const advice=buildLocalAdvice(sessionList,profile,preferences,p.id,window.solidoCoachHealthData||null);
