@@ -126,9 +126,88 @@
   let coachLastVideoChunk=-1;
   function voiceEnabled(){return read('solidoCoachVoiceEnabled','1')!=='0';}
   let coachVideoFrame=0;
-  function hideAvatarVideo(){const video=$('coachAvatarVideo'),canvas=$('coachAvatarCanvas'),image=$('coachAvatarImage');if(video){video.pause();try{video.currentTime=0;}catch(e){}video.style.display='none';}if(canvas)canvas.style.display='none';if(image)image.style.display='block';}
-  function revealAvatarVideo(){const video=$('coachAvatarVideo'),canvas=$('coachAvatarCanvas'),image=$('coachAvatarImage');if(!video)return;video.style.display='block';if(canvas)canvas.style.display='none';if(image)image.style.display='none';}
-  function playAvatarVideo(source){const video=$('coachAvatarVideo'),canvas=$('coachAvatarCanvas'),image=$('coachAvatarImage');if(!video)return;video.muted=true;video.loop=true;video.controls=false;video.removeAttribute('controls');video.setAttribute('playsinline','');video.setAttribute('disablepictureinpicture','');video.setAttribute('controlslist','nodownload nofullscreen noplaybackrate');video.style.pointerEvents='none';if(video.dataset.source!==source){video.pause();video.style.display='none';if(canvas)canvas.style.display='none';if(image)image.style.display='block';video.dataset.source=source;video.src=source;video.load();}if(!coachSpeaking)return;video.onplaying=()=>{if(coachSpeaking)revealAvatarVideo();};video.onloadeddata=()=>{if(coachSpeaking&&video.readyState>=2)revealAvatarVideo();};const result=video.play();if(result&&typeof result.then==='function')result.then(()=>{if(coachSpeaking&&video.readyState>=2)revealAvatarVideo();}).catch(()=>{video.style.display='none';if(image)image.style.display='block';});}
+  let coachActiveVideo=null;
+  function getCoachVideoPair(){
+    const first=$('coachAvatarVideo');
+    if(!first)return [];
+    if(!first.dataset.crossfadeReady){
+      const second=first.cloneNode(false);
+      second.removeAttribute('id');
+      second.dataset.crossfadeBuffer='1';
+      first.parentNode.insertBefore(second,first.nextSibling);
+      [first,second].forEach(video=>{
+        video.style.display='none';
+        video.style.opacity='0';
+        video.style.transition='opacity 360ms ease-in-out';
+        video.preload='auto';
+        video.muted=true;
+        video.loop=true;
+        video.playsInline=true;
+        video.style.pointerEvents='none';
+      });
+      first.dataset.crossfadeReady='1';
+    }
+    return [first,first.nextElementSibling].filter(video=>video&&video.tagName==='VIDEO');
+  }
+  function hideAvatarVideo(){
+    const videos=getCoachVideoPair(),canvas=$('coachAvatarCanvas'),image=$('coachAvatarImage');
+    videos.forEach(video=>{video.pause();try{video.currentTime=0;}catch(e){}video.style.opacity='0';video.style.display='none';video.onplaying=null;});
+    coachActiveVideo=null;
+    if(canvas)canvas.style.display='none';
+    if(image)image.style.display='block';
+  }
+  function revealAvatarVideo(video){
+    const canvas=$('coachAvatarCanvas'),image=$('coachAvatarImage');
+    if(!video)return;
+    video.style.display='block';
+    if(canvas)canvas.style.display='none';
+    if(image)image.style.display='none';
+  }
+  function playAvatarVideo(source){
+    if(!coachSpeaking)return;
+    const videos=getCoachVideoPair(),image=$('coachAvatarImage');
+    if(!videos.length)return;
+    const active=coachActiveVideo;
+    if(active&&active.dataset.source===source&&!active.paused)return;
+    const next=videos.find(video=>video!==active)||videos[0];
+    next.pause();
+    next.onplaying=null;
+    next.dataset.source=source;
+    next.src=source;
+    next.load();
+    next.muted=true;
+    next.loop=true;
+    next.controls=false;
+    next.removeAttribute('controls');
+    next.setAttribute('playsinline','');
+    next.setAttribute('disablepictureinpicture','');
+    next.setAttribute('controlslist','nodownload nofullscreen noplaybackrate');
+    next.style.display='block';
+    next.style.opacity='0';
+    next.onplaying=()=>{
+      if(!coachSpeaking||next.dataset.source!==source)return;
+      revealAvatarVideo(next);
+      requestAnimationFrame(()=>{next.style.opacity='1';});
+      if(active&&active!==next){
+        active.style.opacity='0';
+        window.setTimeout(()=>{
+          if(active.style.opacity==='0'){
+            active.pause();
+            active.style.display='none';
+          }
+        },390);
+      }
+      coachActiveVideo=next;
+    };
+    const result=next.play();
+    if(result&&typeof result.then==='function'){
+      result.catch(()=>{
+        next.style.display='none';
+        if(active&& !active.paused){active.style.display='block';active.style.opacity='1';coachActiveVideo=active;}
+        else if(image)image.style.display='block';
+      });
+    }
+  }
   function showAvatarVideo(){const source=avatarVideos[currentAvatarState]||avatarVideos.welcome;playAvatarVideo(source);}
   function startAvatarSpeechVisual(){coachSpeaking=true;if(coachLastVideoChunk<0)playAvatarVideo(avatarVideos[currentAvatarState]||avatarVideos.welcome);else selectAvatarVideoForChunk(coachLastVideoChunk);}
   function stopAvatarSpeechVisual(){coachSpeaking=false;hideAvatarVideo();coachLastVideoChunk=-1;}
