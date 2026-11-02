@@ -624,7 +624,7 @@ assert.ok(runnerEvents.filter(e=>e.type==='sound'&&e.kind==='start').length>=3,'
 assert.match(html, /<section id="coachConfig" class="hide">[\s\S]*?class="coach-config-shell"/, 'Coach settings must live on their own screen');
 assert.match(html, /class="tile coach-config-launch" onclick="show\('coachConfig'\)"/, 'Personal must contain a single entry card for Coach settings');
 assert.match(html, /onclick="show\('profile'\)">← Volver a Personal/, 'Coach settings must provide a route back to Personal');
-assert.match(html, /\.coach-intro-overlay \.coach-avatar-media \.coach-avatar-video\{z-index:2;background:transparent;opacity:0!important;mix-blend-mode:normal\}/, 'The intro video must be decoded behind the transparent alpha canvas');
+assert.match(html, /\.coach-intro-overlay \.coach-avatar-media \.coach-avatar-video\{z-index:2;background:transparent;opacity:0;mix-blend-mode:normal\}/, 'The intro video must be decoded behind the transparent alpha canvas');
 assert.match(html, /grid-template-columns:minmax\(0,\.82fr\) minmax\(0,1\.18fr\)/, 'The Coach welcome must place the video on the left and its dialogue on the right');
 assert.match(html, /PERSONALIZAR COACH/, 'The Personal launcher must use the improved, elongated label');
 assert.match(coach, /read\('solidoCoachPersonality','gracioso'\)/, 'Funny must be the default Coach personality');
