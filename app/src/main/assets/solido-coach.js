@@ -121,6 +121,9 @@
   function getAvatarVideoOrder(){const preferred=avatarVideos[currentAvatarState]||avatarVideos.welcome;return [preferred,...Object.keys(avatarVideos).map(key=>avatarVideos[key])].filter((source,index,all)=>all.indexOf(source)===index);}
   let currentAvatarState='welcome';
   let coachSpeaking=false;
+  let coachIntroActive=false;
+  let coachIntroFallbackTimer=null;
+  const coachIntroText='¡Hola, escalador! Soy SOLIDO CLIMBING, tu entrenador personal. Voy a tener en cuenta tu perfil y tu actividad para darte consejos y proponerte la próxima sesión. Tú decides cuándo empezar. ¡Vamos a por tu siguiente nivel!';
   let coachSpeechText='';
   let coachSpeechChunks=[];
   let coachLastVideoChunk=-1;
@@ -213,11 +216,62 @@
   function stopAvatarSpeechVisual(){coachSpeaking=false;hideAvatarVideo();coachLastVideoChunk=-1;}
   function buildCoachSpeechChunks(text){const sentences=[];const re=/[^.!?]+[.!?]*/g;let match;while((match=re.exec(text))!==null){const value=match[0].trim();if(value)sentences.push({start:match.index,end:match.index+match[0].length});}if(sentences.length>1)return sentences.slice(0,5);if(text.length<110)return [{start:0,end:text.length}];const count=Math.min(5,Math.max(2,Math.ceil(text.length/105))),chunks=[];let start=0;for(let i=0;i<count;i++){let end=i===count-1?text.length:Math.floor((i+1)*text.length/count);if(end<text.length){const space=text.indexOf(' ',end);if(space>0&&space<end+28)end=space;}chunks.push({start,end});start=end;}return chunks;}
   function selectAvatarVideoForChunk(chunkIndex){const order=getAvatarVideoOrder();const videoIndex=chunkIndex%order.length;playAvatarVideo(order[videoIndex]);}
-  window.onSolidoCoachSpeechRange=function(start,end){if(!coachSpeaking||!coachSpeechChunks.length)return;let index=coachSpeechChunks.findIndex(chunk=>start>=chunk.start&&start<chunk.end);if(index<0)index=coachSpeechChunks.length-1;if(index!==coachLastVideoChunk){coachLastVideoChunk=index;selectAvatarVideoForChunk(index);}};
-  function setAvatar(state,message){currentAvatarState=avatarStates[state]?state:'welcome';const image=$('coachAvatarImage'),copy=$('coachAvatarMessage');if(image)image.src='coach/'+(avatarStates[currentAvatarState]||avatarStates.welcome);if(copy&&message)copy.textContent=message;if(coachSpeaking)showAvatarVideo();else hideAvatarVideo();}
+  window.onSolidoCoachSpeechRange=function(start,end){if(!coachSpeaking||coachIntroActive||!coachSpeechChunks.length)return;let index=coachSpeechChunks.findIndex(chunk=>start>=chunk.start&&start<chunk.end);if(index<0)index=coachSpeechChunks.length-1;if(index!==coachLastVideoChunk){coachLastVideoChunk=index;selectAvatarVideoForChunk(index);}};
+  function setAvatar(state,message){if(coachIntroActive){state='welcome';message=coachIntroText;}currentAvatarState=avatarStates[state]?state:'welcome';const image=$('coachAvatarImage'),copy=$('coachAvatarMessage');if(image)image.src='coach/'+(avatarStates[currentAvatarState]||avatarStates.welcome);if(copy&&message)copy.textContent=message;if(coachSpeaking)showAvatarVideo();else hideAvatarVideo();}
   function updateVoiceButton(){const button=$('coachVoiceToggle');if(button){button.textContent=voiceEnabled()?'🔊 VOZ ACTIVADA':'🔇 VOZ SILENCIADA';button.setAttribute('aria-pressed',voiceEnabled()?'true':'false');}}
   window.solidoCoachToggleVoice=function(){const enabled=!voiceEnabled();write('solidoCoachVoiceEnabled',enabled?'1':'0');if(!enabled){if(window.AndroidCoach&&window.AndroidCoach.stopCoachSpeech)window.AndroidCoach.stopCoachSpeech();stopAvatarSpeechVisual();}updateVoiceButton();const status=$('coachVoiceStatus');if(status)status.textContent=enabled?'Voz activada · usa la voz española instalada en Android':'Voz silenciada';};
-  window.onSolidoCoachVoiceStatus=function(state){const status=$('coachVoiceStatus');if(state==='started'){if(status)status.textContent='El entrenador está hablando…';startAvatarSpeechVisual();}else if(state==='done'){stopAvatarSpeechVisual();if(status)status.textContent='Consejo terminado.';}else if(state==='stopped'){stopAvatarSpeechVisual();if(status)status.textContent='Reproducción detenida.';}else if(state==='error'||state==='unavailable'){stopAvatarSpeechVisual();if(status)status.textContent='No se pudo iniciar la voz de Android. Comprueba el motor de texto a voz.';}};
+  function finishCoachIntro(){
+    if(!coachIntroActive)return;
+    coachIntroActive=false;
+    if(coachIntroFallbackTimer){clearTimeout(coachIntroFallbackTimer);coachIntroFallbackTimer=null;}
+    stopAvatarSpeechVisual();
+    const overlay=$('coachIntroOverlay');
+    if(overlay){overlay.classList.remove('active');overlay.setAttribute('aria-hidden','true');}
+    if(document.body)document.body.classList.remove('coach-intro-active');
+    try{if(window.AndroidUi&&typeof window.AndroidUi.exitGameFullscreen==='function')window.AndroidUi.exitGameFullscreen();}catch(e){}
+  }
+  window.solidoCoachOpen=function(){
+    if(typeof window.show==='function')window.show('solidoCoach');
+    render();
+    coachIntroActive=true;
+    const overlay=$('coachIntroOverlay');
+    if(overlay){overlay.classList.add('active');overlay.setAttribute('aria-hidden','false');}
+    if(document.body)document.body.classList.add('coach-intro-active');
+    try{if(window.AndroidUi&&typeof window.AndroidUi.enterGameFullscreen==='function')window.AndroidUi.enterGameFullscreen();}catch(e){}
+    setAvatar('welcome',coachIntroText);
+    const spoken=coachIntroText.replace(/\\bSOLIDO(?:\\s+CLIMBING)?\\b/gi,'Sólido Climbing');
+    coachSpeechText=spoken;
+    coachSpeechChunks=[{start:0,end:spoken.length}];
+    coachLastVideoChunk=-1;
+    coachSpeaking=true;
+    playAvatarVideo(avatarVideos.welcome);
+    const status=$('coachVoiceStatus');
+    if(voiceEnabled()&&window.AndroidCoach&&typeof window.AndroidCoach.speakCoachText==='function'){
+      if(status)status.textContent='Presentación de SOLIDO COACH…';
+      try{window.AndroidCoach.speakCoachText(spoken);}
+      catch(error){if(status)status.textContent='No se pudo iniciar la voz. Mostrando la presentación.';coachIntroFallbackTimer=setTimeout(finishCoachIntro,6500);}
+    }else{
+      if(status)status.textContent=voiceEnabled()?'La voz no está disponible en este dispositivo.':'Voz silenciada en Config. Coach.';
+      coachIntroFallbackTimer=setTimeout(finishCoachIntro,6500);
+    }
+  };
+  window.solidoCoachFinishIntro=finishCoachIntro;
+  window.onSolidoCoachVoiceStatus=function(state){
+    const status=$('coachVoiceStatus');
+    if(state==='started'){
+      if(status)status.textContent='SOLIDO CLIMBING te está hablando…';
+      startAvatarSpeechVisual();
+    }else if(state==='done'){
+      if(coachIntroActive){finishCoachIntro();if(status)status.textContent='Presentación terminada.';}
+      else{stopAvatarSpeechVisual();if(status)status.textContent='Consejo terminado.';}
+    }else if(state==='stopped'){
+      if(coachIntroActive)finishCoachIntro();else stopAvatarSpeechVisual();
+      if(status)status.textContent='Reproducción detenida.';
+    }else if(state==='error'||state==='unavailable'){
+      if(coachIntroActive)finishCoachIntro();else stopAvatarSpeechVisual();
+      if(status)status.textContent='No se pudo iniciar la voz de Android. Comprueba el motor de texto a voz.';
+    }
+  };
   window.solidoCoachSpeak=function(){const status=$('coachVoiceStatus');if(!voiceEnabled()){if(status)status.textContent='Activa la voz para escuchar al entrenador.';return;}const text=[$('coachAdviceTitle')?.textContent,$('coachAdviceBody')?.textContent].filter(Boolean).join('. ').trim().replace(/\bSOLIDO(?:\s+CLIMBING)?\b/gi,'Sólido Climbing');if(!text){if(status)status.textContent='Todavía no hay ningún consejo para leer.';return;}coachSpeechText=text;coachSpeechChunks=buildCoachSpeechChunks(text);coachLastVideoChunk=-1;if(window.AndroidCoach&&typeof window.AndroidCoach.speakCoachText==='function'){try{window.AndroidCoach.speakCoachText(text);if(status)status.textContent='Preparando la voz masculina en español…';return;}catch(error){if(status)status.textContent='No se pudo iniciar la voz de Android.';return;}}if(status)status.textContent='La voz nativa solo está disponible dentro de la aplicación Android.';};
   function render(){
     const p=personalities.find(x=>x.id===read('solidoCoachPersonality','cercano'))||personalities[0];
@@ -238,11 +292,10 @@
     const proposal=preferences.limitations.trim()?null:buildProposal(profile,preferences);
     const proposalSafetyNote=proposal?proposalBlockReason:'';
     window.solidoCoachCurrentProposal=proposal?{category:proposal.category,name:proposal.name,items:proposal.items.map(({id,sets,reps,work,rest})=>({id,sets,reps,work,rest}))}:null;
-    const initialPlanReady=typeof window.solidoCoachEnsureInitialPlan==='function'&&window.solidoCoachEnsureInitialPlan(window.solidoCoachCurrentProposal);
     const proposalBody=$('coachProposalBody'),proposalItems=$('coachProposalItems'),proposalButton=$('coachProposalAccept');
-    if(proposalBody)proposalBody.textContent=initialPlanReady?'Tu primer plan ya está creado y guardado en Mis planes. '+(proposalSafetyNote||'Puedes empezar a entrenar cuando quieras.'):proposal?proposal.note+(proposalSafetyNote?' '+proposalSafetyNote:''):proposalBlockReason;
+    if(proposalBody)proposalBody.textContent=proposal?proposal.note+(proposalSafetyNote?' '+proposalSafetyNote:''):proposalBlockReason;
     if(proposalItems)proposalItems.innerHTML=proposal?proposal.items.map(item=>'<div class="coach-proposal-item"><strong>'+safe(item.label)+'</strong><span>'+safe(item.detail)+'</span></div>').join(''):'';
-    if(proposalButton)proposalButton.style.display=proposal&&!initialPlanReady?'block':'none';
+    if(proposalButton)proposalButton.style.display=proposal?'block':'none';
     const advice=buildLocalAdvice(sessionList,profile,preferences,p.id,window.solidoCoachHealthData||null);
     setAvatar(proposalBlockReason?'rest':(sessionList.length?'motivation':'welcome'),proposalBlockReason||'Vamos a trabajar para que sigas progresando. Yo te acompaño en cada sesión.');
     updateVoiceButton();
