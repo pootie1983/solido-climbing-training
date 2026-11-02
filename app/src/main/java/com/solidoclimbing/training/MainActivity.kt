@@ -127,10 +127,7 @@ class MainActivity : ComponentActivity() {
                     runOnUiThread {
                         if (status == TextToSpeech.SUCCESS) {
                             coachTtsReady = true
-                            val language = coachTts?.setLanguage(Locale("es", "ES")) ?: TextToSpeech.LANG_NOT_SUPPORTED
-                            if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
-                                coachTts?.setLanguage(Locale("es"))
-                            }
+                            configureCoachSpanishVoiceTwo()
                             coachTts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                                 override fun onStart(utteranceId: String?) {
                                     if (utteranceId == currentCoachUtteranceId) notifyCoachVoiceStatus("started")
@@ -163,6 +160,26 @@ class MainActivity : ComponentActivity() {
                 speakCoachTextNow(cleanText)
             } else {
                 pendingCoachSpeech = cleanText
+            }
+        }
+    }
+
+    // Selecciona explícitamente la segunda voz disponible para español de España.
+    // Así no dependemos de la voz femenina que el motor haya elegido como predeterminada.
+    private fun configureCoachSpanishVoiceTwo() {
+        val tts = coachTts ?: return
+        val spanishVoices = tts.voices
+            ?.filter { it.locale.language == "es" && it.locale.country.equals("ES", ignoreCase = true) }
+            ?.sortedBy { it.name.lowercase(Locale.ROOT) }
+            .orEmpty()
+        val selectedVoice = spanishVoices.getOrNull(1) ?: spanishVoices.firstOrNull()
+        if (selectedVoice != null) {
+            tts.voice = selectedVoice
+            tts.setPitch(1.0f)
+        } else {
+            val language = tts.setLanguage(Locale("es", "ES"))
+            if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
+                tts.setLanguage(Locale("es"))
             }
         }
     }
