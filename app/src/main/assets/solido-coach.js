@@ -241,7 +241,7 @@
     }
   }
   function showAvatarVideo(){const source=avatarVideos[currentAvatarState]||avatarVideos.welcome;playAvatarVideo(source);}
-  function startAvatarSpeechVisual(){coachSpeaking=true;if(coachLastVideoChunk<0)playAvatarVideo(avatarVideos[currentAvatarState]||avatarVideos.welcome);else selectAvatarVideoForChunk(coachLastVideoChunk);}
+  function startAvatarSpeechVisual(){coachSpeaking=true;if(coachLastVideoChunk<0)playAvatarVideo(getAvatarVideoOrder()[0]);else selectAvatarVideoForChunk(coachLastVideoChunk);}
   function stopAvatarSpeechVisual(){coachSpeaking=false;hideAvatarVideo();coachLastVideoChunk=-1;}
   function buildCoachSpeechChunks(text){const sentences=[];const re=/[^.!?]+[.!?]*/g;let match;while((match=re.exec(text))!==null){const value=match[0].trim();if(value)sentences.push({start:match.index,end:match.index+match[0].length});}if(sentences.length>1)return sentences.slice(0,5);if(text.length<110)return [{start:0,end:text.length}];const count=Math.min(5,Math.max(2,Math.ceil(text.length/105))),chunks=[];let start=0;for(let i=0;i<count;i++){let end=i===count-1?text.length:Math.floor((i+1)*text.length/count);if(end<text.length){const space=text.indexOf(' ',end);if(space>0&&space<end+28)end=space;}chunks.push({start,end});start=end;}return chunks;}
   function selectAvatarVideoForChunk(chunkIndex){const order=getAvatarVideoOrder();playAvatarVideo(order[0]);}
