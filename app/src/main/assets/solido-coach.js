@@ -154,6 +154,7 @@
   }
   function hideAvatarVideo(){
     const videos=getCoachVideoPair(),canvas=$('coachAvatarCanvas'),image=$('coachAvatarImage');
+    if(coachVideoFrame){cancelAnimationFrame(coachVideoFrame);coachVideoFrame=0;}
     videos.forEach(video=>{video.pause();try{video.currentTime=0;}catch(e){}video.style.opacity='0';video.style.display='none';video.onplaying=null;});
     coachActiveVideo=null;
     if(canvas)canvas.style.display='none';
@@ -161,10 +162,40 @@
   }
   function revealAvatarVideo(video){
     const canvas=$('coachAvatarCanvas'),image=$('coachAvatarImage');
-    if(!video)return;
-    video.style.display='block';
-    if(canvas)canvas.style.display='none';
-    if(image)image.style.display='none';
+    if(!video||!canvas)return;
+    if(coachVideoFrame){cancelAnimationFrame(coachVideoFrame);coachVideoFrame=0;}
+    if(video.videoWidth&&video.videoHeight){
+      const scale=Math.min(1,540/video.videoWidth);
+      const width=Math.max(1,Math.round(video.videoWidth*scale));
+      const height=Math.max(1,Math.round(video.videoHeight*scale));
+      if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
+      const context=canvas.getContext('2d',{alpha:true,willReadFrequently:true});
+      const drawFrame=()=>{
+        if(!coachSpeaking||video.paused||!video.videoWidth){coachVideoFrame=0;return;}
+        try{
+          context.drawImage(video,0,0,width,height);
+          const frame=context.getImageData(0,0,width,height),pixels=frame.data;
+          for(let i=0;i<pixels.length;i+=4){
+            const red=pixels[i],green=pixels[i+1],blue=pixels[i+2];
+            const brightest=Math.max(red,green,blue),darkest=Math.min(red,green,blue);
+            if(brightest<42&&(brightest-darkest)<24)pixels[i+3]=0;
+            else if(brightest<68&&(brightest-darkest)<20)pixels[i+3]=Math.round(pixels[i+3]*(brightest-42)/26);
+          }
+          context.putImageData(frame,0,0);
+        }catch(error){canvas.style.display='none';video.style.display='block';video.style.opacity='1';}
+        coachVideoFrame=requestAnimationFrame(drawFrame);
+      };
+      canvas.style.display='block';
+      video.style.display='block';
+      video.style.opacity='0';
+      if(image)image.style.display='none';
+      coachVideoFrame=requestAnimationFrame(drawFrame);
+    }else{
+      canvas.style.display='none';
+      video.style.display='block';
+      video.style.opacity='1';
+      if(image)image.style.display='none';
+    }
   }
   function playAvatarVideo(source){
     if(!coachSpeaking)return;
@@ -280,7 +311,7 @@
   };
   window.solidoCoachSpeak=function(){const status=$('coachVoiceStatus');if(!voiceEnabled()){if(status)status.textContent='Activa la voz para escuchar al entrenador.';return;}const text=[$('coachAdviceTitle')?.textContent,$('coachAdviceBody')?.textContent].filter(Boolean).join('. ').trim().replace(/\bSOLIDO(?:\s+CLIMBING)?\b/gi,'Sólido Climbing');if(!text){if(status)status.textContent='Todavía no hay ningún consejo para leer.';return;}coachSpeechText=text;coachSpeechChunks=buildCoachSpeechChunks(text);coachLastVideoChunk=-1;if(window.AndroidCoach&&typeof window.AndroidCoach.speakCoachText==='function'){try{window.AndroidCoach.speakCoachText(text);if(status)status.textContent='Preparando la voz masculina en español…';return;}catch(error){if(status)status.textContent='No se pudo iniciar la voz de Android.';return;}}if(status)status.textContent='La voz nativa solo está disponible dentro de la aplicación Android.';};
   function render(){
-    const p=personalities.find(x=>x.id===read('solidoCoachPersonality','cercano'))||personalities[0];
+    const p=personalities.find(x=>x.id===read('solidoCoachPersonality','gracioso'))||personalities[0];
     const profile={
       nickname:read('solidoNickname','Sin apodo'),
       age:read('solidoAge','—'),
