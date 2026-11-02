@@ -239,7 +239,7 @@
     if(document.body)document.body.classList.add('coach-intro-active');
     try{if(window.AndroidUi&&typeof window.AndroidUi.enterGameFullscreen==='function')window.AndroidUi.enterGameFullscreen();}catch(e){}
     setAvatar('welcome',coachIntroText);
-    const spoken=coachIntroText.replace(/\\bSOLIDO(?:\\s+CLIMBING)?\\b/gi,'Sólido Climbing');
+    const spoken=coachIntroText.replace(/\bSOLIDO(?:\s+CLIMBING)?\b/gi,'Sólido Climbing');
     coachSpeechText=spoken;
     coachSpeechChunks=[{start:0,end:spoken.length}];
     coachLastVideoChunk=-1;
