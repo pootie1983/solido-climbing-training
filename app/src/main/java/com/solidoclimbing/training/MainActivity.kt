@@ -131,7 +131,6 @@ class MainActivity : ComponentActivity() {
                             if (language == TextToSpeech.LANG_MISSING_DATA || language == TextToSpeech.LANG_NOT_SUPPORTED) {
                                 coachTts?.setLanguage(Locale("es"))
                             }
-                            configureCoachSpanishMaleVoice()
                             coachTts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                                 override fun onStart(utteranceId: String?) {
                                     if (utteranceId == currentCoachUtteranceId) notifyCoachVoiceStatus("started")
@@ -168,28 +167,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun configureCoachSpanishMaleVoice() {
-        val tts = coachTts ?: return
-        val spanishVoices = tts.voices?.filter { it.locale.language == "es" }.orEmpty()
-        val maleVoice = spanishVoices.firstOrNull { voice ->
-            val name = voice.name.lowercase(Locale.ROOT)
-            name.contains("male") || name.contains("mascul") ||
-                voice.features.any { feature -> feature.equals("gender=male", true) || feature.equals("male", true) }
-        }
-        if (maleVoice != null) {
-            tts.voice = maleVoice
-            tts.setPitch(0.95f)
-        } else {
-            // Samsung TTS ya tiene seleccionada la voz masculina desde los ajustes del teléfono.
-            // No forzar un tono artificial: conservar el tono natural de esa voz.
-            tts.setPitch(1.0f)
-        }
-    }
-
     private fun speakCoachTextNow(text: String) {
         try {
             coachTts?.setSpeechRate(0.94f)
-            configureCoachSpanishMaleVoice()
             coachUtteranceSequence += 1
             val utteranceId = "solido-coach-$coachUtteranceSequence"
             currentCoachUtteranceId = utteranceId
