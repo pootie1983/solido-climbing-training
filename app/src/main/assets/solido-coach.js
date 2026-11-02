@@ -26,10 +26,14 @@
   window.solidoCoachSetPersonality=function(id){
     if(!personalities.some(p=>p.id===id))return;
     write('solidoCoachPersonality',id);render();
-    const spoken=personalityIntro(id);coachIntroActive=false;currentAvatarState='welcome';
+    const spoken=personalityIntro(id);currentAvatarState='welcome';
     coachSpeechText=spoken;coachSpeechChunks=[{start:0,end:spoken.length}];coachLastVideoChunk=-1;
     renderKaraoke(spoken);
     if(!voiceEnabled()){const status=$('coachVoiceStatus');if(status)status.textContent='Personalidad cambiada · activa la voz para escucharla';return;}
+    coachIntroActive=true;
+    const overlay=$('coachIntroOverlay');if(overlay){overlay.classList.add('active');overlay.setAttribute('aria-hidden','false');}
+    if(document.body)document.body.classList.add('coach-intro-active');
+    try{if(window.AndroidUi&&typeof window.AndroidUi.enterGameFullscreen==='function')window.AndroidUi.enterGameFullscreen();}catch(e){}
     coachSpeaking=true;playAvatarVideo(personalityVideos[id]);
     const status=$('coachVoiceStatus');
     if(window.AndroidCoach&&typeof window.AndroidCoach.speakCoachText==='function'){if(status)status.textContent='Presentando la personalidad '+id+'…';window.AndroidCoach.speakCoachText(spoken);}
