@@ -2457,6 +2457,28 @@ body.coach-intro-active{overflow:hidden!important}
 .coach-config-launch-copy small{color:#c5d6d0;font-size:11px;line-height:1.4}
 .coach-config-launch-arrow{font-size:30px;color:var(--green)}
 @media(max-width:380px){.coach-intro-panel{padding:6px 0 12px}.coach-intro-overlay .coach-avatar-copy{padding:11px 10px 8px}.coach-config-launch{gap:9px;padding:12px}}
+/* SOLIDO COACH · avatar inmersivo, subtítulos karaoke y acceso compacto */
+.coach-intro-overlay{padding:0!important;align-items:stretch!important;justify-content:stretch!important;background:radial-gradient(ellipse at 50% 35%,#173b31 0%,#07131a 72%,#03080c 100%)!important}
+.coach-intro-panel{width:100vw!important;height:100dvh!important;max-width:none!important;margin:0!important;padding:0!important;justify-content:stretch!important}
+.coach-intro-overlay .coach-avatar-media{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;flex:none!important;overflow:hidden!important}
+.coach-intro-overlay .coach-avatar-media .coach-avatar-art,.coach-intro-overlay .coach-avatar-media .coach-avatar-video,.coach-intro-overlay .coach-avatar-media .coach-avatar-canvas{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:contain!important;object-position:center center!important;filter:none!important}
+.coach-intro-overlay .coach-avatar-media .coach-avatar-video{background:transparent!important;mix-blend-mode:screen;z-index:2}
+.coach-intro-overlay .coach-avatar-media .coach-avatar-art{z-index:1}
+.coach-intro-overlay .coach-avatar-copy{position:absolute!important;left:max(12px,env(safe-area-inset-left))!important;right:max(12px,env(safe-area-inset-right))!important;bottom:max(14px,calc(env(safe-area-inset-bottom) + 10px))!important;width:auto!important;max-width:900px!important;margin:0 auto!important;padding:0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;text-align:center!important}
+.coach-intro-overlay .coach-avatar-copy>strong{display:none!important}
+.coach-intro-overlay .coach-avatar-copy p{display:none!important}
+.coach-intro-overlay .coach-avatar-copy .coach-voice-status{display:block!important;margin-top:8px;color:#d6e4dc!important;font-size:10px;text-shadow:0 2px 8px #000}
+.coach-karaoke{display:block;max-height:27vh;overflow-y:auto;padding:14px 16px;border:1px solid #a7ed78aa;border-radius:17px;background:linear-gradient(135deg,#071b18eF,#071018eF);box-shadow:0 10px 35px #0009;color:#e9f1eb;font-size:clamp(19px,5vw,26px);font-weight:800;line-height:1.55;text-align:center;text-wrap:pretty;backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
+.coach-karaoke-word{display:inline-block;margin:0 2px;color:#e5eee8;transition:color .08s ease,text-shadow .08s ease,transform .08s ease}
+.coach-karaoke-word.active{color:#baff62;text-shadow:0 0 13px #baff62b0;transform:scale(1.07)}
+.coach-config-launch{min-height:58px!important;margin:9px 0!important;padding:9px 12px!important;gap:10px!important;border-radius:15px!important;box-shadow:0 4px 12px #0002!important}
+.coach-config-launch-icon{flex-basis:34px!important;width:34px!important;height:34px!important;border-radius:10px!important;font-size:19px!important}
+.coach-config-launch-copy{gap:2px!important}
+.coach-config-launch-copy strong{font-size:12px!important}
+.coach-config-launch-copy small{font-size:10px!important;line-height:1.25!important}
+.coach-config-launch-arrow{font-size:22px!important}
+@media(max-width:380px){.coach-karaoke{font-size:18px;padding:11px 12px}.coach-intro-overlay .coach-avatar-copy{left:9px!important;right:9px!important}}
+
 </style></head>
 
 <body>
@@ -3426,7 +3448,7 @@ body.coach-intro-active{overflow:hidden!important}
       </div>
       <div class="coach-avatar-copy">
         <strong>¡HOLA, ESCALADOR!</strong>
-        <p id="coachAvatarMessage">Soy tu entrenador personal. Vamos a trabajar para que sigas progresando.</p>
+        <div id="coachKaraoke" class="coach-karaoke" aria-live="off" aria-label="Subtítulos sincronizados"></div>
         <small id="coachVoiceStatus" class="coach-voice-status" aria-live="polite">Preparando tu entrenador…</small>
       </div>
     </div>
