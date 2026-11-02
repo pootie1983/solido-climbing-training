@@ -4875,7 +4875,8 @@ window.solidoCoachAcceptPlanProposal=function(){
   const button=document.getElementById('coachProposalAccept');if(button)button.style.display='none';
   const body=document.getElementById('coachProposalBody');if(body)body.textContent='Propuesta añadida como un plan nuevo. Tus planes anteriores siguen intactos.';
   const list=document.getElementById('coachProposalItems');if(list)list.innerHTML='';
-  startPlan(entry.id);
+  if(typeof startPlan==='function')startPlan(entry.id);
+  else{renderPlan();show('plans');}
 };
 const planCategories=[{name:'Calentamiento',icon:'<svg viewBox="0 0 40 40"><path d="M20 4c-2 7-9 9-9 18a9 9 0 0 0 18 0c0-4-2-7-5-10 0 5-3 6-4 7-1-5 2-9 0-15Z"/><path d="M20 23c-3 3-3 8 1 9 4-1 4-6 1-9"/></svg>'},{name:'Fuerza',icon:'<svg viewBox="0 0 40 40"><path d="M5 15v10m5-14v18m20-18v18m5-14v10M10 20h20"/><path d="M14 16v8m12-8v8"/></svg>'},{name:'Resistencia',icon:'<svg viewBox="0 0 40 40"><path d="M4 24h7l4-12 7 18 5-12 3 6h6"/></svg>'},{name:'Técnica',icon:'<svg viewBox="0 0 40 40"><path d="M7 32 15 8l7 14 5-9 6 19"/><circle cx="15" cy="8" r="2"/><circle cx="22" cy="22" r="2"/><circle cx="27" cy="13" r="2"/></svg>'},{name:'Escalada',icon:'<svg viewBox="0 0 40 40"><path d="M5 34 14 7l7 13 5-8 9 22"/><path d="M11 24c5-3 8-1 11 3m-3-13 5-2"/></svg>'},{name:'Recuperación',icon:'<svg viewBox="0 0 40 40"><path d="M31 13A13 13 0 1 0 33 24"/><path d="M25 8h7v7"/><path d="M20 13v8l6 3"/></svg>'}];
 function savePlanOrder(){try{localStorage.setItem('solidoPlanOrder',JSON.stringify(planOrder));}catch(e){}}
