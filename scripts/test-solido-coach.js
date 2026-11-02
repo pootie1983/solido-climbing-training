@@ -626,6 +626,7 @@ assert.match(html, /class="tile coach-config-launch" onclick="show\('coachConfig
 assert.match(html, /onclick="show\('profile'\)">← Volver a Personal/, 'Coach settings must provide a route back to Personal');
 assert.match(html, /\.coach-intro-overlay \.coach-avatar-media \.coach-avatar-video\{z-index:2;background:transparent\}/, 'The intro video must occupy a visible, layered media area');
 assert.match(html, /\.coach-intro-overlay \.coach-avatar-copy\{position:relative;z-index:4;display:block!important;visibility:visible!important;[\s\S]*?background:#fff!important/, 'The welcome text must remain visible in its white card while the video plays');
+assert.match(coach, /next\.onloadeddata=\(\)=>\{[\s\S]*?revealAvatarVideo\(next\);[\s\S]*?next\.style\.opacity='1';/, 'The welcome video must become visible as soon as its first frame is decoded');
 
 console.log('SOLIDO plan automation and workout cue checks passed: first plan auto-created once, safety gates preserved, and session transitions announce start/rest/exercise changes.');
 
