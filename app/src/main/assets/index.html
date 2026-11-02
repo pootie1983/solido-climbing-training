@@ -2434,29 +2434,30 @@ body.br-fullscreen-active .sg-close{display:flex}
 </style>
 <link rel="stylesheet" href="solido-coach.css">
 <style>
-/* SOLIDO COACH · bienvenida visible y configuración organizada en Personal */
+/* SOLIDO COACH · bienvenida horizontal: vídeo a la izquierda y diálogo a la derecha */
 body.coach-intro-active{overflow:hidden!important}
-.coach-intro-overlay{display:none;position:fixed;inset:0;z-index:10000;width:100vw;height:100vh;height:100dvh;overflow:hidden;align-items:center;justify-content:center;padding:max(14px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));background:radial-gradient(ellipse at 50% 24%,#24483c 0%,#10242d 48%,#050d13 100%)}
+.coach-intro-overlay{display:none;position:fixed;inset:0;z-index:10000;width:100vw;height:100vh;height:100dvh;overflow:hidden;align-items:center;justify-content:center;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));background:radial-gradient(ellipse at 22% 45%,#24483c 0%,#10242d 52%,#050d13 100%)}
 .coach-intro-overlay.active{display:flex!important;visibility:visible!important;opacity:1!important}
-.coach-intro-panel{display:flex!important;visibility:visible!important;flex-direction:column;align-items:stretch;justify-content:center;width:100%;height:100%;max-width:760px;min-height:0;margin:auto;padding:12px 4px 18px;background:transparent!important;border:0!important;box-shadow:none!important;opacity:1!important}
-.coach-intro-overlay .coach-avatar-media{display:block!important;visibility:visible!important;position:relative;isolation:isolate;flex:1 1 0;width:100%;height:auto;max-height:none;min-height:0;overflow:hidden}
+.coach-intro-panel{display:grid!important;visibility:visible!important;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);grid-template-rows:minmax(0,1fr);align-items:center;gap:14px;width:100%;height:100%;max-width:900px;min-height:0;margin:auto;padding:14px;background:transparent!important;border:0!important;box-shadow:none!important;opacity:1!important}
+.coach-intro-overlay .coach-avatar-media{display:block!important;visibility:visible!important;position:relative;isolation:isolate;grid-column:1;grid-row:1;width:100%;height:min(72vh,620px);max-height:100%;min-height:0;overflow:hidden;align-self:center}
 .coach-intro-overlay .coach-avatar-media .coach-avatar-art,.coach-intro-overlay .coach-avatar-media .coach-avatar-video,.coach-intro-overlay .coach-avatar-media .coach-avatar-canvas{position:absolute;inset:0;display:block;object-fit:contain;object-position:center center;width:100%;height:100%;max-width:100%;max-height:100%;filter:drop-shadow(0 12px 20px #0009)}
 .coach-intro-overlay .coach-avatar-media .coach-avatar-art{z-index:1}
-.coach-intro-overlay .coach-avatar-media .coach-avatar-video{z-index:2;background:transparent}
+.coach-intro-overlay .coach-avatar-media .coach-avatar-video{z-index:2;background:transparent;opacity:0!important;mix-blend-mode:normal}
 .coach-intro-overlay .coach-avatar-media .coach-avatar-canvas{z-index:3;pointer-events:none}
-.coach-intro-overlay .coach-avatar-copy{position:relative;z-index:4;display:block!important;visibility:visible!important;flex:0 0 auto;width:100%;max-width:560px;margin:12px auto 0;padding:15px 16px 12px;text-align:center;background:#fff!important;color:#17251f!important;border:1px solid #dbe6dd;border-radius:18px;box-shadow:0 10px 28px #0006;opacity:1!important}
-.coach-intro-overlay .coach-avatar-copy>strong{display:block;color:#28623b!important;font-size:clamp(19px,5vw,27px);font-weight:1000;letter-spacing:.6px}
-.coach-intro-overlay .coach-avatar-copy p{margin:9px auto 8px;max-width:480px;color:#17251f!important;font-size:clamp(14px,3.8vw,17px);line-height:1.5}
-.coach-intro-overlay .coach-voice-status{display:block;color:#52645a!important;font-size:11px}
+.coach-intro-overlay .coach-avatar-copy{position:relative;z-index:4;display:block!important;visibility:visible!important;grid-column:2;grid-row:1;align-self:center;flex:0 0 auto;width:100%;max-width:none;max-height:88%;overflow:auto;margin:0;padding:18px 16px;text-align:left;background:#fff!important;color:#17251f!important;border:1px solid #dbe6dd;border-radius:18px;box-shadow:0 10px 28px #0006;opacity:1!important}
+.coach-intro-overlay .coach-avatar-copy>strong{display:block;color:#28623b!important;font-size:clamp(17px,4vw,25px);font-weight:1000;letter-spacing:.4px}
+.coach-intro-overlay .coach-avatar-copy p{margin:10px 0 8px;max-width:none;color:#17251f!important;font-size:clamp(12px,2.8vw,16px);line-height:1.48}
+.coach-intro-overlay .coach-voice-status{display:block;color:#52645a!important;font-size:10px;line-height:1.35}
 .coach-config-shell{display:grid;gap:12px;margin-bottom:18px}
 .coach-voice-settings button{width:100%;margin-top:4px}
-.coach-config-launch{display:flex;align-items:center;gap:13px;width:100%;min-height:88px;margin:16px 0;padding:15px;text-align:left;color:var(--text);border:1px solid #477d58;background:linear-gradient(120deg,#1b3b32,#122a30);box-shadow:0 7px 20px #0003}
-.coach-config-launch-icon{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;border-radius:13px;background:#7cff4520;font-size:25px}
-.coach-config-launch-copy{display:grid;gap:5px;flex:1;min-width:0}
-.coach-config-launch-copy strong{margin:0!important;color:var(--green);font-size:14px;letter-spacing:.6px}
-.coach-config-launch-copy small{color:#c5d6d0;font-size:11px;line-height:1.4}
-.coach-config-launch-arrow{font-size:30px;color:var(--green)}
-@media(max-width:380px){.coach-intro-panel{padding:6px 0 12px}.coach-intro-overlay .coach-avatar-copy{padding:11px 10px 8px}.coach-config-launch{gap:9px;padding:12px}}
+.coach-config-launch{display:flex;align-items:center;gap:11px;width:100%;min-height:66px;margin:12px 0;padding:10px 14px;text-align:left;color:var(--text);border:1px solid #477d58;border-radius:15px;background:linear-gradient(110deg,#1b3b32,#122a30);box-shadow:0 5px 15px #0003}
+.coach-config-launch-icon{display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border-radius:11px;background:#7cff4520;font-size:20px}
+.coach-config-launch-copy{display:grid;gap:3px;flex:1;min-width:0}
+.coach-config-launch-copy strong{margin:0!important;color:var(--green);font-size:13px;letter-spacing:.45px}
+.coach-config-launch-copy small{color:#c5d6d0;font-size:10px;line-height:1.3}
+.coach-config-launch-arrow{font-size:23px;color:var(--green)}
+@media(max-width:390px){.coach-intro-panel{grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr);gap:8px;padding:8px 5px}.coach-intro-overlay .coach-avatar-media{height:64vh}.coach-intro-overlay .coach-avatar-copy{padding:12px 10px;border-radius:14px}.coach-intro-overlay .coach-avatar-copy>strong{font-size:16px}.coach-intro-overlay .coach-avatar-copy p{font-size:12px;line-height:1.4;margin:8px 0}.coach-intro-overlay .coach-voice-status{font-size:9px}.coach-config-launch{min-height:62px;gap:9px;padding:9px 11px}}
+@media(max-height:430px){.coach-intro-panel{padding:5px}.coach-intro-overlay .coach-avatar-media{height:84vh}.coach-intro-overlay .coach-avatar-copy{max-height:96%;padding:9px 11px}.coach-intro-overlay .coach-avatar-copy p{margin:6px 0;font-size:11px}}
 </style></head>
 
 <body>
@@ -3349,7 +3350,7 @@ body.coach-intro-active{overflow:hidden!important}
 
   <button type="button" class="tile coach-config-launch" onclick="show('coachConfig')">
     <span class="coach-config-launch-icon" aria-hidden="true">⚙️</span>
-    <span class="coach-config-launch-copy"><strong>CONFIG. COACH</strong><small>Personaliza el estilo, la voz y las preferencias de tu entrenador.</small></span>
+    <span class="coach-config-launch-copy"><strong>PERSONALIZAR COACH</strong><small>Voz, personalidad y preferencias del entrenador.</small></span>
     <span class="coach-config-launch-arrow" aria-hidden="true">›</span>
   </button>
 
@@ -3373,7 +3374,7 @@ body.coach-intro-active{overflow:hidden!important}
         <button type="button" class="coach-personality" data-personality="gracioso" onclick="solidoCoachSetPersonality('gracioso')"><span class="coach-face">😄</span><strong>GRACIOSO</strong><small>Humor y buen ambiente</small></button>
         <button type="button" class="coach-personality" data-personality="estricto" onclick="solidoCoachSetPersonality('estricto')"><span class="coach-face">🎯</span><strong>ESTRICTO</strong><small>Exigente y disciplinado</small></button>
       </div>
-      <p id="coachPersonalitySummary" class="coach-muted" style="margin:12px 0 0">Estilo seleccionado: Cercano</p>
+      <p id="coachPersonalitySummary" class="coach-muted" style="margin:12px 0 0">Estilo seleccionado: Gracioso</p>
     </div>
     <div class="coach-panel">
       <h3>Tu perfil de escalador</h3>
