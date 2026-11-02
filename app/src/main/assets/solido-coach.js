@@ -175,6 +175,7 @@
     const next=videos.find(video=>video!==active)||videos[0];
     next.pause();
     next.onplaying=null;
+    next.onloadeddata=null;
     next.dataset.source=source;
     next.src=source;
     next.load();
@@ -187,6 +188,11 @@
     next.setAttribute('controlslist','nodownload nofullscreen noplaybackrate');
     next.style.display='block';
     next.style.opacity='0';
+    next.onloadeddata=()=>{
+      if(!coachSpeaking||next.dataset.source!==source)return;
+      revealAvatarVideo(next);
+      next.style.opacity='1';
+    };
     next.onplaying=()=>{
       if(!coachSpeaking||next.dataset.source!==source)return;
       revealAvatarVideo(next);
